@@ -17,6 +17,7 @@ import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressInfoDetailVO;
 import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.service.ExplinkUserDetail;
+import cn.explink.service.UserService;
 
 /**
  *
@@ -42,6 +43,9 @@ public class ExpressCommonService {
 	 */
 	protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	@Autowired
+	private UserService userService;
+	
 	/**
 	 *
 	 * @Title: getSessionUser
@@ -54,7 +58,14 @@ public class ExpressCommonService {
 	 */
 	public User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
-		return userDetail.getUser();
+		
+		//Modified by leoliao at 2016-07-26 如果session用户的branchid为0则重新获取用户branchid
+		User currUser = userDetail.getUser();
+		userService.convertSessionUserBranchId(currUser);
+		
+		return currUser;
+		//return userDetail.getUser();
+		//Modified end
 	}
 
 	/**

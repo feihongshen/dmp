@@ -4330,25 +4330,52 @@ public class PDAController {
 					if (isbale.getBalestate() == BaleStateEnum.BuKeYong.getValue()) {
 						msg = "（异常扫描）" + cwb + "已被拆包";
 					} else {
+						/* ***************modify begin*********************/
+						//comment by neo01.huang，2016-7-25，这种代码没加入事务控制，出异常了也不回滚代码。
+						//把下面的代码抽取到一个带有事务的service方法中，逻辑不变，用于解决live问题1751，合包扫描过程中当前站为0导致不能封包出库
+						
 						// 更新包的下一站为用户选择的下一站，当前站为0
-						this.baleDAO.updateBranchIdAndNextBranchId(isbale.getId(), branchid, 0);
-
-						StringBuilder cwbs = new StringBuilder();
-						for (String cwbStr : cwbList) {
-							cwbs.append(cwbStr).append("\r\n");
-						}
-						BatchCount batchCount = new BatchCount(0, 0, 0);
-						List<Customer> cList = this.customerDAO.getAllCustomers();// 获取供货商列表
-
-						List<JSONObject> objList = new ArrayList<JSONObject>();
-
+//						this.baleDAO.updateBranchIdAndNextBranchId(isbale.getId(), branchid, 0);
+//
+//						StringBuilder cwbs = new StringBuilder();
+//						for (String cwbStr : cwbList) {
+//							cwbs.append(cwbStr).append("\r\n");
+//						}
+//						BatchCount batchCount = new BatchCount(0, 0, 0);
+//						List<Customer> cList = this.customerDAO.getAllCustomers();// 获取供货商列表
+//
+//						List<JSONObject> objList = new ArrayList<JSONObject>();
+//
+//						boolean exportHouseFailed = false;
+//						try {
+//							this.cwbOrderService.exportHouseForExpressPackage(this.getSessionUser(),cwbs.toString(), branchid, driverid, truckid, confirmflag, batchCount, cList, objList);
+//						} catch (Exception e) {
+//							exportHouseFailed = true;
+//							msg = "（异常扫描）" + e.getMessage();
+//						}
+						/* ***************modify end***********************/
+						
+						/* ***************add begin*********************/
+						//add by neo01.huang，2016-7-25
 						boolean exportHouseFailed = false;
+						StringBuilder cwbs = new StringBuilder();
+						BatchCount batchCount = new BatchCount(0, 0, 0);
 						try {
-							this.cwbOrderService.exportHouseForExpressPackage(this.getSessionUser(),cwbs.toString(), branchid, driverid, truckid, confirmflag, batchCount, cList, objList);
+							//出库扫描包号处理
+							baleService.cwbexportwarhouseScanBaleNo(
+									getSessionUser(), isbale, cwb, branchid, cwbList, driverid, truckid, confirmflag, cwbs, batchCount);
 						} catch (Exception e) {
 							exportHouseFailed = true;
+							String errMsg = "包号：" + cwb + ",";
+							if (e instanceof CwbException) {
+								CwbException cwbException = (CwbException) e;
+								errMsg += "单号：" + cwbException.getCwb() + ",操作：" + cwbException.getFlowordertye();
+							}
+							errMsg += "," + e.getMessage();
+							logger.info(errMsg, e);
 							msg = "（异常扫描）" + e.getMessage();
 						}
+						/* ***************add begin*********************/
 
 						if (!exportHouseFailed && (cwbs.length() > 0)) {
 							Branch nextBranch = this.branchDAO.getBranchByBranchid(branchid);
@@ -4483,39 +4510,71 @@ public class PDAController {
 		boolean isPackage = false;
 		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
 		// 订单不存在，则可能是包号，按照包号进行查询
+		/* ***************modify begin*********************/
+		//modified by neo01.huang，2016-7-25，从原版方法cwbexportwarhouse copy过来
 		if (null == co) {
 			// 这里cwb是包号
-			List<String> cwbList = this.baleCwbDao.getCwbsByBaleNO(cwb);
+			Bale isbale = this.baleDAO.getBaleOnway(cwb);
+			List<String> cwbList = null;
+			if(isbale==null){
+				msg = "（异常扫描）无此包号:" + cwb;
+			}else{
+				cwbList = this.baleCwbDao.getCwbsByBale(""+isbale.getId());
+			}		
 			if ((cwbList != null) && !cwbList.isEmpty()) {
 				isPackage = true;
 				if (branchid == 0) {
 					msg = "（异常扫描）请先选择下一站";
 				} else {
-					List<Bale> baleList = this.baleDAO.getBaleByBaleno(cwb);
-					if ((baleList == null) || baleList.isEmpty()) {
-						msg = "（异常扫描）无此包号:" + cwb;
-					} else if (baleList.get(0).getBalestate() == BaleStateEnum.BuKeYong.getValue()) {
+					if (isbale.getBalestate() == BaleStateEnum.BuKeYong.getValue()) {
 						msg = "（异常扫描）" + cwb + "已被拆包";
 					} else {
+						/* ***************modify begin*********************/
+						//comment by neo01.huang，2016-7-25，这种代码没加入事务控制，出异常了也不回滚代码。
+						//把下面的代码抽取到一个带有事务的service方法中，逻辑不变，用于解决live问题1751，合包扫描过程中当前站为0导致不能封包出库
+						
 						// 更新包的下一站为用户选择的下一站，当前站为0
-						this.baleDAO.updateBranchIdAndNextBranchId(cwb, branchid, 0);
-
-						StringBuilder cwbs = new StringBuilder();
-						for (String cwbStr : cwbList) {
-							cwbs.append(cwbStr).append("\r\n");
-						}
-						BatchCount batchCount = new BatchCount(0, 0, 0);
-						List<Customer> cList = this.customerDAO.getAllCustomers();// 获取供货商列表
-
-						List<JSONObject> objList = new ArrayList<JSONObject>();
-
+//						this.baleDAO.updateBranchIdAndNextBranchId(isbale.getId(), branchid, 0);
+//
+//						StringBuilder cwbs = new StringBuilder();
+//						for (String cwbStr : cwbList) {
+//							cwbs.append(cwbStr).append("\r\n");
+//						}
+//						BatchCount batchCount = new BatchCount(0, 0, 0);
+//						List<Customer> cList = this.customerDAO.getAllCustomers();// 获取供货商列表
+//
+//						List<JSONObject> objList = new ArrayList<JSONObject>();
+//
+//						boolean exportHouseFailed = false;
+//						try {
+//							this.cwbOrderService.exportHouseForExpressPackage(this.getSessionUser(),cwbs.toString(), branchid, driverid, truckid, confirmflag, batchCount, cList, objList);
+//						} catch (Exception e) {
+//							exportHouseFailed = true;
+//							msg = "（异常扫描）" + e.getMessage();
+//						}
+						/* ***************modify end***********************/
+						
+						/* ***************add begin*********************/
+						//add by neo01.huang，2016-7-25
 						boolean exportHouseFailed = false;
+						StringBuilder cwbs = new StringBuilder();
+						BatchCount batchCount = new BatchCount(0, 0, 0);
 						try {
-							this.cwbOrderService.exportHouseForExpressPackage(this.getSessionUser(), cwbs.toString(), branchid, driverid, truckid, confirmflag, batchCount, cList, objList);
+							//出库扫描包号处理
+							baleService.cwbexportwarhouseScanBaleNo(
+									getSessionUser(), isbale, cwb, branchid, cwbList, driverid, truckid, confirmflag, cwbs, batchCount);
 						} catch (Exception e) {
 							exportHouseFailed = true;
+							String errMsg = "包号：" + cwb + ",";
+							if (e instanceof CwbException) {
+								CwbException cwbException = (CwbException) e;
+								errMsg += "单号：" + cwbException.getCwb() + ",操作：" + cwbException.getFlowordertye();
+							}
+							errMsg += "," + e.getMessage();
+							logger.info(errMsg, e);
 							msg = "（异常扫描）" + e.getMessage();
 						}
+						/* ***************add begin*********************/
 
 						if (!exportHouseFailed && (cwbs.length() > 0)) {
 							Branch nextBranch = this.branchDAO.getBranchByBranchid(branchid);
@@ -4526,6 +4585,7 @@ public class PDAController {
 				}
 			}
 		}
+		/* ***************modify end*********************/
 		if (!isPackage) {
 			JSONObject obj = new JSONObject();
 

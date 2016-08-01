@@ -282,7 +282,8 @@ function _exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno
 		baleaddcwbCheck(needWeightFlag,carrealweight);
 	}else{//出库
 		var url = pname+"/PDA/cwbSortingAndChangeExportWarehouse/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno ;
-		if(needWeightFlag == "checked"){
+		console.log("needWeightFlag:" + needWeightFlag) ;
+	    if(needWeightFlag == "checked"){
 			url = url + "&carrealweight="+carrealweight ;
 		}
 			$.ajax({
@@ -364,7 +365,7 @@ function _exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno
 		var needWeightFlag = jQuery("#needWeightFlag").attr("checked") ;
 	    var carrealweight = 0 ;
 	    if(needWeightFlag == undefined){
-	    	exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,carrealweight);
+	    	exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,needWeightFlag,carrealweight);
 	    	return ;
 	    }
 	    $("#msg").html("") ;
@@ -385,7 +386,7 @@ function _exportWarehouse(pname,scancwb,branchid,driverid,truckid,requestbatchno
 	    		jQuery("#orderWeight").focus() ;
 	        	return false ;
 	    	}
-	    exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,carrealweight);
+	    exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,needWeightFlag,carrealweight);
      },(weightTime + 3) * 1000) ;
 }
 

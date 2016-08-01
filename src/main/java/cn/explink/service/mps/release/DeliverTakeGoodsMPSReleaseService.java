@@ -24,7 +24,6 @@ import cn.explink.dao.OrderBackCheckDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.dao.TranscwbOrderFlowDAO;
-import cn.explink.dao.YpdjHandleRecordDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.OrderBackCheck;
@@ -39,8 +38,6 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.enumutil.TransCwbStateEnum;
 import cn.explink.exception.CwbException;
-import cn.explink.support.transcwb.TransCwbDao;
-import cn.explink.support.transcwb.TranscwbView;
 
 /**
  *
@@ -61,8 +58,6 @@ public final class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseS
 	private SystemInstallDAO systemInstallDAO;
 	@Autowired
 	private OrderBackCheckDAO orderBackCheckDAO;
-	@Autowired
-	private TransCwbDao transCwbDao;
 	@Autowired
 	private CustomerDAO customerDAO;
 	
@@ -140,6 +135,9 @@ public final class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseS
 			return;
 		}
 		
+		/* ***************modify begin*********************/
+		//commented by neo01.huang，2016-7-26，放开对express_ops_transcwb的校验，express_ops_transcwb的记录条数有可能跟sendcarnum不一致
+		/*
 		List<TranscwbView> transcwbViewList = transCwbDao.getTransCwbByCwb(cwbOrder.getCwb());
 		if (CollectionUtils.isEmpty(transcwbViewList)) {
 			logger.info("{}{}订单号没有绑定运单号，无需校验，跳过", logPrefix, cwbOrder.getCwb());
@@ -150,6 +148,8 @@ public final class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseS
 			logger.info("{}{}运单号数量与发货数量不一致，无需校验，跳过", logPrefix, cwbOrder.getCwb());
 			return;
 		}
+		*/
+		/* ***************modify end*********************/
 		
 		//是否属于到站集齐领货
 		boolean isAllArrived = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() == flowordertype ||
