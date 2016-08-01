@@ -245,7 +245,11 @@ public class ReasonDao {
 	 */
 	public Reason getWorkFirstReasonByContent(String content) {
 		String sql = "select * from express_set_reason where reasontype = 13 and whichreason = 1 and reasoncontent = ?";
-		return this.jdbcTemplate.queryForObject(sql, new ReasonRowMapper(), content);
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new ReasonRowMapper(), content);
+		} catch (DataAccessException e) {
+			return null;
+		}
 	}
 	
 	/**
@@ -254,6 +258,10 @@ public class ReasonDao {
 	 */
 	public Reason getWorkSecondReasonByContent(int parentId, String content) {
 		String sql = "select * from express_set_reason where whichreason=2 and parentid=? and reasoncontent = ?";
-		return this.jdbcTemplate.queryForObject(sql, new ReasonRowMapper(), parentId, content);
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new ReasonRowMapper(), parentId, content);
+		} catch (DataAccessException e) {
+			return null;
+		}
 	}
 }
