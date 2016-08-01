@@ -535,6 +535,17 @@ function delSuccess(data){
             $("#edit").val('<%=request.getContextPath()%>/kuaJingGou/show/');
             $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
         }
+		/******************************add start**********************************************/
+		//add by zhouhuan 七乐康接口配置 2016-07-22
+		else if(obj=='22504'){//七乐康
+            $("#edit").val('<%=request.getContextPath()%>/qiLeKang/show/');
+            $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
+        }
+		else if(obj=='22505'){//大家分
+            $("#edit").val('<%=request.getContextPath()%>/daJiaFen/show/');
+            $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
+        }
+		/********************************add end**********************************************/
 		else if(obj=='23001'){//哲盟_轨迹
 			$("#edit").val('<%=request.getContextPath()%>/zhemengTrack/show/');
 			$("#del").val('<%=request.getContextPath()%>/zhemengTrack/del/');
