@@ -614,11 +614,10 @@ public class UserController {
 			
 			try {
 				AddressSyncServiceResult addressSyncServiceResult;
-				if (deliver.getUserDeleteFlag() == 1 && deliver.getEmployeestatus() == 1) { // 地址库逻辑：saveOrUpdate
+				if (deliver.getUserDeleteFlag() == 1 && deliver.getEmployeestatus() != 3) { // 地址库逻辑：saveOrUpdate
 					addressSyncServiceResult = this.addressService.updateDeliverer(applicationVo, delivererVo);
 				} else { // 删除
 					addressSyncServiceResult = this.addressService.deleteDeliverer(applicationVo, delivererVo);
-	
 				}
 				if (addressSyncServiceResult.getResultCode().getCode() == 0) {
 					logger.info("[成功]小件员批量同步地址库 {} ：{}", deliver.getUsername(), addressSyncServiceResult.toString());

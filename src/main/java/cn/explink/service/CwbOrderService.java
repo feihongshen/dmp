@@ -4608,8 +4608,8 @@ public class CwbOrderService extends BaseOrderService {
 			if (co.getExceldeliverid() > 0) { // 必须该小件员才能领货
 				if (co.getExceldeliverid() != deliveryUser.getUserid()) {
 					User coDeliver = this.userDao.getUserByUserid(co.getExceldeliverid());
-					// 如果地址库匹配的小件员不存在，则按未匹配处理
-					if (coDeliver != null && coDeliver.getUserid() != 0) {
+					// 如果地址库匹配的小件员不存在或离职，则按未匹配处理
+					if (coDeliver != null && coDeliver.getUserid() != 0 && coDeliver.getEmployeestatus() != 3) {
 						throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),
 								ExceptionCwbErrorTypeEnum.PEI_SONG_YUAN_BU_PI_PEI, coDeliver.getRealname(),
 								deliveryUser.getRealname());
