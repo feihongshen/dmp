@@ -62,10 +62,7 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css"></link>
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
-<link href="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/docsupport/prism.css" rel="stylesheet">
-<link href="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/chosen.css" rel="stylesheet">
-<script src="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/docsupport/prism.js" type="text/javascript" charset="utf-8"></script>
-<script src="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/chosen.jquery.js" type="text/javascript"></script>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <script>
 function subEdit(form){
 	if(form.excelbranch.value.length==0){
@@ -333,8 +330,8 @@ function bdbranchmatch(){
 												onblur="$('#add${vo.cwbOrder.cwb }').css('background','#ffffff');" />
 										</td>
 										<td width="20%" align="left">
-											<select id="courier_${voStatus.index }" name="courier" style="width:120px;" data-placeholder="请选择" class="chosen-select-deselect" tabindex="12">
-												<option value="" selected="selected"></option>
+											<select id="courier_${voStatus.index }" name="courier" class="easyui-combobox" style="width:120px;">
+												<option value="" selected="selected">请选择</option>
 												<c:forEach var="courier" items="${vo.courierList }">
 													<option value="${courier.username }" <c:if test="${vo.cwbOrder.exceldeliverid eq courier.userid }">selected="selected"</c:if>>${courier.realname }</option>
 												</c:forEach>
@@ -413,7 +410,6 @@ $(function(){
 	$("#onePageNumber").val(<%=request.getParameter("onePageNumber")==null?"10":request.getParameter("onePageNumber")%>);
 	$("#emaildate").val(<%=emaildateidParam%>);
 	$("#branchid").val(<%=branchidParam%>);
-	$(".chosen-select-deselect").chosen({allow_single_deselect:true, search_contains: true});
 });
 
 function getCourier(branchcode, index) {
@@ -440,17 +436,27 @@ function initCourier(index, courierList) {
 		courierList = new Array();
 	}
 	var $courier = $("#courier_" + index);
+	var data = new Array();
 	$courier.empty();
-	$courier[0].add(new Option("", "", true, true));
+	$courier[0].add(new Option("请选择", "", true, true));
+	data.push({"id":"", "text":"请选择"});
 	$.each(courierList, function(i, courier) { 
 		$courier[0].add(new Option(courier.realname, courier.username));
+		data.push({"id":courier.username, "text":courier.realname});
 	});
-	$courier.chosen("destroy");
-	$courier.chosen({allow_single_deselect:true, search_contains: true});
+	$courier.combobox({
+        url: null,
+        valueField: 'id',
+        textField: 'text',
+        data: data,
+        onLoadSuccess: function () {
+        	$(this).combobox("select", "");
+        }
+    });
 }
 
 function saveBranchAndCourier(cwb, index) {
-	var courierName = $("#courier_" + index).val();
+	var courierName = $("#courier_" + index).combobox("getValue");
 	$.ajax({
 		type: "POST",
         url: "<%=request.getContextPath() %>/dataimport/saveCourier",

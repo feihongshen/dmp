@@ -33,10 +33,7 @@
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
-<link href="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/docsupport/prism.css" rel="stylesheet">
-<link href="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/chosen.css" rel="stylesheet">
-<script src="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/docsupport/prism.js" type="text/javascript" charset="utf-8"></script>
-<script src="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/chosen.jquery.js" type="text/javascript"></script>
+<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <script>
 function subEdit(form){
 	if(form.excelbranch.value.length==0){
@@ -56,9 +53,9 @@ function subEdit(form){
 			if(data.errorCode==0){
 				form.excelbranch.value=data.excelbranch;
 				//form.exceldeliver.value=data.exceldeliver;
-				var $inp = $('input:text');
+				var $inp = $("input:text[name='excelbranch']");
 				var nxtIdx = $inp.index(form.excelbranch) + 1;
-	             $(":input:text:eq(" + nxtIdx + ")").focus();
+	            $("input:text[name='excelbranch']:eq(" + nxtIdx + ")").focus();
 	             getCourierByCode(data.branchcode, form.index.value);
 			}else{
 				form.excelbranch.value="";
@@ -86,14 +83,15 @@ function getCourierByCode(branchcode, index) {
 }
 
 function getCourier(index) {
-	var branchid = $("#branchcode").val();
+	var branchid = $("#branchcode").combobox("getValue");
 	var branch = $("#excelbranch").val().replace(/(^\s*)|(\s*$)/g,"");
+	if (branch == "输入站点名称或者站点编号") {
+		branch = "";
+	}
 	var branchcode;
 	if(branchid.length>0&&branch.length>0){
-		if(branch!='输入站点名称或者站点编号'){
-			alert("下拉框与输入框只能选一个");
-			return false;
-		}
+		alert("下拉框与输入框只能选一个");
+		return false;
 	}
 	branchcode = branchid.length > 0 ? branchid : branch;
 	if(branchcode == null || branchcode == "") {
@@ -125,13 +123,23 @@ function initCourier(index, courierList) {
 	} else {
 		$courier = $("#courier_" + index);
 	}
+	var data = new Array();
 	$courier.empty();
 	$courier[0].add(new Option("", "", true, true));
+	data.push({"id":"", "text":"请选择"});
 	$.each(courierList, function(i, courier) { 
 		$courier[0].add(new Option(courier.realname, courier.username));
+		data.push({"id":courier.username, "text":courier.realname});
 	});
-	$courier.chosen("destroy");
-	$courier.chosen({allow_single_deselect:true, search_contains: true});
+	$courier.combobox({
+        url: null,
+        valueField: 'id',
+        textField: 'text',
+        data: data,
+        onLoadSuccess: function () {
+        	$(this).combobox("select", "");
+        }
+    });
 }
 
 function saveBranchAndCourier(cwb, index) {
@@ -164,7 +172,7 @@ function showMsg(){
 		 alert("请输入订单号");
 		 return false;
 	 }
-	 var branchid=$("#branchcode").val();
+	 var branchid=$("#branchcode").combobox("getValue");
 	 var branch=$("#excelbranch").val().replace(/(^\s*)|(\s*$)/g,"");
 	 if(branchid.length>0&&branch.length>0){
 		 if(branch!='输入站点名称或者站点编号'){
@@ -182,9 +190,6 @@ function showMsg(){
 	 $("#selectButton").val("请稍候");
 	 $("#editBranchForm").submit();
  }
- $(function(){
-	 	$(".chosen-select-deselect").chosen({allow_single_deselect:true, search_contains: true});
-	});
 </script>
 </head>
 <body  style="background:#f5f5f5" onload="showMsg()">
@@ -206,8 +211,8 @@ function showMsg(){
 					<td width="100%" colspan="2">
 					订单号：<textarea cols="24" rows="4"  name ="cwbs" id="cwbs" ><%if("1".equals(request.getAttribute("msg"))){ %><%=request.getParameter("cwbs")%><%} %></textarea>
 					匹配站点：<%if(branchlist!=null&&branchlist.size()>0){%>
-						<select id="branchcode" name="branchcode" onchange="getCourier()" style="width:150px;" data-placeholder="--请选择站点--" class="chosen-select-deselect" tabindex="12">
-								<option value="" selected="selected"></option>
+						<select id="branchcode" name="branchcode" onchange="getCourier()" style="width:150px;" class="easyui-combobox">
+								<option value="" selected="selected">--请选择站点--</option>
 								<%for( Branch b:branchlist){ %>
 									<option value="<%=b.getBranchcode() %>"><%=b.getBranchname() %></option>
 								<%}%>
@@ -217,8 +222,8 @@ function showMsg(){
 						<input type="text" id="excelbranch" name="excelbranch" size="30" 
 							onblur="if(this.value==''){this.value='输入站点名称或者站点编号'}"
 							onfocus="if(this.value=='输入站点名称或者站点编号'){this.value=''}" onchange="getCourier()" value="输入站点名称或者站点编号"  />
-						<select id="courierName" name="courierName" style="width: 150px;" data-placeholder="--请选择小件员--" class="chosen-select-deselect" tabindex="12">
-							<option value="" selected="selected"></option>
+						<select id="courierName" name="courierName" style="width: 150px;" class="easyui-combobox">
+							<option value="" selected="selected">请选择</option>
 						</select>
 						<input type="button"  class='input_button2' value="确认匹配"  onclick="selectForm();" id="selectButton"/>
 							<!-- <input style="width: 130px; height:20px; border:none; background-color: #ADEAEA ; cursor:pointer; padding:0; text-align:left;" type="button" id="btnval0" value="导出所有未匹配订单" onclick="exportField();"/><br/> -->
@@ -266,7 +271,7 @@ function showMsg(){
 												onblur="$('#add${vo.cwbOrder.cwb }').css('background','#ffffff');" />
 								</td>
 								<td align="left">
-									<select id="courier_${voStatus.index }" name="courier" style="width:120px;" data-placeholder="请选择" class="chosen-select-deselect" tabindex="12">
+									<select id="courier_${voStatus.index }" name="courier" class="easyui-combobox" style="width:120px;">
 										<option value="" selected="selected"></option>
 										<c:forEach var="courier" items="${vo.courierList }">
 											<option value="${courier.username }" <c:if test="${vo.cwbOrder.exceldeliverid eq courier.userid }">selected="selected"</c:if>>${courier.realname }</option>

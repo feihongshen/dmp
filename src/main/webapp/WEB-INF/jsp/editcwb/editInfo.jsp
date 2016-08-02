@@ -22,10 +22,11 @@
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
-<link href="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/docsupport/prism.css" rel="stylesheet">
-<link href="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/chosen.css" rel="stylesheet">
-<script src="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/docsupport/prism.js" type="text/javascript" charset="utf-8"></script>
-<script src="<%=request.getContextPath()%>/dmp40/plug-in/chosen_v1.6.1/chosen.jquery.js" type="text/javascript"></script>
+<link href="<%=request.getContextPath()%>/js/easyui-extend/plugins/easyui/jquery-easyui-theme/<c:out value="${cookie.themeName.value}" default="default"/>/easyui.css" rel="stylesheet" type="text/css" />
+<link href="<%=request.getContextPath()%>/js/easyui-extend/plugins/easyui/jquery-easyui-theme/icon.css" rel="stylesheet" type="text/css" />
+<link href="<%=request.getContextPath()%>/js/easyui-extend/plugins/easyui/icons/icon-all.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/easyui-extend/plugins/easyui/jquery-easyui-1.3.6/jquery.easyui.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/easyui-extend/plugins/easyui/jquery-easyui-1.3.6/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
 </head>
 <body>
 
@@ -42,7 +43,6 @@
 		    timeFormat: 'hh:mm:ss',
 		    dateFormat: 'yy-mm-dd'
 		});
-		$(".chosen-select-deselect").chosen({allow_single_deselect:true, search_contains: true});
 	});
 	
 	function getCourier(cwb, matchExceldeliverid) {
@@ -73,18 +73,30 @@
 			matchExceldeliverid = "";
 		}
 		var $courier = $("#courier" + cwb);
+		var data = new Array();
 		$courier.empty();
 		$courier[0].add(new Option("", "", true, true));
+		data.push({"id":"", "text":"请选择"});
+		var selected = "";
 		$.each(courierList, function(i, courier) { 
 			if(courier.userid == matchExceldeliverid) { // 选中
-				alert(1);
 				$courier[0].add(new Option(courier.realname, courier.username, true, true));
+				data.push({"id":courier.username, "text":courier.realname});
+				selected = courier.username;
 			} else {
 				$courier[0].add(new Option(courier.realname, courier.username));
+				data.push({"id":courier.username, "text":courier.realname});
 			}
 		});
-		$courier.chosen("destroy");
-		$courier.chosen({allow_single_deselect:true, search_contains: true});
+		$courier.combobox({
+	        url: null,
+	        valueField: 'id',
+	        textField: 'text',
+	        data: data,
+	        onLoadSuccess: function () {
+	        	$(this).combobox("select", selected);
+	        }
+	    });
 	}
 	
 	function setMatchAddress(obj,cwb){
@@ -197,8 +209,8 @@ function editInit(){
 													</select>
 												</td>
 												<td width="10%"valign="middle"  align="left">
-													<select id="courier${vo.cwbOrder.cwb }" name="courier" style="width:120px;" data-placeholder="请选择" class="chosen-select-deselect" tabindex="12">
-														<option value="" selected="selected"></option>
+													<select id="courier${vo.cwbOrder.cwb }" name="courier" style="width:120px;" class="easyui-combobox">
+														<option value="" selected="selected">请选择</option>
 														<c:forEach var="courier" items="${vo.courierList }">
 															<option value="${courier.username }" <c:if test="${vo.cwbOrder.exceldeliverid eq courier.userid }">selected="selected"</c:if>>${courier.realname }</option>
 														</c:forEach>
@@ -261,7 +273,7 @@ function editInit(){
 							editshow:$("#editshow"+a).val(),	
 							remark:$("#remark"+a).val(),	
 							matchaddress:$("#branchlist"+a).val(),	
-							courierName:$("#courier" + a).val(),
+							courierName:$("#courier" + a).combobox("getValue"),
 							editaddress:$("#editaddress"+a).val(),	
 							checkeditaddress:$("#checkeditaddress"+a).val(),	
 							checkeditname:$("#checkeditname"+a).val(),	
@@ -306,11 +318,13 @@ function editInit(){
 						data:{"address":editaddress,"cwb":cwb},//参数
 						dataType:'json',//接受数据格式
 						success:function(data){
+							$("#matchaddress"+cwb).val((data.netpoint));
 							if(data.netpoint.length==0){
 								$("#buttonMatch"+cwb).removeAttr('disabled');
 								$("#buttonMatch"+cwb).val('修改匹配站');
-								alert("未匹配到站点");}
-							$("#matchaddress"+cwb).val((data.netpoint));
+								findbranch(cwb);
+								alert("未匹配到站点");
+							}
 							if($("#matchaddress"+cwb).val().length>0){
 								$("#buttonMatch"+cwb).removeAttr('disabled');
 								$("#buttonMatch"+cwb).val('修改匹配站');
@@ -361,6 +375,7 @@ function editInit(){
 			$('#branchAll option').each(function(){
 				  $("<option value='"+$(this).val()+"'>"+$(this).text()+"</option>").appendTo("#branchlist"+cwb);
 				  });
+			getCourier(cwb);
 		}
 		
 }
