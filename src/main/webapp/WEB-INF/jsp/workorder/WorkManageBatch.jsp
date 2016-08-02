@@ -150,6 +150,7 @@ function importExcel(){
 	$("#importButton").val("正在导入");
 	$('#swfupload-control').swfupload('addPostParam', 'type', $('#type').val());
 	$('#swfupload-control').swfupload('startUpload');
+	$("#importList").datagrid('loadData',[]); // 清空数据
 }
 
 function initDataGrid() {
@@ -168,7 +169,7 @@ function initDataGrid() {
 		                          { field: 'content', title: '工单内容', width: 120, align: 'left' },
 		                          { field: 'codOrgIdName', title: '责任机构', width: 80, align: 'left' },
 		                          { field: 'complaintUser', title: '责任人', width: 80, align: 'left' },
-		                          { field: 'errorMsg', title: '失败原因', width: 120, align: 'left' }
+		                          { field: 'errorMsg', title: '失败原因', width: 200, align: 'left' }
 		                      ]]});
 	} else if (type == 2) {
 		dg.datagrid( {columns: [[
@@ -184,9 +185,10 @@ function initDataGrid() {
 		                          { field: 'codOrgIdName', title: '责任机构', width: 80, align: 'left' },
 		                          { field: 'complaintUser', title: '责任人', width: 80, align: 'left' },
 		                          { field: 'remark', title: '处理结果', width: 120, align: 'left' },
-		                          { field: 'errorMsg', title: '失败原因', width: 120, align: 'left' }
+		                          { field: 'errorMsg', title: '失败原因', width: 200, align: 'left' }
 		                      ]]});
 	}
+	$("#importList").datagrid('loadData',[]); // 清空数据
 }
 
 function pagerFilter(data){
@@ -220,7 +222,7 @@ function pagerFilter(data){
 }
 
 function displayRowData(result) {
-	$("#importList").datagrid('loadData',[]); // 清空数据
+	//$("#importList").datagrid('loadData',[]); // 清空数据
 	var data = JSON.parse(result);
 	var gridData = data.map.result;
     //加载数据

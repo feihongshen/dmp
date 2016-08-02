@@ -1,6 +1,7 @@
 package cn.explink.service;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -207,16 +208,22 @@ public class WorkOrderService {
 						} else {
 							complain.setCustomerid(-1);//找不到该客户
 							complain.setCustomerName(cusName);
+							if(complain.isCorrect()) 
+								complain.setErrorMsg("订单客户与该客户不符！");
 							complain.setCorrect(false);
-							complain.setErrorMsg("订单客户与该客户不符！");
 						}
 						break;
+					} else {
+						if(complain.isCorrect()) 
+							complain.setErrorMsg("该客户不存在！");
+						complain.setCorrect(false);
 					}
 				}
 				complain.setCustomerid(-1);//找不到该客户
 				complain.setCustomerName(cusName);
+				if(complain.isCorrect()) 
+					complain.setErrorMsg("客户不能为空！");
 				complain.setCorrect(false);
-				complain.setErrorMsg("该客户不存在！");
 				break;	
 			case 5 ://订单号
 				String cwb = extractor.getXRowCellData(row, 5).trim();//订单号
@@ -225,6 +232,13 @@ public class WorkOrderService {
 					break;
 				}
 				complain = new CsComplaintAcceptViewVo(true);
+				try {
+					BigDecimal temp = new BigDecimal(cwb);
+					cwb = temp.intValue()+"";//去除纯数字订单号小数点
+				} catch (NumberFormatException e) {
+					//doNothing
+					logger.error("订单号非数字", e);
+				}
 				cwbOrder = cwbdao.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					complain.setOrderNo(cwb);
@@ -232,10 +246,15 @@ public class WorkOrderService {
 					complain.setFlowordertype(cwbOrder.getFlowordertype());
 					complain.setProvence(cwbOrder.getCwbprovince());
 					break;
+				} else {
+					if(complain.isCorrect()) 
+						complain.setErrorMsg("该订单号不存在！");
+					complain.setCorrect(false);
 				}
 				complain.setOrderNo(cwb);
+				if(complain.isCorrect()) 
+					complain.setErrorMsg("订单号不能为空！");
 				complain.setCorrect(false);
-				complain.setErrorMsg("该订单不存在！");
 				break;
 			case 6 ://一级分类
 				String Category1 = extractor.getXRowCellData(row, 6).trim();//一级分类
@@ -245,12 +264,17 @@ public class WorkOrderService {
 						complain.setComplaintOneLevel((int)reason.getReasonid());
 						complain.setComplaintOneLevelName(reason.getReasoncontent());
 						break;
+					} else {
+						if(complain.isCorrect()) 
+							complain.setErrorMsg("该一级分类不存在！");
+						complain.setCorrect(false);
 					}
 				}
 				complain.setComplaintOneLevel(-1);
 				complain.setComplaintOneLevelName(Category1);
+				if(complain.isCorrect()) 
+					complain.setErrorMsg("一级分类不能为空！");
 				complain.setCorrect(false);
-				complain.setErrorMsg("一级分类不存在！");
 				break;
 			case 7 ://二级分类
 				String Category2 = extractor.getXRowCellData(row, 7).trim();//二级分类
@@ -260,18 +284,28 @@ public class WorkOrderService {
 						complain.setComplaintTwoLevel((int)reason.getReasonid());
 						complain.setComplaintTwoLevelName(reason.getReasoncontent());
 						break;
+					} else {
+						 if(complain.isCorrect()) 
+			                complain.setErrorMsg("二级分类与一级分类不对应！！");
+						  complain.setCorrect(false);
 					}
+				} else {
+					if(complain.isCorrect()) 
+	                	complain.setErrorMsg("二级分类不存在！");
+					complain.setCorrect(false);
 				}
                 complain.setComplaintTwoLevel(-1);
                 complain.setComplaintTwoLevelName(Category2);
+                if(complain.isCorrect()) 
+                	complain.setErrorMsg("二级分类不为空！");
 				complain.setCorrect(false);
-				complain.setErrorMsg("二级分类不存在！");
 				break;
 			case 8 ://工单内容
 				String content = extractor.getXRowCellData(row, 8).trim();//工单内容
 				if (StringUtils.isBlank(content) && type == 2) {
+					if(complain.isCorrect()) 
+						complain.setErrorMsg("工单内容不能为空！");
 					complain.setCorrect(false);
-					complain.setErrorMsg("工单内容为空！");
 				}
 				complain.setContent(content);
 				break;
@@ -284,7 +318,9 @@ public class WorkOrderService {
 						complain.setCodOrgIdName(branch.getBranchname());
 						break;
 					}
-					complain.setErrorMsg("该责任机构不存在！");
+					if(complain.isCorrect()) 
+						complain.setErrorMsg("该责任机构不存在！");
+					complain.setCorrect(false);
 				} else {
 					if (cwbOrder != null && type ==1) {
 						Branch branch = branchDao.getBranchByBranchid(cwbOrder.getDeliverybranchid());
@@ -294,9 +330,10 @@ public class WorkOrderService {
 							break;
 						}
 					}
-					complain.setErrorMsg("责任机构不能为空！");
+					if(complain.isCorrect()) 
+						complain.setErrorMsg("责任机构不能为空！");
+					complain.setCorrect(false);
 				}
-				complain.setCorrect(false);
 				complain.setCodOrgId(-1);
 				complain.setCodOrgIdName(responsibilityBranch);
 				break;
@@ -311,20 +348,22 @@ public class WorkOrderService {
 					complain.setComplaintUser(user.getUsername());
 					break;
 				}
+				if(complain.isCorrect()) 
+					complain.setErrorMsg("该责任人不存在！");
 				complain.setCorrect(false);
-				complain.setErrorMsg("该责任人不存在！");
 				complain.setComplaintUser(responsibilityPerson);
 				break;
 			case 11 : //处理结果
 				String handleContent = extractor.getXRowCellData(row, 11).trim();//处理结果
 				if (StringUtils.isBlank(handleContent) && type == 2) {
+					if(complain.isCorrect()) 
+						complain.setErrorMsg("处理结果不能为空！");
 					complain.setCorrect(false);
-					complain.setErrorMsg("处理结果为空！");
 				}
 				complain.setRemark(handleContent);
 				break;
 			}
-			if (!isValidated) break; //跳过空行
+			if (!isValidated) break; //订单号为空视为空行就跳出该行的 
 		}
 		return complain;
 	}
