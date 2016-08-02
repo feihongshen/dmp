@@ -87,9 +87,35 @@ function check(){
 		alert("开始时间不能大于结束时间");
 		return false;
 	}
-	else{
-		return true;
+	
+	//Added by leoliao at 2016-07-29 限制只能查1个月内的数据
+	var startTm = $("#strtime").val();
+	var endTm   = $("#endtime").val();
+	
+	var dtStart = new Date(startTm);
+	var dtEnd   = new Date(endTm);
+	
+	var fromM = dtStart.getMonth();
+	var fromD = dtStart.getDate();
+	
+	var dtNext   = new Date(startTm);	
+	dtNext.setMonth(fromM+1, fromD);
+	
+	/*
+	alert("===dtStart==="+dtStart.toString() +
+		  "\n===dtEnd===="+dtEnd.toString() +
+		  "\n===dtNext==="+dtNext.toString()
+	);
+	*/
+		
+	if(dtNext < dtEnd){
+		alert("每次只能查询1个月范围内的数据");
+		return false;
 	}
+	//Added end
+	
+	return true;
+		
 }
 function checkBeishu(id,num){
 	// 如用户倍数框留空，光标离开倍数输入框，则倍数输入框默认为1.
