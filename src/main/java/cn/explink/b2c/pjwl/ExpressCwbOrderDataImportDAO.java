@@ -378,7 +378,7 @@ public class ExpressCwbOrderDataImportDAO {
 				ps.setString(++i, ((null != branch)?branch.getBranchname():""));//配送站点名称
 				ps.setInt(++i, ((null != branch)?CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue():CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()));//是否匹配状态位
 
-				ps.setBigDecimal(++i, BigDecimal.ZERO);
+				ps.setBigDecimal(++i, cwbOrderDTO.getCarriage());
 				ps.setBigDecimal(++i, BigDecimal.ZERO);
 				ps.setBigDecimal(++i, BigDecimal.ZERO);
 				ps.setBigDecimal(++i, BigDecimal.ZERO);
