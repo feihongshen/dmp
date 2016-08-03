@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.slf4j.Logger;
@@ -859,8 +860,11 @@ public class OMSInterfaceController {
 				orderDto.setPaywayid(cwbOrder.getPaywayid());
 				// CustomWareHouse
 				// customWareHouse=customWareHouseDAO.getWarehouseId(Long.valueOf(cwbOrder.getCustomerwarehouseid()));
-
-				orderDto.setWarehousename(branchDAO.getBranchByBranchid(Long.valueOf(cwbOrder.getCarwarehouse())).getBranchname());
+				if(!StringUtils.isEmpty(cwbOrder.getCarwarehouse())){
+					orderDto.setWarehousename(branchDAO.getBranchByBranchid(Long.valueOf(cwbOrder.getCarwarehouse())).getBranchname());
+				}else{
+					orderDto.setWarehousename("");
+				}
 				orderDto.setCwbprovince(cwbOrder.getCwbprovince());
 				orderDto.setCwbcity(cwbOrder.getCwbcity());
 				orderDto.setCwbcounty(cwbOrder.getCwbcounty());
