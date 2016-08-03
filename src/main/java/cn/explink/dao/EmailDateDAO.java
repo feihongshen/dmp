@@ -295,7 +295,20 @@ public class EmailDateDAO {
 		String sql = "select * from express_ops_emaildate where customerid =? and state in (0,1) ORDER BY emaildatetime DESC ";
 		return jdbcTemplate.query(sql, new EmailDateRowMapper(), customerid);
 	}
-
+	
+	/**
+	 * 查询10天以内的批次信息
+	 * @author 刘武强
+	 * @date:2016年8月3日 下午3:56:34 
+	 * @params:@param customerid
+	 * @params:@param branchid
+	 * @params:@return
+	 */
+	public Collection<? extends EmailDate> getEmailDateByCustomeridInTenDays(long customerid, String state) {
+		String sql = "select * from express_ops_emaildate where customerid =? and state in (0,1) and emaildatetime > DATE_ADD(NOW(), INTERVAL - 10 DAY) ORDER BY emaildatetime DESC ";
+		return jdbcTemplate.query(sql, new EmailDateRowMapper(), customerid);
+	}
+	
 	public Collection<? extends EmailDate> getEmailDateByCustomeridAndWarehouseId(long customerid, long branchid) {
 		String sql = "select * from express_ops_emaildate where customerid =? and state<>2 and branchid=?  ORDER BY emaildatetime DESC ";
 		return jdbcTemplate.query(sql, new EmailDateRowMapper(), customerid, branchid);
