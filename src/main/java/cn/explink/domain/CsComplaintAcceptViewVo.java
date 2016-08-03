@@ -14,7 +14,14 @@ public class CsComplaintAcceptViewVo extends CsComplaintAccept {
 	private String codOrgIdName; //被投诉机构
 	private String contact;//联系人
 	private String email;//联系邮箱
+	private String ComplaintUserRealname;	//被投诉人姓名
 
+	public String getComplaintUserRealname() {
+		return ComplaintUserRealname;
+	}
+	public void setComplaintUserRealname(String complaintUserRealname) {
+		ComplaintUserRealname = complaintUserRealname;
+	}
 	public CsComplaintAcceptViewVo() {
 
 	}
