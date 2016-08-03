@@ -378,7 +378,7 @@ public class ExpressCwbOrderDataImportDAO {
 				ps.setString(++i, ((null != branch)?branch.getBranchname():""));//配送站点名称
 				ps.setInt(++i, ((null != branch)?CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue():CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()));//是否匹配状态位
 
-				ps.setBigDecimal(++i, BigDecimal.ZERO);
+				ps.setBigDecimal(++i, cwbOrderDTO.getCarriage());//快递转业务定时器将费用合计的取值由固定的0改为取Carriage--刘武强 20160802
 				ps.setBigDecimal(++i, BigDecimal.ZERO);
 				ps.setBigDecimal(++i, BigDecimal.ZERO);
 				ps.setBigDecimal(++i, BigDecimal.ZERO);

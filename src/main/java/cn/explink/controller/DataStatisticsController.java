@@ -14,6 +14,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -37,9 +40,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.pjbest.splitting.aspect.DataSource;
-import com.pjbest.splitting.routing.DatabaseType;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
@@ -88,8 +88,9 @@ import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
 
 @RequestMapping("/datastatistics")
 @Controller
@@ -1177,6 +1178,28 @@ public class DataStatisticsController {
 
 			}
 
+			//Modified by leoliao at 2016-07-29 优化分站到货查询性能
+			String flowordertypes   = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
+			String currentBranchids = this.dataStatisticsService.getStrings(currentBranchid);
+			String sqlOrderFlow      = this.orderFlowDAO.genSqlOrderFlowBySome(begindate, enddate, flowordertypes, currentBranchids, isnowdata, false);
+			String sqlOrderFlowLimit = this.orderFlowDAO.genSqlOrderFlowBySome(begindate, enddate, flowordertypes, currentBranchids, isnowdata, true);
+			
+			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
+			String kufangids       = this.dataStatisticsService.getStrings(kufangid);
+			
+			//将发货仓库里面拼接上0，保持导出和查询一直
+			if(kufangids != null && kufangids.length() > 0){
+				kufangids += ",0";
+			}
+			
+			// 获订单总数
+			count = this.cwbDAO.getDaoHuoCount(customerid, cwbordertypeids, kufangids, "", sqlOrderFlow);
+			// 获取订单中金额
+			sum   = this.cwbDAO.getDaoHuoSum(customerid, cwbordertypeids, kufangids, "", sqlOrderFlow);
+			//获取订单明细
+			clist = this.cwbDAO.getDaoHuoByPage(page, customerid, cwbordertypeids, kufangids, "", sqlOrderFlowLimit);
+			
+			/*
 			List<String> orderFlowList = this.orderFlowDAO
 					.getOrderFlowBySome(begindate, enddate, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), this.dataStatisticsService
 							.getStrings(currentBranchid), isnowdata);
@@ -1200,6 +1223,8 @@ public class DataStatisticsController {
 			sum = this.cwbDAO.getcwborderDaoHuoSum(customerid, cwbordertypeids, orderflowcwbs, kufangids, "");
 
 			clist = this.cwbDAO.getDaoHuocwbOrderByPage(page, customerid, cwbordertypeids, orderflowcwbs, kufangids, "");
+			*/
+			//Modified end
 
 			pageparm = new Page(count, page, Page.ONE_PAGE_NUMBER);
 

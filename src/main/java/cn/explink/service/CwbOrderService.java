@@ -1821,7 +1821,7 @@ public class CwbOrderService extends BaseOrderService {
 		// 先更新运单状态，要不然运单流程里面的当前站为0
 		this.mpsOptStateService.updateTransCwbDetailInfo(scancwb, flowOrderTypeEnum, -1L, currentbranchid, 0L);
 
-		if (((co.getCurrentbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) || (newMPSOrder && (co.getScannum() > 0))|| (!newMPSOrder && FenZhanDaoHuoFlag)) {
+		if (((co.getCurrentbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) || (newMPSOrder && (co.getScannum() > 0))) {
 			if (co.getScannum() < 1) {
 				this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, false, isAutoSupplyLink);
 			}
@@ -1830,43 +1830,49 @@ public class CwbOrderService extends BaseOrderService {
 				this.cwbDAO.updateScannum(co.getCwb(), co.getScannum() + 1);
 				co.setScannum(co.getScannum() + 1);
 			}
-				if (isypdjusetranscwb == 1) {
-					if (!newMPSOrder) {
-						this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
-					}
-					//Commented by leoliao at 2016-03-30
-					//this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
-					//Added by leoliao at 2016-03-30 到货扫描在到错货的情况需要把flowordertype改为8(到错货)，然后删除缺件表记录。
-					//					long flowOrderTypeTemp = flowOrderTypeEnum.getValue();
-					//					if ((co.getNextbranchid() != 0) && (co.getNextbranchid() != currentbranchid)
-					//						&& (userbranch.getSitetype() == BranchEnum.ZhanDian.getValue())
-					//						&& (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())
-					//						&& (co.getFlowordertype() != FlowOrderTypeEnum.TiHuo.getValue())
-					//						&& (co.getFlowordertype() != FlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue())
-					//						&& (co.getFlowordertype() != FlowOrderTypeEnum.TuiHuoChuZhan.getValue())
-					//						&& (co.getFlowordertype() != FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue())) {
-					//						flowOrderTypeTemp = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
-					//					}
-					//
-					//					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeTemp, isypdjusetranscwb, 0);
-					//Added end
-					//update by neo01.huang，2016-4-21
-					//清除缺件记录
-					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
-					//同时，也要把当前站点的到错货的缺件记录，也一并删除
-					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), isypdjusetranscwb, 0);
+			if (isypdjusetranscwb == 1) {
+				if (!newMPSOrder ) {
+					this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
+				}
+				//Commented by leoliao at 2016-03-30
+				//this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
+				//Added by leoliao at 2016-03-30 到货扫描在到错货的情况需要把flowordertype改为8(到错货)，然后删除缺件表记录。
+				//					long flowOrderTypeTemp = flowOrderTypeEnum.getValue();
+				//					if ((co.getNextbranchid() != 0) && (co.getNextbranchid() != currentbranchid)
+				//						&& (userbranch.getSitetype() == BranchEnum.ZhanDian.getValue())
+				//						&& (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue())
+				//						&& (co.getFlowordertype() != FlowOrderTypeEnum.TiHuo.getValue())
+				//						&& (co.getFlowordertype() != FlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue())
+				//						&& (co.getFlowordertype() != FlowOrderTypeEnum.TuiHuoChuZhan.getValue())
+				//						&& (co.getFlowordertype() != FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue())) {
+				//						flowOrderTypeTemp = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
+				//					}
+				//
+				//					this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeTemp, isypdjusetranscwb, 0);
+				//Added end
+				//update by neo01.huang，2016-4-21
+				//清除缺件记录
+				this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
+				//同时，也要把当前站点的到错货的缺件记录，也一并删除
+				this.intoAndOutwarehouseYpdjDel(user, co, scancwb, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), isypdjusetranscwb, 0);
 
-					//清除非本站的缺件记录，add by neo01.huang，2016-6-14
-					ypdjHandleRecordDAO.delYpdjHandleRecord(cwb, user.getBranchid());
-					
-				}
-				//集包模式（之前写的）和非集单一票多件中，一件先出库、到货，下一件才出库、到货的情况下，需要对下一件进行到货
-				if (newMPSOrder||(!newMPSOrder && FenZhanDaoHuoFlag) ) {
-					this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, true, isAutoSupplyLink);
-				}
+				//清除非本站的缺件记录，add by neo01.huang，2016-6-14
+				ypdjHandleRecordDAO.delYpdjHandleRecord(cwb, user.getBranchid());
+				
+			}
+			//集包模式
+			if (newMPSOrder) {
+				this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, true, isAutoSupplyLink);
+			}
 //			} else {
 //				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 //			}
+		
+		}else if(!newMPSOrder && FenZhanDaoHuoFlag){//非集单一票多件中，一件先出库、到货，下一件才出库、到货的情况下，需要对下一件进行到货,并且将这种情况分离出来（不在防止它上面的if中），防止做一些多余的操作 ，譬如多写入一条运单轨迹 ---刘武强 20160802
+			this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, false, isAutoSupplyLink);
+			this.intoAndOutwarehouseYpdjDel(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0);
+			this.intoAndOutwarehouseYpdjDel(user, co, scancwb, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), isypdjusetranscwb, 0);
+			ypdjHandleRecordDAO.delYpdjHandleRecord(cwb, user.getBranchid());
 		} else {
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
 			this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, false, isAutoSupplyLink);
