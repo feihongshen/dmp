@@ -25,16 +25,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
 
-import com.pjbest.splitting.aspect.DataSource;
-import com.pjbest.splitting.routing.DatabaseType;
-
 import cn.explink.b2c.vipshop.oxo.response.TpsOxoPickStateVo;
 import cn.explink.domain.Branch;
-import cn.explink.domain.CwbOrderBranchMatchVo;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbOrderAndCustomname;
 import cn.explink.domain.MatchExceptionOrder;
@@ -61,6 +56,9 @@ import cn.explink.util.Page;
 import cn.explink.util.SecurityUtil;
 import cn.explink.util.StringUtil;
 import cn.explink.util.Tools;
+
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
 
 @Component
 public class CwbDAO {
@@ -3808,6 +3806,9 @@ public class CwbDAO {
 				flowordertype, paywayid, sign, paybackfeeIsZero, servicetype);
 
 		sql += " limit " + page + " ," + Page.EXCEL_PAGE_NUMBER;
+		
+		logger.info("CwbDAO.getSQLExportHuiZong sql: {}", sql);
+		
 		return sql;
 	}
 
@@ -9927,5 +9928,121 @@ public class CwbDAO {
 	public void saveTranscwbAndTpsTranscwbByCwb(String transcwb, String cwb) {
 		String sql = "update express_ops_cwb_detail set transcwb=?,tpstranscwb=? where cwb=? and state=1";
 		this.jdbcTemplate.update(sql, transcwb,transcwb, cwb);
+	}
+	
+	/**
+	 * 分站到货统计统计订单数
+	 * @author leo01.liao
+	 * @param customerids
+	 * @param cwbordertypeids
+	 * @param kufangids
+	 * @param flowordertypes
+	 * @param sqlOrderFlow
+	 * @return
+	 */
+	@DataSource(DatabaseType.REPLICA)
+	public long getDaoHuoCount(String customerids, String cwbordertypeids, String kufangids, String flowordertypes, String sqlOrderFlow) {
+		StringBuffer sbSql = new StringBuffer();
+		sbSql.append("select count(1) from express_ops_cwb_detail a, (").append(sqlOrderFlow).append(") b where b.cwb = a.cwb and a.state=1 ");
+		
+		if (!customerids.equals("0")) {
+			sbSql.append(" and a.customerid in(").append(customerids).append(") ");
+		}
+		
+		if (kufangids.length() > 0) {
+			// modified by wangwei, 如果是快递单那么发货站点carwarehouse是空，所以区分对待
+			// w.append(" and carwarehouse in(" + kufangids + ")");
+			sbSql.append(" and (a.cwbordertypeid=").append(CwbOrderTypeIdEnum.Express.getValue()).append(" or a.carwarehouse in(").append(kufangids).append(")) ");
+		}
+		
+		if (cwbordertypeids.length() > 0) {
+			sbSql.append(" and a.cwbordertypeid in(").append(cwbordertypeids).append(") ");
+		}
+		
+		if (flowordertypes.length() > 0) {
+			sbSql.append(" and a.flowordertype in(").append(flowordertypes).append(") ");
+		}
+		
+		logger.info("CwbDAO getDaoHuoCount sql:{}", sbSql);
+		
+		try {
+			return this.jdbcTemplate.queryForInt(sbSql.toString());
+		} catch (DataAccessException e) {
+			return 0;
+		}
+	}
+	
+	/**
+	 * 分站到货统计查询总金额
+	 * @param customerids
+	 * @param cwbordertypeids
+	 * @param kufangids
+	 * @param flowordertypes
+	 * @param sqlOrderFlow
+	 * @return
+	 */
+	@DataSource(DatabaseType.REPLICA)
+	public CwbOrder getDaoHuoSum(String customerids, String cwbordertypeids, String kufangids, String flowordertypes, String sqlOrderFlow) {
+		StringBuffer sbSql = new StringBuffer();
+		sbSql.append("select sum(receivablefee) as receivablefee,sum(paybackfee) as paybackfee from express_ops_cwb_detail a, ");
+		sbSql.append("(").append(sqlOrderFlow).append(") b where b.cwb = a.cwb and a.state=1 "); 
+		
+		if (!customerids.equals("0")) {
+			sbSql.append(" and a.customerid in(" + customerids + ") ");
+		}
+		
+		if (kufangids.length() > 0) {
+			// modified by wangwei, 如果是快递单那么发货站点carwarehouse是空，所以区分对待
+			// w.append(" and carwarehouse in(" + kufangids + ")");
+			sbSql.append(" and (a.cwbordertypeid=").append(CwbOrderTypeIdEnum.Express.getValue()).append(" or a.carwarehouse in(").append(kufangids).append(")) ");
+		}
+		
+		if (cwbordertypeids.length() > 0) {
+			sbSql.append(" and a.cwbordertypeid in(").append(cwbordertypeids).append(") ");
+		}
+		
+		if (flowordertypes.length() > 0) {
+			sbSql.append(" and a.flowordertype in(").append(flowordertypes).append(") ");
+		}
+		
+		logger.info("CwbDAO getDaoHuoSum sql:{}", sbSql);
+		
+		try {
+			return this.jdbcTemplate.queryForObject(sbSql.toString(), new CwbMOneyMapper());
+		} catch (DataAccessException e) {
+			return new CwbOrder();
+		}
+	}
+	
+	// 分站到货统计查询订单list
+	@DataSource(DatabaseType.REPLICA)
+	public List<CwbOrder> getDaoHuoByPage(long page, String customerids, String cwbordertypeids, String kufangids, String flowordertypes, String sqlOrderFlowLimit) {
+		//在order flow里分页
+		sqlOrderFlowLimit = sqlOrderFlowLimit.replace(OrderFlowDAO.LIMIT_FLAG, " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+		
+		StringBuffer sbSql = new StringBuffer();
+		sbSql.append("select a.* from express_ops_cwb_detail a, (").append(sqlOrderFlowLimit).append(") b where b.cwb = a.cwb and a.state=1 ");
+		
+		if (!customerids.equals("0")) {
+			sbSql.append(" and a.customerid in(").append(customerids).append(") ");
+		}
+
+		if ((kufangids.length() > 0)) {
+			// modified by wangwei, 如果是快递单那么发货站点carwarehouse是空，所以区分对待
+			// w.append(" and carwarehouse in(" + kufangids + ")");
+			sbSql.append(" and (a.cwbordertypeid=").append(CwbOrderTypeIdEnum.Express.getValue()).append(" or a.carwarehouse in(").append(kufangids).append(")) ");
+		}
+		
+		if ((cwbordertypeids.length() > 0)) {
+			sbSql.append(" and a.cwbordertypeid in(").append(cwbordertypeids).append(") ");
+		}
+		
+		if (flowordertypes.length() > 0) {
+			sbSql.append(" and a.flowordertype in(").append(flowordertypes).append(") ");
+		}
+		
+		logger.info("CwbDAO getDaoHuoByPage sql:{}", sbSql);
+		
+		return this.jdbcTemplate.query(sbSql.toString(), new CwbMapper());
 	}
 }
