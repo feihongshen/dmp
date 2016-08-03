@@ -10,18 +10,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import cn.explink.dao.CwbStateControlDAO;
+import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.dao.TranscwbOrderFlowDAO;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.CwbStateControl;
 import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
+import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.MPSAllArrivedFlagEnum;
 import cn.explink.enumutil.TransCwbStateEnum;
+import cn.explink.exception.CwbException;
 
 /**
  *
@@ -41,6 +47,8 @@ public final class MPSOptStateService extends AbstractMPSService {
 
 	@Autowired
 	private TranscwbOrderFlowDAO transcwbOrderFlowDAO;
+	@Autowired
+	private CwbStateControlDAO cwbStateControlDAO;
 
 	/**
 	 *
@@ -222,5 +230,51 @@ public final class MPSOptStateService extends AbstractMPSService {
 	 */
 	public List<TransCwbDetail> queryTransCwbDetail(String cwb){
 		return this.getTransCwbDetailDAO().queryTransCwbDetail(cwb) ;
+	}
+	
+	/**
+	 * 通过运单的flowordertype校验订单的操作流程
+	 * @param cwb 订单号
+	 * @param scancwb 扫描的单号
+	 * @param nextState 下一步操作
+	 * @throws CwbException 校验不通过则会抛出异常
+	 * @author neo01.huang，2016-7-27
+	 */
+	public void validateStateTransferForTranscwb(String cwb, String scancwb, FlowOrderTypeEnum nextState) {
+		final String logPrefix = "通过运单的flowordertype校验订单的操作流程->";
+		
+		cwb = StringUtils.trimToEmpty(cwb);
+		scancwb = StringUtils.trimToEmpty(scancwb);
+		LOGGER.info("{}cwb:{}, scancwb:{}, nextState:{}", logPrefix, cwb, scancwb, nextState.getValue());
+				
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("cwb", cwb);
+		paramMap.put("scancwb", scancwb);
+		paramMap.put("isnow", 1);
+		//当前操作记录List
+		List<TranscwbOrderFlow> currentOptList = transcwbOrderFlowDAO.queryTranscwbOrderFlow(paramMap, "t.credate DESC");
+		if (currentOptList == null || currentOptList.size() == 0) {
+			LOGGER.info("{}cwb:{}, scancwb:{},当前操作记录List为空", logPrefix, cwb, scancwb);
+			return;
+		}
+		
+		TranscwbOrderFlow transcwbOrderFlow = currentOptList.get(0);
+		if (transcwbOrderFlow == null) {
+			LOGGER.info("{}cwb:{}, scancwb:{},运单轨迹为空", logPrefix, cwb, scancwb);
+			return;
+		}
+		
+		int fromStateValue = transcwbOrderFlow.getFlowordertype();
+		LOGGER.info("{}cwb:{}, scancwb:{}, fromStateValue:{}", logPrefix, cwb, scancwb, fromStateValue);
+		
+		FlowOrderTypeEnum fromState = FlowOrderTypeEnum.getByValue(fromStateValue);
+		if (fromState != null) {
+			CwbStateControl cwbStateControl = cwbStateControlDAO.getCwbStateControlByParam(fromState.getValue(), nextState.getValue());
+			if (cwbStateControl == null) {
+				LOGGER.info("{}cwb:{}, scancwb:{}, cwbStateControl is null", logPrefix, cwb, scancwb);
+				throw new CwbException(cwb, nextState.getValue(), ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR, fromState.getText(), nextState.getText());
+			}
+		}
+		LOGGER.info("{}cwb:{}, scancwb:{}, 通过!", logPrefix, cwb, scancwb);
 	}
 }

@@ -1390,7 +1390,13 @@ public class CwbOrderService extends BaseOrderService {
 				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 			}
 		} else {
-			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
+			
+			/* ***************modify begin*********************/
+            // modify by neo01.huang，2016-8-3，改用用中转库专用的校验
+            this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
+			//this.validateYipiaoduojianStateForZhongZhuanKu(co, flowOrderTypeEnum, isypdjusetranscwb, false);
+            /* ***************modify end*********************/
+			
 			this.handleChangeIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false, driverid, isAutoSupplyLink);
 		}
 		// 中转站入库一票多件操作===LX
@@ -1421,9 +1427,28 @@ public class CwbOrderService extends BaseOrderService {
 	}
 
 	private void handleChangeIntowarehouse(User user, String cwb, String scancwb, long currentbranchid, long requestbatchno, String comment, boolean isauto, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj, Long credate, boolean anbaochuku, long driverid, boolean isAutoSupplyLink) {
-		this.validateCwbState(co, flowOrderTypeEnum);
-
-		this.validateStateTransfer(co, flowOrderTypeEnum);
+		/* ***************modify begin*********************/
+		//(原来的代码)commented by neo01.huang，2016-7-27，对于一票多件，需要用运单的状态来做校验
+//		this.validateCwbState(co, flowOrderTypeEnum);
+//
+//		this.validateStateTransfer(co, flowOrderTypeEnum);
+		/* ***************modify end*********************/
+		
+		/* ***************add begin*********************/
+		//是否为真正一票多件
+		boolean isRealOneVoteMultiPiece = mpsCommonService.isRealOneVoteMultiPiece(co, isypdjusetranscwb);
+		if (isRealOneVoteMultiPiece) {
+			//通过运单的flowordertype校验订单的操作流程
+			mpsOptStateService.validateStateTransferForTranscwb(cwb, scancwb, flowOrderTypeEnum);
+			
+		} else {
+			//走原来的逻辑
+			this.validateCwbState(co, flowOrderTypeEnum);
+			
+			this.validateStateTransfer(co, flowOrderTypeEnum);
+			
+		}
+		/* ***************add end*********************/
 
 		// 对oxo和oxo_jit的订单不用中转审核 by jinghui.pan on 20150806
 		if (this.isOxoAndJitType(co) == false) {
@@ -3093,7 +3118,15 @@ public class CwbOrderService extends BaseOrderService {
 	}
 
 	private void handleChangeOutowarehouse(User user, String cwb, String scancwb, long currentbranchid, long branchid, long requestbatchno, boolean forceOut, String comment, String packagecode, boolean isauto, long reasonid, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean isypdj, boolean iszhongzhuanout, boolean aflag, Long credate, boolean anbaochuku, Branch userbranch, boolean isAutoSupplyLink) {
-		this.validateCwbState(co, flowOrderTypeEnum);
+		/* ***************modify begin*********************/
+		//modify by neo01.huang，2016-8-1
+		//是否为真正一票多件
+		boolean isRealOneVoteMultiPiece = mpsCommonService.isRealOneVoteMultiPiece(co, isypdjusetranscwb);
+		if (!isRealOneVoteMultiPiece) { //不是真正一票多件，跳过订单状态流程校验
+			this.validateCwbState(co, flowOrderTypeEnum);
+		}
+		/* ***************modify end*********************/
+		
 		// 对oxo和oxo_jit的订单不用中转审核 by jinghui.pan on 20150806
 		if (this.isOxoAndJitType(co) == false) {
 			this.validateAppZhongZhuan(cwb, co, flowOrderTypeEnum);// 中转校验
@@ -3104,9 +3137,21 @@ public class CwbOrderService extends BaseOrderService {
 			this.validateAppZhongZhuan(cwb, co, flowOrderTypeEnum);// 中转校验
 		}
 
-		if ((co.getFlowordertype() != flowOrderTypeEnum.getValue()) || (co.getStartbranchid() != currentbranchid)) {
-			this.validateStateTransfer(co, flowOrderTypeEnum);
+		/* ***************modify begin*********************/
+		if (!isRealOneVoteMultiPiece) { //不是真正一票多件，走原来的逻辑
+			if ((co.getFlowordertype() != flowOrderTypeEnum.getValue()) || (co.getStartbranchid() != currentbranchid)) {
+				this.validateStateTransfer(co, flowOrderTypeEnum);
+			}
+			
+		} else {
+			
+			//通过运单的flowordertype校验订单的操作流程
+			mpsOptStateService.validateStateTransferForTranscwb(cwb, scancwb, flowOrderTypeEnum);
+			
 		}
+		
+		/* ***************modify begin*********************/
+		
 		if (iszhongzhuanout) {
 			// 中转出站操作根据系统设置，是否只有审核的订单才可以中转出站
 			String isUseAuditZhongZhuan = this.systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan") == null ? "no" : this.systemInstallDAO.getSystemInstall("isUseAuditZhongZhuan").getValue();
@@ -3692,6 +3737,14 @@ public class CwbOrderService extends BaseOrderService {
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
+	/**
+	 * 校验一票多件状态
+	 * @param co 订单
+	 * @param flowOrderTypeEnum 操作类型
+	 * @param isypdjusetranscwb 一票多件是否使用运单号
+	 * @param forceOut 是否强制出库
+	 * @see CwbOrderService.validateYipiaoduojianStateForZhongZhuanKu
+	 */
 	private void validateYipiaoduojianState(CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean forceOut) {
 		if (isypdjusetranscwb != 1) {
 			return;
@@ -3749,6 +3802,79 @@ public class CwbOrderService extends BaseOrderService {
 			}
 		}
 	}
+	
+	/**
+	 * 校验一票多件状态（For中转）
+	 * copy 自validateYipiaoduojianState
+	 * @param co 订单
+	 * @param flowOrderTypeEnum 操作类型
+	 * @param isypdjusetranscwb 一票多件是否使用运单号
+	 * @param forceOut 是否强制出库
+	 * @author neo01.huang，2016-8-3
+	 */
+	private void validateYipiaoduojianStateForZhongZhuanKu(CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, boolean forceOut) {
+		if (isypdjusetranscwb != 1) {
+			return;
+		}
+		if (co.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) {
+			return;
+		}
+		if (co.getFlowordertype() == FlowOrderTypeEnum.YiFanKui.getValue()) {
+			return;
+		}
+		if (co.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) {
+			return;
+		}
+
+		int alength = 0;
+		if (co.getTranscwb().length() > 0) {
+			String trans = co.getTranscwb().replaceAll(":", ",");
+			String[] a = trans.split(",");
+			for (String m : a) {
+				if (m.trim().length() > 0) {
+					alength++;
+				}
+			}
+		}
+		if (!this.mpsCommonService.isNewMPSOrder(co.getCwb())) {
+			SystemInstall switchInstall = this.systemInstallDAO.getSystemInstall("ypdjpathtong");
+			if ("0".equals(switchInstall.getValue())) {
+				// 针对一票多件多个订单号的订单扫描其中运单号,未匹配站点,出库给不同下一站的时候会更改扫描次数,并且重复扫描同一运单号,再扫其他单号的时候会直接报重复出库的问题
+				if (!forceOut && (co.getSendcarnum() > co.getScannum()) && (co.getFlowordertype() != flowOrderTypeEnum.getValue()) && (alength == co.getSendcarnum())) {
+					boolean allarrive = this.automateCheck(co, flowOrderTypeEnum);
+					if (!allarrive) {
+						throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR, FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(), flowOrderTypeEnum
+								.getText());
+					}
+				}
+			} else if ("1".equals(switchInstall.getValue())) {
+				// 一票多件时在领货前的操作是不阻挡的，但在领货的时候会拦截一票多件前一环节件数不对而阻拦
+				if (!forceOut && ((co.getSendcarnum() > co.getScannum()) && ((co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao
+						.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue())) && (co.getFlowordertype() != flowOrderTypeEnum.getValue()) && (alength == co
+						.getSendcarnum()))) {
+					
+					if (flowOrderTypeEnum.getValue() != FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue()) {
+						boolean allarrive = this.automateCheck(co, flowOrderTypeEnum);
+						if (!allarrive) {
+							throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR, FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(), flowOrderTypeEnum
+									.getText());
+						}
+					}
+					
+					
+				}
+				// 一票多件时在领货前的操作是不阻挡的，但在领货的时候会拦截一票多件前一环节件数不对而阻拦
+				else if (!forceOut && ((co.getSendcarnum() > co.getScannum()) && (flowOrderTypeEnum.getValue() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()))) {
+					boolean allarrive = this.automateCheck(co, flowOrderTypeEnum);
+					if (!allarrive) {
+						throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR, FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(), flowOrderTypeEnum
+								.getText());
+					}
+				}
+			}
+		}
+	}
+	
 	private boolean automateCheck(CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum) {
 		boolean allarrive = false;
 		try {

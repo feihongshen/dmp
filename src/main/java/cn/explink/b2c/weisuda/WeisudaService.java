@@ -496,6 +496,7 @@ public class WeisudaService {
 						for (OrderGoods orderGood : orderGoods) {
 							if (orderGood.getGoods_code().equals(good.getCode())) {
 								orderGood.setShituicount(good.getFetch_num());
+								// add by jian_xie 2016-08-01 揽退部分退的
 								int weituicount = 0;
 								if(Integer.parseInt(orderGood.getGoods_num()) - good.getFetch_num() >= 0){
 									weituicount = Integer.parseInt(orderGood.getGoods_num()) - good.getFetch_num();
