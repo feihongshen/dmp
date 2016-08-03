@@ -198,7 +198,11 @@ public class DfAdjustmentRecordDAO {
 
                 ps.setInt(30, record.getDeliverystate());
 
-                ps.setTimestamp(31, new Timestamp(record.getEmaildate().getTime()));
+                if (record.getEmaildate() == null) {
+                    ps.setNull(31, Types.DATE);
+                }else {
+                    ps.setTimestamp(31, new Timestamp(record.getEmaildate().getTime()));
+                }
 
                 if (record.getCredate() == null) {
                     ps.setNull(32, Types.DATE);
