@@ -68,6 +68,8 @@ public class EmailDateController {
 		} else if ("-1".equals(state)) {
 			long branchid = getSessionUser().getBranchid();
 			eList.addAll(emailDateDAO.getEmailDateByCustomeridAndWarehouseId(Long.parseLong(customerids), branchid));
+		}else if("2".equals(state)){//匹配管理里面只查询十天以内的批次信息----刘武强 20160803
+			eList.addAll(emailDateDAO.getEmailDateByCustomeridInTenDays(Long.parseLong(customerids), state));
 		} else {
 			eList.addAll(emailDateDAO.getEmailDateByCustomerid(Long.parseLong(customerids), state));
 		}

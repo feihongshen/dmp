@@ -1,3 +1,4 @@
+
 <%@page import="cn.explink.domain.Exportmould"%>
 <%@page import="cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum"%>
 <%@page import="cn.explink.enumutil.CwbFlowOrderTypeEnum"%>
@@ -63,6 +64,7 @@
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
+
 <script>
 function subEdit(form){
 	if(form.excelbranch.value.length==0){
@@ -490,7 +492,7 @@ function changeCustomerid(){
 		type: "POST",
 		url:"<%=request.getContextPath()%>/emaildate/getEmailDateList",
 		data:{customerids:$("#customerid").val(),
-			  state:1
+			  state:2
 		},
 		success:function(data){
 			var optionstring="";
