@@ -5,6 +5,7 @@ package cn.explink.service.mps;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +96,38 @@ public final class MPSCommonService extends AbstractMPSService {
 		LOGGER.info("resetScannumByTranscwbForArride->transCwb:{}, branchid:{}, realscannum:{}, realscannumForErrorArrive:{}", 
 				transCwb, branchid, realscannum, realscannumForErrorArrive);
 		this.getCwbDAO().updateScannum(cwbOrder.getCwb(), realscannum + realscannumForErrorArrive);
+	}
+	
+	/**
+	 * 是否为真正一票多件
+	 * @param cwbOrder 订单
+	 * @param isypdjusetranscwb 一票多件是否使用运单号
+	 * @return true为真正一票多件
+	 * @author neo01.huang，2016-7-27
+	 */
+	public boolean isRealOneVoteMultiPiece(CwbOrder cwbOrder, long isypdjusetranscwb) {
+		final String logPrefix = "是否为真正一票多件->";
+		if (cwbOrder == null) {
+			LOGGER.info("{}cwbOrder为空", logPrefix);
+			return false;
+		}
+		
+		String cwb = cwbOrder.getCwb(); //订单号
+		long sendcarnum = cwbOrder.getSendcarnum(); //发货数量
+		String transcwb = StringUtils.trimToEmpty(cwbOrder.getTranscwb()); //运单号
+		long cwbstate = cwbOrder.getCwbstate(); //订单状态
+		long flowordertype = cwbOrder.getFlowordertype(); //订单操作类型
+		LOGGER.info("{}cwb:{}, sendcarnum:{}, transcwb:{}, isypdjusetranscwb:{}, cwbstate:{}, flowordertype:{}", 
+				logPrefix, cwb, sendcarnum, transcwb, isypdjusetranscwb, cwbstate, flowordertype);
+		
+		if (sendcarnum > 1 && StringUtils.isNotEmpty(transcwb) && isypdjusetranscwb == 1) {
+			LOGGER.info("{}cwb:{},是真正一票多件", logPrefix, cwb);
+			return true;
+		} else {
+			LOGGER.info("{}cwb:{},不是真正一票多件", logPrefix, cwb);
+			return false;
+		}
+		
 	}
 
 }
