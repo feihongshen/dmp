@@ -191,7 +191,7 @@ public class WorkOrderService {
 						cci.setContactNum(1);
 						cci.setMailBox(email);
 						cci.setCallerremark("导入工单创建！");
-						workorderdao.save(cci);
+						workorderdao.saveAllCsConsigneeInfo(cci);
 					} catch (Exception e) {
 						logger.error("工单导入创建联系人出现异常", e);
 					}
@@ -245,6 +245,12 @@ public class WorkOrderService {
 					complain.setCwbstate(cwbOrder.getCwbstate());
 					complain.setFlowordertype(cwbOrder.getFlowordertype());
 					complain.setProvence(cwbOrder.getCwbprovince());
+					Branch b=branchDao.getbranchname(cwbOrder.getCurrentbranchid());//存入站点信息
+					if(b!=null){
+						complain.setCurrentBranch(b.getBranchname());
+					}else{
+						complain.setCurrentBranch("");	
+					}
 					break;
 				} else {
 					if(complain.isCorrect()) 
@@ -289,10 +295,6 @@ public class WorkOrderService {
 			                complain.setErrorMsg("二级分类与一级分类不对应！！");
 						  complain.setCorrect(false);
 					}
-				} else {
-					if(complain.isCorrect()) 
-	                	complain.setErrorMsg("二级分类不存在！");
-					complain.setCorrect(false);
 				}
                 complain.setComplaintTwoLevel(-1);
                 complain.setComplaintTwoLevelName(Category2);
