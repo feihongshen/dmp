@@ -33,7 +33,11 @@
 <script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
-<%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
+<link href="<%=request.getContextPath()%>/js/easyui-extend/plugins/easyui/jquery-easyui-theme/<c:out value="${cookie.themeName.value}" default="default"/>/easyui.css" rel="stylesheet" type="text/css" />
+<link href="<%=request.getContextPath()%>/js/easyui-extend/plugins/easyui/jquery-easyui-theme/icon.css" rel="stylesheet" type="text/css" />
+<link href="<%=request.getContextPath()%>/js/easyui-extend/plugins/easyui/icons/icon-all.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/easyui-extend/plugins/easyui/jquery-easyui-1.3.6/jquery.easyui.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/easyui-extend/plugins/easyui/jquery-easyui-1.3.6/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
 <script>
 function subEdit(form){
 	if(form.excelbranch.value.length==0){
@@ -272,7 +276,7 @@ function showMsg(){
 								</td>
 								<td align="left">
 									<select id="courier_${voStatus.index }" name="courier" class="easyui-combobox" style="width:120px;">
-										<option value="" selected="selected"></option>
+										<option value="" selected="selected">请选择</option>
 										<c:forEach var="courier" items="${vo.courierList }">
 											<option value="${courier.username }" <c:if test="${vo.cwbOrder.exceldeliverid eq courier.userid }">selected="selected"</c:if>>${courier.realname }</option>
 										</c:forEach>
