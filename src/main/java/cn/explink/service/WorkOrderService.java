@@ -299,12 +299,12 @@ public class WorkOrderService {
                 complain.setComplaintTwoLevel(-1);
                 complain.setComplaintTwoLevelName(Category2);
                 if(complain.isCorrect()) 
-                	complain.setErrorMsg("二级分类不为空！");
+                	complain.setErrorMsg("二级分类不能为空！");
 				complain.setCorrect(false);
 				break;
 			case 8 ://工单内容
 				String content = extractor.getXRowCellData(row, 8).trim();//工单内容
-				if (StringUtils.isBlank(content) && type == 2) {
+				if (StringUtils.isBlank(content)) {
 					if(complain.isCorrect()) 
 						complain.setErrorMsg("工单内容不能为空！");
 					complain.setCorrect(false);
@@ -332,9 +332,9 @@ public class WorkOrderService {
 							break;
 						}
 					}
-					if(complain.isCorrect()) 
+					/*if(complain.isCorrect()) 
 						complain.setErrorMsg("责任机构不能为空！");
-					complain.setCorrect(false);
+					complain.setCorrect(false);*/
 				}
 				complain.setCodOrgId(-1);
 				complain.setCodOrgIdName(responsibilityBranch);
