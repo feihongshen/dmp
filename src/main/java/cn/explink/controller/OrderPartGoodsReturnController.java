@@ -7,6 +7,7 @@ import java.util.Map;
 
 import net.sf.json.JSONArray;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -222,7 +223,9 @@ public class OrderPartGoodsReturnController {
 						continue;
 					}
 					VipShop vipshop = this.vipShopGetCwbDataService.getVipShop(enums.getKey());
-					customerids.append(vipshop.getCustomerids()).append(",");
+					if(!StringUtils.isEmpty(vipshop.getCustomerids())){
+						customerids.append(vipshop.getCustomerids()).append(",");
+					}
 				}
 			}
 			if (customerids.length() > 0) {

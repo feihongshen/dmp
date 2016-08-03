@@ -496,6 +496,11 @@ public class WeisudaService {
 						for (OrderGoods orderGood : orderGoods) {
 							if (orderGood.getGoods_code().equals(good.getCode())) {
 								orderGood.setShituicount(good.getFetch_num());
+								int weituicount = 0;
+								if(Integer.parseInt(orderGood.getGoods_num()) - good.getFetch_num() >= 0){
+									weituicount = Integer.parseInt(orderGood.getGoods_num()) - good.getFetch_num();
+								} 
+								orderGood.setWeituicount(weituicount);
 								orderGood.setTepituicount(good.getSpecial_num());
 								orderGood.setRemark1(good.getRemark());
 							}
