@@ -345,14 +345,22 @@ public class WorkOrderService {
 					complain.setComplaintUser(responsibilityPerson);
 					break;
 				}
-				User user = userDao.getUserByUsername(responsibilityPerson);
-				if (user != null) {
-					complain.setComplaintUser(user.getUsername());
-					break;
+				User user = null;
+				if (complain.getCodOrgId() != - 1) {//有输入责任机构 
+					user = userDao.getUserByRealNameBranchid(responsibilityPerson, complain.getCodOrgId());
+					if (user == null){
+						if(complain.isCorrect()) 
+							complain.setErrorMsg("该责任人不属于责任机构！");
+					    complain.setCorrect(false);
+					} 
+				} else {
+					user = userDao.getUserByRealName(responsibilityPerson);
+					if (user == null) {
+						if(complain.isCorrect()) 
+							complain.setErrorMsg("该责任人不存在！");
+						complain.setCorrect(false);
+					}
 				}
-				if(complain.isCorrect()) 
-					complain.setErrorMsg("该责任人不存在！");
-				complain.setCorrect(false);
 				complain.setComplaintUser(responsibilityPerson);
 				break;
 			case 11 : //处理结果
