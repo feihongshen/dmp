@@ -494,7 +494,7 @@ function changeCustomerid(){
 		type: "POST",
 		url:"<%=request.getContextPath()%>/emaildate/getEmailDateList",
 		data:{customerids:$("#customerid").val(),
-			  state:1
+			  state:2
 		},
 		success:function(data){
 			var optionstring="";
