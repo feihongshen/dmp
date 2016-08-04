@@ -10290,11 +10290,9 @@ public class CwbOrderService extends BaseOrderService {
 	 */
 	private void validateExpress(CwbOrder co, User deliveryUser) {
 		String cwb  = co.getCwb();
-		OrderFlow orderFlow = orderFlowDAO.getOrderCurrentFlowByCwb(cwb);
+		OrderFlow orderFlow = orderFlowDAO.queryFlow(cwb,FlowOrderTypeEnum.LanJianRuZhan);
 		if (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()
-				&& orderFlow != null
-				&& orderFlow.getFlowordertype() == FlowOrderTypeEnum.LanJianRuZhan
-						.getValue()) { // 揽件入站的快递单
+				&& orderFlow != null ) { // 揽件入站的快递单
 				long lanjianBranchid = orderFlow.getBranchid(); //揽件站点
 				long deliveryBranchid = co.getDeliverybranchid();//匹配站点
 				long operateBranchid = deliveryUser.getBranchid();//当前操作站点
