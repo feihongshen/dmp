@@ -1393,8 +1393,8 @@ public class CwbOrderService extends BaseOrderService {
 			
 			/* ***************modify begin*********************/
             // modify by neo01.huang，2016-8-3，改用用中转库专用的校验
-            this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
-			//this.validateYipiaoduojianStateForZhongZhuanKu(co, flowOrderTypeEnum, isypdjusetranscwb, false);
+            //this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
+			this.validateYipiaoduojianStateForZhongZhuanKu(co, flowOrderTypeEnum, isypdjusetranscwb, false);
             /* ***************modify end*********************/
 			
 			this.handleChangeIntowarehouse(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, isypdjusetranscwb, true, credate, false, driverid, isAutoSupplyLink);
