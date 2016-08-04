@@ -178,7 +178,6 @@ public class PDAController {
 	private static final String PLAY_GP_SOUND = "playGPSound";
 
 	private static final String PLAY_YPDJ_SOUND = "RUKUPCandPDAaboutYJDPWAV";
-	private static final int PORT = 8008;
 
 	private Logger logger = LoggerFactory.getLogger(PDAController.class);
 	@Autowired
@@ -11381,7 +11380,7 @@ public class PDAController {
 			logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
 			if(null==sc||sc.Clientstate.State!=2){
 				logger.info("尝试连接中间件 ："+entranceIP);
-				sc=this.autoAllocationService.startConnect(entranceIP, PORT);
+				sc=this.autoAllocationService.startConnect(entranceIP);
 				socketMap.put(entranceIP, sc);
 			}
 			
@@ -11640,7 +11639,7 @@ public class PDAController {
 			SocketClient sc=socketMap.get(e.getEntranceip());
 			if(null==sc||sc.Clientstate.State!=2){
 				logger.info("尝试连接中间件："+e.getEntranceip());
-				sc=this.autoAllocationService.startConnect(e.getEntranceip(), PORT);
+				sc=this.autoAllocationService.startConnect(e.getEntranceip());
 				socketMap.put(e.getEntranceip(), sc);
 			}
 		}
@@ -11694,7 +11693,7 @@ public class PDAController {
 				logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
 				if(null==sc||sc.Clientstate.State!=2){
 					logger.info("尝试连接中间件："+entranceIP);
-					sc=this.autoAllocationService.startConnect(entranceIP, PORT);
+					sc=this.autoAllocationService.startConnect(entranceIP);
 					socketMap.put(entranceIP, sc);
 					
 					sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态

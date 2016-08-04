@@ -248,9 +248,14 @@ public class AutoAllocationService {
 	/**
 	 * 启动与服务器的通信
 	 */
-	public SocketClient startConnect(String IP, int port) {
+	public SocketClient startConnect(String IPAndPort) {
 		SocketClient sc = new SocketClient();
-		sc.StartEngine(IP, port);
+		String[] items = IPAndPort.split(":");
+		if (items.length == 2) {
+			String realIP = items[0];
+			int port = Integer.valueOf(items[1]);
+			sc.StartEngine(realIP, port);
+		}
 		return sc;
 	}
 
