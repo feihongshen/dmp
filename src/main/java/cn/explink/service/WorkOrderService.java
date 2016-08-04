@@ -361,8 +361,8 @@ public class WorkOrderService {
 						complain.setCorrect(false);
 					}
 				}
-				complain.setComplaintUserRealname(user == null ? "" : user.getRealname());
-				complain.setComplaintUser(responsibilityPerson);
+				complain.setComplaintUserRealname(responsibilityPerson);
+				complain.setComplaintUser(user == null ? "" : user.getUsername());
 				break;
 			case 11 : //处理结果
 				String handleContent = extractor.getXRowCellData(row, 11).trim();//处理结果
