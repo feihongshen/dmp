@@ -1473,7 +1473,7 @@ public class OrderFlowDAO {
 	 */
 	public String genSqlForExport(String sqlOrderFlowBySome, long page, String begindate, String enddate, String customeridStr, String startbranchids,
 								  String nextbranchids, String cwbordertypeids, String currentBranchids, String dispatchbranchids, String kufangids, 
-								  long flowordertype, long paywayid, long sign, Integer paybackfeeIsZero, String servicetype) {
+								  long flowordertype, long paywayid, long sign, Integer paybackfeeIsZero, String servicetype, boolean limit) {
 		StringBuffer sbSql = new StringBuffer();
 		sbSql.append("select a.* from express_ops_cwb_detail a, (").append(sqlOrderFlowBySome).append(") b where a.cwb = b.cwb and a.state=1 ");
 		
@@ -1527,10 +1527,11 @@ public class OrderFlowDAO {
 				sbSql.append(" and a.receivablefee>0 ");
 			}
 		}
-
-		//sqlOrderFlowBySome已经带了分页，这里不需要加
-		//sbSql.append(" limit ").append(page).append(" ,").append(Page.EXCEL_PAGE_NUMBER);
-		//sbSql.append(LIMIT_FLAG);
+		
+		if(limit){
+			//sbSql.append(" limit ").append(page).append(" ,").append(Page.EXCEL_PAGE_NUMBER);
+			sbSql.append(LIMIT_FLAG);
+		}
 		
 		logger.info("genSqlForExport sql: {}", sbSql.toString());
 		

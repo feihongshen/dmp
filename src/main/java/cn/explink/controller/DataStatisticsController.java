@@ -1182,7 +1182,7 @@ public class DataStatisticsController {
 			String flowordertypes   = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
 			String currentBranchids = this.dataStatisticsService.getStrings(currentBranchid);
 			String sqlOrderFlow      = this.orderFlowDAO.genSqlOrderFlowBySome(begindate, enddate, flowordertypes, currentBranchids, isnowdata, false);
-			String sqlOrderFlowLimit = this.orderFlowDAO.genSqlOrderFlowBySome(begindate, enddate, flowordertypes, currentBranchids, isnowdata, true);
+			//String sqlOrderFlowLimit = this.orderFlowDAO.genSqlOrderFlowBySome(begindate, enddate, flowordertypes, currentBranchids, isnowdata, true);
 			
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
 			String kufangids       = this.dataStatisticsService.getStrings(kufangid);
@@ -1197,7 +1197,8 @@ public class DataStatisticsController {
 			// 获取订单中金额
 			sum   = this.cwbDAO.getDaoHuoSum(customerid, cwbordertypeids, kufangids, "", sqlOrderFlow);
 			//获取订单明细
-			clist = this.cwbDAO.getDaoHuoByPage(page, customerid, cwbordertypeids, kufangids, "", sqlOrderFlowLimit);
+			//clist = this.cwbDAO.getDaoHuoByPage(page, customerid, cwbordertypeids, kufangids, "", sqlOrderFlowLimit);
+			clist = this.cwbDAO.getDaoHuoByPage(page, customerid, cwbordertypeids, kufangids, "", sqlOrderFlow);
 			
 			/*
 			List<String> orderFlowList = this.orderFlowDAO
