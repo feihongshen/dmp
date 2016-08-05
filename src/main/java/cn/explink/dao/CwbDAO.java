@@ -10016,12 +10016,12 @@ public class CwbDAO {
 	
 	// 分站到货统计查询订单list
 	@DataSource(DatabaseType.REPLICA)
-	public List<CwbOrder> getDaoHuoByPage(long page, String customerids, String cwbordertypeids, String kufangids, String flowordertypes, String sqlOrderFlowLimit) {
+	public List<CwbOrder> getDaoHuoByPage(long page, String customerids, String cwbordertypeids, String kufangids, String flowordertypes, String sqlOrderFlow) {
 		//在order flow里分页
-		sqlOrderFlowLimit = sqlOrderFlowLimit.replace(OrderFlowDAO.LIMIT_FLAG, " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+		//sqlOrderFlow = sqlOrderFlowLimit.replace(OrderFlowDAO.LIMIT_FLAG, " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 		
 		StringBuffer sbSql = new StringBuffer();
-		sbSql.append("select a.* from express_ops_cwb_detail a, (").append(sqlOrderFlowLimit).append(") b where b.cwb = a.cwb and a.state=1 ");
+		sbSql.append("select a.* from express_ops_cwb_detail a, (").append(sqlOrderFlow).append(") b where b.cwb = a.cwb and a.state=1 ");
 		
 		if (!customerids.equals("0")) {
 			sbSql.append(" and a.customerid in(").append(customerids).append(") ");
@@ -10040,6 +10040,8 @@ public class CwbDAO {
 		if (flowordertypes.length() > 0) {
 			sbSql.append(" and a.flowordertype in(").append(flowordertypes).append(") ");
 		}
+		
+		sbSql.append(" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 		
 		logger.info("CwbDAO getDaoHuoByPage sql:{}", sbSql);
 		
