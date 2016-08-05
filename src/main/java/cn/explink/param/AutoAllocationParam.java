@@ -92,8 +92,9 @@ public class AutoAllocationParam {
 	public static AutoAllocationParam getInitParams(){
 		AutoAllocationParam params=new AutoAllocationParam();
 		params.setAct(INITQUEUE);
-		params.setOrderid(getInitOrderId());
-		params.setExport(Tools.getCurrentTime("yyyy-MM-dd HH:mm:ss.SSS"));
+		String currentTime = Tools.getCurrentTime("yyyy-MM-dd HH:mm:ss.SSS");
+		params.setOrderid(getInitOrderId(currentTime, GRANTDIRECTION));
+		params.setExport(currentTime);
 		params.setDirection(GRANTDIRECTION);
 		params.setStation("");
 		return params;
@@ -203,13 +204,13 @@ public class AutoAllocationParam {
 	}
 	
 	/**
-	 * orderid为MD5(MD5(MD5(MD5(Export + Direction)+“x”)+“i”)+“e”)
+	 * orderid为MD5(Export + Direction + "xie")
 	 * export为当前时间精确到毫秒 2010-10-10 10:10:10.999
 	 * @return
 	 */
-	private static String getInitOrderId(){
-		String time=Tools.getCurrentTime("yy-MM-dd HH:mm:ss.SSS");
-		String orderId=MD5Util.md5(MD5Util.md5(MD5Util.md5(MD5Util.md5(time+GRANTDIRECTION)+"x")+"i")+"e");
+	private static String getInitOrderId(String time, String grantdirection){
+//		String orderId=MD5Util.md5(MD5Util.md5(MD5Util.md5(MD5Util.md5(time+GRANTDIRECTION)+"x")+"i")+"e");
+		String orderId=MD5Util.md5(time + GRANTDIRECTION + "xie");
 		return orderId;
 	}
 	
