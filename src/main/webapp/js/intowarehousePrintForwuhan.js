@@ -166,6 +166,6 @@ function CreateOneFormPageForwuhan(scancwb,printHtml){
  */
 function prn1_printForwuhan(scancwb,printHtml) {		
 	CreateOneFormPageForwuhan(scancwb,printHtml);
-	//LODOP_wuhan.PRINT();  TODO
-	LODOP_wuhan.PREVIEW();
+	LODOP_wuhan.PRINT();  
+	//LODOP_wuhan.PREVIEW(); //打印预览
 };
