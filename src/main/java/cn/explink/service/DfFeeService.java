@@ -247,7 +247,7 @@ public class DfFeeService {
             if (order.getCollectorid() > 0) {
                 DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.STAFF.getValue(), cwb, chargeType, (long) order.getCollectorid());
                 if (null == fee) {
-                    logger.info("相同小件员ID{}，相同订单号{}，相同费用类型{}, 未能找到计费明细", order.getCollectorid(), cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
+                    logger.info("相同小件员ID:{}，相同订单号:{}，相同费用类型:{}, 未能找到计费明细", order.getCollectorid(), cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
                     saveDeliveryFee(DeliveryFeeChargerType.STAFF, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                             order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
                             chargeType, order.getCollectorid(), userName, branchId, order.getCwbstate(),
@@ -256,15 +256,17 @@ public class DfFeeService {
                             order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
 
                 } else {
-                    logger.info("相同小件员ID{}，相同订单号{}，相同费用类型{}, 能找到计费明细", order.getCollectorid(), cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
-                    saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.STAFF, fee, currentUser.getRealname());
+                    logger.info("相同小件员ID:{}，相同订单号:{}，相同费用类型:{}, 能找到计费明细, 不生成揽件费用", order.getCollectorid(), cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
+                    //commented by Steve PENG, 2016/08/03, 揽件费不需要调整记录。
+                    //saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.STAFF, fee, currentUser.getRealname());
+                    //commented by Steve PENG, 2016/08/03, end
                 }
             }
             //如果站点是加盟站点
             if (isJoinBranch(branchId)) {
                 DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.ORG.getValue(), cwb, chargeType, branchId);
                 if (null == fee) {
-                    logger.info("相同站点ID{}，相同订单号{}，相同费用类型{}, 未能找到计费明细", branchId, cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
+                    logger.info("相同站点ID:{}，相同订单号:{}，相同费用类型:{}, 未能找到计费明细", branchId, cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
                     saveDeliveryFee(DeliveryFeeChargerType.ORG, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                             order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
                             chargeType, order.getCollectorid(), userName, branchId, order.getCwbstate(),
@@ -272,8 +274,10 @@ public class DfFeeService {
                             pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
                             order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
                 } else {
-                    logger.info("相同站点ID{}，相同订单号{}，相同费用类型{}, 能找到计费明细", branchId, cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
-                    saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.ORG, fee, currentUser.getRealname());
+                    logger.info("相同站点ID:{}，相同订单号:{}，相同费用类型:{}, 能找到计费明细, 不生成揽件费用", branchId, cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
+                    //commented by Steve PENG, 2016/08/03, 揽件费不需要调整记录。
+                    //saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.ORG, fee, currentUser.getRealname());
+                    //commented by Steve PENG, 2016/08/03, end
                 }
             }
         }
@@ -314,7 +318,7 @@ public class DfFeeService {
                 if (order.getDeliverid() > 0) {
                     DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.STAFF.getValue(), cwb, chargeType, order.getDeliverid());
                     if (null == fee) {
-                        logger.info("相同小件员ID{}，相同订单号{}，相同费用类型{}, 未能找到计费明细", order.getDeliverid(), cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
+                        logger.info("相同小件员ID:{}，相同订单号:{}，相同费用类型:{}, 未能找到计费明细", order.getDeliverid(), cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
                         saveDeliveryFee(DeliveryFeeChargerType.STAFF, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                                 order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
                                 chargeType, order.getDeliverid(), userName, branchId, order.getCwbstate(),
@@ -322,14 +326,14 @@ public class DfFeeService {
                                 pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
                                 order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
                     } else {
-                        logger.info("相同小件员ID{}，相同订单号{}，相同费用类型{}, 能找到计费明细", order.getDeliverid(), cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
+                        logger.info("相同小件员ID:{}，相同订单号:{}，相同费用类型:{}, 能找到计费明细", order.getDeliverid(), cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
                         saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.STAFF, fee, currentUser.getRealname());
                     }
                 }
 
                 if (isJoinBranch(branchId)) {
                     DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.ORG.getValue(), cwb, chargeType, branchId);
-                    logger.info("相同站点ID{}，相同订单号{}，相同费用类型{}, 未能找到计费明细", branchId, cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
+                    logger.info("相同站点ID:{}，相同订单号:{}，相同费用类型:{}, 未能找到计费明细", branchId, cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
                     if (null == fee) {
                         saveDeliveryFee(DeliveryFeeChargerType.ORG, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                                 order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
@@ -338,7 +342,7 @@ public class DfFeeService {
                                 pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
                                 order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
                     } else {
-                        logger.info("相同站点ID{}，相同订单号{}，相同费用类型{}, 能找到计费明细", branchId, cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
+                        logger.info("相同站点ID:{}，相同订单号:{}，相同费用类型:{}, 能找到计费明细", branchId, cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
                         saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.ORG, fee, currentUser.getRealname());
                     }
                 }
@@ -415,16 +419,26 @@ public class DfFeeService {
     }
 
     private void deleteFeeOrAddAdjust(DeliveryFeeChargerType chargerType, String cwb, Integer chargeType, Long branchOrUserId, User currentUser, int fromWhere) {
-        boolean isQulified = false;
-        if (branchOrUserId != null && branchOrUserId > 0) {
-            if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
-                if (isJoinBranch(branchOrUserId))
-                    isQulified = true;
-            } else
-                isQulified = true;
+        //是否适合删除派费记录或增加调整记录。
+        boolean isQualified = false;
+        //amended by Steve PENG, 2016/08/03, 揽件费不需要调整
+        if (DeliveryFeeRuleChargeType.GET.getValue() == chargeType) {
+            //揽件费不需要
+            isQualified = false;
+        } else {
+            if (branchOrUserId != null && branchOrUserId > 0) {
+                if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
+                    if (isJoinBranch(branchOrUserId)){
+                        //加盟站点才需要
+                        isQualified = true;
+                    }
+                } else
+                    isQualified = true;
+            }
         }
+        //amended by Steve PENG, 2016/08/03, end
 
-        if (isQulified) {
+        if (isQualified) {
             //费用类型，同一配送站点或小件员
             DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(chargerType.getValue(), cwb, chargeType, branchOrUserId);
 
