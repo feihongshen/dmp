@@ -10066,4 +10066,14 @@ public class CwbDAO {
 		
 		return this.jdbcTemplate.query(sbSql.toString(), new CwbMapper());
 	}
+	
+	/**
+	 * 查询订单号是否存在  add by vic.liang@pjbest.com 2016-08-05
+	 * @param cwb
+	 * @return
+	 */
+	public int getCountByCwb (String cwb) {
+		String sql = "select count(1) from express_ops_cwb_detail where state = 1 and cwb = ? ";
+		return this.jdbcTemplate.queryForInt(sql,cwb);
+	}
 }

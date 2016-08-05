@@ -862,6 +862,18 @@ public class ExpressOrderDao {
 		list = this.jdbcTemplate.query(sql.toString(), new EmbrancedOrderInputRowMapper());
 		return list;
 	}
+	
+	
+	/**
+	 * 根据订单号获取运单号 add by vic.liang@pjbest.com 2016-08-05
+	 * @param cwbs
+	 * @return
+	 */
+	public List<String> getTranscwbByCwbs(String cwbs) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("select transcwb from express_ops_transcwb where transcwb in " + cwbs);
+		return this.jdbcTemplate.queryForList(sql.toString() ,String.class); 
+	}
 
 	private final class changeAddrRowMapper implements RowMapper<CwbOrder> {
 		@Override

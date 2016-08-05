@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.dao.CwbDAO;
 import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.express.CityDAO;
@@ -49,19 +50,21 @@ import cn.explink.enumutil.express.ExpressOrderStatusEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.express.tps.enums.FeedbackOperateTypeEnum;
 import cn.explink.service.express2.ReserveOrderService;
+import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.StringUtil;
 
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderCargoRequest;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderRequest;
 import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
-import com.pjbest.deliveryorder.bizservice.PjDeliverOrder4DMPRequest;
-import com.pjbest.deliveryorder.bizservice.PjDeliveryOrder4DMPCargoInfo;
-import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
 
 @Transactional
 @Service
 public class EmbracedOrderInputService extends ExpressCommonService {
+	@Autowired
+	private CwbDAO cwbDao;
+	@Autowired
+	private TransCwbDao transCwbDao;
 	@Autowired
 	private UserDAO userDAO;
 	@Autowired
@@ -907,7 +910,12 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			this.logger.info("vo为空");
 			return false;
 		}
-		// 首先校验付款方式
+		
+		
+		
+		
+		
+		// 首先校验付款方式  
 		if (this.jugNull(embracedOrderVO.getPayment_method())) {
 			this.logger.info("付款方式未输入");
 			return false;
@@ -1041,5 +1049,21 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				this.logger.info(e.getMessage());
 			}
 		}
+	}
+	
+	/**
+	 * 校验录入运单号是否与系统订单号/运单号重复 add by vic.liang@pjbest.com 2016-08-05
+	 * @param transcwb
+	 * @return
+	 */
+	public boolean checkTranscwb(String transcwb) {
+		int countCwb = this.cwbDao.getCountByCwb(transcwb);
+		if (countCwb > 0) 
+			return true;
+		int countTransCwb = this.transCwbDao.getCountByTranscwb(transcwb);
+		if (countTransCwb > 0) 
+			return true;
+		
+		return false;
 	}
 }

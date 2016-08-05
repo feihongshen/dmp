@@ -96,7 +96,6 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.enumutil.JiesuanstateEnum;
 import cn.explink.enumutil.MPSAllArrivedFlagEnum;
-import cn.explink.enumutil.MpsswitchTypeEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.enumutil.PenalizeSateEnum;
 import cn.explink.enumutil.PunishInsideStateEnum;
@@ -808,6 +807,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 
 			// 存放查询数据所用的list
 			List<EmbracedOrderVO> cwbordersList = new ArrayList<EmbracedOrderVO>();// 订单号集合
+			List<String> transorderList = new ArrayList<String>();// 运单号集合
 			List<AdressVO> senderProvincesList = new ArrayList<AdressVO>();// 寄件人省的集合
 			List<AdressVO> senderCitysList = new ArrayList<AdressVO>();// 寄件人市的集合
 			List<AdressVO> senderCountysList = new ArrayList<AdressVO>();// 寄件人区的集合
@@ -832,6 +832,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			// consigneeProvincesList, consigneeCitysList, consigneeCountysList,
 			// senderCompanyNamesList, delivermanNamesList, user);
 			cwbordersList = this.expressOrderDao.getOrderBycwbs(cwbordersArr.toString());
+			transorderList = this.expressOrderDao.getTranscwbByCwbs(cwbordersArr.toString());
 			senderProvincesList = this.provinceDAO.getProvincesByProviceNames(senderProvincesArr.toString());
 			senderCitysList = this.cityDAO.getCityByCityNames(senderCitysArr.toString());
 			senderCountysList = this.countyDAO.getCountysByCountyNames(senderCountysArr.toString());
@@ -846,7 +847,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 
 			// 将解析出来的数据转变为可运单类型的实体,同时校验数据，将错误数据放到resultCollector中
 			map = this
-					.changeImportOrder(cwbImportOrders, resultCollector, cwbordersList, senderProvincesList, senderCitysList, senderCountysList, sendertownsList, consigneeProvincesList, consigneeCitysList, consigneeCountysList, consigneeTownsList, senderCompanyNamesList, delivermanNamesList, repeatOrdersSet, user);
+					.changeImportOrder(cwbImportOrders, resultCollector, cwbordersList, transorderList, senderProvincesList, senderCitysList, senderCountysList, sendertownsList, consigneeProvincesList, consigneeCitysList, consigneeCountysList, consigneeTownsList, senderCompanyNamesList, delivermanNamesList, repeatOrdersSet, user);
 		}
 		return map;
 	}
@@ -1028,7 +1029,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 	 * @return List<EmbracedOrderVO>
 	 * @throws
 	 */
-	private synchronized Map<String, List<EmbracedOrderVO>> changeImportOrder(List<EmbracedImportOrderVO> cwbImportOrders, EmbracedImportResult resultCollector, List<EmbracedOrderVO> cwbordersList, List<AdressVO> senderProvincesList, List<AdressVO> senderCitysList, List<AdressVO> senderCountysList, List<AdressVO> sendertownsList, List<AdressVO> consigneeProvincesList, List<AdressVO> consigneeCitysList, List<AdressVO> consigneeCountysList, List<AdressVO> consigneeTownsList, List<Customer> senderCompanyNamesList, List<User> delivermanNamesList, Set<String> repeatOrdersSet, User user) {
+	private synchronized Map<String, List<EmbracedOrderVO>> changeImportOrder(List<EmbracedImportOrderVO> cwbImportOrders, EmbracedImportResult resultCollector, List<EmbracedOrderVO> cwbordersList, List<String> transorderList, List<AdressVO> senderProvincesList, List<AdressVO> senderCitysList, List<AdressVO> senderCountysList, List<AdressVO> sendertownsList, List<AdressVO> consigneeProvincesList, List<AdressVO> consigneeCitysList, List<AdressVO> consigneeCountysList, List<AdressVO> consigneeTownsList, List<Customer> senderCompanyNamesList, List<User> delivermanNamesList, Set<String> repeatOrdersSet, User user) {
 		Map<String, List<EmbracedOrderVO>> map = new HashMap<String, List<EmbracedOrderVO>>();
 		List<EmbracedOrderVO> cwbCheckedOrders = new ArrayList<EmbracedOrderVO>();
 		List<EmbracedImportOrderVO> cwbOrders = new ArrayList<EmbracedImportOrderVO>();
@@ -1642,6 +1643,19 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 				embracedUpdateOrderVO.setGoods_kgs(kgs + "");
 			}
 
+			//校验运单号是否重复    add by vic.liang@pjbest.com 2016-08-05 
+			for (String trans : transorderList) {
+				if (trans.equals(temp.getOrderNo())) {//运单号重复
+					this.createErrNote(temp.getOrderNo(), "运单与系统订单/运单重复", failList);
+					cwbOrders.remove(temp);
+					flag = true; // 已经出错，下面不用在执行
+					break;
+				}
+			}
+			//this.embracedOrderInputService.checkTranscwb(temp.getOrderNo());//校验录入运单号是否与系统订单号/运单号重复
+			//end add by vic.liang@pjbest.com 2016-08-05
+			
+			
 			for (EmbracedOrderVO cwborder : cwbordersList) {
 				if ((cwborder.getOrderNo() != null) && cwborder.getOrderNo().equals(temp.getOrderNo())) {
 					if ("1".equals(cwborder.getIsadditionflag())) {
@@ -1671,7 +1685,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 						flag = true; // 已经出错，下面不用在执行
 						break;
 					}
-				}
+				} 
 			}
 			this.setNullToZero(embracedOrdervo, user);
 			this.setNullToZero(embracedUpdateOrderVO, user);

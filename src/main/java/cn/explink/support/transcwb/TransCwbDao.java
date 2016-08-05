@@ -143,4 +143,14 @@ public class TransCwbDao {
 		this.jdbcTemplate.update(sql, transCwbStateEnum.getValue(), transCwb);
 	}
 
+	/**
+	 * 查询运单号是否存在  add by vic.liang@pjbest.com 2016-08-05
+	 * @param transcwb
+	 * @return
+	 */
+	public int getCountByTranscwb(String transcwb) {
+		String sql = "select count(1) from express_ops_transcwb where transcwb = ?";
+		return this.jdbcTemplate.queryForInt(sql,transcwb);
+		
+	}
 }
