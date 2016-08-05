@@ -122,6 +122,8 @@
                 <ref bean="doTime_imitateEMSTraceToDmpOpt"/>
                 <!-- 重推快递单各种操作给TPS -->
                 <ref bean="doTime_resendExpressToTps"/>
+              <!-- add by zhouhuan tps对接新增非唯品会订单转业务定时器，查询临时表，插入数据到detail表中 2016-08-05 -->
+                <ref bean="doTime_getTPSOtherCwbTempInsert"/>
 			</list>
 		</property>
 		<property name="dataSource" ref="dataSource"></property>
@@ -1616,4 +1618,26 @@
 		<property name="concurrent" value="false" />
 	</bean>
      
+     <!-- add start-->
+	<!-- add by zhouhuan tps对接新增非唯品会订单转业务定时器，查询临时表，插入数据到detail表中 2016-08-05 -->
+	<bean id="doTime_getTPSOtherCwbTempInsert" class="cn.explink.util.DatabaseInitCronTriggerBean"
+		dependency-check="default">
+		<property name="jobDetail">
+			<ref bean="getTPSOtherCwbTempInsert" />
+		</property>
+		<property name="cronExpression">
+			<value>0 */10 * * * ?</value>
+		</property>
+	</bean>
+	<bean id="getTPSOtherCwbTempInsert" class="cn.explink.util.BeanInvokingJobDetailFactoryBean"
+		dependency-check="default">
+		<property name="targetBean">
+			<value>excuteTimmer</value>
+		</property>
+		<property name="targetMethod">
+			<value>getCwbTempInsert_Task</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+	<!-- add end -->
 </beans>

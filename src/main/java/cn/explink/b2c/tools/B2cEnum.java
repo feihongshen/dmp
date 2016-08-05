@@ -119,8 +119,15 @@ public enum B2cEnum {
 	TPS_MQExpress(22502, "tps快递单下发接口", "tpsvipshop_mqExpress", 0),
 	TPS_kuajinggou(22503, "跨境购订单下发接口", "kuajinggouvipshop_mq", 0),
 	TPS_TraceFeedback(22601, "订单轨迹回传给tps接口", "tps_traceFeedback", 0),
-	TPS_qilekang(22504, "七乐康订单下发接口", "qilekangvipshop_mq", 0),
-	TPS_dajiafen(22505, "大家分订单下发接口", "dajiafenvipshop_mq", 0);
+	/**********************edit by zhouhuan 2016-08-05********/
+	TPS_qilekang(22504, "七乐康订单下发接口", "qilekangtpsother", 0),
+	TPS_dajiafen(22505, "大家分订单下发接口", "dajiafentpsother", 0),
+	TPS_Maikaolin(22506, "麦考林-TPS", "maikaolintpsother",0), // 麦考林
+	TPS_Benlaishenghuo(22507, "本来生活-TPS", "bnlaishenghuotpsother",0), // 来生活
+	TPS_Weitepai(22508, "微特派-TPS", "weitepaitpsother",0), // 微特派
+	TPS_Yousu(22509, "优速-TPS", "yousutpsother",0) //优速
+	/**********************edit end ********************/
+	;
 
 	 
 

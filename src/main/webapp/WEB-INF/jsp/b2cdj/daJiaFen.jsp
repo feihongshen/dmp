@@ -36,7 +36,7 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
                             <input type ="text" id="customerids" name ="customerids" onblur="validate('customerids')" value="<%=vipshop.getCustomerids() %>"  maxlength="300">
                         </li>
                         <li><span>托运模式：</span>
-                            <input type ="radio" id="isTuoYunDanFlag1" name ="isTuoYunDanFlag" value="1" disabled="disabled" >开启
+                            <input type ="radio" id="isTuoYunDanFlag1" name ="isTuoYunDanFlag" value="1" >开启
                             <input type ="radio" id="isTuoYunDanFlag2" name ="isTuoYunDanFlag" value="0"  checked="checked" >关闭
                         </li>
                         <li><span>订单接收类型：</span>
