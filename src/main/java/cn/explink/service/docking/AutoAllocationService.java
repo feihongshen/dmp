@@ -68,20 +68,32 @@ public class AutoAllocationService {
 	/**
 	 * 初始化授权
 	 */
-	public void init() {
-		// 分拨入口查询
-		List<Entrance> eList = this.entranceDAO.getAllEnableEntrances();
+	public void init(List<Entrance> eList) {
 		// 是否开启自动分拣设置
 		String autoAllocatingSwitch = this.systemInstallDAO.getSystemInstall(
 				"AutoAllocating").getValue();
 
 		if (autoAllocatingSwitch != null && autoAllocatingSwitch.equals("1")) {
 			// 获得初始化参数
-			AutoAllocationParam params = AutoAllocationParam.getInitParams();
+			AutoAllocationParam param = AutoAllocationParam.getInitParams();
 			for (Entrance entrance : eList) {
-				this.sendMsg(entrance.getEntranceip(), params);
+				this.createEmptyMsgLog(param, "", "", (byte) 0, entrance.getEntranceip());
+				this.sendMsg(entrance.getEntranceip(), param);
 
 			}
+		}
+	}
+	
+	public void init(String entranceIP) {
+		// 是否开启自动分拣设置
+		String autoAllocatingSwitch = this.systemInstallDAO.getSystemInstall(
+				"AutoAllocating").getValue();
+
+		if (autoAllocatingSwitch != null && autoAllocatingSwitch.equals("1")) {
+			// 获得初始化参数
+			AutoAllocationParam param = AutoAllocationParam.getInitParams();
+			this.createEmptyMsgLog(param, "", "", (byte) 0, entranceIP);
+			this.sendMsg(entranceIP, param);
 		}
 	}
 

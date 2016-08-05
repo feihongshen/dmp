@@ -11385,6 +11385,8 @@ public class PDAController {
 			}
 			
 			sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+			this.autoAllocationService.init(entranceIP);	//初始化连接
+			
 			socketMap=this.autoAllocationService.getSocketMap();
 			sc=socketMap.get(entranceIP);
 			logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
@@ -11645,12 +11647,14 @@ public class PDAController {
 		}
 		
 		sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+		
+		this.autoAllocationService.init(eList);	//初始化连接
+		
 		for(Entrance e:eList){
 			Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
 			SocketClient sc=socketMap.get(e.getEntranceip());
 			logger.info("中间件[" + e.getEntranceip() + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
 		}
-		
 		
 	}
 	
@@ -11697,6 +11701,8 @@ public class PDAController {
 					socketMap.put(entranceIP, sc);
 					
 					sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+					
+					this.autoAllocationService.init(entranceIP);	//初始化连接
 				}
 				
 				//再次检查是否连接断开，若仍然未连上则抛出异常，不能入库
