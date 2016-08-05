@@ -1887,9 +1887,9 @@ public class CwbOrderService extends BaseOrderService {
 				ypdjHandleRecordDAO.delYpdjHandleRecord(cwb, user.getBranchid());
 				
 			}
-			//集包模式
+			//集包模式  ----    把isauto置为true，防止集包模式的所有运单都补订单的轨迹（正常情况下第一单补就行了）---刘武强20160805
 			if (newMPSOrder) {
-				this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, true, isAutoSupplyLink);
+				this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, true, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, true, isAutoSupplyLink);
 			}
 //			} else {
 //				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);

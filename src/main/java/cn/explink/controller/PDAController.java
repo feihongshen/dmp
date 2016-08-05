@@ -7340,6 +7340,9 @@ public class PDAController {
 		// 今日出库(未到货)订单数
 		List<String> jinriweidaohuocwbslist = this.operationTimeDAO.getOrderFlowJinRiChuKuORRuKuListAll(this.getSessionUser().getBranchid(), flowordertypes, DateTimeUtil.getCurrentDayZeroTime());
 		List<String> lishiweidaohuocwbslist = this.operationTimeDAO.getlishiweidaohuoAll(this.getSessionUser().getBranchid(), flowordertypes, DateTimeUtil.getCurrentDayZeroTime());
+		// 已到货list
+		List<String> yidaohuocwbs = this.operationTimeDAO.getyidaohuoByBranchid(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue());
+				
 		// List<String> yidaohuocwbs =
 		// this.operationTimeDAO.getyidaohuoByBranchid(this.getSessionUser().getBranchid(),
 		// FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue());
@@ -7354,6 +7357,12 @@ public class PDAController {
 			lishiweidaohuocwbs = this.getStrings(lishiweidaohuocwbslist);
 		} else {
 			lishiweidaohuocwbs = "'--'";
+		}
+		String yidaohuo = "";
+		if (yidaohuocwbs.size() > 0) {
+			yidaohuo = this.getStrings(yidaohuocwbs);
+		}else{
+			yidaohuo = "'--'";
 		}
 		/*
 		 * String yidaohuoorder = ""; if (yidaohuocwbs.size() > 0) {
@@ -7372,13 +7381,18 @@ public class PDAController {
 
 		// 揽件未到站数量统计
 		long lanjianweidaozhancount = this.cwbDAO.countLanJianWeiDaoZhanByBranch(branchid);// 揽件未到站
-																							// 货物数量统计
+		
+		//将已到货的数量统计逻辑改为和已到货明细查询的逻辑一致，防止数量和明细对应不上---刘武强
+		long yidaohuocount = this.cwbDAO.getHistoryDaoHuoByBranchidForCount(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ","+ FlowOrderTypeEnum.LanJianRuZhan.getValue(), this.getSessionUser().getBranchid(), yidaohuo);
+
+																					// 货物数量统计
 
 		obj.put("branch", b);
 		obj.put("jinriweidaohuocount", jinriweidaohuocount);
 		obj.put("historyweidaohuocount", historyweidaohuocount);
 		obj.put("lanjianweidaozhancount", lanjianweidaozhancount);
-		obj.put("yidaohuonum", this.cwbDAO.getYiDaohuobyBranchid(this.getSessionUser().getBranchid()).getOpscwbid());
+		//obj.put("yidaohuonum", this.cwbDAO.getYiDaohuobyBranchid(this.getSessionUser().getBranchid()).getOpscwbid());
+		obj.put("yidaohuonum", yidaohuocount);
 		return obj;
 	}
 

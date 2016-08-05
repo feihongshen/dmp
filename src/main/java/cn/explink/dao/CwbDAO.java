@@ -3049,7 +3049,26 @@ public class CwbDAO {
 		return this.jdbcTemplate.query(sql, new CwbMapper(), (page - 1)
 				* Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
-
+	
+	/**
+	 * 根据条件查询站点到货时已到货数量
+	 * @author 刘武强
+	 * @date:2016年8月4日 上午10:49:34 
+	 * @params:@param flowordertypes
+	 * @params:@param branchid
+	 * @params:@param cwbs
+	 * @params:@return
+	 */
+	public long getHistoryDaoHuoByBranchidForCount(
+			String flowordertypes, long branchid,  String cwbs) {
+		String sql = "SELECT count(1) FROM express_ops_cwb_detail WHERE currentbranchid="
+				+ branchid
+				+ " and flowordertype in("
+				+ flowordertypes
+				+ ") and state=1  and cwb  in(" + cwbs + ") ";
+		return this.jdbcTemplate.queryForLong(sql);
+	}
+	
 	public List<CwbOrder> getHistoryDaoHuoByBranchidForList(String flowordertypes, long page, String cwbs) {
 		String sql = "SELECT * FROM express_ops_cwb_detail WHERE  flowordertype in(" + flowordertypes + ") and state=1  and cwb  in(" + cwbs + ") and cwbstate!=3  limit ?,? ";
 		return this.jdbcTemplate.query(sql, new CwbMapper(), (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
