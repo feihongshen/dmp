@@ -1488,8 +1488,8 @@ public class OrderFlowDAO {
 			sbSql.append(" and a.customerid in(").append(customeridStr).append(") ");
 		}
 
-		if (cwbordertypeids.length() > 0) {
-			sbSql.append(" and a.currentbranchid in(").append(cwbordertypeids).append(") ");
+		if (currentBranchids.length() > 0) {
+			sbSql.append(" and a.currentbranchid in(").append(currentBranchids).append(") ");
 		}
 		if (dispatchbranchids.length() > 0) {
 			sbSql.append(" and a.deliverybranchid in(").append(dispatchbranchids).append(") ");
