@@ -204,13 +204,12 @@ public class AutoAllocationParam {
 	}
 	
 	/**
-	 * orderid为MD5(Export + Direction + "xie")
+	 * orderid为MD5(MD5(MD5(MD5(Export + Direction)+“x”)+“i”)+“e”)
 	 * export为当前时间精确到毫秒 2010-10-10 10:10:10.999
 	 * @return
 	 */
 	private static String getInitOrderId(String time, String grantdirection){
-//		String orderId=MD5Util.md5(MD5Util.md5(MD5Util.md5(MD5Util.md5(time+GRANTDIRECTION)+"x")+"i")+"e");
-		String orderId=MD5Util.md5(time + GRANTDIRECTION + "xie");
+		String orderId=MD5Util.md5(MD5Util.md5(MD5Util.md5(MD5Util.md5(time+GRANTDIRECTION)+"x")+"i")+"e");
 		return orderId;
 	}
 	
