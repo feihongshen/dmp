@@ -266,6 +266,12 @@ function checkUseAutoAllocating() {
 	 */
 	function submitIntoWarehouse(pname, scancwb, customerid, driverid,
 			requestbatchno, rk_switch, comment) {
+		if('${auto_allocat}'=="1" && scancwb.indexOf("@rhk_")>-1){
+			var entranceValue = scancwb.split('_')[1];
+			handleAutoAllocationAndSelectEntrance(entranceValue);
+			return false;
+		}
+		
 		if('${auto_allocat}'=="1" && $('#useAutoAllocating').attr('checked')=='checked' && $("#entryselect").val()=='-1'){
 			alert("请选择自动分拨机入口");
 			return;
@@ -418,6 +424,23 @@ function checkUseAutoAllocating() {
 						});
 			}
 		}
+	}
+	
+	function handleAutoAllocationAndSelectEntrance(entranceValue) {
+// 		$("#updateswitch").prop("checked", true);
+		$("#useAutoAllocating").prop("checked", true);
+		checkUseAutoAllocating();
+		
+		$("#entryselect").val(entranceValue)
+		if($("#entryselect").val()!=entranceValue){
+			$("#msg1").html("         （异常扫描）扫描选择入货分拨机失败");
+			$("#entryselect").val(-1)
+			$('#find').dialog('open');
+			$("#scancwb").blur();
+		}else{
+			$("#msg1").html("");
+		}
+		$("#scancwb").val("");
 	}
 	/**
 	 * 入库扫描（包）
