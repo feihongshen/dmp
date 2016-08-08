@@ -323,7 +323,7 @@ public class ExpressOrderDao {
 	public List<DeliverSummary> getDeliverSummary(String beginDate, String endDate, Set<Long> collectoridSet) {
 		StringBuffer sql = new StringBuffer("select collectorid,count(opscwbid) order_sum,sum(totalfee) totalfee_sum,paymethod from express_ops_cwb_detail");
 		sql.append(" where cwbordertypeid=" + CwbOrderTypeIdEnum.Express.getValue());
-
+		sql.append(" and state =1 ");// add by jian_xie 2016-08-08,只统计有效的单
 		if ((beginDate != null) && (endDate != null)) {
 			sql.append(" and instationdatetime between '" + beginDate + "' and '" + endDate + "'");
 		}
