@@ -6189,18 +6189,12 @@ public class PDAController {
 		print = JacksonMapper.getInstance().readValue(str, PrintStyle.class);
 		obj.put("print", print);
 		Branch branch = this.branchDAO.getBranchById(cwbOrder.getDeliverybranchid());
-		if (branch != null) {
-			obj.put("branch", JSONObject.fromObject(branch));
-		}
+		obj.put("branch", JSONObject.fromObject(branch));
 		
 		String value = this.systemInstallDAO.getSystemInstall("printdeliveryuser").getValue();
 		if ("1".equals(value)) {
 			User user = this.userDAO.getUserByUserid(cwbOrder.getExceldeliverid());
-			if (user != null) {
-				obj.put("deliveryuser", user.getRealname());
-			} else {
-				obj.put("deliveryuser", "");
-			}
+			obj.put("deliveryuser", user.getRealname() == null ? "" : user.getRealname());
 		} else {
 			obj.put("deliveryuser", "");
 		}
