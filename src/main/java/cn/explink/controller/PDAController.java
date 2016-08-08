@@ -178,6 +178,7 @@ public class PDAController {
 	private static final String PLAY_GP_SOUND = "playGPSound";
 
 	private static final String PLAY_YPDJ_SOUND = "RUKUPCandPDAaboutYJDPWAV";
+	private static final int PORT = 8008;
 
 	private Logger logger = LoggerFactory.getLogger(PDAController.class);
 	@Autowired
@@ -6179,6 +6180,41 @@ public class PDAController {
 		}
 		return explinkResponse;
 	}
+	
+	
+	@RequestMapping("/querycwbbranchcode")
+	public @ResponseBody String querycwbbranchcode(HttpServletRequest request, @RequestParam(value = "cwb", required=true) String cwb) 
+			throws JsonGenerationException, JsonMappingException, IOException {
+		cwb = this.cwbOrderService.translateCwb(cwb);
+		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+
+		JSONObject obj = new JSONObject();
+		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
+		PrintStyle print = new PrintStyle();
+
+		String str = this.systemInstallDAO.getSystemInstall("cqhy_print").getValue();
+
+		print = JacksonMapper.getInstance().readValue(str, PrintStyle.class);
+		obj.put("print", print);
+		Branch branch = this.branchDAO.getBranchById(cwbOrder.getDeliverybranchid());
+		obj.put("branch", JSONObject.fromObject(branch));
+		
+		String value = this.systemInstallDAO.getSystemInstall("printdeliveryuser").getValue();
+		if ("1".equals(value)) {
+			User user = this.userDAO.getUserByUserid(cwbOrder.getExceldeliverid());
+			obj.put("deliveryuser", user.getRealname() == null ? "" : user.getRealname());
+		} else {
+			obj.put("deliveryuser", "");
+		}
+		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
+		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
+			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
+		} else {
+			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl());
+		}
+		String result = JacksonMapper.getInstance().writeValueAsString(explinkResponse); 
+		return result;
+	}
 
 	@RequestMapping("/cwbscancwbbranchnew1")
 	public @ResponseBody String cwbbranchfinishchangeexportnew1(HttpServletRequest request, @RequestParam(value = "cwb", required=true) String cwb) 
@@ -11655,6 +11691,7 @@ public class PDAController {
 			SocketClient sc=socketMap.get(e.getEntranceip());
 			logger.info("中间件[" + e.getEntranceip() + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
 		}
+		
 		
 	}
 	

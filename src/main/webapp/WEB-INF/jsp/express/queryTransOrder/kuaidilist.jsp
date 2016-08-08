@@ -294,6 +294,7 @@ function changeBranchDeliver(branchname,delivername,deliverid){
 				<td align="center" bgcolor="#F4F4F4">快递单号</td>
 				<td align="center" bgcolor="#F4F4F4">揽收人</td>
 				<td bgcolor="#F4F4F4">揽收站点</td>
+				<td bgcolor="#F4F4F4">配送站点</td>
 				<td bgcolor="#F4F4F4">揽收时间</td>
 				<td bgcolor="#F4F4F4">收件人</td>
 				<td bgcolor="#F4F4F4">收件人手机号</td>
@@ -314,6 +315,7 @@ function changeBranchDeliver(branchname,delivername,deliverid){
 					<td align="center"><a  target="_blank" href="<%=request.getContextPath()%>/order/queckSelectOrder/<%=c.getCwb() %>"><%=c.getCwb() %></a></td>
 					<td align="center"><%=c.getLanshouusername() %></td>
 					<td><%=c.getLanshoubranchname() %></td>
+					<td><%=c.getPaisongbranchname() %></td>
 					<td><%=c.getLanshoutime() %></td>
 					<td><%=c.getConsigneename() %></td>
 					<td><%=c.getConsigneemobile() %></td>

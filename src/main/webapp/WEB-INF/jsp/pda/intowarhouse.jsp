@@ -43,6 +43,7 @@ String ifshowtag=(String)request.getAttribute("ifshowtag");
 <script src="<%=request.getContextPath()%>/js/intowarehousePrint.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/intowarehousePrintNew.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/intowarehousePrintFor3025.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/intowarehousePrintForwuhan.js" type="text/javascript"></script>
 
 <link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
@@ -427,6 +428,10 @@ function callfunction(cwb){//getEmailDateByIds
 										}else if (rk_switch == "rkbq_06") {						
 											printIntowarehouse3025(scancwb);
 										} 
+										//武汉飞远35*35
+										else if (rk_switch == "rkbq_07") {	
+											printIntowarehousewuhan(scancwb);
+										}
 									}
 
 									$("#scansuccesscwb").val(scancwb);
