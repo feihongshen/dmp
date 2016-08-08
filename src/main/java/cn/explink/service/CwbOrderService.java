@@ -6516,6 +6516,13 @@ public class CwbOrderService extends BaseOrderService {
 			if (deliverystate.getGcaid() > 0) {
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiShenHe.getValue(), ExceptionCwbErrorTypeEnum.ChongFuShenHe, co.getCwb());
 			}
+			
+			//Added by leoliao at 2016-08-04  未反馈不允许进行归班审核
+			if(deliverystate.getDeliverystate() == DeliveryStateEnum.WeiFanKui.getValue()){
+				throw new CwbException(co.getCwb(), "订单("+co.getCwb()+")未反馈不允许进行归班审核");
+			}
+			//Added end
+			
 			FlowOrderTypeEnum auditFlowOrderTypeEnum = FlowOrderTypeEnum.YiShenHe;
 			this.deliveryStateDAO.auditDelivery(deliverystate.getId(), user.getUserid(), okTime, gcaId);
 			this.deliveryCashDAO.saveDeliveryCashForGBById(okTime, gcaId, deliverystate.getId());
