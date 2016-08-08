@@ -71,4 +71,20 @@ public class AutoUserService {
 		TpsAutoCfg tpsAutoCfg = (TpsAutoCfg) JSONObject.toBean(jsonObj, TpsAutoCfg.class);
 		return tpsAutoCfg.getBatchnoOpenFlag();
 	}
+    
+  //是否需要合包出库,0需要  1不需要
+  public int getHebaoFlag() {
+ 	    int openState = this.jointService.getStateForJoint(B2cEnum.TPS_AUTO.getKey());//
+	    if(openState==0){
+			return 0;
+		}
+		
+		JointEntity obj = this.jointService.getObjectMethod(B2cEnum.TPS_AUTO.getKey());
+		if(obj == null){
+			return 0;
+		}
+		JSONObject jsonObj = JSONObject.fromObject(obj.getJoint_property());
+		TpsAutoCfg tpsAutoCfg = (TpsAutoCfg) JSONObject.toBean(jsonObj, TpsAutoCfg.class);
+		return tpsAutoCfg.getHebaoFlag();
+	}
 }
