@@ -136,13 +136,15 @@ function printIntowarehousewuhan(scancwb){
 					"</td></tr><tr><td style=\"padding: -30,0,0,-20;margin: -25,0,0,-20;display: table-cell;\">"+
 					"<div style=\"font: bolder;font-size: 3mm;height: 4mm;line-height: 2mm;\" align=\"center\" id=\"transcwb\">" + scancwb + "</div>" + 
 					"</td></tr></table>";*/
-					
+					var fontSize = 4;
+					if (scancwb.length > 14) {
+						fontSize = 3;
+					}
 					var printHtml = "<table border='0' style=\"width: 35mm; height: 30mm; display: table;\" cellspacing=\"0\" valign=\"TOP\" cellpadding=\"0\">"+
 		                              "<tr><td> <div style=\"font-family:黑体; font:bolder;font-size:14mm;font-weight:14mm;\" align=\"center\" id=\"branchcode\">"+ branchcode + "</div></td></tr>"+
 	                                  "<tr><td><div style=\"font-family:黑体; font:bolder;font-size:6mm;font-weight:6mm;\" align=\"center\">" + branchname+ "</div></td></tr>"+
-		                              "<tr><td><div style=\"font-family:黑体; font:bolder;font-size:4mm;font-weight:4mm;\" align=\"center\">"+ scancwb +"</div></td></tr>"+
+		                              "<tr><td><div style=\"font-family:黑体; font:bolder;font-size:"+fontSize+"mm;font-weight:"+fontSize+"mm;\" align=\"center\">"+ scancwb +"</div></td></tr>"+
 		                              "<tr><td><div style=\"font-family:黑体; font:bolder;font-size:4mm;font-weight:4mm;\" align=\"center\">"+ deliveryuser +"</div></td></tr></table>";
-					
 					prn1_printForwuhan(scancwb,printHtml);
 				}
 			}
