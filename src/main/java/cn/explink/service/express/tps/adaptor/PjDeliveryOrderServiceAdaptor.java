@@ -173,12 +173,16 @@ public class PjDeliveryOrderServiceAdaptor implements ExpressDeliveryOrderServic
 
 	@Override
 	public void upLoadPackageInfo(String packageNo, List<String> waybillNoList, String branchCode, String packageMan) {
+		//Added by leoliao at 2016-08-09 增加日志输出
+		LOGGER.info("upLoadPackageInfo:packageNo={}, tpsbranchcode={}, packageMan={}", packageNo, branchCode, packageMan);
+		//Added end
+		
 		ExpressOperationInfo paramObj = new ExpressOperationInfo(ExpressOperationEnum.PackOpereate);
 		PjDcPackageModel pjPackage = this.constructUploadPackageRequestParam(packageNo, waybillNoList, branchCode, packageMan);
 		paramObj.setPackModel(pjPackage);
 		// 发送JMS消息
 		this.tpsInterfaceExecutor.executTpsInterface(paramObj);
-		List<CwbOrder> list = this.cwbDAO.getCwbOrderByCwbList(waybillNoList);
+		//List<CwbOrder> list = this.cwbDAO.getCwbOrderByCwbList(waybillNoList); //Comment by leoliao
 		//增加快递单的判断，只有快递单才需要此操作--刘武强10.19
 		//王海说调用合包接口后就不需要在调用状态反馈了--刘武强（10.23）
 		/*for (CwbOrder temp : list) {

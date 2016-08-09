@@ -749,6 +749,10 @@ public class DataStatisticsController {
 
 			String customerids = this.dataStatisticsService.getStrings(customerid);
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
+			// add by jian_xie 2016-08-09，当选定了小件员，站点过滤不需要。兼容小件员跳槽到其它站点问题。
+			if(deliverid > 0){
+				dispatchbranchid = new String[0];
+			}
 			List<String> orderFlowLastList = this.deliveryStateDAO
 					.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid, 1, customerids, firstlevelreasonid);
 			if (orderFlowLastList.size() > 0) {

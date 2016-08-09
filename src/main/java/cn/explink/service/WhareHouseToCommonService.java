@@ -217,12 +217,17 @@ public class WhareHouseToCommonService {
 				continue;
 			}
 
-			String sql = "select * from  commen_cwb_order  " + " where commencode =" + commencode + " and stateTime='' and outbranchflag=" + outbranchflag;
+			// 过滤非配送、上门退、上门换的订单  modify by jian_xie 2016-08-09
+			String sql = "select o.id as id, o.cwb as cwb, o.customerid as customerid, o.startbranchid as startbranchid "
+					+ " , o.commencode as commencode, o.credate as credate, o.statetime as statetime, o.nextbranchid as nextbranchid "
+					+ " from  commen_cwb_order o inner join express_ops_cwb_detail d on o.cwb=d.cwb " 
+					+ " where d.cwbordertypeid not in (1,2,3) and o.commencode =" + commencode + " and o.stateTime='' and o.outbranchflag=" + outbranchflag;
+//			String sql = "select * from  commen_cwb_order  " + " where commencode =" + commencode + " and stateTime='' and outbranchflag=" + outbranchflag;
 			/*if (quejiancwbStr.length() > 0) {
 				sql = sql + " and cwb not in(" + quejiancwbStr + ")";
 			}*/
 			if (startbranchid > 0) {
-				sql += " and startbranchid=" + startbranchid;
+				sql += " and o.startbranchid=" + startbranchid;
 			}
 			jdbcTemplate.query(new StreamingStatementCreator(sql), new RowCallbackHandler() {
 				@Override
