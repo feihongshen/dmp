@@ -153,6 +153,7 @@ public class Constants {
 	 */
 	public static final byte INTOWAHOUSE_TYPE_INTOWAHOUSE = 1;			//分拣库入库
 	public static final byte INTOWAHOUSE_TYPE_CHANGE_INTOWAHOUSE = 2;	//中转库入库
+	public static final byte INTOWAHOUSE_TYPE_AUTO_ALLOCATE_AGAIN = 3;	//二次分拨
 	
 	/*
 	 * 武汉自动化分拨报文处理状态
