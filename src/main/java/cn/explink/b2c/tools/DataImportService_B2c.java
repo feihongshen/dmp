@@ -150,9 +150,10 @@ public class DataImportService_B2c {
 		User user = new User();
 		user.setUserid(1);
 		user.setBranchid(warehouseid);
-
+		List<CwbOrderDTO> resultCwbOrders = new ArrayList<CwbOrderDTO>();
 		if (!SaveTempTableFlag) { // 调用正常导入的方法
 			importData(cwbOrders, customerid, user, warehouseid, ed);
+			resultCwbOrders.addAll(cwbOrders);
 		} else { // 导入临时表，然后定时器处理
 			for (CwbOrderDTO cwbOrder : cwbOrders) {
 				try {
@@ -173,17 +174,19 @@ public class DataImportService_B2c {
 					}
 
 					dataImportDAO_B2c.insertCwbOrder_toTempTable(cwbOrder, customerid, warehouseid, user, ed);
+					resultCwbOrders.add(cwbOrder);
 				} catch (Exception e) {
 					logger.error(b2cFlag + "数据插入临时表发生未知异常cwb=" + cwbOrder.getCwb(), e);
 					// Mail.LoadingAndSendMessage(b2cFlag+"数据临时表插入主表发生未知异常cwb="+cwbOrder.getCwb()+",请及时查看并修复.");
-					 e.printStackTrace();
-					return null;
+					// delete by jian_xie 这里只要第一单有问题，后面所以的单都会处理不了。
+//					 e.printStackTrace();
+//					return null;
 				}
 			}
 
 		}
 
-		return cwbOrders;
+		return resultCwbOrders;
 	}
 
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
