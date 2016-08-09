@@ -11794,5 +11794,106 @@ public class PDAController {
 		
 		return listBranch;
 	}
+	
+	/**
+	 * 二次分拨（不入库，只上自动分拨）
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param cwb
+	 */
+	@RequestMapping("/autoAllocateAgainWithoutIntoWarehouse/{cwb}")
+	public @ResponseBody ExplinkResponse autoAllocateAgainWithoutIntoWarehouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "autoallocatid", defaultValue = "-1") String entranceno){
+		if(isAutoAllocatingButDisconnected(entranceno)){
+			throw new CwbException(cwb, FlowOrderTypeEnum.RuKu.getValue(), ExceptionCwbErrorTypeEnum.AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE);
+		}
+		
+		long startTime = System.currentTimeMillis();
+		ExplinkResponse resp = null;
+		String scancwb = cwb;
+		CwbOrder cwbOrder = new CwbOrder();
 
+		String branchName="";//配送站点名称
+		String outputNo="";//出货口编号
+		
+		cwb = this.cwbOrderService.translateCwb(cwb);
+		cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+		
+		if (cwbOrder == null) {
+			throw new CwbException(cwb, FlowOrderTypeEnum.RuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
+		
+		try{
+			JSONObject obj = new JSONObject();
+			resp = new ExplinkResponse("000000", CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText(), obj);
+			
+			obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
+			obj.put("cwbcustomername", this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
+
+			if (cwbOrder.getNextbranchid() != 0) {
+				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
+				obj.put("cwbbranchname", branch.getBranchname());
+			} else {
+				obj.put("cwbbranchname", "");
+			}
+			
+			/*
+			 * 单票成功订单，有站点提示语音的，忽略通用提示音
+			 */
+			// 通用提示音
+			String wavPath = null;
+			// 一票多件提示音乐
+			String multiTipPath = null;
+			if (resp.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
+				wavPath = this.getErrorWavFullPath(request, CwbOrderPDAEnum.OK.getVediourl());
+			} else {
+				wavPath = this.getErrorWavFullPath(request, CwbOrderPDAEnum.SYS_ERROR.getVediourl());
+			}
+			if ((cwbOrder.getSendcarnum() > 1) || (cwbOrder.getBackcarnum() > 1)) {
+				resp.setErrorinfo(resp.getErrorinfo() + "\n一票多件");
+				if (this.isPlayYPDJSound()) {
+					multiTipPath = this.getErrorWavFullPath(request, CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
+					resp.addLongWav(multiTipPath);
+				}
+			}
+			if (cwbOrder.getDeliverybranchid() != 0) {
+				// 如果存在站点声音，忽略通用提示音
+				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid());
+				branchName=branch.getBranchname();//站点中文名
+				outputNo=branch.getOutputno();//站点出货口
+				obj.put("cwbdeliverybranchname", branch.getBranchname());
+				if (!this.isStringEmpty(branch.getBranchwavfile())) {
+					String fullPath = this.getWavFullPath(request, branch.getBranchwavfile());
+					resp.addLastWav(fullPath);
+					obj.put("cwbdeliverybranchnamewav", fullPath);
+				} else {
+					// 存在站点,但未设置声音，也使用通用提示音
+					resp.addLongWav(wavPath);
+				}
+			} else {
+				// 如果不存在站点声音，使用通用提示音
+				resp.addLongWav(wavPath);
+				obj.put("cwbdeliverybranchname", "");
+				obj.put("cwbdeliverybranchnamewav", "");
+			}
+			/**
+			 * 对接自动分拨的中间件
+			 */
+			this.addQueue(outputNo, entranceno, cwb, branchName, scancwb, Constants.INTOWAHOUSE_TYPE_AUTO_ALLOCATE_AGAIN);		
+		
+			this.logger.info("二次分拣扫描的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
+			return resp;
+		} catch (CwbException e) {
+			this.logger.error("cwb="+cwb,e);
+			ExplinkResponse explinkResponse = new ExplinkResponse(e.getError().getValue() + "", e.getMessage(), null);
+			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl());
+			// 添加货物类型声音.
+			this.addGoodsTypeWaveJSON(request, cwbOrder, explinkResponse);
+			// 单号不存在异常.
+			this.addNoOrderWav(request, e, explinkResponse);
+			explinkResponse.addShortWav(this.getErrorWavFullPath(request, CwbOrderPDAEnum.SYS_ERROR.getVediourl()));
+			return explinkResponse;
+		}
+	}
 }

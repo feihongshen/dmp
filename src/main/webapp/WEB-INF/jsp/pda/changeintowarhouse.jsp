@@ -160,9 +160,8 @@ function checkUseAutoAllocating() {
 		$('#autoallocating_switch').show();	
 	}
 	else {
+		$('useAutoAllocating').prop("checked", false);
 		$('#entryselect').val('-1');
-		$('#forward').attr('checked','checked');
-		$('#backward').removeAttr('checked');
 		$('#autoallocating_switch').hide();
 	}
 }
@@ -833,7 +832,7 @@ function flush(){
 				</div>
 				<div>					
 						<span id='autoallocating_use' type="text" style="display:none"><input type="checkbox" id="useAutoAllocating" name="useAutoAllocating" onclick="checkUseAutoAllocating();" />启用自动分拨</span>
-						<span id='autoallocating_switch' type="text" style="display:none;width:500px"> &nbsp;&nbsp;&nbsp;&nbsp;自动分拨机入口选择*：<select id="entryselect" name="entryselect" style="height: 20px; width: 200px">
+						<span id='autoallocating_switch' type="text" style="display:none;width:500px"> &nbsp;&nbsp;&nbsp;&nbsp;自动分拨机入口选择*：<select id="entryselect" name="entryselect" style="height: 20px; width: 200px" disabled="disabled">
 						<option value="-1" selected>请选择</option>
 						<%
 							for (Entrance e : eList) {
@@ -843,7 +842,7 @@ function flush(){
 							}
 						%>
 						</select> 
-						<input type="button" id="connect" onclick="connect()"  value="连接" />
+						<input type="button" id="connect" onclick="connect()"  value="重连" />
 						<!-- <input type="button" id="flush" onclick="flush()"  value="清空队列" /> -->
 						<!-- <input type="radio" name="direction" id="forward" value="0" checked="checked" />正向 -->
 						<!-- <input type="radio"  name="direction" id="backward" value="1" />逆向 -->
