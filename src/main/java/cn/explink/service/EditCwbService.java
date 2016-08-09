@@ -3,6 +3,7 @@ package cn.explink.service;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,6 +35,7 @@ import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.FinanceAuditDAO;
 import cn.explink.dao.FinanceDeliverPayUpDetailDAO;
 import cn.explink.dao.FinancePayUpAuditDAO;
+import cn.explink.dao.FnCwbStateDao;
 import cn.explink.dao.FnOrgOrderAdjustRecordDAO;
 import cn.explink.dao.FnOrgRechargesAdjustRecordDAO;
 import cn.explink.dao.FnOrgRechargesRptmodeDAO;
@@ -53,6 +55,8 @@ import cn.explink.domain.EdtiCwb_DeliveryStateDetail;
 import cn.explink.domain.FinanceAudit;
 import cn.explink.domain.FinanceDeliverPayupDetail;
 import cn.explink.domain.FinancePayUpAudit;
+import cn.explink.domain.FnCwbState;
+import cn.explink.domain.FnOrgRecharges;
 import cn.explink.domain.GotoClassAuditing;
 import cn.explink.domain.OrgOrderAdjustmentRecord;
 import cn.explink.domain.OrgRechargesAdjustmentRecord;
@@ -68,11 +72,16 @@ import cn.explink.enumutil.EditCwbTypeEnum;
 import cn.explink.enumutil.FinanceAuditTypeEnum;
 import cn.explink.enumutil.FinanceDeliverPayUpDetailTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.FnCwbStatusEnum;
+import cn.explink.enumutil.OrgRechargeSourceEnum;
+import cn.explink.enumutil.OrgRechargesHandleStatusEnum;
 import cn.explink.enumutil.PayMethodSwitchEnum;
 import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.enumutil.SettlementModeEnum;
 import cn.explink.exception.ExplinkException;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.JSONReslutUtil;
+import cn.explink.util.Tools;
 
 @Service
 public class EditCwbService {
@@ -142,6 +151,9 @@ public class EditCwbService {
 	
 	@Autowired
 	FnOrgRechargesRptmodeDAO fnOrgRechargesRptmodeDAO;
+	
+	@Autowired
+	private FnCwbStateDao fnCwbStateDao;
 	
 	/**
 	 * 修改订单 之 重置审核状态
@@ -1794,6 +1806,11 @@ public class EditCwbService {
 		// 查询出对应订单号的账单详细信息
 		CwbOrder order = this.cwbDao.getCwbByCwb(cwb);
 		if (order != null) {
+					
+			int currentSettleMode = SettlementModeEnum.BillMode.getValue();
+			List<FnOrgRecharges> fnOrgRechargesList = new ArrayList<FnOrgRecharges>();
+			List<FnCwbState> fnCwbStateList = new ArrayList<FnCwbState>();
+			
 			// 根据不同的订单类型
 			record.setOrderNo(order.getCwb());
 			record.setBillNo("");
@@ -1823,6 +1840,12 @@ public class EditCwbService {
 			} else {
 				record.setModifyFee(order.getReceivablefee());
 				record.setAdjustAmount(order.getReceivablefee().negate());
+				record.setStatus(FnCwbStatusEnum.Received.getIndex());//标记为已付款 added by gordon.zhou 2016/8/9
+				
+				//如果再签收余额结算模式下，需把代收货款的调整金额的决定值 作为预付款 写入到缴款记录中 added by gordon.zhou 2016/8/9
+				if(currentSettleMode == SettlementModeEnum.SignRptMode.getValue()){
+					fnOrgRechargesList.add(this.buildFnOrgRecharges(order, OrgRechargeSourceEnum.ReceiveFeeAdjust, order.getReceivablefee(), order.getReceivablefee()));
+				}
 			}
 			record.setSignTime(DateTimeUtil.parseDate(deliveryState.getSign_time(), DateTimeUtil.DEF_DATETIME_FORMAT));
 			record.setPayWayChangeFlag(0);
@@ -1838,7 +1861,40 @@ public class EditCwbService {
 				record.setAdjustAmount(ec_dsd.getOriInfactfare().negate());
 				// 调整金额为运费调整
 				record.setAdjustType(BillAdjustTypeEnum.ExpressFee.getValue());
+				record.setStatus(FnCwbStatusEnum.Received.getIndex());//标记为已付款 added by gordon.zhou 2016/8/9
+								
 				this.fnOrgOrderAdjustRecordDAO.creOrderAdjustmentRecord(record);
+				
+				//如果再签收余额结算模式下，需把运费的调整金额的决定值 作为预付款 写入到缴款记录中 added by gordon.zhou 2016/8/9
+				if(currentSettleMode == SettlementModeEnum.SignRptMode.getValue()){
+					FnCwbState fnCwbState = new FnCwbState();
+					fnCwbState.setCwb(order.getCwb());
+					fnCwbState.setSmtfreightflag(FnCwbStatusEnum.Unreceive.getIndex());
+					fnCwbState.setSmtfreightTime(null);
+					fnCwbStateList.add(fnCwbState); //更新上门退运费收款状态 added by gordon.zhou 2016/8/9
+					
+					fnOrgRechargesList.add(this.buildFnOrgRecharges(order, OrgRechargeSourceEnum.FreightAdjust, ec_dsd.getOriInfactfare(), ec_dsd.getOriInfactfare()));
+				}
+			}
+			
+			if(currentSettleMode == SettlementModeEnum.SignRptMode.getValue()){
+				/**
+				 * 更新订单相关收款状态为未收款
+				 */
+				FnCwbState fnCwbState = new FnCwbState();
+				fnCwbState.setCwb(order.getCwb());
+				fnCwbState.setReceivablefeeflag(FnCwbStatusEnum.Unreceive.getIndex());
+				fnCwbState.setReceivablefeeTime(null);
+				
+				fnCwbStateList.add(fnCwbState);
+			}
+			
+			if(!fnOrgRechargesList.isEmpty()){
+				fnOrgRechargesRptmodeDAO.batchInsertOrgRecharges(fnOrgRechargesList);
+			}
+			
+			if(!fnCwbStateList.isEmpty()){
+				fnCwbStateDao.batchUpdateReceivablefeeflag(fnCwbStateList);
 			}
 		}
 	}
@@ -1872,4 +1928,70 @@ public class EditCwbService {
 
 		}
 	}
+	
+	
+	private FnOrgRecharges buildFnOrgRecharges(CwbOrder order, OrgRechargeSourceEnum resource,
+			BigDecimal rechargeAmount, BigDecimal surplus){
+		FnOrgRecharges orgRecharges = new FnOrgRecharges();
+		Date date = new Date();
+		orgRecharges.setAmount(rechargeAmount);
+		orgRecharges.setCreateTime(date);
+		orgRecharges.setCreator(resource.getText());
+		orgRecharges.setCwb(order.getCwb());
+		orgRecharges.setHandleStatus(rechargeAmount.compareTo(surplus) == 0 ? OrgRechargesHandleStatusEnum.Imported.getValue() : OrgRechargesHandleStatusEnum.ChargeAgainsted.getValue());
+		orgRecharges.setImportTime(date);
+		orgRecharges.setOrgId(order.getDeliverybranchid());
+		orgRecharges.setPayinType(this.branchDAO.getPayinTypeByBranchid(order.getDeliverybranchid()));
+		orgRecharges.setPaymethod(Integer.valueOf(order.getNewpaywayid()));
+		User picker = this.userDAO.getUserByUserid(order.getDeliverid());
+		orgRecharges.setPicker(picker== null ? "" : picker.getUsername());
+		orgRecharges.setPickerId(order.getDeliverid());
+		orgRecharges.setRechargeNo((Tools.getRandomSeq("P", 1)).get(0));
+		orgRecharges.setRechargeSource(resource.getValue());
+		orgRecharges.setRemark(resource.getText());
+		orgRecharges.setSurplus(surplus);
+		orgRecharges.setBiId(0L);
+		return orgRecharges;
+	}
+	
+	
+	/**
+	 * 获取当前结算模式 系统参数
+	 * @return
+	 */
+	public int getCurrentSettleModeFromSysConfig(){
+		int currentMode = SettlementModeEnum.BillMode.getValue();
+		try{
+			String modeStr = this.systemInstallDAO.getSystemInstallByName("SETTLEMENTMODE").getValue();
+			currentMode = Integer.valueOf(modeStr);
+			if(currentMode != SettlementModeEnum.BillMode.getValue() && currentMode != SettlementModeEnum.SignRptMode.getValue()){
+				logger.warn("SETTLEMENTMODE={}，未按约定配置系统参数SETTLEMENTMODE的值，约定的合法值为 1 或 2，其中1表示账单模式，2表示签收余额模式。临时取值为1。", currentMode);
+				currentMode = SettlementModeEnum.BillMode.getValue();
+			}
+		}catch(Exception e){
+			logger.error("SETTLEMENTMODE={}，未按约定配置系统参数SETTLEMENTMODE的值，约定的合法值为 1 或 2，其中1表示账单模式，2表示签收余额模式。临时取值为1。", currentMode);
+		}
+		return currentMode;
+	}
+	
+	
+	/**
+	 * 获取POSCOD自动回款开启标识
+	 * @return
+	 */
+	public int getPosCodAutoRechargeFlagFromSysConfig(){
+		int autoReceivedOfPOS = 0;
+		try{
+			String autoFlag = this.systemInstallDAO.getSystemInstallByName("AUTORECEIVEDOFPOS").getValue();
+			autoReceivedOfPOS = Integer.valueOf(autoFlag);
+			if(autoReceivedOfPOS != 0 && autoReceivedOfPOS != 1){
+				logger.warn("AUTORECEIVEDOFPOS={}，未按约定配置系统参数AUTORECEIVEDOFPOS的值，约定的合法值为 0 或 1，其中0表示未开启，1表示开启。临时取值为0。", autoReceivedOfPOS);
+				autoReceivedOfPOS = 0;
+			}
+		}catch(Exception e){
+			logger.error("AUTORECEIVEDOFPOS={}，未按约定配置系统参数AUTORECEIVEDOFPOS的值，约定的合法值为 0 或 1，其中0表示未开启，1表示开启。临时取值为0。", autoReceivedOfPOS);
+		}
+		return autoReceivedOfPOS;
+	}
+	
 }

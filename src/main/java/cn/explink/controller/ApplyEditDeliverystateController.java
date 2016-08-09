@@ -294,29 +294,9 @@ public class ApplyEditDeliverystateController {
 		long errorcount = 0;
 		String cwbStr = "已做过重置审核订单:";
 		if (cwbdata.length() > 0) {
-			int currentMode = SettlementModeEnum.BillMode.getValue();
-			int autoReceivedOfPOS = 0;
-			try{
-				String modeStr = this.systemInstallDAO.getSystemInstallByName("SETTLEMENTMODE").getValue();
-				currentMode = Integer.valueOf(modeStr);
-				if(currentMode != SettlementModeEnum.BillMode.getValue() && currentMode != SettlementModeEnum.SignRptMode.getValue()){
-					logger.warn("SETTLEMENTMODE={}，未按约定配置系统参数SETTLEMENTMODE的值，约定的合法值为 1 或 2，其中1表示账单模式，2表示签收余额模式。临时取值为1。", currentMode);
-					currentMode = SettlementModeEnum.BillMode.getValue();
-				}
-			}catch(Exception e){
-				logger.error("SETTLEMENTMODE={}，未按约定配置系统参数SETTLEMENTMODE的值，约定的合法值为 1 或 2，其中1表示账单模式，2表示签收余额模式。临时取值为1。", currentMode);
-			}
 			
-			try{
-				String autoFlag = this.systemInstallDAO.getSystemInstallByName("AUTORECEIVEDOFPOS").getValue();
-				autoReceivedOfPOS = Integer.valueOf(autoFlag);
-				if(autoReceivedOfPOS != 0 && autoReceivedOfPOS != 1){
-					logger.warn("AUTORECEIVEDOFPOS={}，未按约定配置系统参数AUTORECEIVEDOFPOS的值，约定的合法值为 0 或 1，其中0表示未开启，1表示开启。临时取值为0。", autoReceivedOfPOS);
-					autoReceivedOfPOS = 0;
-				}
-			}catch(Exception e){
-				logger.error("AUTORECEIVEDOFPOS={}，未按约定配置系统参数AUTORECEIVEDOFPOS的值，约定的合法值为 0 或 1，其中0表示未开启，1表示开启。临时取值为0。", autoReceivedOfPOS);
-			}
+			int currentMode = this.editCwbService.getCurrentSettleModeFromSysConfig();
+			int autoReceivedOfPOS = this.editCwbService.getPosCodAutoRechargeFlagFromSysConfig();
 			
 			for (String cwb : cwbdata.split(",")) {
 				try {

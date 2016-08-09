@@ -24,7 +24,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import cn.explink.aspect.SystemInstallOperation;
 import cn.explink.domain.Branch;
@@ -1281,6 +1280,18 @@ public class BranchDAO {
 		String sql = "select  * from express_set_branch where outputno = ?" ;
 		list = this.jdbcTemplate.query(sql, new BranchRowMapper(),outputno);
 		return list;
-}
+	}
+	
+	/**
+	 * 根据站点id获取站点缴款类型
+	 * @param branchid
+	 * @return
+	 */
+	public Integer getPayinTypeByBranchid(long branchid) {
+		if(branchid > 0){
+			return this.jdbcTemplate.queryForObject("SELECT payin_type FROM express_set_branch WHERE branchid = ?", Integer.class, branchid);
+		} 
+		return null;
+	}
 
 }
