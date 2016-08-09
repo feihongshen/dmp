@@ -22,6 +22,7 @@
 		<intercept-url pattern="/css/**" access="permitAll" />
 		<intercept-url pattern="/dmp40/**" access="permitAll" />
 		<intercept-url pattern="/login" access="permitAll" />
+		<intercept-url pattern="/slogin" access="permitAll" />
 		<intercept-url pattern="/image" access="permitAll" />
 		<intercept-url pattern="/imageForOutside" access="permitAll" />
 		<intercept-url pattern="/js/**" access="permitAll" />
