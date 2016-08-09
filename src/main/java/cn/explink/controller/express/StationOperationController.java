@@ -469,7 +469,10 @@ public class StationOperationController extends ExpressCommonController {
 		bale.setHandlerid((int) this.getSessionUser().getUserid());
 		bale.setHandlername(this.getSessionUser().getRealname());
 
-		this.stationOperationService.combinePackage(waybillNoList, this.getCurrentBranchCode(), bale);
+		//Modified by leoliao at 2016-08-09 发给TPS的快递包信息中机构编码改为TPS机构编码
+		//this.stationOperationService.combinePackage(waybillNoList, this.getCurrentBranchCode(), bale);
+		this.stationOperationService.combinePackage(waybillNoList, this.getCurrentTpsbranchcode(), bale);
+		//Modified end
 
 		model.addAttribute("packageNo", "");
 		model.addAttribute("nextBranch", nextBranch);
@@ -479,6 +482,21 @@ public class StationOperationController extends ExpressCommonController {
 		model.addAttribute("page", page);
 
 		return "express/stationOperation/takeExpressCombine";
+	}
+	
+	/**
+	 * 获取当前机构的TPS机构编码
+	 * @author leo01.liao
+	 * @return
+	 */
+	private String getCurrentTpsbranchcode() {
+		long branchid = this.getCurrentBranchid();
+		Branch branch = this.branchDAO.getBranchByBranchid(branchid);
+		if(branch == null){
+			return "";
+		}
+		
+		return branch.getTpsbranchcode();
 	}
 
 	/**
