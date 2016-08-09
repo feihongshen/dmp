@@ -559,6 +559,22 @@ function delSuccess(data){
 			$("#edit").val('<%=request.getContextPath()%>/tpsAutoFlowCfg/show/');
 			$("#del").val('<%=request.getContextPath()%>/tpsAutoFlowCfg/del/');
 		}
+		else if(obj=='22506'){//麦考林-TPS
+            $("#edit").val('<%=request.getContextPath()%>/tpsMaikaolin/show/');
+            $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
+        }
+		else if(obj=='22507'){//本来生活-TPS
+            $("#edit").val('<%=request.getContextPath()%>/tpsBenlaishenghuo/show/');
+            $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
+        }
+		else if(obj=='22508'){//微特派-TPS
+            $("#edit").val('<%=request.getContextPath()%>/tpsWeitepai/show/');
+            $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
+        }
+		else if(obj=='22509'){//优速-TPS
+            $("#edit").val('<%=request.getContextPath()%>/tpsYousu/show/');
+            $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
+        }
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');
