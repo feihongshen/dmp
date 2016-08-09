@@ -58,7 +58,8 @@
 				          <td></td>
 				       </tr>
 				       <tr>
-				          <td style="text-align:left;vertical-align:middle;height:40px;font-size:12px;">推送状态： <select id="status"><option value="0">全部</option><option value="1">未推送</option><option value="2">已推送</option></select></td>
+				          <!-- <td style="text-align:left;vertical-align:middle;height:40px;font-size:12px;">推送状态： <select id="status"><option value="0">全部</option><option value="1">未推送</option><option value="2">已推送</option></select></td> -->
+				          <td></td>
 				          <td></td>
 				       </tr>
 				      </div> 
