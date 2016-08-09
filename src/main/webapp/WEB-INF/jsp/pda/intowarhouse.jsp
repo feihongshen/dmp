@@ -1085,8 +1085,8 @@ function flush(){
 					<input type="checkbox" id="cwbnohide" />
 					<span>入库标签补签</span>
 					<div style="display: none" id="div0011">
-					<input type="text" name="scancwbprint" id="scancwbprint" class="saomiao_inputtxt" />			
-					<input type="button" value="生成" onclick="javascript:BuprintTag('<%=request.getContextPath()%>');"/> 
+					<input type="text" name="scancwbprint" id="scancwbprint" class="saomiao_inputtxt" onKeyDown="if(event.keyCode==13&&$(this).val().length>0){BuprintTag('<%=request.getContextPath()%>')}"/>			
+					<%-- <input type="button" value="生成" onclick="javascript:BuprintTag('<%=request.getContextPath()%>');"/>  modify by vic.liang@pjbest.com 2016-08-08--%>
 					</div>
 					<%
 					}
