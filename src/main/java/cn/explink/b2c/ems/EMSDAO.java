@@ -335,6 +335,8 @@ public class EMSDAO {
                     		  sql += " and ems.cwb = '"+cwb+"'";
                     	  } else if ("1".equals(cwbType)) {
                     		  sql += " and ems.transcwb = '"+cwb+"'";
+                    	  } else if ("2".equals(cwbType)) {
+                    		  sql += " and ems.email_num = '"+cwb+"'";
                     	  }
                       }
                       if (!StringUtil.isEmpty(starttime)) {

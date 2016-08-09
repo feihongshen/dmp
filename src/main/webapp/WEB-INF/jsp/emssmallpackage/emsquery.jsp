@@ -39,8 +39,9 @@
 				     <div style="border: 1px;border-bottom-color:grey;">
 				       <tr>
 				          <td width="270px">
-				           <label style="margin-left:20px;margin-right:50px;font-size:12px;"><input name="cwbType" type="radio" value="0" checked="checked" />订单号</label>
-                           <label style="font-size:12px"><input name="cwbType" type="radio" value="1" />运单号 </label>
+				           <label style="margin-right:10px;font-size:12px;"><input name="cwbType" type="radio" value="0" checked="checked" />订单号</label>
+                           <label style="margin-right:10px;font-size:12px;"><input name="cwbType" type="radio" value="1" />运单号 </label>
+                           <label style="font-size:12px;"><input name="cwbType" type="radio" value="2" />邮政运单号 </label>
 				          </td>
 				          <td></td>
 				       </tr>
