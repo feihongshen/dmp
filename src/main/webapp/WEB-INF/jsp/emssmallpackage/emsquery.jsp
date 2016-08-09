@@ -58,8 +58,7 @@
 				          <td></td>
 				       </tr>
 				       <tr>
-				          <!-- <td style="text-align:left;vertical-align:middle;height:40px;font-size:12px;">推送状态： <select id="status"><option value="0">全部</option><option value="1">未推送</option><option value="2">已推送</option></select></td> -->
-				          <td></td>
+				           <td style="text-align:left;vertical-align:middle;height:40px;font-size:12px;display:none">推送状态： <select id="status"><option value="0">全部</option><option value="1">未推送</option><option value="2">已推送</option></select></td> 
 				          <td></td>
 				       </tr>
 				      </div> 
@@ -85,6 +84,30 @@
 	var starttime = $("#starttime").val();
 	var endtime = $("#endtime").val();
 	var status = $("#status").val();
+	
+	if (starttime && !endtime) {
+		alert("请输入结束时间！");
+		return;
+	}
+	if (!starttime && endtime) {
+		alert("请输入开始时间！");
+		return;
+	}
+	if(starttime && endtime) {
+		var time = (Date.parse(endtime) - Date.parse(starttime)) / (1000 * 60 * 60 * 24);
+		if (time > 30) {
+			alert("入库时间范围不能超过30天！");
+			return;
+		}
+	}
+	
+	if (!starttime && !endtime) {
+		if (!querycwb) {
+			alert("请输入订单号或者入库时间查询！");
+			return;
+		}
+	}
+	
 	//数据加载动画
 	var layEle = layer.load({
 		type:3
