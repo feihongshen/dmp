@@ -505,11 +505,16 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 		entity.setFlowOrderType(0L);
 		//接口名称
 		entity.setRemark(ExpressOperationEnum.getByValue(params.getOperationType()).getText());
+		
+		//Modified by leolaio at 2016-08-09 增加日志输出
+		this.logger.info("createExceptionLog operationType={}", params.getOperationType());
 
 		Long id = this.expressTpsInterfaceExcepRecordDAO.createTpsInterfaceExcepRecord(entity);
-		if (id.intValue() > 0) {
-			this.logger.debug("调用Tps接口记录创建成功");
+		if (id.longValue() > 0) {
+			this.logger.info("调用Tps接口记录创建成功:id={}", id);
 		}
+		//Modified end
+		
 		return id;
 	}
 
