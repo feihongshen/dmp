@@ -32,7 +32,10 @@ public class XssFilter  extends HttpRequestWordFilter{
 	     * @param s 
 	     * @return 
 	     */  
-	    private  String xssEncode(String s) { 
+	    private  String xssEncode(String s) {
+	    	if(StringUtils.isEmpty(s)){
+	    		return s;
+	    	}
 	    	String tempStr = s;
 	    	tempStr= tempStr.replaceAll("(?i)javascript", "ｊａｖａscript")
 			    			.replaceAll("(?i)void(", "ｖｏｉｄ(")
