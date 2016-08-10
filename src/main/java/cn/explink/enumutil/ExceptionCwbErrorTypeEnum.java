@@ -71,7 +71,8 @@ public enum ExceptionCwbErrorTypeEnum {
 			DIFF_TUI_HUO_KU_ZUO_BACK_TO_CUSTOMER(213, "不在同一个退货库做退供货商出库"),
 			PEI_SONG_YUAN_BU_PI_PEI(211, "此订单匹配的是{0}，{1}不能进行领货！"),
 			PEI_SONG_YUAN_WEI_PI_PEI(212, "此订单未匹配配送员，不能进行领货！"),
-			AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE(220, "连接自动分拨机失败，不能入库！请取消自动分拨功能，或重新连接。")
+			AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE(220, "连接自动分拨机失败，不能入库！请取消自动分拨功能，或重新连接。"),
+			PLEASE_RECEIVE_GOODS_FIRST(221, "请先做{0}"),
 			;
 	
 

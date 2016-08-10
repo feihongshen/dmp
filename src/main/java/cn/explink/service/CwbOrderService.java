@@ -6191,23 +6191,23 @@ public class CwbOrderService extends BaseOrderService {
 			//this.jdbcTemplate.update("update express_ops_cwb_detail set flowordertype=?,currentbranchid=startbranchid where cwb=? and state=1", auditFlowOrderTypeEnum.getValue(), cwb);
 			//update by neo01.huang，2016-5-30
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-			CwbOrderService.logger.info("归班审核->更新站点信息->站点id信息：startbranchid:{}, currentbranchid:{}, nextbranchid:{}, deliverybranchid:{}, podresultid:{}", cwbOrder.getStartbranchid(), cwbOrder
+			CwbOrderService.logger.info("归班审核->更新站点信息->cwb:{},站点id信息：startbranchid:{}, currentbranchid:{}, nextbranchid:{}, deliverybranchid:{}, podresultid:{}", cwb, cwbOrder.getStartbranchid(), cwbOrder
 					.getCurrentbranchid(), cwbOrder.getNextbranchid(), cwbOrder.getDeliverybranchid(), podresultid);
 			//==>如果startbranchid不为0，则走原来正常逻辑
 			if (cwbOrder.getStartbranchid() != 0) {
-				CwbOrderService.logger.info("归班审核->更新站点信息->如果startbranchid不为0，则走原来正常逻辑");
+				CwbOrderService.logger.info("归班审核->更新站点信息->cwb:{},如果startbranchid不为0，则走原来正常逻辑", cwb);
 				this.jdbcTemplate.update("update express_ops_cwb_detail set flowordertype=?,currentbranchid=startbranchid where cwb=? and state=1", auditFlowOrderTypeEnum.getValue(), cwb);
 			} else { //==>startbranchid为0
-				CwbOrderService.logger.info("归班审核->更新站点信息->startbranchid为0");
+				CwbOrderService.logger.info("归班审核->更新站点信息->cwb:{},startbranchid为0", cwb);
 				long deliverybranchid = cwbOrder.getDeliverybranchid(); // 配送站点
 				//==>deliverybranchid不为0，则用deliverybranchid赋值给startbranchid、currentbranchid
 				if (deliverybranchid != 0) {
-					CwbOrderService.logger.info("归班审核->更新站点信息->deliverybranchid不为0，则用deliverybranchid赋值给startbranchid、currentbranchid");
+					CwbOrderService.logger.info("归班审核->更新站点信息->cwb:{},deliverybranchid不为0，则用deliverybranchid赋值给startbranchid、currentbranchid", cwb);
 					this.jdbcTemplate
 							.update("update express_ops_cwb_detail set flowordertype=?, startbranchid=deliverybranchid, currentbranchid=deliverybranchid where cwb=? and state=1", auditFlowOrderTypeEnum
 									.getValue(), cwb);
 				} else { //==>deliverybranchid为0，则用当前用户的branchid赋值给startbranchid、currentbranchid、deliverybranchid
-					CwbOrderService.logger.info("归班审核->更新站点信息->deliverybranchid为0，则用当前用户的branchid赋值给startbranchid、currentbranchid、deliverybranchid，当前用户的branchid为：{}", user.getBranchid());
+					CwbOrderService.logger.info("归班审核->更新站点信息->cwb:{},deliverybranchid为0，则用当前用户的branchid赋值给startbranchid、currentbranchid、deliverybranchid，当前用户的branchid为：{}", cwb, user.getBranchid());
 					deliverybranchid = user.getBranchid();
 					long startbranchid = deliverybranchid; // 上一个机构id
 					long currentbranchid = deliverybranchid; // 当前机构

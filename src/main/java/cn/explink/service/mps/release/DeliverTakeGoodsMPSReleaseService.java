@@ -38,6 +38,7 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.enumutil.TransCwbStateEnum;
 import cn.explink.exception.CwbException;
+import cn.explink.service.mps.MPSCommonService;
 
 /**
  *
@@ -60,6 +61,8 @@ public final class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseS
 	private OrderBackCheckDAO orderBackCheckDAO;
 	@Autowired
 	private CustomerDAO customerDAO;
+	@Autowired
+	private MPSCommonService mpsCommonService;
 	
 	@Override
 	public void validateReleaseCondition(String cwbOrTransCwb) throws CwbException {
@@ -439,4 +442,23 @@ public final class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseS
 		logger.info("{}通过！", logPrefix);
 	}
 
+	/**
+	 * 反馈时校验是否已存在领货记录
+	 * @param cwbOrder 订单
+	 * @throws CwbException 如果不存在领货记录，则会抛出异常
+	 */
+	public void validateExistPickingForFeedBack(CwbOrder cwbOrder) {
+		final String logPrefix = "反馈时校验是否已存在领货记录->";
+		String cwb = cwbOrder.getCwb(); //订单号
+		long flowordertype = cwbOrder.getFlowordertype(); //订单操作类型
+		logger.info("{}cwb:{}, flowordertype:{}", logPrefix, cwb, flowordertype);
+		if (flowordertype != FlowOrderTypeEnum.FenZhanLingHuo.getValue()) {
+			if (flowordertype == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() || 
+					flowordertype == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) {
+				logger.info("{}cwb:{}, 请先做到货扫描", logPrefix, cwb);
+				throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.PLEASE_RECEIVE_GOODS_FIRST, FlowOrderTypeEnum.FenZhanLingHuo.getText());				
+			}
+		}
+	}
+	
 }
