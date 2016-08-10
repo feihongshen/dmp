@@ -252,6 +252,8 @@
  			return;
  		}
  		LODOP.PRINT_INIT("邮政面单打印");
+ 		LODOP.SET_PRINT_PAGESIZE(0, 200, 120);
+ 		LODOP.NewPage();
  		LODOP.SET_PRINT_STYLE("FontSize",12);
 		LODOP.ADD_PRINT_TEXT(61,44,150,20, "徐得谱");
 		LODOP.ADD_PRINT_TEXT(61,199,150,20, "027-82668066");
@@ -262,10 +264,7 @@
 		LODOP.ADD_PRINT_TEXT(171,44,150,20, cwbOrder.consigneename);
 		LODOP.ADD_PRINT_TEXT(171,199,150,20, cwbOrder.consigneemobile);
 		LODOP.ADD_PRINT_TEXT(219,44,300,20, cwbOrder.consigneeaddress);
-		//LODOP.PRINT();
-		LODOP.ADD_PRINT_SETUP_BKIMG("<img border='0' src='<%=request.getContextPath()%>/images/emsPrintLable.jpg'>");
-		LODOP.SET_SHOW_MODE("BKIMG_IN_PREVIEW", 1);
-		LODOP.PREVIEW();
+		LODOP.PRINT();
 	}
  	
  	// 检测打印控件是否有效
