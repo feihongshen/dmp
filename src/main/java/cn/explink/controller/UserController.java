@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -26,9 +27,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.b2c.weisuda.CourierService;
+import cn.explink.consts.ImageValidateConsts;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.MenuDAO;
 import cn.explink.dao.PaiFeiRuleDAO;
@@ -384,7 +389,14 @@ public class UserController {
 	}
 
 	@RequestMapping("updatewebpassword")
-	public String updateWebPassword(@RequestParam("webPassword") String webPassword, @RequestParam("confirmWebPassword") String confirmWebPassword, ExplinkUserDetail userDetail, Model model) {
+	public String updateWebPassword(@RequestParam("webPassword") String webPassword, 
+									@RequestParam("confirmWebPassword") String confirmWebPassword, 
+									@RequestParam("validateWebCode") String validateWebCode, //验证码
+									@RequestParam("oldWebPassword") String oldWebPassword,  //旧密码
+									ExplinkUserDetail userDetail, Model model) {
+		//by zhili01.liang on 2016-08-09
+		//唯品支付资金归集，修改密码时需同时验证密码和验证码======START=====
+		/*
 		if (webPassword.equals(confirmWebPassword)) {
 			this.jdbcTemplate.update("update express_set_user set webPassword=? where userid=?", webPassword, this.getSessionUser().getUserid());
 			this.logger.info("operatorUser={},用户管理->updatewebpassword", this.getSessionUser().getUsername());
@@ -392,6 +404,33 @@ public class UserController {
 		} else {
 			model.addAttribute("message", "两次输入的网页登录密码不一致");
 		}
+		return "/passwordupdate";
+		*/
+		User sessionUser = getSessionUser();
+		cn.explink.domain.User user = userDAO.getAllUserByid(sessionUser.getUserid());
+		String vCodeInSession =  getImageValidateCode(ImageValidateConsts.TYPE_UPDATE_WEB_PWD);
+		if(!oldWebPassword.trim().equals(user.getWebPassword())){
+			model.addAttribute("message", "旧密码错误，请输入正确的密码");
+			return "/passwordupdate";
+		}
+		if(webPassword.trim().equals(user.getWebPassword())){
+			model.addAttribute("message", "新旧密码不能相同，请输入正确的密码");
+			return "/passwordupdate";
+		}
+		if(!webPassword.equals(confirmWebPassword)){
+			model.addAttribute("message", "两次输入的网页登录密码不一致");
+			return "/passwordupdate";
+		}
+		if(!validateWebCode.equals(vCodeInSession)){
+			model.addAttribute("message", "验证码不正确，请重新输入");
+			return "/passwordupdate";
+		}
+		
+		//成功操作
+		this.jdbcTemplate.update("update express_set_user set webPassword=? where userid=?", webPassword, this.getSessionUser().getUserid());
+		this.logger.info("operatorUser={},用户管理->updatewebpassword", sessionUser.getUsername());
+		model.addAttribute("message", "修改网页登录密码成功");
+		//唯品支付资金归集，修改密码时需同时验证密码和验证码======END=====
 		return "/passwordupdate";
 	}
 
@@ -633,4 +672,33 @@ public class UserController {
 		}
 		return "完成同步!成功：" + success + "，失败：" + failure;
 	}
+	
+	/**
+	 * @author zhili01.liang
+	 * 唯品支付资金归集，修改密码时需同时验证密码和验证码
+	 * 获取image_validate.jsp里的验证码
+	 * @param type 对应ImageValidateConsts里的值
+	 * @return
+	 */
+	private String getImageValidateCode(String type){
+		String validateCode = "-1";
+		HttpSession session = getSession();
+		Object validateObject= session.getAttribute(type);
+		if(validateObject!=null){
+			validateCode = validateObject.toString();
+		}
+		return validateCode;
+		
+	}
+	
+	/**
+	 * 获取http session
+	 * @return
+	 */
+	private HttpSession getSession(){
+		RequestAttributes ra = RequestContextHolder.getRequestAttributes();  
+	    HttpServletRequest request = ((ServletRequestAttributes)ra).getRequest();  
+	    return request.getSession();
+	}
+	
 }
