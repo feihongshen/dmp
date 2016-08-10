@@ -16,7 +16,7 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 			return content;
 		}
 		// 过滤information_schema
-		String tempContent = content.replaceAll("(?i)information_schema", "ＩＮＦＯＲＭＡＴＩＯＮ＿ＳＣＨＥＭＡ").replace("'", "\\'"); // 过滤单引号'
+		String tempContent = content.replace("'", "\\'").replaceAll("(?i)information_schema", "ＩＮＦＯＲＭＡＴＩＯＮ＿ＳＣＨＥＭＡ"); 
 		// 下面是正则替换
 		StringBuffer regxpSb = new StringBuffer();
 		// 过滤select from
@@ -29,11 +29,29 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 		// 过滤union all select
 		regxpSb.append("union([\\s\t\n\r]{1,})all([\\s\t\n\r]{1,})select");
 		regxpSb.append("|");
-		// 过滤or
-		regxpSb.append("or([\\s\t\n\r]{1,})([^\\s\t\n\r]{1,})");
+		//or[1个或多个空格]
+		regxpSb.append("or([\\s\t\n\r]{1,})");
+		regxpSb.append("|");
+		regxpSb.append("and([\\s\t\n\r]{1,})");
+		regxpSb.append("|");
+		regxpSb.append("case([\\s\t\n\r]{1,})");
+		regxpSb.append("|");
+		regxpSb.append("like([\\s\t\n\r]{1,})");
+		regxpSb.append("|");
+		regxpSb.append("regexp([\\s\t\n\r]{1,})");
 		regxpSb.append("|");
 		// 过滤SYSTEM_USER()
-		regxpSb.append("SYSTEM_USER(\\s*)");
+		regxpSb.append("SYSTEM_USER[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("|");
+		regxpSb.append("USER[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("|");
+		regxpSb.append("DATABASE[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("|");
+		regxpSb.append("IF[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("|");
+		regxpSb.append("MID[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("|");
+		regxpSb.append("SUBSTR[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
 
 		Pattern pattern = Pattern.compile(regxpSb.toString(), Pattern.CASE_INSENSITIVE);
 		Matcher matcher = pattern.matcher(tempContent);
@@ -48,12 +66,23 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 			// (?i)表示不区分大小写
 			tagIncontent = tagIncontent.replaceAll("(?i)select", "ＳＥＬＥＣＴ").replaceAll("(?i)from", "ＦＲＯＭ")
 					.replaceAll("(?i)union", "ＵＮＩＯＮ").replaceAll("(?i)all", "ＡＬＬ").replaceAll("(?i)or", "ＯＲ")
-					.replaceAll("(?i)SYSTEM_USER", "ＳＹＳＴＥＭ＿ＵＳＥＲ");
+					.replaceAll("(?i)SYSTEM_USER", "ＳＹＳＴＥＭ＿ＵＳＥＲ").replaceAll("(?i)USER", "ＵＳＥＲ")
+					.replaceAll("(?i)DATABASE", "ＤＡＴＡＢＡＳＥ").replaceAll("(?i)IF", "ＩＦ")
+					.replaceAll("(?i)MID", "ＭＩＤ").replaceAll("(?i)SUBSTR", "ＳＵＢＳＴＲ")
+					.replaceAll("(?i)and", "ＡＮＤ").replaceAll("(?i)case", "ＣＡＳＥ")
+					.replaceAll("(?i)like", "ＬＩＫＥ").replaceAll("(?i)regexp", "ＲＥＧＥＸＰ");
 			matcher.appendReplacement(encodeSb, tagIncontent);
 		} while (matcher.find());
 
 		matcher.appendTail(encodeSb);
 		return encodeSb.toString();
+	}
+	
+	//测试用函数
+	public static void main(String[] args){
+		AntiSqlInjectFilter filter = new AntiSqlInjectFilter();
+		String sqlStr = "mid ( ) ";
+		System.out.println(filter.filterParamValue(sqlStr));
 	}
 
 }

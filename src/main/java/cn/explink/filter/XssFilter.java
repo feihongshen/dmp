@@ -32,8 +32,32 @@ public class XssFilter  extends HttpRequestWordFilter{
 	     * @param s 
 	     * @return 
 	     */  
-	    private  String xssEncode(String s) {   
-	        return encodeHtmlTag(s, "script");
+	    private  String xssEncode(String s) { 
+	    	String tempStr = s;
+	    	tempStr= tempStr.replaceAll("(?i)javascript", "ｊａｖａscript")
+			    			.replaceAll("(?i)void(", "ｖｏｉｄ(")
+			    			.replaceAll("(?i)onabort","ｏｎabort")
+			    			.replaceAll("(?i)onblur","ｏｎblur")
+			    			.replaceAll("(?i)onchange","ｏｎchange")
+			    			.replaceAll("(?i)onclick","ｏｎclick")
+			    			.replaceAll("(?i)ondblclick","ｏｎdblclick")
+			    			.replaceAll("(?i)onerror","ｏｎerror")
+			    			.replaceAll("(?i)onfocus","ｏｎfocus")
+			    			.replaceAll("(?i)onkeydown","ｏｎkeydown")
+			    			.replaceAll("(?i)onkeypress","ｏｎkeypres")
+			    			.replaceAll("(?i)onkeyup","ｏｎkeyup")
+			    			.replaceAll("(?i)onload","ｏｎload")
+			    			.replaceAll("(?i)onmousedown","ｏｎmousedown")
+			    			.replaceAll("(?i)onmousemove","ｏｎmousemove")
+			    			.replaceAll("(?i)onmouseout","ｏｎmouseout")
+			    			.replaceAll("(?i)onmouseover","ｏｎmouseover")
+			    			.replaceAll("(?i)onmouseup","ｏｎmouseup")
+			    			.replaceAll("(?i)onreset","ｏｎreset")
+			    			.replaceAll("(?i)onresize","ｏｎresize")
+			    			.replaceAll("(?i)onselect","ｏｎselect")
+			    			.replaceAll("(?i)onsubmit","ｏｎsubmit")
+			    			.replaceAll("(?i)onunload","ｏｎunload");
+	        return encodeHtmlTag(tempStr, "script");
 	    }
 	    
 	    /**

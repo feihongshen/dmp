@@ -57,7 +57,10 @@ public boolean isSqlGrammarException(String message){
 	if(message==null || message.trim().equals("")){
 		return false;
 	}
-	if(message.indexOf("BadSqlGrammar")>0 || message.indexOf("bad SQL grammar")>0){
+	String tempMsg = message.trim().toUpperCase();
+	if(tempMsg.indexOf("BADSQLGRAMMAR")>0 
+			|| tempMsg.indexOf("BAD SQL GRAMMAR")>0
+			|| tempMsg.indexOf("MYSQL")>0){
 		return true;
 	}
 	return false;
