@@ -32,8 +32,10 @@ function createOneFormPage(){
 	var strBodyHtml = document.getElementById("printTable_0").outerHTML;
 	strBodyHtml = strBodyHtml.replace("preview_box", "");
 	LODOP.PRINT_INIT("武汉运输交接单打印");
-	LODOP.NewPage();
-	LODOP.ADD_PRINT_HTM("0mm","0mm","RightMargin:0mm","BottomMargin:0mm", '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">' + strBodyStyle + "<body>" + strBodyHtml + "</body>");
+	for(var i = 0; i < 4; i++) {
+		LODOP.NewPage();
+		LODOP.ADD_PRINT_HTM("0mm","0mm","RightMargin:0mm","BottomMargin:0mm", '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">' + strBodyStyle + "<body>" + strBodyHtml + "</body>");
+	}
 };
 
 function nowprint(){
