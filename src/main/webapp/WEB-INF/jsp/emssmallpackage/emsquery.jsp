@@ -96,14 +96,14 @@
 	if(starttime && endtime) {
 		var time = (Date.parse(endtime) - Date.parse(starttime)) / (1000 * 60 * 60 * 24);
 		if (time > 30) {
-			alert("入库时间范围不能超过30天！");
+			alert("出库时间范围不能超过30天！");
 			return;
 		}
 	}
 	
 	if (!starttime && !endtime) {
 		if (!querycwb) {
-			alert("请输入订单号或者入库时间查询！");
+			alert("请输入订单号或者出库时间查询！");
 			return;
 		}
 	}
