@@ -167,7 +167,6 @@ public class EmsSmallPackageController {
 	
 	@RequestMapping("/queryCwbList")
 	@ResponseBody
-	@DataSource(DatabaseType.REPLICA)
 	public Map<String, Object> querycwbList(Model model,
 			@RequestParam(value = "cwbtype", required = true, defaultValue="") String cwbtype,
 			@RequestParam(value = "cwb", required = true, defaultValue="") String cwb,
@@ -202,7 +201,6 @@ public class EmsSmallPackageController {
 	 */
 	@RequestMapping("/export")
 	@ResponseBody
-	@DataSource(DatabaseType.REPLICA)
 	public void export2Excel(
 			@RequestParam(value = "cwbtype", required = true, defaultValue="") String cwbtype,
 			@RequestParam(value = "cwb", required = true, defaultValue="") String cwb,
