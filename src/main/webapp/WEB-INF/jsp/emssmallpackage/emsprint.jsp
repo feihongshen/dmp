@@ -53,7 +53,7 @@
 			<div id="cwb_toolbar">
 				<div class="form-inline" style="padding:10px">
 				    <label style="width:400px;">订单/运单号：<input type="text" class="saomiao_inputtxt" id="scancwb" name="scancwb" value="" style="width:296px;height:45px;" onKeyDown='if(event.keyCode==13&&$(this).val().length>0){scanCwbConfirm()}'/></label>
-				    <label style="width:100px;"><input name="print" type="checkbox" value="0" onclick="checkIsInstall()" checked="checked"/>打印面单 </label>
+				    <label style="width:100px;"><input id="printButton" name="print" type="checkbox" value="0" onclick="checkIsInstall()" checked="checked"/>打印面单 </label>
 				    <label style="width:100px;"><input name="print" type="checkbox" value="1" />重新绑定 </label>
 				</div>
 		</div>
@@ -266,9 +266,11 @@
  	
  	// 检测打印控件是否有效
  	function checkIsInstall() {
- 		var LODOP = getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));
- 		if(!LODOP.VERSION) {
- 			downlodLodop();
+ 		if($("#printButton").is(':checked')) {
+	 		var LODOP = getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));
+	 		if(!LODOP.VERSION) {
+	 			downlodLodop();
+	 		}
  		}
 	}
 	
