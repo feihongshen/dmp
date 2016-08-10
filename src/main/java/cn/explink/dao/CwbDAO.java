@@ -10045,4 +10045,22 @@ public class CwbDAO {
 		
 		return this.jdbcTemplate.query(sbSql.toString(), new CwbMapper());
 	}
+
+	
+	/**
+	 * 查询订单，不过滤信息
+	 * @date 2016年8月10日 下午7:48:57
+	 * @param cwb
+	 * @return
+	 */
+	public CwbOrder getCwbByCwbWithoutFilterUserInfo(String cwb) {
+		try {
+			return this.jdbcTemplate
+					.queryForObject(
+							"SELECT * from express_ops_cwb_detail where cwb=? and state=1 limit 0,1",
+							new CwbMapper(false), cwb);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
 }
