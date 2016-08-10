@@ -265,16 +265,19 @@ function checkUseAutoAllocating() {
 	 */
 	function submitIntoWarehouse(pname, scancwb, customerid, driverid,
 			requestbatchno, rk_switch, comment) {
-		if('${auto_allocat}'=="1" && scancwb.indexOf("@rhk_")>-1){
-			var entranceValue = scancwb.split('_')[1];
-			handleAutoAllocationAndSelectEntrance(entranceValue);
-			return false;
+		if('${auto_allocat}'=="1") {
+			if('${auto_allocat}'=="1" && scancwb.indexOf("@rhk_")>-1){
+				var entranceValue = scancwb.split('_')[1];
+				handleAutoAllocationAndSelectEntrance(entranceValue);
+				return false;
+			}
+			
+			if('${auto_allocat}'=="1" && $('#useAutoAllocating').attr('checked')=='checked' && $("#entryselect").val()=='-1'){
+				alert("请选择自动分拨机入口");
+				return;
+			}
 		}
 		
-		if('${auto_allocat}'=="1" && $('#useAutoAllocating').attr('checked')=='checked' && $("#entryselect").val()=='-1'){
-			alert("请选择自动分拨机入口");
-			return;
-		}
 		if($("#emaildate").val()>0){
 			var flag=false;
 			$(".cwbids").each(function(i,val){

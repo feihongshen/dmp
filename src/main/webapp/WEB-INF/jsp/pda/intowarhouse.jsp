@@ -1,4 +1,4 @@
-l<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@page import="cn.explink.enumutil.DeliveryStateEnum"%>
 <%@page import="cn.explink.enumutil.CwbFlowOrderTypeEnum"%>
 <%@page import="cn.explink.enumutil.CwbStateEnum"%>
@@ -319,93 +319,33 @@ function callfunction(cwb){//getEmailDateByIds
 	 */
 	function submitIntoWarehouse(pname, scancwb, customerid, driverid,
 			requestbatchno, rk_switch, comment) {
-		if('${auto_allocat}'=="1" && scancwb.indexOf("@rhk_")>-1){
-			var entranceValue = scancwb.split('_')[1];
-			handleAutoAllocationAndSelectEntrance(entranceValue);
-			return false;
-		}
-		
-		if('${auto_allocat}'=="1" && $('#useAutoAllocating').attr('checked')=='checked' && $("#entryselect").val()=='-1'){
-			alert("请选择自动分拨机入口");
-			return;
-		}
-		
-		// 二次入库
-		if('${auto_allocat}'=="1" && $('#useAutoAllocating').attr('checked')=='checked' && $('#autoAllocateAgain').attr('checked')=='checked'){
-			$.ajax({
-				type : "POST",
-				url : pname + "/PDA/autoAllocateAgainWithoutIntoWarehouse/" + scancwb,
-				data : {
-					"autoallocatid":$("#entryselect").val()
-				},
-				dataType : "json",
-				success : function(data) {
-					if (data.statuscode == "000000") {
-						$("#msg").val("");
-						$("#scancwb").val("");
-// 						$("#cwbgaojia").hide();
-
-						$("#excelbranch").show();
-						$("#customername").show();
-// 						$("#damage").show();
-// 						$("#multicwbnum").show();
-
-						$("#customerid").val(data.body.cwbOrder.customerid);
-
-						if(data.body.showRemark!=null){
-							$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
-							}
-						if (data.body.cwbOrder.deliverybranchid != 0) {
-							$("#excelbranch").html("目的站："+ data.body.cwbdeliverybranchname
-													+ "<br/>下一站："+ data.body.cwbbranchname);
-						} else {
-							$("#excelbranch").html("尚未匹配站点");
-						}
-						$("#customername").html(
-								data.body.cwbcustomername);
-						$("#multicwbnum").val(
-								data.body.cwbOrder.sendcarnum);
-						$("#msg").html(scancwb+ data.errorinfo + "（共"+ data.body.cwbOrder.sendcarnum
-										+ "件，已扫"+ data.body.cwbOrder.scannum+ "件）" );
-						
-						$("#scansuccesscwb").val(scancwb);
-						$("#showcwb").html("订 单 号：" + data.body.cwbOrder.cwb);
-						$("#consigneeaddress").html("地 址："+ data.body.cwbOrder.consigneeaddress);
-						if(data.body.showRemark!=null){
-						$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
-						}
-						if(data.body.cwbOrder.emaildateid==0){
-							$("#morecwbnum").html(parseInt($("#morecwbnum").html()) + 1);
-						}
-					} else {
-						$("#excelbranch").hide();
-						$("#customername").hide();
-						$("#cwbgaojia").hide();
-						$("#damage").hide();
-						$("#multicwbnum").hide();
-						$("#multicwbnum").val("1");
-						$("#showcwb").html("");
-						$("#cwbDetailshow").html("");
-						$("#consigneeaddress").html("");
-						$("#scancwb").html("");
-						$("#msg").html("");
-						$("#scancwb").val("");
-						if("${isOpenDialog}" != "open"){
-							$("#msg").html("（异常扫描）" + data.errorinfo);
-						}else{
-							$("#msg1").html("（异常扫描）" + data.errorinfo);
-							$('#find').dialog('open');
-							$("#scancwb").blur();
-								
-						}
-					}
-					
-					$("#youhuowudanflag").val("0");
-					$("#responsebatchno").val(data.responsebatchno);
-					batchPlayWav(data.wavList);
-				}
-			});
-			return false;
+		if('${auto_allocat}'=="1") {
+			//扫码选择入货口
+			if('${auto_allocat}'=="1" && scancwb.indexOf("@rhk_")>-1){	// “入货口”的的拼音rhk
+				var entranceValue = scancwb.split('_')[1];
+				handleAutoAllocationAndSelectEntrance(entranceValue);
+				return false;
+			}
+			
+			//扫码选中二次分拨
+			if('${auto_allocat}'=="1" && $('#useAutoAllocating').attr('checked')=='checked' && scancwb == "@ecfb"){	// “二次分拨”的拼音ecfb
+				$('#autoAllocateAgain').prop("checked", true);
+				$("#scancwb").val("");
+				return false;
+			}
+			
+			// 二次入库
+			if('${auto_allocat}'=="1" && $('#useAutoAllocating').attr('checked')=='checked' && $('#autoAllocateAgain').attr('checked')=='checked'){
+				handleAutoAllocateAgain(pname, scancwb);
+				//二次入库后取消勾选checkbox
+				$('#autoAllocateAgain').prop("checked", false);
+				return false;
+			}
+			
+			if('${auto_allocat}'=="1" && $('#useAutoAllocating').attr('checked')=='checked' && $("#entryselect").val()=='-1'){
+				alert("请选择自动分拨机入口");
+				return;
+			}
 		}
 		
 		var flag=false;
@@ -630,6 +570,83 @@ function callfunction(cwb){//getEmailDateByIds
 		}
 		$("#scancwb").val("");
 	}
+	
+	function handleAutoAllocateAgain(pname, scancwb) {
+		$.ajax({
+			type : "POST",
+			url : pname + "/PDA/autoAllocateAgainWithoutIntoWarehouse/" + scancwb,
+			data : {
+				"autoallocatid":$("#entryselect").val()
+			},
+			dataType : "json",
+			success : function(data) {
+				if (data.statuscode == "000000") {
+					$("#msg").val("");
+					$("#scancwb").val("");
+//						$("#cwbgaojia").hide();
+
+					$("#excelbranch").show();
+					$("#customername").show();
+//						$("#damage").show();
+//						$("#multicwbnum").show();
+
+					$("#customerid").val(data.body.cwbOrder.customerid);
+
+					if(data.body.showRemark!=null){
+						$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
+						}
+					if (data.body.cwbOrder.deliverybranchid != 0) {
+						$("#excelbranch").html("目的站："+ data.body.cwbdeliverybranchname
+												+ "<br/>下一站："+ data.body.cwbbranchname);
+					} else {
+						$("#excelbranch").html("尚未匹配站点");
+					}
+					$("#customername").html(
+							data.body.cwbcustomername);
+					$("#multicwbnum").val(
+							data.body.cwbOrder.sendcarnum);
+					$("#msg").html(scancwb+ data.errorinfo + "（共"+ data.body.cwbOrder.sendcarnum
+									+ "件，已扫"+ data.body.cwbOrder.scannum+ "件）" );
+					
+					$("#scansuccesscwb").val(scancwb);
+					$("#showcwb").html("订 单 号：" + data.body.cwbOrder.cwb);
+					$("#consigneeaddress").html("地 址："+ data.body.cwbOrder.consigneeaddress);
+					if(data.body.showRemark!=null){
+					$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
+					}
+					if(data.body.cwbOrder.emaildateid==0){
+						$("#morecwbnum").html(parseInt($("#morecwbnum").html()) + 1);
+					}
+				} else {
+					$("#excelbranch").hide();
+					$("#customername").hide();
+					$("#cwbgaojia").hide();
+					$("#damage").hide();
+					$("#multicwbnum").hide();
+					$("#multicwbnum").val("1");
+					$("#showcwb").html("");
+					$("#cwbDetailshow").html("");
+					$("#consigneeaddress").html("");
+					$("#scancwb").html("");
+					$("#msg").html("");
+					$("#scancwb").val("");
+					if("${isOpenDialog}" != "open"){
+						$("#msg").html("（异常扫描）" + data.errorinfo);
+					}else{
+						$("#msg1").html("（异常扫描）" + data.errorinfo);
+						$('#find').dialog('open');
+						$("#scancwb").blur();
+							
+					}
+				}
+				
+				$("#youhuowudanflag").val("0");
+				$("#responsebatchno").val(data.responsebatchno);
+				batchPlayWav(data.wavList);
+			}
+		});
+	}
+	
 	/**
 	 * 入库备注提交
 	 */
