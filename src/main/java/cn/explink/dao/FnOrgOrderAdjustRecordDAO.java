@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.OrgOrderAdjustmentRecord;
+import cn.explink.enumutil.FnCwbStatusEnum;
 
 @Component
 public class FnOrgOrderAdjustRecordDAO {
@@ -68,8 +69,8 @@ public class FnOrgOrderAdjustRecordDAO {
 				+ "creator," + "create_time," + "order_type," + "pay_method,"
 				+ "deliver_id," + "sign_time," + "deliverybranchid,"
 				+ "goods_amount," + "pay_way_change_flag," + "adjust_type,"
-				+ "freight_amount" + ") "
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+				+ "freight_amount, status" + ") "
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps)
@@ -108,6 +109,7 @@ public class FnOrgOrderAdjustRecordDAO {
 						ps.setInt(20, orderAdjustmentRecord.getAdjustType());
 						ps.setBigDecimal(21,
 								orderAdjustmentRecord.getFreightAmount());
+						ps.setInt(22, orderAdjustmentRecord.getStatus() == null ? FnCwbStatusEnum.Unreceive.getIndex() : orderAdjustmentRecord.getStatus().intValue());
 					}
 				});
 	}
