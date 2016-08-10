@@ -246,9 +246,9 @@ public class EmsSmallPakageService {
 	 * 检验所输入的订单/运单是否符合绑定邮政小包 add by vic.liang@pjbest.com 2016-07-26
 	 */
 	public CwbOrder validateCwb (String scancwb) {
-		CwbOrder cwbOrder = this.getCwbByCwb(scancwb);
+		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwbWithoutFilterUserInfo(scancwb);
 		if (cwbOrder == null) {
-			cwbOrder = this.getCwbByCwb(this.translateCwb(scancwb));
+			cwbOrder = this.cwbDAO.getCwbByCwbWithoutFilterUserInfo(this.translateCwb(scancwb));
 		}
 		if (cwbOrder == null) {
 			throw new CwbException(scancwb, ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
