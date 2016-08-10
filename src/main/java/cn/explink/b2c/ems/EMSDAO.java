@@ -331,12 +331,22 @@ public class EMSDAO {
                       +" left join express_set_branch branch on cwb.deliverybranchid = branch.branchid "
                       +" where 1=1";
                       if (!StringUtil.isEmpty(cwb)) {
+                    	  StringBuilder sb = new StringBuilder();
+                    	  for (String cwbNo : cwb.split(",")) {
+                    		  if (!"".equals(cwbNo.trim())) {
+                    			  if (sb.length() > 0) {
+                    				  sb.append(",'").append(cwbNo).append("'");
+                    			  } else {
+                    				  sb.append("'").append(cwbNo).append("'");
+                    			  }
+                    		  }
+                    	  }
                     	  if ("0".equals(cwbType)) {
-                    		  sql += " and ems.cwb = '"+cwb+"'";
+                    		  sql += " and ems.cwb in ("+sb.toString()+")";
                     	  } else if ("1".equals(cwbType)) {
-                    		  sql += " and ems.transcwb = '"+cwb+"'";
+                    		  sql += " and ems.transcwb in ("+sb.toString()+")";
                     	  } else if ("2".equals(cwbType)) {
-                    		  sql += " and ems.email_num = '"+cwb+"'";
+                    		  sql += " and ems.email_num in ("+sb.toString()+")";
                     	  }
                       }
                       if (!StringUtil.isEmpty(starttime)) {

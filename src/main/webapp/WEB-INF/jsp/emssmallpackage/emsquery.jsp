@@ -80,7 +80,7 @@
  var _ctx = "<%=request.getContextPath()%>";
  function query () {
 	var cwbType = $("input[name='cwbType']:checked").val();
-	var querycwb = $("#querycwb").val()
+	var querycwb = $("#querycwb").val().replace(/\n/g,",");
 	var starttime = $("#starttime").val();
 	var endtime = $("#endtime").val();
 	var status = $("#status").val();
@@ -105,6 +105,11 @@
 		if (!querycwb) {
 			alert("请输入订单号或者出库时间查询！");
 			return;
+		} else {
+			if(querycwb.length > 200) {
+				alert("订单号只支持200字符！");
+				return;
+			}
 		}
 	}
 	
