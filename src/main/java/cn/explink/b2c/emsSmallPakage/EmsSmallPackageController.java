@@ -70,7 +70,7 @@ public class EmsSmallPackageController {
 			@RequestParam(value = "rebingcwb", required = true, defaultValue="") String rebingcwb,
 			HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		
+		boolean isPrint = false;
 		try {
 			scancwb = scancwb.trim();
 			printcwb = printcwb.trim();
@@ -78,7 +78,7 @@ public class EmsSmallPackageController {
 			
 			CwbOrder cwbOrder = this.emsSmallPakageService.validateCwb(scancwb);
 			if ("1".equals(printcwb)) {//打印邮政面单
-				//TODO 调用邮政运单打印接口
+				isPrint = true;
 			}
 			List<SendToEMSOrder> list= null;
 			if ("1".equals(rebingcwb)) { //重新绑定邮政运单号
@@ -97,6 +97,7 @@ public class EmsSmallPackageController {
 			map.put("list", null);
 			return map;
 		}
+		map.put("isPrint", isPrint);
 		map.put("result", "{\"result\":\"success\"}");
 		return map;
 	}

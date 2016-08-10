@@ -7,6 +7,7 @@
 
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-1.8.0.min.js"></script>
 	<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
+	
 	<script type="text/javascript" src="<%=request.getContextPath()%>/js/easyui/jquery.easyui.min.js"></script>
 	
 	<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/js/eapTools.js"></script>
@@ -23,6 +24,13 @@
 	<link type="text/css" href="<%=request.getContextPath()%>/js/multiSelcet/multiple-select.css" rel="stylesheet"/>
     <link type="text/css" href="<%=request.getContextPath()%>/css/easyui/themes/default/easyui.css" rel="stylesheet" media="all"/>
 	<link type="text/css" href="<%=request.getContextPath()%>/dmp40/plug-in/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+	<link id="skinlayercss" href="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/skin/layer.css" rel="stylesheet" type="text/css">
+	<object id="LODOP" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0 >
+		<param name="CompanyName" value="北京易普联科信息技术有限公司" />
+		<param name="License" value="653717070728688778794958093190" />
+		<embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 companyname="北京易普联科信息技术有限公司" license="653717070728688778794958093190"></embed>
+	</object>
+	<script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
 </HEAD>
 <body class="easyui-layout" leftmargin="0" topmargin="0">
     <div data-options="region:'center'" style="height:100%;overflow-x: auto; overflow-y: auto;">
@@ -45,7 +53,7 @@
 			<div id="cwb_toolbar">
 				<div class="form-inline" style="padding:10px">
 				    <label style="width:400px;">订单/运单号：<input type="text" class="saomiao_inputtxt" id="scancwb" name="scancwb" value="" style="width:296px;height:45px;" onKeyDown='if(event.keyCode==13&&$(this).val().length>0){scanCwbConfirm()}'/></label>
-				    <label style="width:100px;"><input name="print" type="checkbox" value="0" checked="checked"/>打印面单 </label>
+				    <label style="width:100px;"><input name="print" type="checkbox" value="0" onclick="checkIsInstall()" checked="checked"/>打印面单 </label>
 				    <label style="width:100px;"><input name="print" type="checkbox" value="1" />重新绑定 </label>
 				</div>
 		</div>
@@ -66,6 +74,9 @@
 		<div class="btn btn-default" id="importButton2" onclick="closeWindow()">
 			关闭
 		</div>
+	</div>
+	<div id="downlodLodop">
+		<h3><font color='#FF00FF'>打印控件未安装或需要升级！点击这里<a style="text-decoration:underline;" href="<%=request.getContextPath()%>/js/install_lodop32.exe" target="_self">执行安装</a>,安装或升级后请刷新页面或重新进入。</font></h3>
 	</div>
 <script type="text/javascript">
  var _ctx = "<%=request.getContextPath()%>";
@@ -143,6 +154,10 @@
 					transcwb = cwbOrder.transcwb;
 					initShowWindow(list);
 					showWindow();
+					// 打印
+					if(data.isPrint == true) {
+						printEmsLabel(cwbOrder);
+					}
 				} 
 			} else {
 				alert(result.result);
@@ -228,6 +243,50 @@
 	data.rows = (data.originalRows.slice(start, end));
 	return data;
  }
+ 
+ 	// 打印
+ 	function printEmsLabel(cwbOrder){
+ 		var LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM')); 
+ 		if(!LODOP.VERSION) {
+ 			downlodLodop();
+ 			return;
+ 		}
+ 		LODOP.PRINT_INIT("邮政面单打印");
+		LODOP.ADD_PRINT_TEXT(105,135,150,20, "徐得谱");
+		LODOP.ADD_PRINT_TEXT(105,280,150,20, "027-82668066");
+		LODOP.ADD_PRINT_TEXT(132,135,150,20, "武汉飞远");
+		LODOP.ADD_PRINT_TEXT(132,355,150,20, "42010301326000");
+		LODOP.ADD_PRINT_TEXT(155,135,150,20, "武汉市");
+		LODOP.ADD_PRINT_TEXT(178,135,150,20, "唯品的订单号");
+		LODOP.ADD_PRINT_TEXT(215,135,150,20, cwbOrder.consigneename);
+		LODOP.ADD_PRINT_TEXT(215,280,150,20, cwbOrder.consigneemobile);
+		LODOP.ADD_PRINT_TEXT(263,135,300,20, cwbOrder.consigneeaddress);
+		LODOP.PRINT();
+	}
+ 	
+ 	// 检测打印控件是否有效
+ 	function checkIsInstall() {
+ 		var LODOP = getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));
+ 		if(!LODOP.VERSION) {
+ 			downlodLodop();
+ 		}
+	}
+	
+ 	// 提示打印控件失效并提供下载链接
+	function downlodLodop() {
+		$.layer({
+          	type: 1,
+            title: "打印控件未安装或需要升级！",
+            shadeClose: true,
+            maxmin: false,
+            fix: false,
+            area: [400, 200],
+            page: {
+                dom: '#downlodLodop'
+            }
+        });
+	}
+
 </script>
 </body>
 </HTML>
