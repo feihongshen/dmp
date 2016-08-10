@@ -251,11 +251,10 @@
  			downlodLodop();
  			return;
  		}
- 		LODOP.PRINT_INIT("邮政面单打印");
- 		LODOP.SET_PRINT_PAGESIZE(0, 200, 120);
- 		LODOP.NewPage();
+ 		LODOP.PRINT_INITA(0,0,"200mm", "100mm","邮政面单打印");
+ 		LODOP.SET_PRINT_PAGESIZE(0, 2000, 1000, "A4");
  		LODOP.SET_PRINT_STYLE("FontSize",12);
-		LODOP.ADD_PRINT_TEXT(81,24,150,20, "徐得谱");
+		LODOP.ADD_PRINT_TEXT(81,24,150,20, "武汉飞远");
 		LODOP.ADD_PRINT_TEXT(81,179,150,20, "027-82668066");
 		LODOP.ADD_PRINT_TEXT(108,24,150,20, "武汉飞远");
 		LODOP.ADD_PRINT_TEXT(108,259,150,20, "42010301326000");
@@ -265,6 +264,7 @@
 		LODOP.ADD_PRINT_TEXT(191,179,150,20, cwbOrder.consigneemobile);
 		LODOP.ADD_PRINT_TEXT(239,24,300,20, cwbOrder.consigneeaddress);
 		LODOP.PRINT();
+		//LODOP.PREVIEW();
 	}
  	
  	// 检测打印控件是否有效
