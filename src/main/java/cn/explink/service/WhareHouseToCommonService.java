@@ -219,9 +219,9 @@ public class WhareHouseToCommonService {
 
 			// 过滤非配送、上门退、上门换的订单  modify by jian_xie 2016-08-09
 			String sql = "select o.id as id, o.cwb as cwb, o.customerid as customerid, o.startbranchid as startbranchid "
-					+ " , o.commencode as commencode, o.credate as credate, o.statetime as statetime, o.nextbranchid as nextbranchid "
+					+ " , o.commencode as commencode, o.credate as credate, o.statetime as statetime, o.nextbranchid as nextbranchid, d.cwbordertypeid as cwbordertypeid "
 					+ " from  commen_cwb_order o inner join express_ops_cwb_detail d on o.cwb=d.cwb " 
-					+ " where d.cwbordertypeid not in (1,2,3) and o.commencode =" + commencode + " and o.stateTime='' and o.outbranchflag=" + outbranchflag;
+					+ " where o.commencode =" + commencode + " and o.stateTime='' and o.outbranchflag=" + outbranchflag;
 //			String sql = "select * from  commen_cwb_order  " + " where commencode =" + commencode + " and stateTime='' and outbranchflag=" + outbranchflag;
 			/*if (quejiancwbStr.length() > 0) {
 				sql = sql + " and cwb not in(" + quejiancwbStr + ")";
@@ -233,31 +233,32 @@ public class WhareHouseToCommonService {
 				@Override
 				public void processRow(ResultSet rs) throws SQLException {
 					try {
-						WarehouseToCommen warehtoCommen = new WarehouseToCommen();
+						String cwbordertypeid =  rs.getString("cwbordertypeid");
 						long id = rs.getLong("id");
-						warehtoCommen.setId(id);
-						String cwb = rs.getString("cwb");
-						warehtoCommen.setCwb(cwb);
-						warehtoCommen.setCustomerid(rs.getLong("customerid"));
-						warehtoCommen.setStartbranchid(rs.getLong("startbranchid"));
-						warehtoCommen.setCommencode(rs.getString("commencode"));
-						warehtoCommen.setCredate(rs.getString("credate"));
-						warehtoCommen.setStatetime(rs.getString("statetime"));
-						warehtoCommen.setEmaildateid(emaildateid);
-						warehtoCommen.setNextbranchid(rs.getInt("nextbranchid"));
+						if("1".equals(cwbordertypeid) || "2".equals(cwbordertypeid) || "3".equals(cwbordertypeid)){
+							WarehouseToCommen warehtoCommen = new WarehouseToCommen();
+							
+							warehtoCommen.setId(id);
+							String cwb = rs.getString("cwb");
+							warehtoCommen.setCwb(cwb);
+							warehtoCommen.setCustomerid(rs.getLong("customerid"));
+							warehtoCommen.setStartbranchid(rs.getLong("startbranchid"));
+							warehtoCommen.setCommencode(rs.getString("commencode"));
+							warehtoCommen.setCredate(rs.getString("credate"));
+							warehtoCommen.setStatetime(rs.getString("statetime"));
+							warehtoCommen.setEmaildateid(emaildateid);
+							warehtoCommen.setNextbranchid(rs.getInt("nextbranchid"));
 
-						try {
 							String str = JSONReslutUtil.getResultMessageChangeLog(url + "/OMSExplink/postdata", "pram=" + om.writeValueAsString(warehtoCommen), "POST").toString();
 							logger.info("{}返回：{}", cwb, str);
 							if (str.indexOf("00") > -1) {
 								warehouseToCommenDAO.updateCommenCwbListById(id, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 							}
-						} catch (Exception e) {
-							logger.error("获取当前用户信息异常", e);
+						}else{
+							warehouseToCommenDAO.updateCommenCwbListById(id, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 						}
-
 					} catch (Exception e) {
-						logger.error("", e);
+						logger.error("环形对接同步数据到oms出错", e);
 					}
 				}
 			});
