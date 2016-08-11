@@ -38,7 +38,7 @@ public class XssFilter  extends HttpRequestWordFilter{
 	    	}
 	    	String tempStr = s;
 	    	tempStr= tempStr.replaceAll("(?i)javascript", "ｊａｖａscript")
-			    			.replaceAll("(?i)void(", "ｖｏｉｄ(")
+			    			.replaceAll("(?i)void", "ｖｏｉｄ")
 			    			.replaceAll("(?i)onabort","ｏｎabort")
 			    			.replaceAll("(?i)onblur","ｏｎblur")
 			    			.replaceAll("(?i)onchange","ｏｎchange")
