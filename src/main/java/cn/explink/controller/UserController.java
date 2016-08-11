@@ -674,6 +674,17 @@ public class UserController {
 	}
 	
 	/**
+	 *@author zhili01.liang
+	 * 唯品支付资金归集，修改密码时需同时验证密码和验证码
+	 * 跳转到image_validate.jsp页面
+	 * @return
+	 */
+	@RequestMapping("/randomImg")
+	public String randomImg(){
+		return "image_validate";
+	}
+	
+	/**
 	 * @author zhili01.liang
 	 * 唯品支付资金归集，修改密码时需同时验证密码和验证码
 	 * 获取image_validate.jsp里的验证码
