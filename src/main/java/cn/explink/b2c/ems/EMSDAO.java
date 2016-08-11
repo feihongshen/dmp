@@ -341,12 +341,14 @@ public class EMSDAO {
                     			  }
                     		  }
                     	  }
-                    	  if ("0".equals(cwbType)) {
-                    		  sql += " and ems.cwb in ("+sb.toString()+")";
-                    	  } else if ("1".equals(cwbType)) {
-                    		  sql += " and ems.transcwb in ("+sb.toString()+")";
-                    	  } else if ("2".equals(cwbType)) {
-                    		  sql += " and ems.email_num in ("+sb.toString()+")";
+                    	  if (sb.length() > 0) {
+                    		  if ("0".equals(cwbType)) {
+                        		  sql += " and ems.cwb in ("+sb.toString()+")";
+                        	  } else if ("1".equals(cwbType)) {
+                        		  sql += " and ems.transcwb in ("+sb.toString()+")";
+                        	  } else if ("2".equals(cwbType)) {
+                        		  sql += " and ems.email_num in ("+sb.toString()+")";
+                        	  }
                     	  }
                       }
                       if (!StringUtil.isEmpty(starttime)) {
