@@ -35,11 +35,13 @@ public class TpsAutoCfgService {
 		Integer autoOpenFlag = StringUtils.isEmpty(request.getParameter("autoOpenFlag"))? 0 :Integer.parseInt(request.getParameter("autoOpenFlag"));
 		Integer batchnoOpenFlag = StringUtils.isEmpty(request.getParameter("batchnoOpenFlag"))? 0 :Integer.parseInt(request.getParameter("batchnoOpenFlag"));
 		Long warehouseId = StringUtils.isEmpty(request.getParameter("warehouseId"))? 0 :Long.parseLong(request.getParameter("warehouseId"));
+		Integer hebaoFlag = StringUtils.isEmpty(request.getParameter("hebaoFlag"))? 0 :Integer.parseInt(request.getParameter("hebaoFlag"));
 		
 			
 		tpsAutoCfg.setAutoOpenFlag(autoOpenFlag);
 		tpsAutoCfg.setBatchnoOpenFlag(batchnoOpenFlag);
 		tpsAutoCfg.setWarehouseid(warehouseId);
+		tpsAutoCfg.setHebaoFlag(hebaoFlag);
 		
 		JSONObject jsonObj = JSONObject.fromObject(tpsAutoCfg);
 		JointEntity jointEntity = this.jiontDAO.getJointEntity(joint_num);
