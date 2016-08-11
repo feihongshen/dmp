@@ -37,3 +37,7 @@ drop TABLE `fn_cwb_state`;
 
 drop TABLE `fn_set_bank`;
 
+delete from dmp40_function where ID='803091' and functionname='对账文件查询';
+delete from dmp40_function where ID='803092' and functionname='结算信息管理';
+delete from dmp40_function where ID='803093' and functionname='代扣查询';
+

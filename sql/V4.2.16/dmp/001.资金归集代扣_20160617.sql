@@ -1,4 +1,4 @@
--- 站点缴款导入银行记录明细表（fn_org_recharges）新增字段
+-- 站点缴款导入银行记录表（fn_org_bank_import）新增字段
 ALTER TABLE `fn_org_bank_import`   
   ADD COLUMN `current_mode` TINYINT(2) DEFAULT 1  NOT NULL  COMMENT '结算模式。1.账单，2.签收余额。默认为账单';
 
@@ -229,6 +229,7 @@ CREATE TABLE `fn_set_bank`(
 ) ENGINE=INNODB CHARSET=utf8;
 
 /*!40101 SET NAMES utf8 */;
+-- 初始化各大银行信息字典表（fn_set_bank）
 insert into `fn_set_bank` (`bank_name`, `bank_code`) values('中国银行','BOC');
 insert into `fn_set_bank` (`bank_name`, `bank_code`) values('建设银行','CCB');
 insert into `fn_set_bank` (`bank_name`, `bank_code`) values('邮政储蓄','PSBC');
@@ -245,3 +246,7 @@ insert into `fn_set_bank` (`bank_name`, `bank_code`) values('农业银行','ABC'
 insert into `fn_set_bank` (`bank_name`, `bank_code`) values('交通银行','BCOM');
 insert into `fn_set_bank` (`bank_name`, `bank_code`) values('北京银行','BOB');
 insert into `fn_set_bank` (`bank_name`, `bank_code`) values('工商银行','ICBC');
+
+-- 新增菜单表记录
+insert into `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) values('803091','2','对账文件查询','803091','${eapUrl}fnVpalMgmt.action?checkFilelistIndex&','8030'),('803092','2','结算信息管理','803092','${eapUrl}orgPayAccount.action?index&','8030'),('803093','2','代扣查询','803090','${eapUrl}fnVpalMgmt.action?queryDealRecordIndex&','8030');
+
