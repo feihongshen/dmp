@@ -675,6 +675,8 @@
 			$.messager.alert("提示", "保存失败!", "warning"); 
 		}else if($.trim($("#flag").html()) == "hasSaved"){
 			$.messager.alert("提示", "该运单号已经录入过，保存失败!", "warning"); 
+		}else if($.trim($("#flag").html()) == "tpsErr"){
+			$.messager.alert("提示", "该运单号已经录入过，保存失败!", "warning"); 
 		}
 		if($.trim($("#orderNoValue").html()) != ""){
 			$("#orderNo_id").val($.trim($("#orderNoValue").html()));
