@@ -68,20 +68,32 @@ public class AutoAllocationService {
 	/**
 	 * 初始化授权
 	 */
-	public void init() {
-		// 分拨入口查询
-		List<Entrance> eList = this.entranceDAO.getAllEnableEntrances();
+	public void init(List<Entrance> eList) {
 		// 是否开启自动分拣设置
 		String autoAllocatingSwitch = this.systemInstallDAO.getSystemInstall(
 				"AutoAllocating").getValue();
 
 		if (autoAllocatingSwitch != null && autoAllocatingSwitch.equals("1")) {
 			// 获得初始化参数
-			AutoAllocationParam params = AutoAllocationParam.getInitParams();
+			AutoAllocationParam param = AutoAllocationParam.getInitParams();
 			for (Entrance entrance : eList) {
-				this.sendMsg(entrance.getEntranceip(), params);
+				this.createEmptyMsgLog(param, "", "", (byte) 0, entrance.getEntranceip());
+				this.sendMsg(entrance.getEntranceip(), param);
 
 			}
+		}
+	}
+	
+	public void init(String entranceIP) {
+		// 是否开启自动分拣设置
+		String autoAllocatingSwitch = this.systemInstallDAO.getSystemInstall(
+				"AutoAllocating").getValue();
+
+		if (autoAllocatingSwitch != null && autoAllocatingSwitch.equals("1")) {
+			// 获得初始化参数
+			AutoAllocationParam param = AutoAllocationParam.getInitParams();
+			this.createEmptyMsgLog(param, "", "", (byte) 0, entranceIP);
+			this.sendMsg(entranceIP, param);
 		}
 	}
 
@@ -248,9 +260,14 @@ public class AutoAllocationService {
 	/**
 	 * 启动与服务器的通信
 	 */
-	public SocketClient startConnect(String IP, int port) {
+	public SocketClient startConnect(String IPAndPort) {
 		SocketClient sc = new SocketClient();
-		sc.StartEngine(IP, port);
+		String[] items = IPAndPort.split(":");
+		if (items.length == 2) {
+			String realIP = items[0];
+			int port = Integer.valueOf(items[1]);
+			sc.StartEngine(realIP, port);
+		}
 		return sc;
 	}
 

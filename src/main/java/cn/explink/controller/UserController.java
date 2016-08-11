@@ -3,8 +3,10 @@ package cn.explink.controller;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +42,7 @@ import cn.explink.domain.Role;
 import cn.explink.domain.User;
 import cn.explink.domain.addressvo.AddressSyncServiceResult;
 import cn.explink.domain.addressvo.ApplicationVo;
+import cn.explink.domain.addressvo.BatchSyncAdressResultVo;
 import cn.explink.domain.addressvo.DelivererVo;
 import cn.explink.enumutil.PaiFeiRuleTypeEnum;
 import cn.explink.enumutil.UserEmployeestatusEnum;
@@ -579,7 +582,8 @@ public class UserController {
 	 */
 	@RequestMapping(value="/batchSyncAdress")
 	@ResponseBody
-	public String batchSyncAdress() {
+	public Map<String, Object> batchSyncAdress() {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
 		Set<Long> roleidSet = new HashSet<Long>();
 		// 小件员和站长属于配送员
 		roleidSet.add(2l);
@@ -601,6 +605,8 @@ public class UserController {
 		applicationVo.setId(Long.parseLong(ResourceBundleUtil.addressid));
 		applicationVo.setPassword(ResourceBundleUtil.addresspassword);
 		
+		List<BatchSyncAdressResultVo> batchSyncAdressResultVoList = new ArrayList<BatchSyncAdressResultVo>();
+		
 		int success = 0; // 成功数量
 		int failure = 0; // 失败数量
 		for (User deliver : deliverList) {
@@ -614,23 +620,35 @@ public class UserController {
 			
 			try {
 				AddressSyncServiceResult addressSyncServiceResult;
-				if (deliver.getUserDeleteFlag() == 1 && deliver.getEmployeestatus() == 1) { // 地址库逻辑：saveOrUpdate
+				if (deliver.getUserDeleteFlag() == 1 && deliver.getEmployeestatus() != 3) { // 地址库逻辑：saveOrUpdate
 					addressSyncServiceResult = this.addressService.updateDeliverer(applicationVo, delivererVo);
 				} else { // 删除
 					addressSyncServiceResult = this.addressService.deleteDeliverer(applicationVo, delivererVo);
-	
 				}
 				if (addressSyncServiceResult.getResultCode().getCode() == 0) {
 					logger.info("[成功]小件员批量同步地址库 {} ：{}", deliver.getUsername(), addressSyncServiceResult.toString());
 					success++;
 				} else {
+					BatchSyncAdressResultVo batchSyncAdressResultVo = new BatchSyncAdressResultVo();
+					batchSyncAdressResultVo.setUsername(deliver.getUsername());
+					batchSyncAdressResultVo.setRealname(deliver.getRealname());
+					batchSyncAdressResultVo.setMessage(addressSyncServiceResult.toString());
+					batchSyncAdressResultVo.setResult("失败");
+					batchSyncAdressResultVoList.add(batchSyncAdressResultVo);
 					logger.info("[失败]小件员批量同步地址库 {} ：{}", deliver.getUsername(), addressSyncServiceResult.toString());
 					failure++;
 				}
 			} catch (Exception e) {
-				return e.getMessage();
+				logger.error(e.getMessage(), e);
+				resultMap.put("code", 1);
+				resultMap.put("errorMsg", e.getMessage());
+				return resultMap;
 			}
 		}
-		return "完成同步!成功：" + success + "，失败：" + failure;
+		resultMap.put("code", 0);
+		resultMap.put("success", success);
+		resultMap.put("failure", failure);
+		resultMap.put("batchSyncAdressResultVoList", batchSyncAdressResultVoList);
+		return resultMap;
 	}
 }

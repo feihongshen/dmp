@@ -560,8 +560,9 @@ public class EditCwbService {
 		this.logger.info("EditCwb_JINE_SQL:{}修改快递运费 开始", cwb);
 		// 根据cwb 获得 订单表 express_ops_cwb_detail 有效记录 state lock
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
-
-		if (co.getReceivablefee().compareTo(shouldfare) == 0) {
+		
+		//快递运费金额修改的时候用的是shouldfare，所以校验的时候也用主表的shouldfare，而不是Receivablefee ---刘武强 20160802
+		if (co.getShouldfare().compareTo(shouldfare) == 0) {
 			throw new ExplinkException(co.getFlowordertype() + "_[失败]快递运费金额没有任何变化，不需要更改数据！");
 		}
 		// 根据cwb 获得反馈表 express_ops_delivery_state 记录 （已审核的，state为1的，对应订单号的） lock

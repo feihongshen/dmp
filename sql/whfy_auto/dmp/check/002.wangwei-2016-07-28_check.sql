@@ -1,0 +1,1 @@
+SELECT 'entranceip字段加长' AS '脚本注释',IF((SELECT count(1) FROM information_schema.columns WHERE table_schema = schema() and table_name = 'express_set_entrance' AND column_name='entranceip' AND column_type = 'varchar(19)') = 1,'success','failed') AS '执行结果';
