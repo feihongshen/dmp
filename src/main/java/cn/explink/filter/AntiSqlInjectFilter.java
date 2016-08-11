@@ -64,6 +64,8 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 		regxpSb.append("CONCAT[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
 		regxpSb.append("|");
 		regxpSb.append("CONCAT_WS[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("|");
+		regxpSb.append("SLEEP[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
 
 		Pattern pattern = Pattern.compile(regxpSb.toString(), Pattern.CASE_INSENSITIVE);
 		Matcher matcher = pattern.matcher(tempContent);
@@ -85,7 +87,8 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 					.replaceAll("(?i)like", "ＬＩＫＥ").replaceAll("(?i)regexp", "ＲＥＧＥＸＰ")
 					.replaceAll("(?i)EXTRACTVALUE", "ＥＸＴＲＡＣＴＶＡＬＵＥ").replaceAll("(?i)BENCHMARK", "ＢＥＮＣＨＭＡＲＫ")
 					.replaceAll("(?i)ELT", "ＥＬＴ").replaceAll("(?i)UPDATEXML", "ＵＰＤＡＴＥＸＭＬ")
-					.replaceAll("(?i)CONCAT_WS", "ＣＯＮＣＡＴ＿ＷＳ").replaceAll("(?i)CONCAT", "ＣＯＮＣＡＴ");
+					.replaceAll("(?i)CONCAT_WS", "ＣＯＮＣＡＴ＿ＷＳ").replaceAll("(?i)CONCAT", "ＣＯＮＣＡＴ")
+					.replaceAll("(?i)SLEEP", "ＳＬＥＥＰ");
 			matcher.appendReplacement(encodeSb, tagIncontent);
 		} while (matcher.find());
 
@@ -96,8 +99,8 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 	//测试用函数
 	public static void main(String[] args){
 		AntiSqlInjectFilter filter = new AntiSqlInjectFilter();
-		String sqlStr  = "UPDATEXML";
-		String sqlStr1 = "UPDATEXML()";
+		String sqlStr  = "SLEEP";
+		String sqlStr1 = "SLEEP()";
 		System.out.println(filter.filterParamValue(sqlStr));
 		System.out.println(filter.filterParamValue(sqlStr1));
 	}
