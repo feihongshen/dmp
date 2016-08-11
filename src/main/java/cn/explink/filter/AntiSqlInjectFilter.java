@@ -30,14 +30,14 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 		 //捕获你抛出的业务异常
 		try {
         	super.doFilter(req, res, chain);
-		} catch (Exception e) {
+		} catch (ServletException e) {
 			String message = e.getMessage();
 			//如果是SQL错误，错误信息不抛出
 			if(isSqlGrammarException(message)){
 				//用于在日志上标识出唯一错误编号
 				String ticketNo = SQL_ERROR_PRE + "-" + System.currentTimeMillis();
 				logger.error(SQL_ERROR_PRE,ticketNo + " :" + getPrintStack(e));
-				throw new RuntimeException("错误代号："+ticketNo + "   请联系技术支持同事。");
+				throw new ServletException("错误代号："+ticketNo + "   请联系技术支持同事。");
 			//如果不是SQL错误，错误信息抛出
 			}else{
 				throw e;
