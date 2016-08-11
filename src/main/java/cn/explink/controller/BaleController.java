@@ -1048,7 +1048,12 @@ public class BaleController {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		if (!"".equals(baleno.trim()) && !"".equals(cwb.trim())) {
-			Bale isbale = this.baleDAO.getBaleOnway(baleno.trim());
+			
+			/***mod by yurong.liang  2016-08-11***/
+			//Bale isbale = this.baleDAO.getBaleOnway(baleno.trim());
+			Bale isbale = this.baleService.getBaleForHebaoDaohuo(request, baleno, FlowOrderTypeEnum.ZhongZhuanZhanRuKu);
+			/***mod end***/
+			
 			//CwbOrder iscwb = this.cwbDAO.getCwbByCwb(cwb);
 			if ("0".equals(baleno) || (isbale == null)) {
 				obj.put("errorinfo", "(合包到货异常)" + baleno + "包号不存在");
