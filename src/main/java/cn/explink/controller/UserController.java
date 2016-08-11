@@ -414,6 +414,8 @@ public class UserController {
 			model.addAttribute("message", "验证码不正确，请重新输入");
 			return "/passwordupdate";
 		}
+		//验证成功后，清空验证码
+		clearImageValidateCode(ImageValidateConsts.TYPE_UPDATE_WEB_PWD);
 		if(!oldWebPassword.trim().equals(user.getWebPassword())){
 			model.addAttribute("message", "旧密码错误，请输入正确的密码");
 			return "/passwordupdate";
@@ -699,9 +701,20 @@ public class UserController {
 		Object validateObject= session.getAttribute(type);
 		if(validateObject!=null){
 			validateCode = validateObject.toString();
+			//使用一次后清空，防止用户用同一个验证码破译密码
+			
 		}
 		return validateCode;
 		
+	}
+	
+	/**
+	 * 清空验证码
+	 * @param type
+	 */
+	private void clearImageValidateCode(String type){
+		HttpSession session = getSession();
+		session.setAttribute(type, null);
 	}
 	
 	/**

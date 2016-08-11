@@ -36,7 +36,7 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 			if(isSqlGrammarException(message)){
 				//用于在日志上标识出唯一错误编号
 				String ticketNo = SQL_ERROR_PRE + "-" + System.currentTimeMillis();
-				logger.error(SQL_ERROR_PRE,ticketNo + " :" + getPrintStack(e));
+				logger.error(ticketNo + " :" + getPrintStack(e));
 				throw new ServletException("错误代号："+ticketNo + "   请联系技术支持同事。");
 			//如果不是SQL错误，错误信息抛出
 			}else{
