@@ -9,7 +9,7 @@ package cn.explink.b2c.dangdang_dataimport;
 public enum DeliveryTypeEnum {
 
 	PuTongPeiSong("普通配送", 1), EMS("EMS", 2), PingYou("平邮", 3), JiaJiPeiSong("加急配送", 5), DangRiDi("当日达", 101), ShangMenZiTi("上门自提", 11), KuqiDiPeiSong("快递公司送货", 12), SiXiaoShiDa("4小时递", 7), WanJianSong(
-			"晚间送", 13)
+			"晚间送", 13),guojikuaidi("国际快递",17),yuyuesonghuo("预约送货",18),dajianpeisong("大件配送",19)
 
 	;
 	private String msg_des; // 描述
