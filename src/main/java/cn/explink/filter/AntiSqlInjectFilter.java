@@ -52,6 +52,18 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 		regxpSb.append("MID[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
 		regxpSb.append("|");
 		regxpSb.append("SUBSTR[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("|");
+		regxpSb.append("EXTRACTVALUE[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("|");
+		regxpSb.append("BENCHMARK[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("|");
+		regxpSb.append("ELT[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("|");
+		regxpSb.append("UPDATEXML[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("|");
+		regxpSb.append("CONCAT[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("|");
+		regxpSb.append("CONCAT_WS[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
 
 		Pattern pattern = Pattern.compile(regxpSb.toString(), Pattern.CASE_INSENSITIVE);
 		Matcher matcher = pattern.matcher(tempContent);
@@ -70,7 +82,10 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 					.replaceAll("(?i)DATABASE", "ＤＡＴＡＢＡＳＥ").replaceAll("(?i)IF", "ＩＦ")
 					.replaceAll("(?i)MID", "ＭＩＤ").replaceAll("(?i)SUBSTR", "ＳＵＢＳＴＲ")
 					.replaceAll("(?i)and", "ＡＮＤ").replaceAll("(?i)case", "ＣＡＳＥ")
-					.replaceAll("(?i)like", "ＬＩＫＥ").replaceAll("(?i)regexp", "ＲＥＧＥＸＰ");
+					.replaceAll("(?i)like", "ＬＩＫＥ").replaceAll("(?i)regexp", "ＲＥＧＥＸＰ")
+					.replaceAll("(?i)EXTRACTVALUE", "ＥＸＴＲＡＣＴＶＡＬＵＥ").replaceAll("(?i)BENCHMARK", "ＢＥＮＣＨＭＡＲＫ")
+					.replaceAll("(?i)ELT", "ＥＬＴ").replaceAll("(?i)UPDATEXML", "ＵＰＤＡＴＥＸＭＬ")
+					.replaceAll("(?i)CONCAT_WS", "ＣＯＮＣＡＴ＿ＷＳ").replaceAll("(?i)CONCAT", "ＣＯＮＣＡＴ");
 			matcher.appendReplacement(encodeSb, tagIncontent);
 		} while (matcher.find());
 
@@ -81,8 +96,10 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 	//测试用函数
 	public static void main(String[] args){
 		AntiSqlInjectFilter filter = new AntiSqlInjectFilter();
-		String sqlStr = "mid ( ) ";
+		String sqlStr  = "UPDATEXML";
+		String sqlStr1 = "UPDATEXML()";
 		System.out.println(filter.filterParamValue(sqlStr));
+		System.out.println(filter.filterParamValue(sqlStr1));
 	}
 
 }
