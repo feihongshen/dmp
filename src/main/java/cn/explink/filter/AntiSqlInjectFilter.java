@@ -41,11 +41,11 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 		regxpSb.append("regexp([\\s\t\n\r]{1,})");
 		regxpSb.append("|");
 		// 过滤SYSTEM_USER()
-		regxpSb.append("SYSTEM_USER[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("SYSTEM_USER[\\s\t\n\r]*\\(");
 		regxpSb.append("|");
-		regxpSb.append("USER[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("USER[\\s\t\n\r]*\\(");
 		regxpSb.append("|");
-		regxpSb.append("DATABASE[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("DATABASE[\\s\t\n\r]*\\(");
 		regxpSb.append("|");
 		regxpSb.append("IF[\\s\t\n\r]*\\(");
 		regxpSb.append("|");
@@ -99,8 +99,8 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 	//测试用函数
 	public static void main(String[] args){
 		AntiSqlInjectFilter filter = new AntiSqlInjectFilter();
-		String sqlStr  = "SLEEP";
-		String sqlStr1 = "SLEEP (";
+		String sqlStr  = "DATABASE";
+		String sqlStr1 = "DATABASE (";
 		System.out.println(filter.filterParamValue(sqlStr));
 		System.out.println(filter.filterParamValue(sqlStr1));
 	}
