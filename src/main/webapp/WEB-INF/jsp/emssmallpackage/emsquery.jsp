@@ -78,12 +78,28 @@
 	</div>
 <script type="text/javascript">
  var _ctx = "<%=request.getContextPath()%>";
- function query () {
+ var export_cwbType;
+ var export_querycwb;
+ var export_starttime;
+ var export_endtime;
+ var export_status; 
+ 
+ function query() {
 	var cwbType = $("input[name='cwbType']:checked").val();
 	var querycwb = $("#querycwb").val().replace(/\n/g,",");
 	var starttime = $("#starttime").val();
 	var endtime = $("#endtime").val();
 	var status = $("#status").val();
+	
+	var isEmpty = true;
+    $.each(querycwb.split(","),function(index,item) {
+		if (item && item.length > 0) {
+			isEmpty = false;
+		}
+	}); 
+	if (isEmpty) {
+		querycwb = '';
+	} 
 	
 	if (starttime && !endtime) {
 		alert("请输入结束时间！");
@@ -113,11 +129,17 @@
 		}
 	}
 	
+	 export_cwbType = cwbType;
+	 export_querycwb = querycwb;
+	 export_starttime = starttime;
+	 export_endtime = endtime;
+	 export_status = status;
+	
 	//数据加载动画
 	var layEle = layer.load({
 		type:3
 	});
-	var url =  _ctx+"/emsSmallPackage/queryCwbList?cwbtype="+cwbType+"&cwb="+querycwb+"&starttime="+starttime+"&endtime="+endtime+"&status="+status;
+	var url =  _ctx+"/emsSmallPackage/queryCwbList?cwbtype="+cwbType+"&querycwb="+querycwb+"&starttime="+starttime+"&endtime="+endtime+"&status="+status;
 	$.ajax({
 		type: "POST",
 		url:url,
@@ -184,12 +206,6 @@
 		})
 	}
 	
-	var cwbType = $("input[name='cwbType']:checked").val();
-	var querycwb = $("#querycwb").val()
-	var starttime = $("#starttime").val();
-	var endtime = $("#endtime").val();
-	var status = $("#status").val();
-
 	var form = $("<form>");   //定义一个form表单
 	form.attr('style', 'display:none');   //在form表单中添加查询参数
 	form.attr('target', 'exportFrame');
@@ -198,32 +214,32 @@
 
 	var input1 = $('<input>');
 	input1.attr('type', 'hidden');
-	input1.attr('name', 'cwbType');
-	input1.attr('value', cwbType);
+	input1.attr('name', 'cwbtype');
+	input1.attr('value', export_cwbType);
 	form.append(input1);
 	
 	var input2 = $('<input>');
 	input2.attr('type', 'hidden');
 	input2.attr('name', 'querycwb');
-	input2.attr('value', querycwb);
+	input2.attr('value', export_querycwb);
 	form.append(input2);	
 	
 	var input3 = $('<input>');
 	input3.attr('type', 'hidden');
 	input3.attr('name', 'starttime');
-	input3.attr('value', starttime);
+	input3.attr('value', export_starttime);
 	form.append(input3);
 	
 	var input4 = $('<input>');
 	input4.attr('type', 'hidden');
 	input4.attr('name', 'endtime');
-	input4.attr('value', endtime);
+	input4.attr('value', export_endtime);
 	form.append(input4);
 	
 	var input5 = $('<input>');
 	input5.attr('type', 'hidden');
 	input5.attr('name', 'status');
-	input5.attr('value', status);
+	input5.attr('value', export_status);
 	form.append(input5);
 	
 	var input6 = $('<input>');

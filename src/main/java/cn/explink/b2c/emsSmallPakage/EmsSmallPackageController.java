@@ -169,14 +169,14 @@ public class EmsSmallPackageController {
 	@ResponseBody
 	public Map<String, Object> querycwbList(Model model,
 			@RequestParam(value = "cwbtype", required = true, defaultValue="") String cwbtype,
-			@RequestParam(value = "cwb", required = true, defaultValue="") String cwb,
+			@RequestParam(value = "querycwb", required = true, defaultValue="") String querycwb,
 			@RequestParam(value = "starttime", required = true, defaultValue="") String starttime,
 			@RequestParam(value = "endtime", required = true, defaultValue="") String endtime,
 			@RequestParam(value = "status", required = true, defaultValue="") String status,
 			HttpServletRequest request, HttpServletResponse response) {
 		Map<String,Object> map = new HashMap<String, Object>();
 		try {
-			map.put("list", this.emsSmallPakageService.getEMSViewListByTransCwb(cwbtype,cwb,starttime,endtime,status));
+			map.put("list", this.emsSmallPakageService.getEMSViewListByTransCwb(cwbtype,querycwb,starttime,endtime,status));
 		} catch (CwbException e) {
 			logger.error("查询邮政订单发生异常", e);
 			map.put("result", "{\"result\":\""+ e.getMessage() +"\"}");
@@ -203,14 +203,14 @@ public class EmsSmallPackageController {
 	@ResponseBody
 	public void export2Excel(
 			@RequestParam(value = "cwbtype", required = true, defaultValue="") String cwbtype,
-			@RequestParam(value = "cwb", required = true, defaultValue="") String cwb,
+			@RequestParam(value = "querycwb", required = true, defaultValue="") String querycwb,
 			@RequestParam(value = "starttime", required = true, defaultValue="") String starttime,
 			@RequestParam(value = "endtime", required = true, defaultValue="") String endtime,
 			@RequestParam(value = "status", required = true, defaultValue="") String status,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		//DataGridReturn dg = this.orderLifeCycleReportService.getOrderLifecycleReportData(customers,queryDate);
-		List<EmsSmallPackageViewVo> list = this.emsSmallPakageService.getEMSViewListByTransCwb(cwbtype,cwb,starttime,endtime,status);
+		List<EmsSmallPackageViewVo> list = this.emsSmallPakageService.getEMSViewListByTransCwb(cwbtype,querycwb,starttime,endtime,status);
 		// 列定义
 		List<ColDef> colDefs = PoiExcelUtils.getExcelColDefFromRequest(request);
 		Workbook workbook = new HSSFWorkbook();
