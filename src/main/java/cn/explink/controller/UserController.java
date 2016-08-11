@@ -409,6 +409,11 @@ public class UserController {
 		User sessionUser = getSessionUser();
 		cn.explink.domain.User user = userDAO.getAllUserByid(sessionUser.getUserid());
 		String vCodeInSession =  getImageValidateCode(ImageValidateConsts.TYPE_UPDATE_WEB_PWD);
+		if(StringUtils.isEmpty(validateWebCode) 
+				||!validateWebCode.equals(vCodeInSession)){
+			model.addAttribute("message", "验证码不正确，请重新输入");
+			return "/passwordupdate";
+		}
 		if(!oldWebPassword.trim().equals(user.getWebPassword())){
 			model.addAttribute("message", "旧密码错误，请输入正确的密码");
 			return "/passwordupdate";
@@ -421,10 +426,7 @@ public class UserController {
 			model.addAttribute("message", "两次输入的网页登录密码不一致");
 			return "/passwordupdate";
 		}
-		if(!validateWebCode.equals(vCodeInSession)){
-			model.addAttribute("message", "验证码不正确，请重新输入");
-			return "/passwordupdate";
-		}
+		
 		
 		//成功操作
 		this.jdbcTemplate.update("update express_set_user set webPassword=? where userid=?", webPassword, this.getSessionUser().getUserid());

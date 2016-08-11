@@ -1,21 +1,7 @@
 package cn.explink.filter;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-
 import cn.explink.core.utils.StringUtils;
 
 public class XssFilter  extends HttpRequestWordFilter{
@@ -38,7 +24,8 @@ public class XssFilter  extends HttpRequestWordFilter{
 	    	}
 	    	String tempStr = s;
 	    	tempStr= tempStr.replaceAll("(?i)javascript", "ｊａｖａscript")
-			    			.replaceAll("(?i)void", "ｖｏｉｄ")
+			    			.replaceAll("void", "ｖｏｉｄ")
+			    			.replaceAll("alert", "ａｌｅｒｔ")
 			    			.replaceAll("(?i)onabort","ｏｎabort")
 			    			.replaceAll("(?i)onblur","ｏｎblur")
 			    			.replaceAll("(?i)onchange","ｏｎchange")
