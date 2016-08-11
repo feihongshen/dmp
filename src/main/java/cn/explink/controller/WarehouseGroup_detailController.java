@@ -2455,14 +2455,5 @@ public class WarehouseGroup_detailController {
 
 		return "warehousegroup/outbalelist_history";
 	}
-	
-	/**
-	 * 武汉飞远运输交接单打印
-	 * @date 2016年8月9日 下午3:41:19
-	 * @return
-	 */
-	@RequestMapping("/wuhanTransportDetailPrint")
-	public String wuhanTransportDetailPrint() {
-		return "warehousegroup/wuhanTransportDetailPrint";
-	}
+
 }
