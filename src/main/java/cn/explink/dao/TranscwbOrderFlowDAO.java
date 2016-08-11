@@ -367,4 +367,13 @@ public class TranscwbOrderFlowDAO {
 			this.jdbcTemplate.update("delete from express_ops_transcwb_orderflow where cwb=?", cwb.trim());
 		} catch (Exception ex) {}
 	}
+
+	/**
+	 * 用过订单查询运单是否都是处于同一操作流程   add by vic.liang@pjbest.com 2016-07-26
+	 * @return
+	 */
+	public int getTransScanTimeByCwbFlowordertype(String cwb, int flowordertype) {
+		String sql = "select count(1) from express_ops_transcwb_orderflow where cwb = ? and flowordertype = ? and isnow = 1";
+		return this.jdbcTemplate.queryForInt(sql, cwb, flowordertype);
+	}
 }
