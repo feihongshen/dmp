@@ -47,25 +47,25 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 		regxpSb.append("|");
 		regxpSb.append("DATABASE[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
 		regxpSb.append("|");
-		regxpSb.append("IF[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("IF[\\s\t\n\r]*\\(");
 		regxpSb.append("|");
-		regxpSb.append("MID[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("MID[\\s\t\n\r]*\\(");
 		regxpSb.append("|");
-		regxpSb.append("SUBSTR[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("SUBSTR[\\s\t\n\r]*\\(");
 		regxpSb.append("|");
-		regxpSb.append("EXTRACTVALUE[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("EXTRACTVALUE[\\s\t\n\r]*\\(");
 		regxpSb.append("|");
-		regxpSb.append("BENCHMARK[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("BENCHMARK[\\s\t\n\r]*\\(");
 		regxpSb.append("|");
-		regxpSb.append("ELT[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("ELT[\\s\t\n\r]*\\(");
 		regxpSb.append("|");
-		regxpSb.append("UPDATEXML[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("UPDATEXML[\\s\t\n\r]*\\(");
 		regxpSb.append("|");
-		regxpSb.append("CONCAT[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("CONCAT[\\s\t\n\r]*\\(");
 		regxpSb.append("|");
-		regxpSb.append("CONCAT_WS[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("CONCAT_WS[\\s\t\n\r]*\\(");
 		regxpSb.append("|");
-		regxpSb.append("SLEEP[\\s\t\n\r]*\\([\\s\t\n\r]*\\)");
+		regxpSb.append("SLEEP[\\s\t\n\r]*\\(");
 
 		Pattern pattern = Pattern.compile(regxpSb.toString(), Pattern.CASE_INSENSITIVE);
 		Matcher matcher = pattern.matcher(tempContent);
@@ -100,7 +100,7 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 	public static void main(String[] args){
 		AntiSqlInjectFilter filter = new AntiSqlInjectFilter();
 		String sqlStr  = "SLEEP";
-		String sqlStr1 = "SLEEP()";
+		String sqlStr1 = "SLEEP (";
 		System.out.println(filter.filterParamValue(sqlStr));
 		System.out.println(filter.filterParamValue(sqlStr1));
 	}
