@@ -25,10 +25,10 @@ function printIntowarehousewuhan(scancwb){
 					if (scancwb.length > 14) {
 						cwbfontSize = 3;
 					}
-					var branchfontSize = 6;
-					if (branchname.length > 4) {
-						branchfontSize = 5
-					}
+					var branchfontSize = 4;
+					//if (branchname.length > 4) {
+					//	branchfontSize = 5
+					//}
 					var printHtml = "<table border='0' style=\"width: 35mm; height: 30mm; display: table;\" cellspacing=\"0\" valign=\"TOP\" cellpadding=\"0\">"+
 		                              "<tr><td style='word-break: keep-all;white-space:nowrap;'><div style=\"font-family:黑体; font:bolder;font-size:14mm;font-weight:14mm;\" align=\"center\" id=\"branchcode\">"+ branchcode + "</div></td></tr>"+
 	                                  "<tr><td style='word-break: keep-all;white-space:nowrap;'><div style=\"font-family:黑体; font:bolder;font-size:"+branchfontSize+"mm;font-weight:"+branchfontSize+"mm;\" align=\"center\">" + branchname+ "</div></td></tr>"+
