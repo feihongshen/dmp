@@ -77,9 +77,9 @@ $(function(){
 			onSubmit="if(check_branchroute01()){afterSumit(this);} return false;"
 			 action="<%=request.getContextPath()%>/kufangBranchMap/create;jsessionid=<%=session.getId()%>" method="post"  >
 			
-			<table width="60%" border="0" cellspacing="1" cellpadding="0" class="table_1" id="gd_table">
+			<table width="70%" border="0" cellspacing="1" cellpadding="0" class="table_1" id="gd_table">
 				<tr class="font_1">
-			        <td width="10%"  bgcolor="#eef6ff">
+			        <td width="15%"  bgcolor="#eef6ff">
 					<span>&nbsp&nbsp&nbsp&nbsp分拣库：</span>
 						<select id="fromBranchId" name="fromBranchId">
 							<option value="0" selected>----请选择----</option> 
@@ -88,7 +88,7 @@ $(function(){
 							<%} %>
 						</select>
 					</td>
-					<td width="10%"  bgcolor="#eef6ff">
+					<td width="15%"  bgcolor="#eef6ff">
 	           		<span>&nbsp&nbsp&nbsp&nbsp配送站点：</span>
 	           			<select id="toBranchId"  name="toBranchId"  multiple="multiple" > 
 							<%for(Branch b : branchlist){ %>
@@ -97,7 +97,7 @@ $(function(){
 						</select>
 							</td>
 
-					<td  width="5%" bgcolor="#eef6ff">
+					<td  width="10%" bgcolor="#eef6ff">
 			&nbsp&nbsp&nbsp&nbsp<input type="submit" value="提交" class="input_button2" id="sub" /></div>
         	&nbsp&nbsp&nbsp&nbsp<a href='<%=request.getContextPath()%>/kufangBranchMap/list?'>返回</a>
 					</td>
