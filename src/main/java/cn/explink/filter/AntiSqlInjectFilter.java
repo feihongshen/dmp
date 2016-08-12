@@ -34,6 +34,7 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 			String message = e.getMessage();
 			//如果是SQL错误，错误信息不抛出
 			if(isSqlGrammarException(message)){
+				e.printStackTrace();
 				//用于在日志上标识出唯一错误编号
 				String ticketNo = SQL_ERROR_PRE + "-" + System.currentTimeMillis();
 				logger.error(ticketNo + " :" + getPrintStack(e));
@@ -109,7 +110,7 @@ public class AntiSqlInjectFilter extends HttpRequestWordFilter {
 			return content;
 		}
 		// 过滤information_schema
-		String tempContent = content.replace("'", "\\'").replaceAll("(?i)information_schema", "ＩＮＦＯＲＭＡＴＩＯＮ＿ＳＣＨＥＭＡ"); 
+		String tempContent = content.replaceAll("(?i)information_schema", "ＩＮＦＯＲＭＡＴＩＯＮ＿ＳＣＨＥＭＡ"); 
 		// 下面是正则替换
 		StringBuffer regxpSb = new StringBuffer();
 		// 过滤select from
