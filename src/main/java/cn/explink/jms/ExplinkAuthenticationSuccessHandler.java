@@ -2,6 +2,7 @@ package cn.explink.jms;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +12,6 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.DepartDAO;
@@ -29,7 +29,10 @@ public class ExplinkAuthenticationSuccessHandler extends SimpleUrlAuthentication
 
 	@Autowired
 	BranchDAO branchDAO;
-
+	
+	@Autowired
+	Properties propertyPlaceHolder;
+	
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 		super.onAuthenticationSuccess(request, response, authentication);
@@ -53,6 +56,27 @@ public class ExplinkAuthenticationSuccessHandler extends SimpleUrlAuthentication
 		usermap.put("roleid", user.getRoleid());
 		session.setAttribute("usermap", usermap);
 		session.setAttribute("showphoneflag", user.getShowphoneflag());
+
+		{
+			try {
+				String url = request.getRequestURL().toString();
+				if (Boolean.valueOf(propertyPlaceHolder.getProperty("login.use.ssl"))) {
+					int pos = url.indexOf("://");
+					if (pos > 0) {
+						String hp = url.substring(pos + 3);
+						int index = hp.indexOf("/");
+						if (index > 0) {
+							String nhp = "http://" + hp.substring(0, index) + request.getContextPath() + getDefaultTargetUrl();
+							setDefaultTargetUrl(nhp);
+							System.out.println("use ssl login : " + nhp);
+						}
+					}
+				}
+			} catch (Exception e) {
+				System.out.println(e.toString());
+			}
+		}
+
 	}
 
 }
