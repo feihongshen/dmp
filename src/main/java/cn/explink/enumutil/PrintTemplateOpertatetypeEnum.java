@@ -15,7 +15,8 @@ public enum PrintTemplateOpertatetypeEnum {
 	ZhanDianChuZhanHuiZong(12, "站点出站交接单汇总"),
 	Tuihuozhanrukumingxi(13, "退货站入库明细交接单"),
 	ChuKuAnBao(14,"出库交接单按包"),
-	TongLuTuiHuoShangChuKu(15,"广州通路退供货商出库按单");
+	TongLuTuiHuoShangChuKu(15,"广州通路退供货商出库按单"),
+	WuHanYunShuJiaoJieDan(16, "武汉运输交接单");
 
 
 

@@ -2,7 +2,6 @@
 <%@ taglib  prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%> 
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> 
-<%@page import="cn.explink.enumutil.OutwarehousegroupOperateEnum"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -39,33 +38,10 @@ function createOneFormPage(){
 	}
 };
 
-function setcreowg(){
-	var operatetype = <%=OutwarehousegroupOperateEnum.ChuKu.getValue()%>;
-	var baleno="";
-	var baleid="${baleid }";
-	if($("#baleno").length>0){
-		baleno=$("#baleno").text();
-	}
-	 $.ajax({
-			type: "POST",
-			url:"<%=request.getContextPath()%>/warehousegroup/creowgnew",
-			data : {"cwbs":"${cwbs }","operatetype":operatetype,"driverid": ${deliverid },"baleno":baleno,"baleid":baleid, "strtime":"${strtime}", "endtime": "${endtime}"},
-			dataType:"json",
-			success : function(data) {
-				if(data.errorCode==0){
-					prn1_print();
-				}
-			},error: function(XMLHttpRequest, textStatus, errorThrown) {
-	            alert(XMLHttpRequest.status+"---"+XMLHttpRequest.responseText);
-	        }
-		});
- 
-}
-
 function nowprint(){
 	var con = confirm("您确认要打印该页吗？");
 	if(con==true){
-		setcreowg();
+		prn1_print();
 	}
 }
 </script>
@@ -130,7 +106,7 @@ function nowprint(){
 	<div id="printTable_${status.index }">
 		<div class="out_box preview_box">
 			<div class="inner_box">
-				<div class="title">（${vo.branchname }）至（${vo.nextBranchname }）运输交接单</div>
+				<div class="title">（${vo.branchname }）至（${vo.nextBranchname }）运输交接单（补打）</div>
 				<div class="dashed"></div>
 				<div class="content_1">出库时间：${vo.outstockStartTime } 至 ${vo.outstockEndTime }</div>
 				<div class="content_1">出库：共${vo.outstockOrderNum }单${vo.outstockSendNum }件（其中单独交接0单0件）</div>

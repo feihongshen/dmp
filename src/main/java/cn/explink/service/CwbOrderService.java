@@ -7683,7 +7683,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * @return
 	 */
 	@Transactional
-	public long checkResponseBatchno(User user, long requestbatchno, long branchid, long driverid, long truckid, long state, long operatetype, String cwbs, long customerid) {
+	public long checkResponseBatchno(User user, long requestbatchno, long branchid, long driverid, long truckid, long state, long operatetype, String cwbs, long customerid, String outstockTime) {
 		// 不传批次号也不存在符合条件的批次号的时候创建一条新的批次信息
 
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -7711,7 +7711,7 @@ public class CwbOrderService extends BaseOrderService {
 			flowordertype = FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue();
 		}
 
-		requestbatchno = this.outWarehouseGroupDAO.creOutWarehouseGroup(driverid, truckid, branchid, datetime, operatetype, customerid, user.getBranchid(), cwbsStrSql.toString());
+		requestbatchno = this.outWarehouseGroupDAO.creOutWarehouseGroup(driverid, truckid, branchid, datetime, operatetype, customerid, user.getBranchid(), cwbsStrSql.toString(), outstockTime);
 
 		this.groupDetailDao.delGroupDetailByCwbsAndBranchidAndFlowordertype(cwbsStrSql.toString(), user.getBranchid(), flowordertype);
 
@@ -7738,7 +7738,7 @@ public class CwbOrderService extends BaseOrderService {
 	 * @return
 	 */
 	@Transactional
-	public long checkResponseBatchnoForBale(User user, long requestbatchno, long branchid, long driverid, long truckid, long state, long operatetype, String cwbs, long customerid, long baleid) {
+	public long checkResponseBatchnoForBale(User user, long requestbatchno, long branchid, long driverid, long truckid, long state, long operatetype, String cwbs, long customerid, long baleid, String outstockTime) {
 		// 不传批次号也不存在符合条件的批次号的时候创建一条新的批次信息
 
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -7766,7 +7766,7 @@ public class CwbOrderService extends BaseOrderService {
 			flowordertype = FlowOrderTypeEnum.KuDuiKuChuKuSaoMiao.getValue();
 		}
 
-		requestbatchno = this.outWarehouseGroupDAO.creOutWarehouseGroup(driverid, truckid, branchid, datetime, operatetype, customerid, user.getBranchid(), cwbsStrSql.toString());
+		requestbatchno = this.outWarehouseGroupDAO.creOutWarehouseGroup(driverid, truckid, branchid, datetime, operatetype, customerid, user.getBranchid(), cwbsStrSql.toString(), outstockTime);
 
 		//		this.groupDetailDao.delGroupDetailByCwbsAndBranchidAndFlowordertypeForBale(cwbsStrSql.toString(), user.getBranchid(), flowordertype, baleno);
 		//DMP 4.2.8 由于分拣中转合包打印，所有当出库扫描打印的时候包含包含
