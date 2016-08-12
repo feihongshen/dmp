@@ -45,8 +45,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
-
 import cn.explink.aspect.OrderFlowOperation;
 import cn.explink.b2c.auto.order.service.AutoUserService;
 import cn.explink.b2c.maisike.branchsyn_json.Stores;
@@ -133,11 +131,10 @@ import cn.explink.domain.ChangeGoodsTypeResult;
 import cn.explink.domain.Common;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbApplyZhongZhuan;
-import cn.explink.domain.CwbDetailView;
-import cn.explink.domain.CwbOrderBranchMatchVo;
 import cn.explink.domain.CwbDiuShi;
 import cn.explink.domain.CwbKuaiDi;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.CwbOrderBranchMatchVo;
 import cn.explink.domain.DeliveryResultChange;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.EmailDate;
@@ -492,6 +489,9 @@ public class CwbOrderService extends BaseOrderService {
 	private UserDAO userDao;
 	@Autowired
 	private TpsCwbFlowService tpsCwbFlowService;
+	
+	@Autowired
+	OrderPartGoodsReturnService orderPartGoodsReturnService;
 	
 	private static final String MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.receivegoods.orderFlow";
 	private static final String MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow";
@@ -5777,6 +5777,13 @@ public class CwbOrderService extends BaseOrderService {
 		//if (CwbOrderTypeIdEnum.Peisong.getValue() == co.getCwbordertypeid() && podresultid == DeliveryStateEnum.JuShou.getValue()) {
 		//	handlePeiSongCwbDeliveryPermit(co, podresultid);
 		//}
+		
+		//Added by leoliao at 2016-08-12  上门退订单在页面进行反馈或修复反馈时,如果由拒退->上门退成功则整单退货,如果由上门退成功->拒退则整单不做退货;如果需要部分退货,可通过部分退货反馈进行操作
+		String comefrompage = (parameters.get("comefrompage")==null?"0":String.valueOf(parameters.get("comefrompage")));
+		if("1".equals(comefrompage) && co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()){
+			orderPartGoodsReturnService.processOrderGoods(co.getCwb(), podresultid);
+		}
+		//Added end
 		
 		CwbOrderService.logger
 				.info("进入单票反馈cwborderservice处理结束跳出cwborderservice！cwb:" + co.getCwb() + "--deliverid:" + deliverid + "--podresultid:" + podresultid + "--receivedfeecash:" + receivedfeecash + "--receivedfeepos:" + receivedfeepos + "--receivedfeecheque:" + receivedfeecheque + "--receivedfeeother:" + receivedfeeother);
