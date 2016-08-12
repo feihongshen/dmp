@@ -24,6 +24,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +83,7 @@ import cn.explink.domain.SystemInstall;
 import cn.explink.domain.Truck;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
+import cn.explink.domain.WuhanTransportDetailVo;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
@@ -93,6 +95,7 @@ import cn.explink.enumutil.PrintTemplateOpertatetypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.print.template.PrintTemplate;
 import cn.explink.print.template.PrintTemplateDAO;
+import cn.explink.service.BranchService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbRouteService;
 import cn.explink.service.DataStatisticsService;
@@ -169,6 +172,9 @@ public class WarehouseGroup_detailController {
 
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
+	
+	@Autowired
+	private BranchService branchService;
 	
 	private static Logger logger = LoggerFactory.getLogger(WarehouseGroup_detailController.class);
 
@@ -523,12 +529,40 @@ public class WarehouseGroup_detailController {
 
 		model.addAttribute("mapBybranchid", map);
 		model.addAttribute("mapForBaleHandler", mapForBaleHandler);
-		
-		if (this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 1) {
+		PrintTemplate printtemplate = this.printTemplateDAO.getPrintTemplate(printtemplateid);
+		if (printtemplate.getTemplatetype() == 1) {
 			model.addAttribute("baleno",  baleno);
 			model.addAttribute("baleid",  baleid);
 			return "warehousegroup/outbillprinting_templatenew";
-		} else if (this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 2) {
+		}
+		// 武汉飞远运输交接单 add by chunlei05.li 2016/8/11
+		else if(printtemplate.getTemplatetype() == 4 && printtemplate.getOpertatetype() == PrintTemplateOpertatetypeEnum.WuHanYunShuJiaoJieDan.getValue()) {
+			User user = this.getSessionUser();
+			Branch userBranch = this.branchService.getBranchByBranchid(user.getBranchid());
+			// 转换成打印信息
+			Map<Long, WuhanTransportDetailVo> voMap = new HashMap<Long, WuhanTransportDetailVo>();
+			for (CwbOrder cwb : cwbList) {
+				WuhanTransportDetailVo vo = voMap.get(cwb.getNextbranchid());
+				if (vo == null) {
+					vo = new WuhanTransportDetailVo();
+					vo.setBranchname(userBranch.getBranchname());
+					Branch nextBranch = this.branchService.getBranchByBranchid(cwb.getNextbranchid());
+					vo.setNextBranchname(nextBranch.getBranchname());
+					vo.setOutstockStartTime(starttime);
+					vo.setOutstockEndTime(endtime);
+					voMap.put(cwb.getNextbranchid(), vo);
+				}
+				vo.setOutstockOrderNum(vo.getOutstockOrderNum() + 1);
+				vo.setOutstockSendNum(vo.getOutstockSendNum() + (int) cwb.getSendcarnum());
+			}
+			List<WuhanTransportDetailVo> voList = new ArrayList<WuhanTransportDetailVo>(voMap.values());
+			model.addAttribute("printList", voList);
+			model.addAttribute("baleno",  baleno);
+			model.addAttribute("baleid",  baleid);
+			model.addAttribute("strtime",  starttime);
+			model.addAttribute("endtime",  endtime);
+			return "warehousegroup/wuhanTransportDetailPrint";
+		} else if (printtemplate.getTemplatetype() == 2) {
 			Map<Long, List<JSONObject>> hmap = new HashMap<Long, List<JSONObject>>();
 			// 按照custome
 			List<Customer> customerList = this.customerDAO.getAllCustomers();
@@ -585,7 +619,7 @@ public class WarehouseGroup_detailController {
 			}
 			model.addAttribute("huizongmap", hmap);
 			return "warehousegroup/outbillhuizongprinting_templatenew";
-		} else if (this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 4) {
+		} else if (printtemplate.getTemplatetype() == 4) {
 			List<WarehouseGroupPrintDto> printlist = new ArrayList<WarehouseGroupPrintDto>();
 			WarehouseGroupPrintDto printDto = new WarehouseGroupPrintDto();
 			int danshu = 0;
@@ -950,6 +984,9 @@ public class WarehouseGroup_detailController {
 			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
 			@RequestParam(value = "cwbOrderTypeId", required = false, defaultValue = "") String cwbOrderTypeId,
 			HttpServletRequest request) {
+		// 查询的实际起始时间 add by chunlei05.li 2016-08-11
+		String realStrTime = strtime;
+		String realEndTime = endtime;
 		List<PrintView> printList = new ArrayList<PrintView>();
 		List<Branch> bList = this.getNextPossibleBranches();
 		List<User> uList = this.userDAO.getUserByRole(3);
@@ -1032,6 +1069,35 @@ public class WarehouseGroup_detailController {
 			List<Customer> customerList = this.customerDAO.getAllCustomers();
 			List<Branch> branchList = this.branchDAO.getAllBranches();
 			printList = this.warehouseGroupDetailService.getChuKuView(orderlist, gdList, customerList, branchList);
+			// 获取查询结果的最大时间和最小时间  add by chunlei05.li 2016-08-11
+			if (org.apache.commons.lang3.StringUtils.isBlank(strtime) || org.apache.commons.lang3.StringUtils.isBlank(strtime)) {
+				String maxTime = null;
+				String minTime = null;
+				for (GroupDetail gd : gdList) {
+					String createtime = gd.getCreatetime();
+					if (org.apache.commons.lang3.StringUtils.isBlank(createtime)) {
+						continue;
+					}
+					if (maxTime == null) {
+						maxTime = createtime;
+					}
+					if (minTime == null) {
+						minTime = createtime;
+					}
+					if (createtime.compareTo(maxTime) == 1) {
+						maxTime = createtime;
+					}
+					if(createtime.compareTo(minTime) == -1) {
+						minTime = createtime;
+					}
+				}
+				if (org.apache.commons.lang3.StringUtils.isBlank(realStrTime)) {
+					realStrTime = minTime;
+				}
+				if (org.apache.commons.lang3.StringUtils.isBlank(realEndTime)) {
+					realEndTime = maxTime;
+				}
+			}
 		}
 		// LKN 这段代码没用
 		// cwbs = cwbs.length()>0?cwbs.substring(0, cwbs.length()-1):"";
@@ -1046,7 +1112,7 @@ public class WarehouseGroup_detailController {
 		model.addAttribute(
 				"printtemplateList",
 				this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.ChuKuAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.ChuKuHuiZong.getValue() + ","
-						+ PrintTemplateOpertatetypeEnum.ChuKuAnBao.getValue()));
+						+ PrintTemplateOpertatetypeEnum.ChuKuAnBao.getValue() + "," + PrintTemplateOpertatetypeEnum.WuHanYunShuJiaoJieDan.getValue()));
 		model.addAttribute("printList", printList);
 		model.addAttribute("type", typeid);
 		model.addAttribute("branchids", branchids);
@@ -1055,6 +1121,8 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("uList", uList);
 		model.addAttribute("tList", tList);
 		model.addAttribute("baleno", baleno);
+		model.addAttribute("realStrTime", realStrTime);
+		model.addAttribute("realEndTime", realEndTime);
 		/*
 		 * List<GroupDetail> groupDetails=new ArrayList<GroupDetail>();
 		 * groupDetails=groupDetailDao.getGroupDetailListByBale(baleno);
@@ -1259,7 +1327,7 @@ public class WarehouseGroup_detailController {
 		List<Branch> blist = this.getNextPossibleBranches();
 		List<Truck> tList = this.truckDAO.getAllTruck();
 		List<PrintTemplate> printtemplateList = this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.ChuKuAnDan.getValue() + ","
-				+ PrintTemplateOpertatetypeEnum.ChuKuHuiZong.getValue() + "," + PrintTemplateOpertatetypeEnum.ChuKuAnBao.getValue());
+				+ PrintTemplateOpertatetypeEnum.ChuKuHuiZong.getValue() + "," + PrintTemplateOpertatetypeEnum.ChuKuAnBao.getValue() + "," + PrintTemplateOpertatetypeEnum.WuHanYunShuJiaoJieDan.getValue());
 		if (type == 2) {
 			// 中转出站
 			printtemplateList = this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.ZhongZhuanChuZhanAnDan.getValue() + ","
@@ -1320,6 +1388,7 @@ public class WarehouseGroup_detailController {
 	 * @param outwarehousegroupid
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	@RequestMapping("/outbillprinting_history/{outwarehousegroupid}")
 	public String outbillprinting_history(Model model, @PathVariable("outwarehousegroupid") long outwarehousegroupid,
 			@RequestParam(value = "isback", defaultValue = "", required = true) String isback, @RequestParam(value = "iscustomer", required = false, defaultValue = "0") long iscustomer,
@@ -1391,9 +1460,11 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("map", mapForOperatorName);
 
 		model.addAttribute("template", this.printTemplateDAO.getPrintTemplate(printtemplateid));
-		model.addAttribute("localbranchname", this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()).getBranchname());
+		Branch localbranch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+		model.addAttribute("localbranchname", localbranch.getBranchname());
 		long nextbranchid = this.outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid).getBranchid();
-		model.addAttribute("branchname", this.branchDAO.getBranchByBranchid(nextbranchid).getBranchname());
+		Branch branch = this.branchDAO.getBranchByBranchid(nextbranchid);
+		model.addAttribute("branchname",branch.getBranchname());
 		model.addAttribute("customerlist", this.customerDAO.getAllCustomers());
 		model.addAttribute("userlist", this.userDAO.getAllUser());
 		model.addAttribute("iscustomer", iscustomer);
@@ -1401,22 +1472,48 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("islinghuo", islinghuo);
 		model.addAttribute("branchlist", this.branchDAO.getAllEffectBranches());
 		model.addAttribute("operatetype", this.outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid).getOperatetype());
-		
-		long templatetype = this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype();
-		if (templatetype == 1) {
+		PrintTemplate printtemplate = this.printTemplateDAO.getPrintTemplate(printtemplateid);
+		if (printtemplate.getTemplatetype() == 1) {
 			/**
 			 * 按包逻辑完善：真实订单、显示打印用订单 list
 			 */
 			model.addAttribute("cwbList", cwbList);
 			model.addAttribute("cwbListForBale",cwbListForBale);
 			return "warehousegroup/outbillprinting_history";
-		} else if (templatetype == 2) {
+		}
+		// 武汉飞远运输交接单 add by chunlei05.li 2016/8/11
+		else if(printtemplate.getTemplatetype() == 4 && printtemplate.getOpertatetype() == PrintTemplateOpertatetypeEnum.WuHanYunShuJiaoJieDan.getValue()) {
+			// 转换成打印信息
+			WuhanTransportDetailVo vo = new WuhanTransportDetailVo();
+			vo = new WuhanTransportDetailVo();
+			vo.setBranchname(localbranch.getBranchname());
+			vo.setNextBranchname(branch.getBranchname());
+			for (CwbOrder cwb : cwbList) {
+				vo.setOutstockOrderNum(vo.getOutstockOrderNum() + 1);
+				vo.setOutstockSendNum(vo.getOutstockSendNum() + (int) cwb.getSendcarnum());
+			}
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(owg.getOutstockTime())) {
+				ObjectMapper mapper = new ObjectMapper();
+				Map<String,String> createtimeMap;
+				try {
+					createtimeMap = mapper.readValue(owg.getOutstockTime(), Map.class);
+				} catch (Exception e) {
+					createtimeMap = new HashMap<String, String>();
+				}
+				vo.setOutstockStartTime(createtimeMap.get("strtime"));
+				vo.setOutstockEndTime(createtimeMap.get("endtime"));
+			}
+			List<WuhanTransportDetailVo> voList = new ArrayList<WuhanTransportDetailVo>();
+			voList.add(vo);
+			model.addAttribute("printList", voList);
+			return "warehousegroup/wuhanTransportDetailPrint_history";
+		} else if (printtemplate.getTemplatetype() == 2) {
 
 			List<JSONObject> cwbJson = this.cwbDao.getDetailForChuKuPrint(cwbs);
 
 			model.addAttribute("cwbList", cwbJson);
 			return "warehousegroup/outbillhuizongprinting_history";
-		} else if (templatetype == 5) {
+		} else if (printtemplate.getTemplatetype() == 5) {
 			List<CwbOrder> cwbList2 = this.cwbDao.getCwbByCwbs(cwbs);
 
 			List<WarehouseGroupPrintDto> printDtos = new ArrayList<WarehouseGroupPrintDto>();
@@ -1474,7 +1571,7 @@ public class WarehouseGroup_detailController {
 			model.addAttribute("cwbOrderList", cwbList2);
 			model.addAttribute("printDtos", printDtos);
 			return "warehousegroup/outbilltongluprinting_history";
-		} else if (templatetype == 4) {
+		} else if (printtemplate.getTemplatetype() == 4) {
 			// 只知道需要打印的cwb
 			List<CwbOrder> cwbList2 = this.cwbDao.getCwbByCwbs(cwbs);// 根据cwbs查询出需要打印的记录
 			Set<String> baleSet = new HashSet<String>();
@@ -1613,11 +1710,11 @@ public class WarehouseGroup_detailController {
 				model.addAttribute("total", warehouseGroupPrintDtoTotal);
 			}
 			return "warehousegroup/outanbaoprinting_history";
-		} else if (templatetype == 10) {//武汉飞远 退货出站
+		} else if (printtemplate.getTemplatetype() == 10) {//武汉飞远 退货出站
 			OutChangePrintVo print = initPrintData(cwbList, nextbranchid,"","", getSessionUser());//TODO 出库时间
 			model.addAttribute("print", print);
 			return "warehousegroup/outbackbillprintinghistory_wuhan";
-		} else if (templatetype == 11) {//武汉飞远 中转出站
+		} else if (printtemplate.getTemplatetype() == 11) {//武汉飞远 中转出站
 			OutChangePrintVo print = initPrintData(cwbList, nextbranchid,"","", getSessionUser());//TODO 出库时间
 			model.addAttribute("print", print);
 			return "warehousegroup/outchangebillprintinghistory_wuhan";
@@ -2550,15 +2647,5 @@ public class WarehouseGroup_detailController {
 		}
 
 		return "warehousegroup/outbalelist_history";
-	}
-	
-	/**
-	 * 武汉飞远运输交接单打印
-	 * @date 2016年8月9日 下午3:41:19
-	 * @return
-	 */
-	@RequestMapping("/wuhanTransportDetailPrint")
-	public String wuhanTransportDetailPrint() {
-		return "warehousegroup/wuhanTransportDetailPrint";
 	}
 }

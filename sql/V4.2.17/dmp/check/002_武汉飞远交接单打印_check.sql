@@ -1,0 +1,1 @@
+SELECT 'express_ops_outwarehousegroup增加outstockTime' AS '脚本注释', IF((SELECT COUNT(1) FROM information_schema.columns WHERE table_schema = schema() and table_name = 'express_ops_outwarehousegroup' AND column_name='outstockTime' AND data_type = 'varchar') = 1,'success','failed') AS '执行结果';

@@ -74,14 +74,14 @@ function bdprint(){
 	$('input[name="isprint"]:checked').each(function(){ //由于复选框一般选中的是多个,所以可以循环输出
 		isprint = $(this).val();
 		});
+	var printtemplateid = $("#printtemplateid").val();
 	if(isprint==""){
 		alert("请选择要打印的订单！");
-	}else if($("#printtemplateid").val()==0){
+	}else if(printtemplateid==0){
 		alert("请选择打印模版！");
-	}else{
+	} else{
 		$("#selectforsmtbdprintForm").attr("action","<%=request.getContextPath() %>/warehousegroupdetail/outbillprinting_defaultnew");
 		$("#selectforsmtbdprintForm").submit();
-
 	}
 }
 function isgetallcheck(){
@@ -257,7 +257,7 @@ $("#branchid").multipleSelect({
 		      <div style="float:right;margin-top: -20px;">   
 				     	 打印模版：<select name="templateid" id="templateid" class="select1">
 					  			<%for(PrintTemplate pt : pList){ %>
-					  				<option value="<%=pt.getId()%>"><%=pt.getName() %>（<%if(pt.getTemplatetype()==1){ %>按单<%}else if(pt.getTemplatetype()==2){ %>汇总<%} %>）</option>
+					  				<option value="<%=pt.getId()%>"><%=pt.getName() %>（<%if(pt.getTemplatetype()==1){ %>按单<%}else if(pt.getTemplatetype()==2){ %>汇总<%} else if(pt.getTemplatetype()==4){ %>武汉飞远<%} %>）</option>
 					  			<%} %>
 							</select>
 				      <input type="button" onclick="bdprint();" value="打印" class="input_button2" />
@@ -304,6 +304,8 @@ $("#branchid").multipleSelect({
 					<input name="baleno" value="<%=request.getAttribute("baleno") %>" type="hidden"/>
 					<input name="truckid" value="<%=request.getAttribute("truckid") %>" type="hidden"/>
 					<input name="driverid" value="<%=request.getAttribute("driverid") %>" type="hidden"/>
+					<input name="strtime" value="${realStrTime }" type="hidden"/>
+					<input name="endtime" value="${realEndTime }" type="hidden"/>
 				</form>
 				</div>
 				<div class="jg_10"></div><div class="jg_10"></div>
@@ -314,8 +316,10 @@ $("#branchid").multipleSelect({
 
 
 <script type="text/javascript">
-$("#selectPg").val(<%=request.getAttribute("page") %>);
-$("#printtemplateid").val(<%=StringUtil.nullConvertToEmptyString(request.getParameter("printtemplateid"))%>);
+$(function() {
+	$("#selectPg").val(<%=request.getAttribute("page") %>);
+	$("#printtemplateid").val($("#templateid").val());
+});
 
 </script>
 </body>
