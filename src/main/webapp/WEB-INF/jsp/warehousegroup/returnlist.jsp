@@ -186,6 +186,8 @@ function cwbexport(){
 						</tr>
 					<%} %>
 					<input value="1" name="isback"  id="isback" type="hidden"/>
+					<input value="<%=begindate %>" name="starttime"  id="starttime" type="hidden"/>
+					<input value="<%=enddate %>" name="endtime"  id="endtime" type="hidden"/>
 					<input id="nextbranchid" name="nextbranchid" value="<%=StringUtil.nullConvertToEmptyString(request.getParameter("branchid"))%>" type="hidden"/>
 					<input id="printtemplateid" name="printtemplateid" value="<%=StringUtil.nullConvertToEmptyString(request.getParameter("templateid"))%>" type="hidden"/>
 					</table>

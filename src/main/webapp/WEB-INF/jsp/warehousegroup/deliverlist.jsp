@@ -192,8 +192,8 @@ $(function(){
 					<input id="currentdeliverid" name="currentdeliverid" value="<%=StringUtil.nullConvertToEmptyString(request.getParameter("deliverid"))%>" type="hidden"/>
 					<input id="nextbranchid" name="nextbranchid" value="0" type="hidden"/>
 					<input id="printtemplateid" name="printtemplateid" value="<%=StringUtil.nullConvertToEmptyString(request.getParameter("templateid"))%>" type="hidden"/>
-					<input id="strtime" name="strtime" value="${begintime }" type="hidden"/>
-					<input id="strtime" name="endtime" value="${endtime }" type="hidden"/>
+					<input id="starttime" name="starttime" value="${begintime }" type="hidden"/>
+					<input id="endtime" name="endtime" value="${endtime }" type="hidden"/>
 				</table>
 				</form>
 				<div class="jg_10"></div><div class="jg_10"></div>

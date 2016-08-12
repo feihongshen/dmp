@@ -919,4 +919,12 @@ public class DateTimeUtil {
 		return df.format(date);
 	}
 	// added by wangwei, 20160714, end
+	
+	/**
+	 * 获取当前时间字符串  add by vic.liang@pjbest.com 2016-08-11
+	 * @return
+	 */
+	public static String getNowDataTime () {
+		return formatDate(new java.util.Date(), DEF_DATETIME_FORMAT);
+	}
 }
