@@ -847,7 +847,7 @@ public class WarehouseGroup_detailController {
 			 */
 
 			return "warehousegroup/outbillanbaoprinting_templatenew";
-		} else if (this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 11) {//武汉飞远 中转
+		} else if (printtemplate.getTemplatetype() == 11) {//武汉飞远 中转
 			List<OutChangePrintVo> prints = new ArrayList<OutChangePrintVo>();
 			User user = getSessionUser();
 			if (map != null && !map.isEmpty()) {

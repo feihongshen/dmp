@@ -116,7 +116,7 @@ function nowprint(){
 		<div class="out_box preview_box">
 			<div class="inner_box">
 				<div class="title">（${print.userbranchname}）至（${print.nextbranchname}）交接清单（补打）</div>
-				<div class="content_1">出站时间：${print.starttime}至${print.endtime}</div>
+				<%-- <div class="content_1">出站时间：${print.starttime}至${print.endtime}</div> --%>
 				<div class="content_1"> 
 				    <span >序号</span>
 				    <span style="word-spacing:8mm;">&nbsp;</span>
