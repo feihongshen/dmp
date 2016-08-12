@@ -250,3 +250,6 @@ insert into `fn_set_bank` (`bank_name`, `bank_code`) values('工商银行','ICBC
 -- 新增菜单表记录
 insert into `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) values('803091','2','对账文件查询','803091','${eapUrl}fnVpalMgmt.action?checkFilelistIndex&','8030'),('803092','2','结算信息管理','803092','${eapUrl}orgPayAccount.action?index&','8030'),('803093','2','代扣查询','803090','${eapUrl}fnVpalMgmt.action?queryDealRecordIndex&','8030');
 
+-- 新增系统参数
+INSERT INTO `express_set_system_install` (`name`, `value`, `chinesename`) VALUES('MultiThreadGenSignReport','false','是否开启多线程生成签收余额报表'),('ConcurrentCountGenSignReport','20','多线程生成签收余额报表并发数'),('VIPPAY3DESKEY','','资金归集代扣接口3DES秘钥'),('ITFCSIGNPWD','','资金归集代扣接口签名密码'),('PARTNERID','','电商编号'),('AUTORECEIVEDOFPOS','0','POSCOD自动回款'),('SETTLEMENTMODE','1','结算模式（1.账单，2.签收余额）');
+

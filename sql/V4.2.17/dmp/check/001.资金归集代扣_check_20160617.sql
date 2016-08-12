@@ -26,5 +26,5 @@ SELECT '新增各大银行信息字典表（fn_set_bank）' AS '脚本注释',IF
 UNION ALL
 SELECT '初始化各大银行信息字典表（fn_set_bank）' AS '脚本注释',IF((SELECT COUNT(1) FROM fn_set_bank) = 16,'success','failed') AS '执行结果'
 UNION ALL
-SELECT '新增菜单表记录' AS '脚本注释',IF((SELECT COUNT(1) FROM dmp40_function WHERE id='803091' AND functionname='对账文件查询') + (SELECT COUNT(1) FROM dmp40_function WHERE id='803092' AND functionname='结算信息管理') + (SELECT COUNT(1) FROM dmp40_function WHERE id='803093' AND functionname='代扣查询')= 3,'success','failed') AS '执行结果'
+SELECT '新增系统参数' AS '脚本注释',IF((SELECT COUNT(1) FROM express_set_system_install s WHERE s.name='MultiThreadGenSignReport') + (SELECT COUNT(1) FROM express_set_system_install s WHERE s.name='ConcurrentCountGenSignReport') + (SELECT COUNT(1) FROM express_set_system_install s WHERE s.name='VIPPAY3DESKEY')+ (SELECT COUNT(1) FROM express_set_system_install s WHERE s.name='ITFCSIGNPWD')+ (SELECT COUNT(1) FROM express_set_system_install s WHERE s.name='PARTNERID')+ (SELECT COUNT(1) FROM express_set_system_install s WHERE s.name='AUTORECEIVEDOFPOS')+ (SELECT COUNT(1) FROM express_set_system_install  s WHERE s.name='SETTLEMENTMODE')= 7,'success','failed') AS '执行结果'
 ;
