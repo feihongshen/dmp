@@ -71,6 +71,7 @@ import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.GroupDetail;
+import cn.explink.domain.OutChangePrintVo;
 import cn.explink.domain.OutWarehouseGroup;
 import cn.explink.domain.PrintView;
 import cn.explink.domain.PrintcwbDetail;
@@ -98,6 +99,7 @@ import cn.explink.service.DataStatisticsService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.WarehouseGroupDetailService;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
@@ -274,7 +276,9 @@ public class WarehouseGroup_detailController {
 			@RequestParam(value = "isback", defaultValue = "", required = true) String isback, @RequestParam(value = "iscustomer", required = false, defaultValue = "0") long iscustomer,
 			@RequestParam(value = "islinghuo", defaultValue = "0", required = true) long islinghuo, @RequestParam(value = "currentdeliverid", defaultValue = "0", required = true) long deliverid,
 			@RequestParam(value = "nextbranchid", defaultValue = "", required = false) String nextbranchid,
-			@RequestParam(value = "printtemplateid", defaultValue = "", required = false) long printtemplateid) {
+			@RequestParam(value = "printtemplateid", defaultValue = "", required = false) long printtemplateid,
+			@RequestParam(value = "starttime", defaultValue = "", required = false) String starttime,
+		    @RequestParam(value = "endtime", defaultValue = "", required = false) String endtime) {
 		String cwbs = "", cwbstr = "", cwbhuizongstr = "";
 		String[] cwbArr = new String[isprint.length];
 		for (int i = 0; i < isprint.length; i++) {
@@ -330,6 +334,11 @@ public class WarehouseGroup_detailController {
 			model.addAttribute("cwbList", cwbJson);
 			model.addAttribute("cwbArr", cwbArr);
 			return "warehousegroup/outbillhuizongprinting_template";
+		} else if (this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 10) {//武汉飞远		
+		    OutChangePrintVo print = initPrintData(cwbList, Long.parseLong(nextbranchid), starttime, endtime, getSessionUser());
+		    model.addAttribute("cwbList",cwbList);
+		    model.addAttribute("print", print);
+			return "warehousegroup/outbackbillprinting_wuhan";
 		}
 		return null;
 	}
@@ -348,7 +357,9 @@ public class WarehouseGroup_detailController {
 			@RequestParam(value = "nextbranchid", defaultValue = "-1", required = false) String nextbranchid,
 			@RequestParam(value = "printtemplateid", defaultValue = "", required = false) long printtemplateid, @RequestParam(value = "baleno", defaultValue = "", required = false) String baleno,
 			@RequestParam(value = "driverid", defaultValue = "0", required = false) long driverid, @RequestParam(value = "truckid", defaultValue = "0", required = false) long truckid,
-			@RequestParam(value = "cwbOrderTypeId", defaultValue = "", required = false) String cwbOrderTypeId
+			@RequestParam(value = "cwbOrderTypeId", defaultValue = "", required = false) String cwbOrderTypeId,
+			@RequestParam(value = "starttime", defaultValue = "", required = false) String starttime,
+		    @RequestParam(value = "endtime", defaultValue = "", required = false) String endtime
 			) {
 		model.addAttribute("mytruckid", truckid);
 		model.addAttribute("flowtype", request.getParameter("type") == null ? -1 : request.getParameter("type"));
@@ -747,6 +758,20 @@ public class WarehouseGroup_detailController {
 			 */
 
 			return "warehousegroup/outbillanbaoprinting_templatenew";
+		} else if (this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 11) {//武汉飞远 中转
+			List<OutChangePrintVo> prints = new ArrayList<OutChangePrintVo>();
+			User user = getSessionUser();
+			if (map != null && !map.isEmpty()) {
+				for (Long key : map.keySet()) {
+					List<CwbOrder> list = map.get(key);
+					OutChangePrintVo print = initPrintData(list, key, starttime, endtime, user);
+				    prints.add(print);
+				}
+			}
+		    model.addAttribute("prints", prints);
+		    model.addAttribute("baleno",  baleno);
+			model.addAttribute("baleid",  baleid);
+			return "warehousegroup/outchangebillprinting_wuhan";
 		}
 		return null;
 	}
@@ -1367,7 +1392,8 @@ public class WarehouseGroup_detailController {
 
 		model.addAttribute("template", this.printTemplateDAO.getPrintTemplate(printtemplateid));
 		model.addAttribute("localbranchname", this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()).getBranchname());
-		model.addAttribute("branchname", this.branchDAO.getBranchByBranchid(this.outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid).getBranchid()).getBranchname());
+		long nextbranchid = this.outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid).getBranchid();
+		model.addAttribute("branchname", this.branchDAO.getBranchByBranchid(nextbranchid).getBranchname());
 		model.addAttribute("customerlist", this.customerDAO.getAllCustomers());
 		model.addAttribute("userlist", this.userDAO.getAllUser());
 		model.addAttribute("iscustomer", iscustomer);
@@ -1375,20 +1401,22 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("islinghuo", islinghuo);
 		model.addAttribute("branchlist", this.branchDAO.getAllEffectBranches());
 		model.addAttribute("operatetype", this.outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid).getOperatetype());
-		if (this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 1) {
+		
+		long templatetype = this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype();
+		if (templatetype == 1) {
 			/**
 			 * 按包逻辑完善：真实订单、显示打印用订单 list
 			 */
 			model.addAttribute("cwbList", cwbList);
 			model.addAttribute("cwbListForBale",cwbListForBale);
 			return "warehousegroup/outbillprinting_history";
-		} else if (this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 2) {
+		} else if (templatetype == 2) {
 
 			List<JSONObject> cwbJson = this.cwbDao.getDetailForChuKuPrint(cwbs);
 
 			model.addAttribute("cwbList", cwbJson);
 			return "warehousegroup/outbillhuizongprinting_history";
-		} else if (this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 5) {
+		} else if (templatetype == 5) {
 			List<CwbOrder> cwbList2 = this.cwbDao.getCwbByCwbs(cwbs);
 
 			List<WarehouseGroupPrintDto> printDtos = new ArrayList<WarehouseGroupPrintDto>();
@@ -1446,7 +1474,7 @@ public class WarehouseGroup_detailController {
 			model.addAttribute("cwbOrderList", cwbList2);
 			model.addAttribute("printDtos", printDtos);
 			return "warehousegroup/outbilltongluprinting_history";
-		} else if (this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 4) {
+		} else if (templatetype == 4) {
 			// 只知道需要打印的cwb
 			List<CwbOrder> cwbList2 = this.cwbDao.getCwbByCwbs(cwbs);// 根据cwbs查询出需要打印的记录
 			Set<String> baleSet = new HashSet<String>();
@@ -1585,8 +1613,76 @@ public class WarehouseGroup_detailController {
 				model.addAttribute("total", warehouseGroupPrintDtoTotal);
 			}
 			return "warehousegroup/outanbaoprinting_history";
+		} else if (templatetype == 10) {//武汉飞远 退货出站
+			OutChangePrintVo print = initPrintData(cwbList, nextbranchid,"","", getSessionUser());//TODO 出库时间
+			model.addAttribute("print", print);
+			return "warehousegroup/outbackbillprintinghistory_wuhan";
+		} else if (templatetype == 11) {//武汉飞远 中转出站
+			OutChangePrintVo print = initPrintData(cwbList, nextbranchid,"","", getSessionUser());//TODO 出库时间
+			model.addAttribute("print", print);
+			return "warehousegroup/outchangebillprintinghistory_wuhan";
 		}
+		
 		return null;
+	}
+	
+	
+	/**
+	 * 初始化打印数据print add by vic.liang@pjbest.com 2016-08-12
+	 * @param cwbList 打印订单列表
+	 * @param nextbranchid 打印订单下一站
+	 * @param starttime 打印订单出库开始时间
+	 * @param endtime 打印订单出库结算时间
+	 * @param user 打印用户
+	 */
+	private OutChangePrintVo initPrintData (List<CwbOrder> cwbList,long nextbranchid, String starttime, String endtime, User user) {
+		String userbranchname = this.branchDAO.getBranchName(user.getBranchid());
+		String nextbranchname = this.branchDAO.getBranchName(nextbranchid);
+	    String username = user.getUsername();
+		OutChangePrintVo print = new OutChangePrintVo();
+		Map<Integer,List<String>> map = new HashMap<Integer, List<String>>();
+	    int count = 0;//订单数
+		int sum = 0;//件数
+		StringBuilder sb = new StringBuilder();
+	    if (cwbList != null) {
+			int index = 1;
+			List<String> list = null;
+			for (int i=0; i < cwbList.size(); i++){
+				int temp = i % 2; //2个订单一行
+				if (temp == 0) {
+					list = new ArrayList<String>();
+					map.put(index, list);
+					index++;
+				}
+				String cwb = cwbList.get(i).getCwb();
+				list.add(cwb);
+				count++;
+				sum += cwbList.get(i).getSendcarnum();
+				if (sb.length() > 0) {
+					sb.append(",").append("'").append(cwb).append("'");
+				} else {
+					sb.append("'").append(cwb).append("'");
+				}
+			}
+		}
+	    if (!StringUtils.isEmpty(starttime)) {
+	    	print.setStarttime(starttime);
+	    	print.setEndtime(endtime);
+	    } else {//没有输入查询时间
+	    	Map<String,Object> mapTime = this.groupDetailDao.getGroupDetailDateTime(sb.toString());
+		    if (mapTime != null) {
+		    	print.setStarttime((String)mapTime.get("starttime"));
+		    	print.setEndtime((String)mapTime.get("endtime"));
+		    }
+	    }
+	    print.setCwbmap(map);
+	    print.setCount(count);
+	    print.setSum(sum);
+		print.setUserbranchname(userbranchname);
+		print.setNextbranchname(nextbranchname);
+		print.setUsername(username);
+		print.setPrinttime(DateTimeUtil.getNowDataTime());
+		return print;
 	}
 
 	/**
