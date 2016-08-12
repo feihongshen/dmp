@@ -17,7 +17,6 @@ public class OutWarehouseGroup {
 	private long sign;
 	private String baleno;
 	private long baleid;
-	private String outstockTime;
 	
 	public long getBranchid() {
 		return this.branchid;
@@ -135,14 +134,6 @@ public class OutWarehouseGroup {
 
 	public void setBaleid(long baleid) {
 		this.baleid = baleid;
-	}
-
-	public String getOutstockTime() {
-		return outstockTime;
-	}
-
-	public void setOutstockTime(String outstockTime) {
-		this.outstockTime = outstockTime;
 	}
 
 }

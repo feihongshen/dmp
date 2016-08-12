@@ -44,7 +44,6 @@ public class OutWarehouseGroupDAO {
 			owg.setSign(rs.getLong("sign"));
 			owg.setBaleno(rs.getString("baleno"));
 			owg.setBaleid(rs.getLong("baleid"));
-			owg.setOutstockTime(rs.getString("outstockTime"));
 			return owg;
 		}
 
@@ -59,15 +58,15 @@ public class OutWarehouseGroupDAO {
 	}
 
 	public long creOutWarehouseGroup(final long driverid, final long truckid, final long branchid, final String printtime, final long operatetype, final long customerid, final long currentbranchid,
-			final String cwbs, final String outstockTime) {
+			final String cwbs) {
 
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
 				PreparedStatement ps = null;
-				ps = con.prepareStatement("insert into express_ops_outwarehousegroup (driverid,truckid,state,branchid,printtime,operatetype,customerid,currentbranchid,cwbs,sign,outstockTime) "
-						+ "values(?,?,?,?,?,?,?,?,?,?,?)", new String[] { "id" });
+				ps = con.prepareStatement("insert into express_ops_outwarehousegroup (driverid,truckid,state,branchid,printtime,operatetype,customerid,currentbranchid,cwbs,sign) "
+						+ "values(?,?,?,?,?,?,?,?,?,?)", new String[] { "id" });
 				ps.setLong(1, driverid);
 				ps.setLong(2, truckid);
 				if (operatetype == OutwarehousegroupOperateEnum.FenZhanLingHuo.getValue()) {
@@ -82,7 +81,7 @@ public class OutWarehouseGroupDAO {
 				ps.setLong(8, currentbranchid);
 				ps.setString(9, cwbs);
 				ps.setLong(10, 1);
-				ps.setString(11, outstockTime);
+
 				return ps;
 			}
 		}, key);

@@ -24,7 +24,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1533,17 +1532,6 @@ public class WarehouseGroup_detailController {
 				vo.setOutstockOrderNum(vo.getOutstockOrderNum() + 1);
 				vo.setOutstockSendNum(vo.getOutstockSendNum() + (int) cwb.getSendcarnum());
 			}
-			if (org.apache.commons.lang3.StringUtils.isNotBlank(owg.getOutstockTime())) {
-				ObjectMapper mapper = new ObjectMapper();
-				Map<String,String> createtimeMap;
-				try {
-					createtimeMap = mapper.readValue(owg.getOutstockTime(), Map.class);
-				} catch (Exception e) {
-					createtimeMap = new HashMap<String, String>();
-				}
-				vo.setOutstockStartTime(createtimeMap.get("strtime"));
-				vo.setOutstockEndTime(createtimeMap.get("endtime"));
-			}
 			List<WuhanTransportDetailVo> voList = new ArrayList<WuhanTransportDetailVo>();
 			voList.add(vo);
 			model.addAttribute("printList", voList);
@@ -1583,17 +1571,8 @@ public class WarehouseGroup_detailController {
 				model.addAttribute("customerid", cwbList.get(0).getCustomerid());
 			}
 			model.addAttribute("huizongcwbs", huizongcwbs);
-			if (org.apache.commons.lang3.StringUtils.isNotBlank(owg.getOutstockTime())) {
-				ObjectMapper mapper = new ObjectMapper();
-				Map<String,String> createtimeMap;
-				try {
-					createtimeMap = mapper.readValue(owg.getOutstockTime(), Map.class);
-				} catch (Exception e) {
-					createtimeMap = new HashMap<String, String>();
-				}
-				model.addAttribute("strtime", createtimeMap.get("strtime"));
-				model.addAttribute("endtime", createtimeMap.get("endtime"));
-			}
+			model.addAttribute("strtime", "");
+			model.addAttribute("endtime", "");
 			return "warehousegroup/wuHanPickingListPrint_history";		
 		}
 		else if (printtemplate.getTemplatetype() == 2) {

@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -826,9 +825,7 @@ public class WarehouseGroupController {
 	@RequestMapping("/creowg/{branchid}")
 	public @ResponseBody String creowg(@PathVariable("branchid") long branchid, @RequestParam(value = "operatetype", required = false, defaultValue = "0") long operatetype,
 			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
-			@RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
-			@RequestParam(value = "strtime", required = false, defaultValue = "") String strtime,
-			@RequestParam(value = "endtime", required = false, defaultValue = "") String endtime) {
+			@RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs) {
 		try {
 			if (cwbs.trim().length() > 0) {
 				if (branchid == 0) {
@@ -841,16 +838,7 @@ public class WarehouseGroupController {
 					cwbsString=cwbsString+"-H-"+string;
 				}
 				cwbsString=cwbsString.substring(3);
-				// 记录入库起始时间 add by chunlei05.li 2016/8/12
-				String outstockTime = "";
-				if (StringUtils.isNotBlank(strtime) && StringUtils.isNotBlank(endtime)) {
-					Map<String, String> timeMap = new HashMap<String, String>();
-					timeMap.put("strtime", strtime);
-					timeMap.put("endtime", endtime);
-					JSONObject jsonObject = JSONObject.fromObject(timeMap);
-					outstockTime = jsonObject.toString();
-				}
-				this.cwbOrderService.checkResponseBatchno(this.getSessionUser(), 0, branchid, driverid, 0, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, cwbsString, customerid, outstockTime);
+				this.cwbOrderService.checkResponseBatchno(this.getSessionUser(), 0, branchid, driverid, 0, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, cwbsString, customerid);
 				return "{\"errorCode\":0,\"error\":\"成功\"}";
 			} else {
 				return "{\"errorCode\":1,\"error\":\"错误,没有订单号\"}";
@@ -868,9 +856,7 @@ public class WarehouseGroupController {
 			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
 			@RequestParam(value = "baleno", required = false, defaultValue = "") String baleno,
 			@RequestParam(value = "truckid", required = false, defaultValue = "0") long truckid,
-			@RequestParam(value = "baleid", required = false, defaultValue = "0") long baleid,
-			@RequestParam(value = "strtime", required = false, defaultValue = "") String strtime,
-			@RequestParam(value = "endtime", required = false, defaultValue = "") String endtime) {
+			@RequestParam(value = "baleid", required = false, defaultValue = "0") long baleid) {
 		try {
 			if (cwbs.trim().length() > 0) {
 				String[] cwbsList = cwbs.split("-HH-");
@@ -900,15 +886,6 @@ public class WarehouseGroupController {
 					}
 					branchAndCwbs.put(branchid, sbf.toString());
 				}
-				// 记录入库起始时间 add by chunlei05.li 2016/8/12
-				String outstockTime = "";
-				if (StringUtils.isNotBlank(strtime) && StringUtils.isNotBlank(endtime)) {
-					Map<String, String> timeMap = new HashMap<String, String>();
-					timeMap.put("strtime", strtime);
-					timeMap.put("endtime", endtime);
-					JSONObject jsonObject = JSONObject.fromObject(timeMap);
-					outstockTime = jsonObject.toString();
-				}
 				for (Long branchid : branchList) {
 					if((null!=baleno)&&(baleno.length()>0)){
 						Bale bale=null;
@@ -916,13 +893,13 @@ public class WarehouseGroupController {
 							bale=this.baleDAO.getBaleById(baleid);
 						}
 						if(bale!=null){
-							long outwarehousegroupid=this.cwbOrderService.checkResponseBatchnoForBale(this.getSessionUser(), 0, branchid, driverid, truckid, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, branchAndCwbs.get(branchid), 0 ,bale.getId(), outstockTime);
+							long outwarehousegroupid=this.cwbOrderService.checkResponseBatchnoForBale(this.getSessionUser(), 0, branchid, driverid, truckid, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, branchAndCwbs.get(branchid), 0 ,bale.getId());
 							this.outwarehousegroupDao.updateOutwarehousegroupBalenoByID(baleno,bale.getId(), outwarehousegroupid);
 						}else{
 							logger.info("此包号已失效，不能插入到express_ops_outwarehousegroup表，baleno="+baleno+",baleid="+baleid);
 						}
 					}else{
-						long outwarehousegroupid=this.cwbOrderService.checkResponseBatchno(this.getSessionUser(), 0, branchid, driverid, truckid, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, branchAndCwbs.get(branchid), 0, outstockTime);
+						long outwarehousegroupid=this.cwbOrderService.checkResponseBatchno(this.getSessionUser(), 0, branchid, driverid, truckid, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, branchAndCwbs.get(branchid), 0);
 					}
 //					if((null!=baleno)&&(baleno.length()>0)){
 //					}

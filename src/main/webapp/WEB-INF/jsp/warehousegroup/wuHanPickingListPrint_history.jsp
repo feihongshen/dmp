@@ -104,7 +104,7 @@ function nowprint(){
 	<div id="printTable">
 		<div class="out_box preview_box">
 			<div class="inner_box">
-				<div class="title">武汉飞远速递领货签收单</div>
+				<div class="title">武汉飞远速递领货签收单（补打）</div>
 				<div class="content_1">
 					<span>站点：${branchname }</span>
 					<span style="word-spacing:1mm;">&nbsp;</span>
