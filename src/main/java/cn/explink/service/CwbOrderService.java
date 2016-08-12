@@ -1887,9 +1887,9 @@ public class CwbOrderService extends BaseOrderService {
 				ypdjHandleRecordDAO.delYpdjHandleRecord(cwb, user.getBranchid());
 				
 			}
-			//集包模式
+			//集包模式  ----    把isauto置为true，防止集包模式的所有运单都补订单的轨迹（正常情况下第一单补就行了）---刘武强20160805
 			if (newMPSOrder) {
-				this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, isauto, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, true, isAutoSupplyLink);
+				this.handleSubstationGoods(user, cwb, scancwb, currentbranchid, requestbatchno, comment, true, co, flowOrderTypeEnum, userbranch, isypdjusetranscwb, true, credate, false, true, isAutoSupplyLink);
 			}
 //			} else {
 //				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
@@ -4524,10 +4524,10 @@ public class CwbOrderService extends BaseOrderService {
 			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
 		
-		// 非本站货 add by jian_xie 2016-07-27， 逻辑有问题，一票多件出了第一单后，订单当前站点为空。
-//		if(co.getCurrentbranchid() != user.getBranchid()){
-//			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
-//		}
+		// 非本站货 add by jian_xie 2016-07-27， 逻辑有问题，一票多件出了第一单后，订单当前站点为空。目前 只针对上门退
+		if(co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue() && co.getCurrentbranchid() != user.getBranchid()){
+			throw new CwbException(cwb, FlowOrderTypeEnum.TuiHuoChuZhan.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+		}
 		
 		// added by jiangyu begin 快递订单不允许做退货出站操作
 		if (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()) {
@@ -6191,23 +6191,23 @@ public class CwbOrderService extends BaseOrderService {
 			//this.jdbcTemplate.update("update express_ops_cwb_detail set flowordertype=?,currentbranchid=startbranchid where cwb=? and state=1", auditFlowOrderTypeEnum.getValue(), cwb);
 			//update by neo01.huang，2016-5-30
 			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
-			CwbOrderService.logger.info("归班审核->更新站点信息->站点id信息：startbranchid:{}, currentbranchid:{}, nextbranchid:{}, deliverybranchid:{}, podresultid:{}", cwbOrder.getStartbranchid(), cwbOrder
+			CwbOrderService.logger.info("归班审核->更新站点信息->cwb:{},站点id信息：startbranchid:{}, currentbranchid:{}, nextbranchid:{}, deliverybranchid:{}, podresultid:{}", cwb, cwbOrder.getStartbranchid(), cwbOrder
 					.getCurrentbranchid(), cwbOrder.getNextbranchid(), cwbOrder.getDeliverybranchid(), podresultid);
 			//==>如果startbranchid不为0，则走原来正常逻辑
 			if (cwbOrder.getStartbranchid() != 0) {
-				CwbOrderService.logger.info("归班审核->更新站点信息->如果startbranchid不为0，则走原来正常逻辑");
+				CwbOrderService.logger.info("归班审核->更新站点信息->cwb:{},如果startbranchid不为0，则走原来正常逻辑", cwb);
 				this.jdbcTemplate.update("update express_ops_cwb_detail set flowordertype=?,currentbranchid=startbranchid where cwb=? and state=1", auditFlowOrderTypeEnum.getValue(), cwb);
 			} else { //==>startbranchid为0
-				CwbOrderService.logger.info("归班审核->更新站点信息->startbranchid为0");
+				CwbOrderService.logger.info("归班审核->更新站点信息->cwb:{},startbranchid为0", cwb);
 				long deliverybranchid = cwbOrder.getDeliverybranchid(); // 配送站点
 				//==>deliverybranchid不为0，则用deliverybranchid赋值给startbranchid、currentbranchid
 				if (deliverybranchid != 0) {
-					CwbOrderService.logger.info("归班审核->更新站点信息->deliverybranchid不为0，则用deliverybranchid赋值给startbranchid、currentbranchid");
+					CwbOrderService.logger.info("归班审核->更新站点信息->cwb:{},deliverybranchid不为0，则用deliverybranchid赋值给startbranchid、currentbranchid", cwb);
 					this.jdbcTemplate
 							.update("update express_ops_cwb_detail set flowordertype=?, startbranchid=deliverybranchid, currentbranchid=deliverybranchid where cwb=? and state=1", auditFlowOrderTypeEnum
 									.getValue(), cwb);
 				} else { //==>deliverybranchid为0，则用当前用户的branchid赋值给startbranchid、currentbranchid、deliverybranchid
-					CwbOrderService.logger.info("归班审核->更新站点信息->deliverybranchid为0，则用当前用户的branchid赋值给startbranchid、currentbranchid、deliverybranchid，当前用户的branchid为：{}", user.getBranchid());
+					CwbOrderService.logger.info("归班审核->更新站点信息->cwb:{},deliverybranchid为0，则用当前用户的branchid赋值给startbranchid、currentbranchid、deliverybranchid，当前用户的branchid为：{}", cwb, user.getBranchid());
 					deliverybranchid = user.getBranchid();
 					long startbranchid = deliverybranchid; // 上一个机构id
 					long currentbranchid = deliverybranchid; // 当前机构
@@ -6516,6 +6516,13 @@ public class CwbOrderService extends BaseOrderService {
 			if (deliverystate.getGcaid() > 0) {
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiShenHe.getValue(), ExceptionCwbErrorTypeEnum.ChongFuShenHe, co.getCwb());
 			}
+			
+			//Added by leoliao at 2016-08-04  未反馈不允许进行归班审核
+			if(deliverystate.getDeliverystate() == DeliveryStateEnum.WeiFanKui.getValue()){
+				throw new CwbException(co.getCwb(), "订单("+co.getCwb()+")未反馈不允许进行归班审核");
+			}
+			//Added end
+			
 			FlowOrderTypeEnum auditFlowOrderTypeEnum = FlowOrderTypeEnum.YiShenHe;
 			this.deliveryStateDAO.auditDelivery(deliverystate.getId(), user.getUserid(), okTime, gcaId);
 			this.deliveryCashDAO.saveDeliveryCashForGBById(okTime, gcaId, deliverystate.getId());

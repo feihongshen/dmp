@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.dao.CwbDAO;
 import cn.explink.dao.RoleDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.express.CityDAO;
@@ -49,19 +50,21 @@ import cn.explink.enumutil.express.ExpressOrderStatusEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.express.tps.enums.FeedbackOperateTypeEnum;
 import cn.explink.service.express2.ReserveOrderService;
+import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.StringUtil;
 
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderCargoRequest;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderRequest;
 import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
-import com.pjbest.deliveryorder.bizservice.PjDeliverOrder4DMPRequest;
-import com.pjbest.deliveryorder.bizservice.PjDeliveryOrder4DMPCargoInfo;
-import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
 
 @Transactional
 @Service
 public class EmbracedOrderInputService extends ExpressCommonService {
+	@Autowired
+	private CwbDAO cwbDao;
+	@Autowired
+	private TransCwbDao transCwbDao;
 	@Autowired
 	private UserDAO userDAO;
 	@Autowired
@@ -294,9 +297,9 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 	public synchronized String savaEmbracedOrderVO(EmbracedOrderVO embracedOrderVO, int flags) {
 		// 判断运单号是否已经被录入过
 		EmbracedOrderVO savedVO = this.judgeCwbOrderByCwb(embracedOrderVO.getOrderNo());
-		if ((flags == 0) && (savedVO != null)) {
+		if ((flags == 0 || flags == 2) && (savedVO != null)) { //如果flags=0或者2，那么会执行insert，但是如果数据库已经有数据了，就放弃insert ---刘武强20160811
 			// TODO 从tps上校验运单号是否重复
-			return "hasSaved";
+			return flags == 0 ? "hasSaved" : "tpsErr";
 		} else if ((savedVO != null) && "1".equals(savedVO.getIsadditionflag())) {
 			return "hasSaved";
 		}
@@ -518,7 +521,13 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("instationname", branch.getBranchname());
 
 			params.put("credate", Timestamp.valueOf(DateTimeUtil.getNowTime()));
-
+			
+			//再次校验数据库是否已经有记录，否则不在insert ---刘武强20160811
+			EmbracedOrderVO VO = this.judgeCwbOrderByCwb(embracedOrderVO.getOrderNo());
+			if(VO != null){
+				System.out.println("快递单：" + embracedOrderVO.getOrderNo() +"已经有数据，不能再isnert");
+				return "hasSaved";
+			}
 			flag = this.generalDAO.insert(params, "express_ops_cwb_detail") == false ? "false" : "true";
 			System.out.println("补录：inset方法，补录标志位：" + embracedOrderVO.getIsadditionflag());
 			// 如果是新建运单，那么他的状态为入站，调用tps状态反馈接口 11.19 如果状态有改变，且变为揽件入站，则需要保存流程信息
@@ -907,7 +916,12 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			this.logger.info("vo为空");
 			return false;
 		}
-		// 首先校验付款方式
+		
+		
+		
+		
+		
+		// 首先校验付款方式  
 		if (this.jugNull(embracedOrderVO.getPayment_method())) {
 			this.logger.info("付款方式未输入");
 			return false;
@@ -1041,5 +1055,21 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				this.logger.info(e.getMessage());
 			}
 		}
+	}
+	
+	/**
+	 * 校验录入运单号是否与系统订单号/运单号重复 add by vic.liang@pjbest.com 2016-08-05
+	 * @param transcwb
+	 * @return
+	 */
+	public boolean checkTranscwb(String transcwb) {
+		int countCwb = this.cwbDao.getCountByCwb(transcwb);
+		if (countCwb > 0) 
+			return true;
+		int countTransCwb = this.transCwbDao.getCountByTranscwb(transcwb);
+		if (countTransCwb > 0) 
+			return true;
+		
+		return false;
 	}
 }

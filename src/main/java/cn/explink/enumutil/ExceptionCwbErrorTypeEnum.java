@@ -77,7 +77,8 @@ public enum ExceptionCwbErrorTypeEnum {
 			DAI_SHOU_HUO_KUAN_DA_LING(223,"订单代收货款大于0或者到付运费大0，不能绑定邮政运单号！"),
 			DING_DAN_ZHUANG_TAI_BU_SHI_CHU_KU(224,"订单当前操作状态不是出库，不能绑定邮政运单号！"),
 			JI_DAN_BU_FA_SONG_YOU_ZHENG(225,"订单为集单模式，不能绑定邮政运单号！"),
-			DING_DAN_BANG_DING_SHU_CHAO_CHU(226,"一票多件绑定次数已经超出订单发货数量！");
+			DING_DAN_BANG_DING_SHU_CHAO_CHU(226,"一票多件绑定次数已经超出订单发货数量！"),
+			PLEASE_RECEIVE_GOODS_FIRST(227, "请先做{0}");
 	
 
 	private int value;

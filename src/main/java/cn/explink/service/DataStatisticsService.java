@@ -231,7 +231,7 @@ public class DataStatisticsService {
 				//分站到货
 				sqlOrderFlowBySome = orderFlowDAO.genSqlOrderFlowBySome(begindate, enddate, 
 																FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), 
-																this.getStrings(currentBranchid), isnowdata, true);
+																this.getStrings(currentBranchid), isnowdata, false);
 			}else{
 				orderflowcwbs = this.getCwbs(sign, begindate, enddate, isauditTime, nextbranchid, startbranchid, isaudit, 
 											 operationOrderResultTypes, dispatchbranchid, deliverid, flowordertype,
@@ -306,7 +306,7 @@ public class DataStatisticsService {
 				final String sql = orderFlowDAO.genSqlForExport(sqlOrderFlowBySome, page, begindate, enddate, this.getStrings(customerids), 
 											 this.getStrings(startbranchid), this.getStrings(nextbranchid),this.getStrings(cwbordertypeids), 
 											 this.getStrings(currentBranchid), this.getStrings(dispatchbranchid), 
-											 strKufangid, flowordertype, paywayid, sign, paybackfeeIsZero, servicetype);
+											 strKufangid, flowordertype, paywayid, sign, paybackfeeIsZero, servicetype, true);
 				
 				DataStatisticsExcelUtils excelUtil = new DataStatisticsExcelUtils(DataStatisticsService.this);
 				excelUtil.setCloumnName4(cloumnName4);

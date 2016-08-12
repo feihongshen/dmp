@@ -676,6 +676,8 @@
 			$.messager.alert("提示", "保存失败!", "warning"); 
 		}else if($.trim($("#flag").html()) == "hasSaved"){
 			$.messager.alert("提示", "该运单号已经录入过，保存失败!", "warning"); 
+		}else if($.trim($("#flag").html()) == "tpsErr"){
+			$.messager.alert("提示", "该运单号已经录入过，保存失败!", "warning"); 
 		}
 		if($.trim($("#orderNoValue").html()) != ""){
 			$("#orderNo_id").val($.trim($("#orderNoValue").html()));
@@ -1452,7 +1454,7 @@
 				},
 				success : function(data) {	
 					if(typeof(data.embracedOrderVO)  == "undefined" || data.embracedOrderVO.orderNo == ""){						
-				        	$("#isadditionflag_id").attr("value",0);
+						    $("#isadditionflag_id").attr("value",0);
 				        	//根据运单号，去订单表查数据，带出小件员
 				        	var orderNo = $.trim($("#orderNo_id").val());
 				    		$.ajax({
@@ -1486,6 +1488,10 @@
 				    				}
 				    			}
 				    		});
+							if (data.isRepeatTranscwb) {
+								$.messager.alert("提示", "该运单号与系统订单/运单重复", "warning");
+								$("#orderNo_id").attr("value","");
+							}
 				        	return;
 					}else if(data.embracedOrderVO.isadditionflag == 1){
 						$.messager.alert("提示", "该运单号已经补录完成", "warning");
@@ -1496,6 +1502,7 @@
 						$("#orderNo_id").attr("value","");
 						return;
 					}
+					
 					$("#isadditionflag_id").attr("value",1);
 					$("#sender_certificateNo_id").val(data.embracedOrderVO.sender_certificateNo);
 					
