@@ -311,7 +311,7 @@ public class WarehouseGroupController {
 		model.addAttribute("page", page);
 
 		model.addAttribute("printtemplateList",
-				this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.LingHuoAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.LingHuoHuiZong.getValue()));
+				this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.LingHuoAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.LingHuoHuiZong.getValue() + "," + PrintTemplateOpertatetypeEnum.WuHanLinHuoDan.getValue()));
 		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 
 		return "warehousegroup/deliverlist";
@@ -382,7 +382,7 @@ public class WarehouseGroupController {
 
 		model.addAttribute("deliverList", deliverList);
 		model.addAttribute("printtemplateList",
-				this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.LingHuoAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.LingHuoHuiZong.getValue()));
+				this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.LingHuoAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.LingHuoHuiZong.getValue() + "," + PrintTemplateOpertatetypeEnum.WuHanLinHuoDan.getValue()));
 		return "warehousegroup/historydeliverlist";
 	}
 
@@ -826,7 +826,9 @@ public class WarehouseGroupController {
 	@RequestMapping("/creowg/{branchid}")
 	public @ResponseBody String creowg(@PathVariable("branchid") long branchid, @RequestParam(value = "operatetype", required = false, defaultValue = "0") long operatetype,
 			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid, @RequestParam(value = "customerid", required = false, defaultValue = "0") long customerid,
-			@RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs) {
+			@RequestParam(value = "cwbs", required = false, defaultValue = "") String cwbs,
+			@RequestParam(value = "strtime", required = false, defaultValue = "") String strtime,
+			@RequestParam(value = "endtime", required = false, defaultValue = "") String endtime) {
 		try {
 			if (cwbs.trim().length() > 0) {
 				if (branchid == 0) {
@@ -839,9 +841,16 @@ public class WarehouseGroupController {
 					cwbsString=cwbsString+"-H-"+string;
 				}
 				cwbsString=cwbsString.substring(3);
-
-
-				this.cwbOrderService.checkResponseBatchno(this.getSessionUser(), 0, branchid, driverid, 0, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, cwbsString, customerid, "");
+				// 记录入库起始时间 add by chunlei05.li 2016/8/12
+				String outstockTime = "";
+				if (StringUtils.isNotBlank(strtime) && StringUtils.isNotBlank(endtime)) {
+					Map<String, String> timeMap = new HashMap<String, String>();
+					timeMap.put("strtime", strtime);
+					timeMap.put("endtime", endtime);
+					JSONObject jsonObject = JSONObject.fromObject(timeMap);
+					outstockTime = jsonObject.toString();
+				}
+				this.cwbOrderService.checkResponseBatchno(this.getSessionUser(), 0, branchid, driverid, 0, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, cwbsString, customerid, outstockTime);
 				return "{\"errorCode\":0,\"error\":\"成功\"}";
 			} else {
 				return "{\"errorCode\":1,\"error\":\"错误,没有订单号\"}";
