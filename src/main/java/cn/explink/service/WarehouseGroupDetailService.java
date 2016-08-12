@@ -21,6 +21,7 @@ import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
+import cn.explink.dao.GroupDetailDao;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.PayWayDao;
 import cn.explink.dao.ReasonDao;
@@ -92,6 +93,9 @@ public class WarehouseGroupDetailService {
 	
 	@Autowired
 	BaleCwbDao baleCwbDao;
+	
+	@Autowired
+	private GroupDetailDao groupDetailDao;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -554,5 +558,16 @@ public class WarehouseGroupDetailService {
 		String cwbsStr = StringUtil.toDbInStr(cwbs);
 		String nextbranchidStr = StringUtil.toDbInStr(nextbranchid);
 		return this.cwbDAO.getCwbByCwbsAndcwbTypeForPrint(cwbsStr, nextbranchidStr, branchid, flowordertype, cwbOrderTypeId);
+	}
+	
+	/**
+	 * @author chunlei05.li
+	 * @date 2016年8月12日 下午6:47:04
+	 * @param cwbs
+	 * @return
+	 */
+	public Map<String, Object> getGroupDetailDateTime(String[] cwbs) {
+		String cwbStr = StringUtil.toDbInStr((String[]) cwbs);
+		return this.groupDetailDao.getGroupDetailDateTime(cwbStr);
 	}
 }

@@ -579,6 +579,21 @@ public class WarehouseGroup_detailController {
 		else if(printtemplate.getTemplatetype() == 4 && printtemplate.getOpertatetype() == PrintTemplateOpertatetypeEnum.WuHanYunShuJiaoJieDan.getValue()) {
 			User user = this.getSessionUser();
 			Branch userBranch = this.branchService.getBranchByBranchid(user.getBranchid());
+			
+			// 起始时间
+			if (org.apache.commons.lang3.StringUtils.isBlank(starttime)
+					|| org.apache.commons.lang3.StringUtils.isBlank(endtime)) {
+				Map<String, Object> timeMap = this.warehouseGroupDetailService.getGroupDetailDateTime(cwbArr);
+				if (org.apache.commons.lang3.StringUtils.isBlank(starttime)) {
+					Object obj = timeMap.get("starttime");
+					starttime = obj == null ? "" : obj.toString();
+				}
+				if (org.apache.commons.lang3.StringUtils.isBlank(endtime)) {
+					Object obj = timeMap.get("endtime");
+					endtime = obj == null ? "" : obj.toString();
+				}
+			}
+			
 			// 转换成打印信息
 			Map<Long, WuhanTransportDetailVo> voMap = new HashMap<Long, WuhanTransportDetailVo>();
 			for (CwbOrder cwb : cwbList) {
@@ -1024,9 +1039,6 @@ public class WarehouseGroup_detailController {
 			@RequestParam(value = "driverid", required = false, defaultValue = "0") long driverid,
 			@RequestParam(value = "cwbOrderTypeId", required = false, defaultValue = "") String cwbOrderTypeId,
 			HttpServletRequest request) {
-		// 查询的实际起始时间 add by chunlei05.li 2016-08-11
-		String realStrTime = strtime;
-		String realEndTime = endtime;
 		List<PrintView> printList = new ArrayList<PrintView>();
 		List<Branch> bList = this.getNextPossibleBranches();
 		List<User> uList = this.userDAO.getUserByRole(3);
@@ -1109,35 +1121,6 @@ public class WarehouseGroup_detailController {
 			List<Customer> customerList = this.customerDAO.getAllCustomers();
 			List<Branch> branchList = this.branchDAO.getAllBranches();
 			printList = this.warehouseGroupDetailService.getChuKuView(orderlist, gdList, customerList, branchList);
-			// 获取查询结果的最大时间和最小时间  add by chunlei05.li 2016-08-11
-			if (org.apache.commons.lang3.StringUtils.isBlank(strtime) || org.apache.commons.lang3.StringUtils.isBlank(strtime)) {
-				String maxTime = null;
-				String minTime = null;
-				for (GroupDetail gd : gdList) {
-					String createtime = gd.getCreatetime();
-					if (org.apache.commons.lang3.StringUtils.isBlank(createtime)) {
-						continue;
-					}
-					if (maxTime == null) {
-						maxTime = createtime;
-					}
-					if (minTime == null) {
-						minTime = createtime;
-					}
-					if (createtime.compareTo(maxTime) == 1) {
-						maxTime = createtime;
-					}
-					if(createtime.compareTo(minTime) == -1) {
-						minTime = createtime;
-					}
-				}
-				if (org.apache.commons.lang3.StringUtils.isBlank(realStrTime)) {
-					realStrTime = minTime;
-				}
-				if (org.apache.commons.lang3.StringUtils.isBlank(realEndTime)) {
-					realEndTime = maxTime;
-				}
-			}
 		}
 		// LKN 这段代码没用
 		// cwbs = cwbs.length()>0?cwbs.substring(0, cwbs.length()-1):"";
@@ -1161,8 +1144,8 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("uList", uList);
 		model.addAttribute("tList", tList);
 		model.addAttribute("baleno", baleno);
-		model.addAttribute("realStrTime", realStrTime);
-		model.addAttribute("realEndTime", realEndTime);
+		model.addAttribute("strTime", strtime);
+		model.addAttribute("endTime", endtime);
 		/*
 		 * List<GroupDetail> groupDetails=new ArrayList<GroupDetail>();
 		 * groupDetails=groupDetailDao.getGroupDetailListByBale(baleno);

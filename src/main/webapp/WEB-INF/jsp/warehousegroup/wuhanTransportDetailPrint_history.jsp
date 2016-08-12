@@ -108,7 +108,7 @@ function nowprint(){
 			<div class="inner_box">
 				<div class="title">（${vo.branchname }）至（${vo.nextBranchname }）运输交接单（补打）</div>
 				<div class="dashed"></div>
-				<div class="content_1">出库时间：${vo.outstockStartTime } 至 ${vo.outstockEndTime }</div>
+				<div class="content_1">出库时间：- 至 -</div>
 				<div class="content_1">出库：共${vo.outstockOrderNum }单${vo.outstockSendNum }件（其中单独交接0单0件）</div>
 				<div class="dashed"></div>
 				<div class="content_2">分拣中心填写区：</div>

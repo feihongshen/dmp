@@ -136,7 +136,7 @@ function nowprint(){
 					</table>
 				</div>
 				<div class="dashed"></div>
-				<div class="content_1">本次领货时间：<br>${strtime } 至${endtime }</div>
+				<div class="content_1">本次领货时间：- 至 -</div>
 				<div class="content_1">
 					<span>共${ordernum }单</span>
 					<span style="word-spacing:1mm;">&nbsp;</span>

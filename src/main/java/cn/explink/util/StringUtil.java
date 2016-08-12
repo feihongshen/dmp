@@ -476,4 +476,22 @@ public class StringUtil {
 		}
 		return objStr;
 	}
+	
+	/**
+	 * 数组转换层数据库in字段
+	 * @date 2016年8月11日 下午3:45:48
+	 * @param objs
+	 * @return
+	 */
+	public static String toDbInStr(int[] objs) {
+		StringBuilder objSb = new StringBuilder("");
+		for (long obj : objs) {
+			objSb.append(obj).append(",");
+		}
+		String objStr = objSb.toString();
+		if (objStr.endsWith(",")) {
+			objStr = objStr.substring(0, objStr.length() - 1);
+		}
+		return objStr;
+	}
 }

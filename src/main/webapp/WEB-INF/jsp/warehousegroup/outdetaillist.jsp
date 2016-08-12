@@ -304,8 +304,8 @@ $("#branchid").multipleSelect({
 					<input name="baleno" value="<%=request.getAttribute("baleno") %>" type="hidden"/>
 					<input name="truckid" value="<%=request.getAttribute("truckid") %>" type="hidden"/>
 					<input name="driverid" value="<%=request.getAttribute("driverid") %>" type="hidden"/>
-					<input name="starttime" value="${realStrTime }" type="hidden"/>
-					<input name="endtime" value="${realEndTime }" type="hidden"/>
+					<input name="starttime" value="${strTime }" type="hidden"/>
+					<input name="endtime" value="${endTime }" type="hidden"/>
 				</form>
 				</div>
 				<div class="jg_10"></div><div class="jg_10"></div>
