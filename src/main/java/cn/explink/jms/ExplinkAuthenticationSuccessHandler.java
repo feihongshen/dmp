@@ -66,8 +66,10 @@ public class ExplinkAuthenticationSuccessHandler extends SimpleUrlAuthentication
 						String hp = url.substring(pos + 3);
 						int index = hp.indexOf("/");
 						if (index > 0) {
-							String nhp = "http://" + hp.substring(0, index) + request.getContextPath() + getDefaultTargetUrl();
-							setDefaultTargetUrl(nhp);
+							//修复问题：登陆多次后连接重复出现
+							//String nhp = "http://" + hp.substring(0, index) + request.getContextPath() + getDefaultTargetUrl();
+							String nhp = "http://" + hp.substring(0, index) + request.getContextPath() ;
+							this.setDefaultTargetUrl(nhp);
 							System.out.println("use ssl login : " + nhp);
 						}
 					}
