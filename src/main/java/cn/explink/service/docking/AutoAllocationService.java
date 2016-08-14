@@ -75,8 +75,8 @@ public class AutoAllocationService {
 
 		if (autoAllocatingSwitch != null && autoAllocatingSwitch.equals("1")) {
 			// 获得初始化参数
-			AutoAllocationParam param = AutoAllocationParam.getInitParams();
 			for (Entrance entrance : eList) {
+				AutoAllocationParam param = AutoAllocationParam.getInitParams();
 				this.createEmptyMsgLog(param, "", "", (byte) 0, entrance.getEntranceip());
 				this.sendMsg(entrance.getEntranceip(), param);
 
