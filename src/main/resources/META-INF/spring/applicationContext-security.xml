@@ -232,7 +232,9 @@
 	</beans:bean>
 	<beans:bean id="failureHandler"
 		class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
-		<beans:property name="defaultFailureUrl" value="/login?login_error=t" />
+		<!-- 资金归集修改，https方式登录时，如出错需重新跳回slogin页面 -->
+		<!--<beans:property name="defaultFailureUrl" value="/login?login_error=t" />-->
+		<beans:property name="defaultFailureUrl" value="/slogin?login_error=t" />
 	</beans:bean>
 	<beans:bean id="successHandler"
 		class="cn.explink.jms.ExplinkAuthenticationSuccessHandler">
