@@ -131,12 +131,11 @@
 		</fieldset>
 		<table width="99%" style="margin-top: 0px;">
 			<tr style="line-height: 25px;">
-				<td class="tdrigth"><input type="button" name="addImg" id="addImg" value="点击查看图片" /></td>
+				<td class="tdrigth"><input type="button" name="addImg" id="addImg" value="点击查看图片" onclick="openwin()"/></td>
 			</tr>
 		</table>
 	   	<%-- <div id="showImg" style="display:none" ><img src="<%=request.getContextPath()%>/images/bg_3.gif "></div> --%>
 	    <div id="img" style="display: none">
-	    	<!-- <img src="http://10.199.195.25:8080/express/file/bookingOrder?date=2016-06-01&fileName=89890610006.jpg">  -->
 		</div>
 		<!-- <div id="img" style="display: none" ><img src="http://10.199.195.25:8080/express/file/bookingOrder?date=2016-06-01&fileName=89890610006.jpg"></div> -->
 		<table width="100%" class="table1">
@@ -1628,7 +1627,6 @@
     					delivermanIdSelect.css('background','#ffffff');
     					delivermanIdSelect.attr("readonly",false);
     				}
-    				console.log(data.expressImage);
     				//图片按钮
     				if(data.expressImage == null){
     					$("#addImg").hide();
@@ -2067,29 +2065,45 @@
 		    .toggleClass("selected")   // 添加/删除高亮  
 		    .siblings('.child_'+this.id).toggle();  // 隐藏/显示所谓的子行
 	   }).click();
-		
-	   //图片显示
-	   var selectImage;
-       $('#addImg').click(function () {
-           //图片显示
-           selectImage = $.layer({
-           	    type: 1,
-                title: '图片展示',
-                shadeClose: true,
-                maxmin: true,
-                fix: false,
-                shade: 0,
-                area: [600],
-                page: {
-                    dom: '#img'
-                } 
-           });
-           
-       });
-       
-    
        
 	});
+	
+	//edit by zhouhuan 图片展示优化  2016-08-15
+	 var selectImage;
+	 function openwin(){
+		 var imgW = document.getElementById("img").firstChild.width;
+		 var imgH = document.getElementById("img").firstChild.height;
+		 var maxW = 600;
+		 var maxH = 600;
+
+		 if (imgW > maxW || imgH > maxH) {
+			var imgB = imgW / imgH;
+			var maxB = maxW / maxH;
+			if (imgB > maxB) {
+				imgW = maxW;
+				imgH = parseInt(imgW / imgB);
+			} else {
+				imgH = maxH;
+				imgW = parseInt(imgH * imgB);
+			}
+			document.getElementById("img").firstChild.width=imgW;
+			document.getElementById("img").firstChild.height=imgH;
+		 }
+
+		 //图片显示
+         selectImage = $.layer({
+         	  type: 1,
+              title: '图片展示',
+              shadeClose: true,
+              maxmin: false,
+              fix: false,
+              shade: 0,
+              area: [imgW,imgH+35],
+              page: {
+                  dom: '#img'
+              } 
+         }); 
+	 }
 	function confirmImport(){
 		if($("#successCount").html() == 0){
 			alert("没有可导入的数据！");
