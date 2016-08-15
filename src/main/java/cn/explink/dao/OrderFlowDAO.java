@@ -25,19 +25,22 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.pjbest.splitting.aspect.DataSource;
-import com.pjbest.splitting.routing.DatabaseType;
-
 import cn.explink.domain.orderflow.OrderFlow;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
 import cn.explink.util.StringUtil;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 @Repository
 public class OrderFlowDAO {
 
 	private static Logger logger = LoggerFactory.getLogger(OrderFlowDAO.class);
+	
+	public static final String LIMIT_FLAG = " {limit} ";
 	
 	private final class OrderFlowRowMapper implements RowMapper<OrderFlow> {
 		@Override
@@ -675,6 +678,9 @@ public class OrderFlowDAO {
 		if (isnowdata > 0) {
 			sql += " and isnow =1 ";
 		}
+		
+		logger.info("OrderFlowDAO.getOrderFlowBySome sql: {}", sql);
+		
 		return this.jdbcTemplate.queryForList(sql, String.class);
 	}
 
@@ -1453,5 +1459,134 @@ public class OrderFlowDAO {
 				+" AND EXISTS(select 1 from express_ops_cwb_detail cd where of.cwb=cd.cwb and cd.customerid=? )"
 				+" order by  of.credate ASC,of.flowordertype asc";
 		return this.jdbcTemplate.query(sql, new OrderFlowRowMapper(), cwb , customerid);
+	}
+	
+	/**
+	 * 分站到货统计SQL：获取订单号
+	 * @author leo01.liao
+	 * @param begindate
+	 * @param enddate
+	 * @param flowordertypes
+	 * @param currentBranchids
+	 * @param isnowdata
+	 * @return
+	 */
+	public String genSqlOrderFlowBySome(String begindate, String enddate, String flowordertypes, String currentBranchids, long isnowdata, boolean limit) {
+		if(currentBranchids.equals("")){
+			currentBranchids="''";
+		}
+						
+		/*String sql = "select distinct cwb from express_ops_order_flow FORCE INDEX(FlowCredateIdx, FlowBranchidIdx)  where flowordertype in(" + flowordertypes + ") " +
+		             " and credate >= '" + begindate + "' and credate <= '" + enddate + "' ";*/
+		String sql = "";
+		if(currentBranchids != null && !currentBranchids.trim().equals("")){
+			sql = "select distinct cwb from express_ops_order_flow FORCE INDEX(FlowCredateIdx, FlowBranchidIdx)  where flowordertype in(" + flowordertypes + ") " +
+		          " and credate >= '" + begindate + "' and credate <= '" + enddate + "' ";
+			sql += " and branchid in(" + currentBranchids + ") ";
+		}else{
+			sql = "select distinct cwb from express_ops_order_flow FORCE INDEX(FlowCredateIdx)  where flowordertype in(" + flowordertypes + ") " +
+		          " and credate >= '" + begindate + "' and credate <= '" + enddate + "' ";
+		}
+		
+		if (isnowdata > 0) {
+			sql += " and isnow =1 ";
+		}
+		
+		if(limit){
+			//sql += " limit " + page + " ," + Page.EXCEL_PAGE_NUMBER;
+			sql += LIMIT_FLAG;
+		}
+		
+		logger.info("genSqlOrderFlowBySome sql: {}", sql);
+		
+		return sql;
+	}
+	
+	/**
+	 * 分站到货SQL：获取订单信息
+	 * @author leo01.liao
+	 * @param sqlOrderFlowBySome
+	 * @param page
+	 * @param begindate
+	 * @param enddate
+	 * @param customeridStr
+	 * @param startbranchids
+	 * @param nextbranchids
+	 * @param cwbordertypeids
+	 * @param currentBranchids
+	 * @param dispatchbranchids
+	 * @param kufangids
+	 * @param flowordertype
+	 * @param paywayid
+	 * @param sign
+	 * @param paybackfeeIsZero
+	 * @param servicetype
+	 * @return
+	 */
+	public String genSqlForExport(String sqlOrderFlowBySome, long page, String begindate, String enddate, String customeridStr, String startbranchids,
+								  String nextbranchids, String cwbordertypeids, String currentBranchids, String dispatchbranchids, String kufangids, 
+								  long flowordertype, long paywayid, long sign, Integer paybackfeeIsZero, String servicetype, boolean limit) {
+		StringBuffer sbSql = new StringBuffer();
+		sbSql.append("select a.* from express_ops_cwb_detail a, (").append(sqlOrderFlowBySome).append(") b where a.cwb = b.cwb and a.state=1 ");
+		
+		if ((begindate.length() > 0)) {
+			sbSql.append(" and a.emaildate >='").append(begindate).append("' ");
+		}
+		if ((enddate.length() > 0)) {
+			sbSql.append(" and a.emaildate <= '").append(enddate).append("' ");
+		}
+		
+		if (customeridStr.length() > 0) {
+			sbSql.append(" and a.customerid in(").append(customeridStr).append(") ");
+		}
+
+		if (currentBranchids.length() > 0) {
+			sbSql.append(" and a.currentbranchid in(").append(currentBranchids).append(") ");
+		}
+		if (dispatchbranchids.length() > 0) {
+			sbSql.append(" and a.deliverybranchid in(").append(dispatchbranchids).append(") ");
+		}
+		if (kufangids.length() > 0) {
+			// modified by wangwei, 如果是快递单那么发货站点carwarehouse是空，所以区分对待
+			if (sign == 8) {
+				sbSql.append(" and (a.cwbordertypeid=").append(CwbOrderTypeIdEnum.Express.getValue()).append(" or a.carwarehouse in( ").append(kufangids).append(")) ");
+			} else {
+				sbSql.append(" and a.carwarehouse in(").append(kufangids).append(") ");
+			}
+		}
+		if (startbranchids.length() > 0) {
+			sbSql.append(" and a.startbranchid in(").append(startbranchids).append(") ");
+		}
+		if (nextbranchids.length() > 0) {
+			sbSql.append(" and a.nextbranchid in(").append(nextbranchids).append(") ");
+		}
+		if (cwbordertypeids.length() > 0) {
+			sbSql.append(" and a.cwbordertypeid in( ").append(cwbordertypeids).append(") ");
+		}
+		if ((servicetype.length() > 0) && !"全部".equals(servicetype)) {
+			sbSql.append(" and a.cartype = '").append(servicetype).append("' ");
+		}
+		if (flowordertype > 0) {
+			sbSql.append(" and a.flowordertype = ").append(flowordertype);
+		}
+		if (paywayid > 0) {
+			sbSql.append(" and a.newpaywayid = '").append(paywayid).append("' ");
+		}
+		if (paybackfeeIsZero > -1) {
+			if (paybackfeeIsZero == 0) {
+				sbSql.append(" and a.receivablefee=0 ");
+			} else {
+				sbSql.append(" and a.receivablefee>0 ");
+			}
+		}
+		
+		if(limit){
+			//sbSql.append(" limit ").append(page).append(" ,").append(Page.EXCEL_PAGE_NUMBER);
+			sbSql.append(LIMIT_FLAG);
+		}
+		
+		logger.info("genSqlForExport sql: {}", sbSql.toString());
+		
+		return sbSql.toString();
 	}
 }

@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import net.sf.json.JSONObject;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -77,7 +78,7 @@ import cn.explink.enumutil.express.ExpressSettleWayEnum;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
-import net.sf.json.JSONObject;
+
 
 @Service
 public class DataStatisticsService {
@@ -212,9 +213,31 @@ public class DataStatisticsService {
 			Integer paybackfeeIsZero = request.getParameter("paybackfeeIsZero1") == null ? -1 : Integer.parseInt(request.getParameter("paybackfeeIsZero1").toString());
 			String servicetype = request.getParameter("servicetype1") == null ? "全部" : request.getParameter("servicetype1").toString();
 			int firstlevelid = request.getParameter("firstzhiliureasonid") == null ? 0 : Integer.parseInt(request.getParameter("firstzhiliureasonid"));
+			
+			//Modified by leoliao at 2016-07-29 优化分站到货导出性能
+			logger.debug("数据导出：cwbordertypeids={}, nextbranchid={}, begindate={}, enddate={}, customerids={}, startbranchid={}, currentBranchid={}, dispatchbranchid={}, " +
+					     "kufangid={}, branchid1={}, type1={}, flowordertype={}, paywayid={}, isaudit={}, isauditTime={}, deliverid={}, operationOrderResultTypes={}, branchid2s={}, " +
+					     "isnowdata={}, paybackfeeIsZero={}, servicetype={}, firstlevelid={}", 
+					     this.getStrings(cwbordertypeids), this.getStrings(nextbranchid), begindate, enddate, this.getStrings(customerids), this.getStrings(startbranchid),
+					     this.getStrings(currentBranchid), this.getStrings(dispatchbranchid), this.getStrings(kufangid), branchid1, type1, flowordertype, paywayid, isaudit,
+					     isauditTime, deliverid, this.getStrings(operationOrderResultTypes), this.getStrings(branchid2s), isnowdata, paybackfeeIsZero, servicetype, firstlevelid);
 
-			String orderflowcwbs = this.getCwbs(sign, begindate, enddate, isauditTime, nextbranchid, startbranchid, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid, flowordertype,
-					kufangid, currentBranchid, branchid1, type1, branchid2s, customerids, isnowdata, firstlevelid);
+			/*String orderflowcwbs = this.getCwbs(sign, begindate, enddate, isauditTime, nextbranchid, startbranchid, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid, flowordertype,
+					kufangid, currentBranchid, branchid1, type1, branchid2s, customerids, isnowdata, firstlevelid);*/
+			
+			String sqlOrderFlowBySome = "";
+			String orderflowcwbs      = "";
+			if(sign == 8){
+				//分站到货
+				sqlOrderFlowBySome = orderFlowDAO.genSqlOrderFlowBySome(begindate, enddate, 
+																FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), 
+																this.getStrings(currentBranchid), isnowdata, false);
+			}else{
+				orderflowcwbs = this.getCwbs(sign, begindate, enddate, isauditTime, nextbranchid, startbranchid, isaudit, 
+											 operationOrderResultTypes, dispatchbranchid, deliverid, flowordertype,
+											 kufangid, currentBranchid, branchid1, type1, branchid2s, customerids, isnowdata, firstlevelid);
+			}
+			//Modified end
 
 			if ((sign == 1) || (sign == 2)) {// 滞留、拒收
 				begindate = enddate = "";
@@ -273,137 +296,164 @@ public class DataStatisticsService {
 			}
 			//Added end
 			
-			final String sql = this.cwbDAO.getSQLExportHuiZong(page, begindate, enddate, this.getStrings(customerids), this.getStrings(startbranchid), this.getStrings(nextbranchid),
+			//Modified by leoliao at 2016-07-29 优化分站到货查询
+			/*final String sql = this.cwbDAO.getSQLExportHuiZong(page, begindate, enddate, this.getStrings(customerids), this.getStrings(startbranchid), this.getStrings(nextbranchid),
 					this.getStrings(cwbordertypeids), orderflowcwbs, this.getStrings(currentBranchid), this.getStrings(dispatchbranchid), strKufangid, flowordertype, paywayid, sign,
-					paybackfeeIsZero, servicetype);
+					paybackfeeIsZero, servicetype);*/
+			
+			if(sign == 8){
+				//分站到货
+				final String sql = orderFlowDAO.genSqlForExport(sqlOrderFlowBySome, page, begindate, enddate, this.getStrings(customerids), 
+											 this.getStrings(startbranchid), this.getStrings(nextbranchid),this.getStrings(cwbordertypeids), 
+											 this.getStrings(currentBranchid), this.getStrings(dispatchbranchid), 
+											 strKufangid, flowordertype, paywayid, sign, paybackfeeIsZero, servicetype, true);
+				
+				DataStatisticsExcelUtils excelUtil = new DataStatisticsExcelUtils(DataStatisticsService.this);
+				excelUtil.setCloumnName4(cloumnName4);
+				excelUtil.setCloumnName5(cloumnName5);
+				excelUtil.setCloumnName6(cloumnName6);
+				excelUtil.setSql(sql);
+				excelUtil.setPage(page);
+				excelUtil.setTotal(count);
+				
+				excelUtil.excel(response, cloumnName4, sheetName, fileName);
+			}else{
+				final String sql = this.cwbDAO.getSQLExportHuiZong(page, begindate, enddate, this.getStrings(customerids), this.getStrings(startbranchid), this.getStrings(nextbranchid),
+														this.getStrings(cwbordertypeids), orderflowcwbs, this.getStrings(currentBranchid), this.getStrings(dispatchbranchid), 
+														strKufangid, flowordertype, paywayid, sign, paybackfeeIsZero, servicetype);
+				
+				
+				ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
+					@Override
+					public void fillData(final Sheet sheet, final CellStyle style) {
+						final List<User> uList = DataStatisticsService.this.userDAO.getAllUserByuserDeleteFlag();
+						final Map<Long, Customer> cMap = DataStatisticsService.this.customerDAO.getAllCustomersToMap();
+						final List<Branch> bList = DataStatisticsService.this.branchDAO.getAllBranches();
+						final List<Common> commonList = DataStatisticsService.this.commonDAO.getAllCommons();
+						final List<CustomWareHouse> cWList = DataStatisticsService.this.customWareHouseDAO.getAllCustomWareHouse();
+						List<Remark> remarkList = DataStatisticsService.this.remarkDAO.getAllRemark();
+						final Map<String, Map<String, String>> remarkMap = DataStatisticsService.this.exportService.getInwarhouseRemarks(remarkList);
+						final List<Reason> reasonList = DataStatisticsService.this.reasonDao.getAllReason();
+
+						DataStatisticsService.this.jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
+							private int count = 0;
+							ColumnMapRowMapper columnMapRowMapper = new ColumnMapRowMapper();
+							private List<Map<String, Object>> recordbatch = new ArrayList<Map<String, Object>>();
+
+							public void processRow(ResultSet rs) throws SQLException {
+								Map<String, Object> mapRow = this.columnMapRowMapper.mapRow(rs, this.count);
+								this.recordbatch.add(mapRow);
+								this.count++;
+								if ((this.count % 100) == 0) {
+									this.writeBatch();
+								}
+							}
+
+							private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap,
+									Map<String, String> complaintMap) throws SQLException {
+								Row row = sheet.createRow(rownum + 1);
+								row.setHeightInPoints(15);
+								for (int i = 0; i < cloumnName4.length; i++) {
+									Cell cell = row.createCell((short) i);
+									cell.setCellStyle(style);
+									// sheet.setColumnWidth(i, (short) (5000));
+									// //设置列宽
+									Object a = DataStatisticsService.this.exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap,
+											reasonList, cwbspayupidMap, complaintMap);
+									if (cloumnName6[i].equals("double")) {
+										cell.setCellValue(a == null ? BigDecimal.ZERO.doubleValue() : a.equals("") ? BigDecimal.ZERO.doubleValue() : Double.parseDouble(a.toString()));
+									} else {
+										cell.setCellValue(a == null ? "" : a.toString());
+									}
+								}
+							}
+
+							@Override
+							public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+								while (rs.next()) {
+									this.processRow(rs);
+								}
+								this.writeBatch();
+								return null;
+							}
+
+							public void writeBatch() throws SQLException {
+								if (this.recordbatch.size() > 0) {
+									List<String> cwbs = new ArrayList<String>();
+									for (Map<String, Object> mapRow : this.recordbatch) {
+										cwbs.add(mapRow.get("cwb").toString());
+									}
+									Map<String, DeliveryState> deliveryStates = this.getDeliveryListByCwbs(cwbs);
+									Map<String, TuihuoRecord> tuihuorecoredMap = this.getTuihuoRecoredMap(cwbs);
+									Map<String, String> cwbspayupMsp = this.getcwbspayupidMap(cwbs);
+									Map<String, String> complaintMap = this.getComplaintMap(cwbs);
+									Map<String, Map<String, String>> orderflowList = DataStatisticsService.this.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
+									int size = this.recordbatch.size();
+									for (int i = 0; i < size; i++) {
+										String cwb = this.recordbatch.get(i).get("cwb").toString();
+										this.writeSingle(this.recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), (this.count - size) + i, cwbspayupMsp,
+												complaintMap);
+									}
+									this.recordbatch.clear();
+								}
+							}
+
+							private Map<String, TuihuoRecord> getTuihuoRecoredMap(List<String> cwbs) {
+								Map<String, TuihuoRecord> map = new HashMap<String, TuihuoRecord>();
+								for (TuihuoRecord tuihuoRecord : DataStatisticsService.this.tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
+									map.put(tuihuoRecord.getCwb(), tuihuoRecord);
+								}
+								return map;
+							}
+
+							
+private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
+								Map<String, DeliveryState> map = new HashMap<String, DeliveryState>();
+								for (DeliveryState deliveryState : DataStatisticsService.this.deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
+									map.put(deliveryState.getCwb(), deliveryState);
+								}
+								return map;
+							}
+
+							private Map<String, String> getComplaintMap(List<String> cwbs) {
+								Map<String, String> complaintMap = new HashMap<String, String>();
+								for (Complaint complaint : DataStatisticsService.this.complaintDAO.getActiveComplaintByCwbs(cwbs)) {
+									complaintMap.put(complaint.getCwb(), complaint.getContent());
+								}
+								return complaintMap;
+							}
+
+							private Map<String, String> getcwbspayupidMap(List<String> cwbs) {
+								Map<String, String> cwbspayupidMap = new HashMap<String, String>();
+								/*
+								 * for(DeliveryState deliveryState:deliveryStateDAO.
+								 * getActiveDeliveryStateByCwbs(cwbs)){ String
+								 * ispayup = "否"; GotoClassAuditing goclass =
+								 * gotoClassAuditingDAO
+								 * .getGotoClassAuditingByGcaid(deliveryState
+								 * .getGcaid());
+								 *
+								 * if(goclass!=null&&goclass.getPayupid()!=0){
+								 * ispayup = "是"; }
+								 * cwbspayupidMap.put(deliveryState.getCwb(),
+								 * ispayup); }
+								 */
+								return cwbspayupidMap;
+							}
+						});
+
+					}
+				};
+				
+				excelUtil.excel(response, cloumnName4, sheetName, fileName);
+			}
+			//Moidified by leoliao
 
 			String dataJson = this.setDataStatisticsExportExcelJson(begindate, enddate, isauditTime, nextbranchid,
 					startbranchid, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid, flowordertype,
 					kufangid, currentBranchid, branchid1, type1, branchid2s, customerids, cwbordertypeids, paywayid,
 					isnowdata, paybackfeeIsZero, servicetype, firstlevelid);
 			
-			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
-				@Override
-				public void fillData(final Sheet sheet, final CellStyle style) {
-					final List<User> uList = DataStatisticsService.this.userDAO.getAllUserByuserDeleteFlag();
-					final Map<Long, Customer> cMap = DataStatisticsService.this.customerDAO.getAllCustomersToMap();
-					final List<Branch> bList = DataStatisticsService.this.branchDAO.getAllBranches();
-					final List<Common> commonList = DataStatisticsService.this.commonDAO.getAllCommons();
-					final List<CustomWareHouse> cWList = DataStatisticsService.this.customWareHouseDAO.getAllCustomWareHouse();
-					List<Remark> remarkList = DataStatisticsService.this.remarkDAO.getAllRemark();
-					final Map<String, Map<String, String>> remarkMap = DataStatisticsService.this.exportService.getInwarhouseRemarks(remarkList);
-					final List<Reason> reasonList = DataStatisticsService.this.reasonDao.getAllReason();
-
-					DataStatisticsService.this.jdbcTemplate.query(new StreamingStatementCreator(sql), new ResultSetExtractor<Object>() {
-						private int count = 0;
-						ColumnMapRowMapper columnMapRowMapper = new ColumnMapRowMapper();
-						private List<Map<String, Object>> recordbatch = new ArrayList<Map<String, Object>>();
-
-						public void processRow(ResultSet rs) throws SQLException {
-							Map<String, Object> mapRow = this.columnMapRowMapper.mapRow(rs, this.count);
-							this.recordbatch.add(mapRow);
-							this.count++;
-							if ((this.count % 100) == 0) {
-								this.writeBatch();
-							}
-						}
-
-						private void writeSingle(Map<String, Object> mapRow, TuihuoRecord tuihuoRecord, DeliveryState ds, Map<String, String> allTime, int rownum, Map<String, String> cwbspayupidMap,
-								Map<String, String> complaintMap) throws SQLException {
-							Row row = sheet.createRow(rownum + 1);
-							row.setHeightInPoints(15);
-							for (int i = 0; i < cloumnName4.length; i++) {
-								Cell cell = row.createCell((short) i);
-								cell.setCellStyle(style);
-								// sheet.setColumnWidth(i, (short) (5000));
-								// //设置列宽
-								Object a = DataStatisticsService.this.exportService.setObjectA(cloumnName5, mapRow, i, uList, cMap, bList, commonList, tuihuoRecord, ds, allTime, cWList, remarkMap,
-										reasonList, cwbspayupidMap, complaintMap);
-								if (cloumnName6[i].equals("double")) {
-									cell.setCellValue(a == null ? BigDecimal.ZERO.doubleValue() : a.equals("") ? BigDecimal.ZERO.doubleValue() : Double.parseDouble(a.toString()));
-								} else {
-									cell.setCellValue(a == null ? "" : a.toString());
-								}
-							}
-						}
-
-						@Override
-						public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
-							while (rs.next()) {
-								this.processRow(rs);
-							}
-							this.writeBatch();
-							return null;
-						}
-
-						public void writeBatch() throws SQLException {
-							if (this.recordbatch.size() > 0) {
-								List<String> cwbs = new ArrayList<String>();
-								for (Map<String, Object> mapRow : this.recordbatch) {
-									cwbs.add(mapRow.get("cwb").toString());
-								}
-								Map<String, DeliveryState> deliveryStates = this.getDeliveryListByCwbs(cwbs);
-								Map<String, TuihuoRecord> tuihuorecoredMap = this.getTuihuoRecoredMap(cwbs);
-								Map<String, String> cwbspayupMsp = this.getcwbspayupidMap(cwbs);
-								Map<String, String> complaintMap = this.getComplaintMap(cwbs);
-								Map<String, Map<String, String>> orderflowList = DataStatisticsService.this.getOrderFlowByCredateForDetailAndExportAllTime(cwbs, bList);
-								int size = this.recordbatch.size();
-								for (int i = 0; i < size; i++) {
-									String cwb = this.recordbatch.get(i).get("cwb").toString();
-									this.writeSingle(this.recordbatch.get(i), tuihuorecoredMap.get(cwb), deliveryStates.get(cwb), orderflowList.get(cwb), (this.count - size) + i, cwbspayupMsp,
-											complaintMap);
-								}
-								this.recordbatch.clear();
-							}
-						}
-
-						private Map<String, TuihuoRecord> getTuihuoRecoredMap(List<String> cwbs) {
-							Map<String, TuihuoRecord> map = new HashMap<String, TuihuoRecord>();
-							for (TuihuoRecord tuihuoRecord : DataStatisticsService.this.tuihuoRecordDAO.getTuihuoRecordByCwbs(cwbs)) {
-								map.put(tuihuoRecord.getCwb(), tuihuoRecord);
-							}
-							return map;
-						}
-
-						private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
-							Map<String, DeliveryState> map = new HashMap<String, DeliveryState>();
-							for (DeliveryState deliveryState : DataStatisticsService.this.deliveryStateDAO.getActiveDeliveryStateByCwbs(cwbs)) {
-								map.put(deliveryState.getCwb(), deliveryState);
-							}
-							return map;
-						}
-
-						private Map<String, String> getComplaintMap(List<String> cwbs) {
-							Map<String, String> complaintMap = new HashMap<String, String>();
-							for (Complaint complaint : DataStatisticsService.this.complaintDAO.getActiveComplaintByCwbs(cwbs)) {
-								complaintMap.put(complaint.getCwb(), complaint.getContent());
-							}
-							return complaintMap;
-						}
-
-						private Map<String, String> getcwbspayupidMap(List<String> cwbs) {
-							Map<String, String> cwbspayupidMap = new HashMap<String, String>();
-							/*
-							 * for(DeliveryState deliveryState:deliveryStateDAO.
-							 * getActiveDeliveryStateByCwbs(cwbs)){ String
-							 * ispayup = "否"; GotoClassAuditing goclass =
-							 * gotoClassAuditingDAO
-							 * .getGotoClassAuditingByGcaid(deliveryState
-							 * .getGcaid());
-							 *
-							 * if(goclass!=null&&goclass.getPayupid()!=0){
-							 * ispayup = "是"; }
-							 * cwbspayupidMap.put(deliveryState.getCwb(),
-							 * ispayup); }
-							 */
-							return cwbspayupidMap;
-						}
-					});
-
-				}
-			};
-
-			excelUtil.excel(response, cloumnName4, sheetName, fileName);
 			//记录导出文件日志
 			this.auditExportExcel(dataJson, fileName, count, this.getSessionUser().getUserid());
 
@@ -1744,7 +1794,7 @@ public class DataStatisticsService {
 
 	// 给CwbOrderView赋值
 	public List<CwbOrderView> getCwbOrderView(List<CwbOrder> clist, List<Customer> customerList, List<CustomWareHouse> customerWareHouseList, List<Branch> branchList, List<User> userList,
-			List<Reason> reasonList, String begindate, String enddate, List<Remark> remarkList){
+			List<Reason> reasonList, String begindate, String enddate, List<Remark> remarkList) {
 		List<CwbOrderView> cwbOrderViewList = new ArrayList<CwbOrderView>();
 
 		List<String> cwbs = new ArrayList<String>();
@@ -2741,4 +2791,6 @@ public class DataStatisticsService {
 		return json.toString();
 	}
 
+	
+	
 }

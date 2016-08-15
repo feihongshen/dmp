@@ -13,10 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import cn.explink.service.DfFeeService;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -73,13 +69,17 @@ import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.SignTypeEnum;
 import cn.explink.service.AdjustmentRecordService;
 import cn.explink.service.CwbOrderService;
+import cn.explink.service.DfFeeService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.OrgBillAdjustmentRecordService;
+import cn.explink.service.mps.release.DeliverTakeGoodsMPSReleaseService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 @Controller
 @RequestMapping("/delivery")
@@ -140,6 +140,8 @@ public class DeliveryController {
 	OrgBillAdjustmentRecordService orgBillAdjustmentRecordService;
     @Autowired
     DfFeeService dfFeeService;
+    @Autowired
+    DeliverTakeGoodsMPSReleaseService deliverTakeGoodsMPSReleaseService;
 
 	private SimpleDateFormat df_d = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -609,6 +611,15 @@ public class DeliveryController {
 		String scancwb = cwb;
 		try {
 			cwb = this.cwborderService.translateCwb(cwb);
+			
+			/* ***************add begin*********************/
+			//add by neo01.huang，2016-8-9
+			//反馈时校验是否已存在领货记录
+			CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+			if (cwbOrder != null) {
+				deliverTakeGoodsMPSReleaseService.validateExistPickingForFeedBack(cwbOrder);
+			}
+			/* ***************add end*********************/
 
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put("deliverid", deliveryid);// 小件员

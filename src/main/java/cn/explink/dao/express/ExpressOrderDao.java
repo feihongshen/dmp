@@ -323,7 +323,7 @@ public class ExpressOrderDao {
 	public List<DeliverSummary> getDeliverSummary(String beginDate, String endDate, Set<Long> collectoridSet) {
 		StringBuffer sql = new StringBuffer("select collectorid,count(opscwbid) order_sum,sum(totalfee) totalfee_sum,paymethod from express_ops_cwb_detail");
 		sql.append(" where cwbordertypeid=" + CwbOrderTypeIdEnum.Express.getValue());
-
+		sql.append(" and state =1 ");// add by jian_xie 2016-08-08,只统计有效的单
 		if ((beginDate != null) && (endDate != null)) {
 			sql.append(" and instationdatetime between '" + beginDate + "' and '" + endDate + "'");
 		}
@@ -861,6 +861,18 @@ public class ExpressOrderDao {
 		sql.append("select * from express_ops_cwb_detail where cwb in " + cwbs);
 		list = this.jdbcTemplate.query(sql.toString(), new EmbrancedOrderInputRowMapper());
 		return list;
+	}
+	
+	
+	/**
+	 * 根据订单号获取运单号 add by vic.liang@pjbest.com 2016-08-05
+	 * @param cwbs
+	 * @return
+	 */
+	public List<String> getTranscwbByCwbs(String cwbs) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("select transcwb from express_ops_transcwb where transcwb in " + cwbs);
+		return this.jdbcTemplate.queryForList(sql.toString() ,String.class); 
 	}
 
 	private final class changeAddrRowMapper implements RowMapper<CwbOrder> {

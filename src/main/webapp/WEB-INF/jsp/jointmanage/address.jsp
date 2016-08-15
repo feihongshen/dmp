@@ -40,6 +40,9 @@
 	src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"></script>
 <script src="<%=request.getContextPath()%>/js/js.js"
 	type="text/javascript"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
+<link id="skinlayercss" href="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/skin/layer.css" rel="stylesheet" type="text/css">
+</head>
 </head>
 <script type="text/javascript">
 	$(function() {
@@ -47,7 +50,7 @@
 			$.ajax({
 				type: "POST",
 		        url: "<%=request.getContextPath() %>/user/batchSyncAdress",
-		        dataType: "text",
+		        dataType: "json",
 		        beforeSend: function() {
 		        	$("#batchSyncAddress").val("同步中...");
 		        	$("#batchSyncAddress").attr("disabled", true);
@@ -55,7 +58,31 @@
 		        success: function(data) {
 		        	$("#batchSyncAddress").val("同步");
 		        	$("#batchSyncAddress").attr("disabled", false);
-		        	alert(data);
+		        	if(data.code == 0) {
+		        		var $sync_table = $("#sync_table");
+			        	$sync_table.find("tr:gt(0)").remove();
+			        	$.each(data.batchSyncAdressResultVoList, function(index, item) {
+			        		$sync_table.append('<tr>'
+									+ '<td valign="middle">' + item.username + '</td>'
+									+ '<td valign="middle">' + item.realname + '</td>'
+									+ '<td valign="middle">' + item.result  + '</td>'
+									+ '<td valign="middle">' + item.message + '</td>'
+									+ '</tr>');
+			        	});
+		        		$.layer({
+		                    type: 1,
+		                    title: "同步成功！成功：" + data.success + "，失败：" + data.failure + "。失败明细如下：",
+		                    shadeClose: false,
+		                    maxmin: false,
+		                    fix: false,
+		                    area: ['800px', '480px'],
+		                    page: {
+		                        dom: '#batchSyncAdressResult'
+		                    }
+		                });
+		        	} else {
+		        		alert(data.errorMsg);
+		        	}
 		        },
 		        error: function() {
 		        	$("#batchSyncAddress").val("同步");
@@ -113,5 +140,15 @@
 				</td>
 			</tr>
 		</table>
+		<div id="batchSyncAdressResult" style="display:none;">
+			<table width="800" border="0" cellspacing="1" cellpadding="0" class="table_2" id="sync_table">
+				<tr class="font_1">
+					<td width="120" align="center" valign="middle" bgcolor="#eef6ff">登录名</td>
+					<td width="120" align="center" valign="middle" bgcolor="#eef6ff">姓名</td>
+					<td width="60" align="center" valign="middle" bgcolor="#eef6ff">结果</td>
+					<td align="center" valign="middle" bgcolor="#eef6ff">信息</td>
+				</tr>
+			</table>
+		</div>
 </body>
 </html>

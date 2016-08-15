@@ -2069,6 +2069,14 @@ public class PDAController {
 				//校验是否存在退货出站审核中的记录
 				orderBackCheckService.validateCheckStateAuditing(cwb, FlowOrderTypeEnum.FenZhanLingHuo);
 				
+				//Added by leoliao at 2016-07-28 快递单未补录全则不允许领货
+				CwbOrder cwbOrderTmp = cwbOrderService.getCwbByCwb(cwb);
+				if(cwbOrderTmp != null && cwbOrderTmp.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue() && cwbOrderTmp.getIsadditionflag() == 0){
+					logger.info("快递单(cwb={})未补录全不允许领货", cwb);
+					continue;
+				}
+				//Added end
+				
 				CwbOrder cwbOrder = this.cwbOrderService.receiveGoodsByDeliver(this.getSessionUser(), deliveryUser, cwb, scancwb, isChaoqu);
 				//*******Hps_Concerto*****2016年5月26日17:23:11
 				try{
@@ -7367,6 +7375,9 @@ public class PDAController {
 		// 今日出库(未到货)订单数
 		List<String> jinriweidaohuocwbslist = this.operationTimeDAO.getOrderFlowJinRiChuKuORRuKuListAll(this.getSessionUser().getBranchid(), flowordertypes, DateTimeUtil.getCurrentDayZeroTime());
 		List<String> lishiweidaohuocwbslist = this.operationTimeDAO.getlishiweidaohuoAll(this.getSessionUser().getBranchid(), flowordertypes, DateTimeUtil.getCurrentDayZeroTime());
+		// 已到货list
+		List<String> yidaohuocwbs = this.operationTimeDAO.getyidaohuoByBranchid(this.getSessionUser().getBranchid(), FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue());
+				
 		// List<String> yidaohuocwbs =
 		// this.operationTimeDAO.getyidaohuoByBranchid(this.getSessionUser().getBranchid(),
 		// FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue());
@@ -7381,6 +7392,12 @@ public class PDAController {
 			lishiweidaohuocwbs = this.getStrings(lishiweidaohuocwbslist);
 		} else {
 			lishiweidaohuocwbs = "'--'";
+		}
+		String yidaohuo = "";
+		if (yidaohuocwbs.size() > 0) {
+			yidaohuo = this.getStrings(yidaohuocwbs);
+		}else{
+			yidaohuo = "'--'";
 		}
 		/*
 		 * String yidaohuoorder = ""; if (yidaohuocwbs.size() > 0) {
@@ -7399,13 +7416,18 @@ public class PDAController {
 
 		// 揽件未到站数量统计
 		long lanjianweidaozhancount = this.cwbDAO.countLanJianWeiDaoZhanByBranch(branchid);// 揽件未到站
-																							// 货物数量统计
+		
+		//将已到货的数量统计逻辑改为和已到货明细查询的逻辑一致，防止数量和明细对应不上---刘武强
+		long yidaohuocount = this.cwbDAO.getHistoryDaoHuoByBranchidForCount(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() + ","+ FlowOrderTypeEnum.LanJianRuZhan.getValue(), this.getSessionUser().getBranchid(), yidaohuo);
+
+																					// 货物数量统计
 
 		obj.put("branch", b);
 		obj.put("jinriweidaohuocount", jinriweidaohuocount);
 		obj.put("historyweidaohuocount", historyweidaohuocount);
 		obj.put("lanjianweidaozhancount", lanjianweidaozhancount);
-		obj.put("yidaohuonum", this.cwbDAO.getYiDaohuobyBranchid(this.getSessionUser().getBranchid()).getOpscwbid());
+		//obj.put("yidaohuonum", this.cwbDAO.getYiDaohuobyBranchid(this.getSessionUser().getBranchid()).getOpscwbid());
+		obj.put("yidaohuonum", yidaohuocount);
 		return obj;
 	}
 
@@ -11408,11 +11430,13 @@ public class PDAController {
 			logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
 			if(null==sc||sc.Clientstate.State!=2){
 				logger.info("尝试连接中间件 ："+entranceIP);
-				sc=this.autoAllocationService.startConnect(entranceIP, PORT);
+				sc=this.autoAllocationService.startConnect(entranceIP);
 				socketMap.put(entranceIP, sc);
 			}
 			
 			sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+			this.autoAllocationService.init(entranceIP);	//初始化连接
+			
 			socketMap=this.autoAllocationService.getSocketMap();
 			sc=socketMap.get(entranceIP);
 			logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
@@ -11667,12 +11691,15 @@ public class PDAController {
 			SocketClient sc=socketMap.get(e.getEntranceip());
 			if(null==sc||sc.Clientstate.State!=2){
 				logger.info("尝试连接中间件："+e.getEntranceip());
-				sc=this.autoAllocationService.startConnect(e.getEntranceip(), PORT);
+				sc=this.autoAllocationService.startConnect(e.getEntranceip());
 				socketMap.put(e.getEntranceip(), sc);
 			}
 		}
 		
 		sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+		
+		this.autoAllocationService.init(eList);	//初始化连接
+		
 		for(Entrance e:eList){
 			Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
 			SocketClient sc=socketMap.get(e.getEntranceip());
@@ -11721,10 +11748,12 @@ public class PDAController {
 				logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
 				if(null==sc||sc.Clientstate.State!=2){
 					logger.info("尝试连接中间件："+entranceIP);
-					sc=this.autoAllocationService.startConnect(entranceIP, PORT);
+					sc=this.autoAllocationService.startConnect(entranceIP);
 					socketMap.put(entranceIP, sc);
 					
 					sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+					
+					this.autoAllocationService.init(entranceIP);	//初始化连接
 				}
 				
 				//再次检查是否连接断开，若仍然未连上则抛出异常，不能入库
@@ -11779,5 +11808,106 @@ public class PDAController {
 		
 		return listBranch;
 	}
+	
+	/**
+	 * 二次分拨（不入库，只上自动分拨）
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param cwb
+	 */
+	@RequestMapping("/autoAllocateAgainWithoutIntoWarehouse/{cwb}")
+	public @ResponseBody ExplinkResponse autoAllocateAgainWithoutIntoWarehouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "autoallocatid", defaultValue = "-1") String entranceno){
+		if(isAutoAllocatingButDisconnected(entranceno)){
+			throw new CwbException(cwb, FlowOrderTypeEnum.RuKu.getValue(), ExceptionCwbErrorTypeEnum.AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE);
+		}
+		
+		long startTime = System.currentTimeMillis();
+		ExplinkResponse resp = null;
+		String scancwb = cwb;
+		CwbOrder cwbOrder = new CwbOrder();
 
+		String branchName="";//配送站点名称
+		String outputNo="";//出货口编号
+		
+		cwb = this.cwbOrderService.translateCwb(cwb);
+		cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+		
+		if (cwbOrder == null) {
+			throw new CwbException(cwb, FlowOrderTypeEnum.RuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
+		
+		try{
+			JSONObject obj = new JSONObject();
+			resp = new ExplinkResponse("000000", CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText(), obj);
+			
+			obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
+			obj.put("cwbcustomername", this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
+
+			if (cwbOrder.getNextbranchid() != 0) {
+				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
+				obj.put("cwbbranchname", branch.getBranchname());
+			} else {
+				obj.put("cwbbranchname", "");
+			}
+			
+			/*
+			 * 单票成功订单，有站点提示语音的，忽略通用提示音
+			 */
+			// 通用提示音
+			String wavPath = null;
+			// 一票多件提示音乐
+			String multiTipPath = null;
+			if (resp.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
+				wavPath = this.getErrorWavFullPath(request, CwbOrderPDAEnum.OK.getVediourl());
+			} else {
+				wavPath = this.getErrorWavFullPath(request, CwbOrderPDAEnum.SYS_ERROR.getVediourl());
+			}
+			if ((cwbOrder.getSendcarnum() > 1) || (cwbOrder.getBackcarnum() > 1)) {
+				resp.setErrorinfo(resp.getErrorinfo() + "\n一票多件");
+				if (this.isPlayYPDJSound()) {
+					multiTipPath = this.getErrorWavFullPath(request, CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
+					resp.addLongWav(multiTipPath);
+				}
+			}
+			if (cwbOrder.getDeliverybranchid() != 0) {
+				// 如果存在站点声音，忽略通用提示音
+				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid());
+				branchName=branch.getBranchname();//站点中文名
+				outputNo=branch.getOutputno();//站点出货口
+				obj.put("cwbdeliverybranchname", branch.getBranchname());
+				if (!this.isStringEmpty(branch.getBranchwavfile())) {
+					String fullPath = this.getWavFullPath(request, branch.getBranchwavfile());
+					resp.addLastWav(fullPath);
+					obj.put("cwbdeliverybranchnamewav", fullPath);
+				} else {
+					// 存在站点,但未设置声音，也使用通用提示音
+					resp.addLongWav(wavPath);
+				}
+			} else {
+				// 如果不存在站点声音，使用通用提示音
+				resp.addLongWav(wavPath);
+				obj.put("cwbdeliverybranchname", "");
+				obj.put("cwbdeliverybranchnamewav", "");
+			}
+			/**
+			 * 对接自动分拨的中间件
+			 */
+			this.addQueue(outputNo, entranceno, cwb, branchName, scancwb, Constants.INTOWAHOUSE_TYPE_AUTO_ALLOCATE_AGAIN);		
+		
+			this.logger.info("二次分拣扫描的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
+			return resp;
+		} catch (CwbException e) {
+			this.logger.error("cwb="+cwb,e);
+			ExplinkResponse explinkResponse = new ExplinkResponse(e.getError().getValue() + "", e.getMessage(), null);
+			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl());
+			// 添加货物类型声音.
+			this.addGoodsTypeWaveJSON(request, cwbOrder, explinkResponse);
+			// 单号不存在异常.
+			this.addNoOrderWav(request, e, explinkResponse);
+			explinkResponse.addShortWav(this.getErrorWavFullPath(request, CwbOrderPDAEnum.SYS_ERROR.getVediourl()));
+			return explinkResponse;
+		}
+	}
 }
