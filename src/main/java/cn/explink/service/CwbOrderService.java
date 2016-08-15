@@ -801,7 +801,7 @@ public class CwbOrderService extends BaseOrderService {
 				
 				+ "carwarehouse=?,remark1=?,remark2=?,remark3=?,remark4=?,"
 				+ "remark5=?,paywayid=?,newpaywayid=?,addresscodeedittype=?,printtime=?,"
-				+ "shouldfare=?,cwbstate =1 where cwb=? and state=1";
+				+ "shouldfare=? where cwb=? and state=1";
 
 		this.jdbcTemplate
 				.update(sql, cwbOrderDTO.getConsigneename(), cwbOrderDTO.getConsigneeaddress(), cwbOrderDTO.getConsigneepostcode(), cwbOrderDTO.getConsigneephone(), cwbOrderDTO.getSendcargoname(), 
