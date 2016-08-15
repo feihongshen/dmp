@@ -9,6 +9,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.aspectj.org.eclipse.jdt.core.dom.ThisExpression;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,6 +32,9 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 	private String validateCodeParameter = DEFAULT_VALIDATE_CODE_PARAMETER;
 	public static final String DEFAULT_SESSION_VALIDATE_CODE_FIELD = "validateCode";
 	public static final String DEFAULT_VALIDATE_CODE_PARAMETER = "validateCode";
+	
+	//add by huangzh 2016-8-3 添加登录日志
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	UserDAO userDAO;
@@ -54,6 +60,8 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 		List<User> users = userDAO.getUsersByUsername(username);
 
 		if (users.size() == 0 || users.size() > 1 || !users.get(0).getWebPassword().equals(password)) {
+			//add by huangzh 2016-8-3  添加登录失败日志
+			this.logger.error("用户名:"+username+",登录IP："+getIpAddr(request)+",登录时间："+DateTimeUtil.getNowTime()+"，登录标识:登录失败，用户名或者密码错误");
 			throw new AuthenticationServiceException("用户名或者密码错误");
 		}
 
@@ -73,6 +81,9 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 		users.get(0).setLastLoginIp(getIpAddr(request));
 		users.get(0).setLastLoginTime(DateTimeUtil.getNowTime());
 		userDAO.updateUserLastInfo(users.get(0));
+		
+		//add by huangzh 2016-8-3  添加登录成功日志
+		this.logger.info("用户名:"+username+",登录IP："+getIpAddr(request)+",登录时间："+DateTimeUtil.getNowTime()+"，登录标识：登录成功。");
 
 		return this.getAuthenticationManager().authenticate(authRequest);
 	}
@@ -99,10 +110,17 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 	protected void checkValidateCode(HttpServletRequest request) {
 		String sessionValidateCode = obtainSessionValidateCode(request);
 		String validateCodeParameter = obtainValidateCodeParameter(request);
+		String username = StringUtils.trimToEmpty(obtainUsername(request));
 		if(StringUtils.isEmpty(sessionValidateCode)) {
+			//add by huangzh 2016-8-3  添加登录失败日志
+			this.logger.error("用户名:"+username+",登录IP："+getIpAddr(request)+",登录时间："+DateTimeUtil.getNowTime()+"，登录标识:登录失败，验证码已过期");
+			
 			throw new AuthenticationServiceException("验证码已过期");
 		}
 		if (StringUtils.isEmpty(validateCodeParameter) || !sessionValidateCode.equalsIgnoreCase(validateCodeParameter)) {// &&!"TTTT".equals(validateCodeParameter)
+			//add by huangzh 2016-8-3  添加登录失败日志
+			this.logger.error("用户名:"+username+",登录IP："+getIpAddr(request)+",登录时间："+DateTimeUtil.getNowTime()+"，登录标识:登录失败，验证码不正确");
+			
 			throw new AuthenticationServiceException("验证码不正确");
 		}
 	}

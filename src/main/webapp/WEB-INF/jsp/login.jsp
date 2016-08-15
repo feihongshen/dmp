@@ -1,4 +1,6 @@
 <%@ page language="java" import="java.util.*" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
+<%@ page import="org.springframework.context.ApplicationContext" %>
+<%@ page import="org.springframework.web.servlet.support.RequestContextUtils" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -158,6 +160,35 @@ h1, h2, h3, h4, h5, h6 {
 }
 </style>
 </head>
+
+<%
+	try {
+		String url = request.getRequestURL().toString();
+
+		if (url.startsWith("http://")) {
+			boolean ssl = false;
+
+			ApplicationContext context = RequestContextUtils.getWebApplicationContext(request);
+			Properties props = (Properties) context.getBean("propertyPlaceHolder");
+			if (props != null) {
+				ssl = Boolean.valueOf(props.getProperty("login.use.ssl"));
+			}
+			if (ssl) {
+				String hp = url.substring(7);
+				int pos = hp.indexOf("/");
+				if (pos > 0) {
+					String nhp = "https://" + hp.substring(0, pos) + request.getContextPath() + "/slogin";
+					response.sendRedirect(nhp);
+					session.setAttribute("login.ssl.url", nhp);
+					System.out.println("use ssl login : " + nhp);
+				}
+			}
+		}
+	} catch (Exception e) {
+		System.out.println(e.toString());
+	}
+%>
+
 <body style="background-color: #efefef;">
 	<div id="alertMessage"></div>
 	<div id="successLogin"></div>

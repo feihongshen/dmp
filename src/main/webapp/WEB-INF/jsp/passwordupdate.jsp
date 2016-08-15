@@ -1,11 +1,20 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.util.*" %>
+<%@ page import="cn.explink.consts.ImageValidateConsts" %>
 <% 
 Map usermap=(Map)session.getAttribute("usermap");
+//图片验证url
+String imgValidateUrl = request.getContextPath()+"/user/randomImg?"+ImageValidateConsts.HTTP_PARAM_NAME_TYPE+"=";
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+<!--本页面a标签定义href="void(0)"后还是会跳页，只能用CSS进行模拟-->
+<style>
+a {
+	cursor:pointer;
+}
+</style>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>修改密码</title>
   <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
@@ -48,7 +57,25 @@ function submitFormWeb(form){
 		alert("两次网页登录密码不一致");
 		form.webPassword.focus();
 		return false;
-	} 
+	}
+	//by zhili01.liang on 2016-08-09
+	//唯品支付资金归集，修改密码时需同时验证密码和验证码======START=====
+	if (trim(form.oldWebPassword.value)==""){
+		alert("请输入网页登录旧密码");
+		form.oldWebPassword.focus();
+		return false;
+	}
+	if (trim(form.oldWebPassword.value)==trim(form.webPassword.value)){
+		alert("新旧密码不能相同，请重新输入新密码");
+		form.webPassword.focus();
+		return false;
+	}
+	if (trim(form.validateWebCode.value)==""){
+		alert("请输入验证码");
+		form.validateWebCode.focus();
+		return false;
+	}
+	//唯品支付资金归集，修改密码时需同时验证密码和验证码======END=====
 	if(!isPasswordValidForWeb(form.webPassword.value)){
 		alert("网页登录密码至少要含小写字母、大写字母、数字、特殊字符中的任意三种，且长度至少需要八位");
 		return false;
@@ -89,6 +116,11 @@ function submitForm(form){
 	}
 }
 
+//唯品支付资金归集，修改密码时需同时验证密码和验证码
+function changeImg(imgId,type){
+	var url = "<%=imgValidateUrl%>"+type+"&a="+Math.random();
+	$("#"+imgId).attr("src",url);
+}
   </script>
   </head>
  
@@ -113,6 +145,16 @@ function submitForm(form){
                         </td>
                         <td width="35%"></td>
 				  </tr>	
+				  <!--by zhili01.liang on 2016-08-09  唯品支付资金归集，修改密码时需同时验证密码和验证码======START===== -->
+				  <tr class="font_1">
+				  	    <td width="30%"></td>
+                        <td width="15%" align="center" valign="middle">网页登录旧密码：</td>
+                        <td width="20%" align="center" valign="middle">
+                          <input name="oldWebPassword" type="password" size="30"  maxlength="60" class="TextInput"/>
+                        </td>
+                        <td width="35%"></td>
+				  </tr>	
+				  <!--by zhili01.liang on 2016-08-09  唯品支付资金归集，修改密码时需同时验证密码和验证码======End===== -->
 				  <tr class="font_1">
 				  	    <td width="30%"></td>
                         <td width="15%" align="center" valign="middle">网页登录新密码：</td>
@@ -129,6 +171,18 @@ function submitForm(form){
                         </td>
                         <td width="35%"></td>
 				  </tr>
+				  <!--by zhili01.liang on 2016-08-09  唯品支付资金归集，修改密码时需同时验证密码和验证码======START===== -->
+				  <tr class="font_1">
+				  	    <td width="30%"></td>
+                        <td width="15%" align="center" valign="middle">验证码：</td>
+                        <td width="20%" align="center" valign="middle">
+                          <input name="validateWebCode" id="validateWebCode" type="text" size="12"  maxlength="4" class="TextInput"/>
+                          <img id="imgValidteWeb" src="<%=imgValidateUrl%><%=ImageValidateConsts.TYPE_UPDATE_WEB_PWD%>" onclick="changeImg('imgValidteWeb','<%=ImageValidateConsts.TYPE_UPDATE_WEB_PWD%>');"/>
+                          <a onclick="changeImg('imgValidteWeb','<%=ImageValidateConsts.TYPE_UPDATE_WEB_PWD%>')" style="color: red; font-size: 12px; text-decoration: none;" >换一张</a>
+                        </td>
+                        <td width="35%"></td>
+				  </tr>	
+				  <!--by zhili01.liang on 2016-08-09  唯品支付资金归集，修改密码时需同时验证密码和验证码======End===== -->
 				  <tr class="font_1">
 				  <td width="30%"></td>
 				   <td width="35%" align="center" valign="middle" colspan ="2" >
