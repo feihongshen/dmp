@@ -5,15 +5,18 @@ import cn.explink.service.DfFeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.List;
 
 @Component
 public class DfAdjustmentRecordDAO {
@@ -28,6 +31,65 @@ public class DfAdjustmentRecordDAO {
         } else {
             throw new IllegalArgumentException("只接受参数为 DfChargerType.ORG 或者 DfChargerType.STAFF");
         }
+    }
+
+    private final class DfAdjustmentRecordRowMapper implements RowMapper<DfAdjustmentRecord> {
+        @Override
+        public DfAdjustmentRecord mapRow(ResultSet rs, int rowNum)
+                throws SQLException {
+            DfAdjustmentRecord record = new DfAdjustmentRecord();
+            record.setId(rs.getLong("id"));
+            record.setOrderNo(rs.getString("order_no"));
+            record.setTranscwb(rs.getString("transcwb"));
+            record.setCwbordertypeid(rs.getInt("cwbordertypeid"));
+            record.setCustomerid(rs.getLong("customerid"));
+            record.setSendcarnum(rs.getInt("sendcarnum"));
+            record.setBackcarnum(rs.getLong("backcarnum"));
+            record.setSenderaddress(rs.getString("senderaddress"));
+            record.setConsigneeaddress(rs.getString("consigneeaddress"));
+            record.setRealweight(rs.getBigDecimal("realweight"));
+            record.setCargovolume(rs.getBigDecimal("cargovolume"));
+            record.setChargeType(rs.getInt("charge_type"));
+            record.setAdjustAmount(rs.getBigDecimal("adjust_amount"));
+            record.setAverPrice(rs.getBigDecimal("aver_price"));
+            record.setLevelAverprice(rs.getBigDecimal("level_averprice"));
+            record.setRangeAverprice(rs.getBigDecimal("range_averprice"));
+            record.setRangeAddprice(rs.getBigDecimal("range_addprice"));
+            record.setAddprice(rs.getBigDecimal("addprice"));
+            record.setOverareaSub(rs.getBigDecimal("overarea_sub"));
+            record.setMultiorderSub(rs.getBigDecimal("multiorder_sub"));
+            record.setHugeorderSub(rs.getBigDecimal("hugeorder_sub"));
+            record.setCodSub(rs.getBigDecimal("cod_sub"));
+            record.setOthersSub(rs.getBigDecimal("others_sub"));
+            record.setDeliverId(rs.getLong("deliver_id"));
+            record.setDeliverUsername(rs.getString("deliver_username"));
+            record.setDeliverybranchid(rs.getInt("deliverybranchid"));
+            record.setCwbstate(rs.getInt("cwbstate"));
+            record.setFlowordertype(rs.getInt("flowordertype"));
+            record.setCreateTime(rs.getTimestamp("create_time"));
+            record.setOutstationDate(rs.getTimestamp("outstationdatetime"));
+            record.setDeliverystate(rs.getInt("deliverystate"));
+            record.setEmaildate(rs.getTimestamp("emaildate"));
+            record.setCredate(rs.getTimestamp("credate"));
+            record.setMobilepodtime(rs.getTimestamp("mobilepodtime"));
+            record.setAuditingtime(rs.getTimestamp("auditingtime"));
+            record.setIsBilled(rs.getInt("is_billed"));
+            record.setBillNo(rs.getString("bill_no"));
+            record.setAgtIds(rs.getString("agt_ids"));
+            record.setRuleIds(rs.getString("rule_ids"));
+            record.setPaybackfee(rs.getBigDecimal("paybackfee"));
+            record.setReceivablefee(rs.getBigDecimal("receivablefee"));
+            record.setAdjustmentCreateTime(rs.getTimestamp("adjustment_create_time"));
+            record.setAdjustmentCreateUser(rs.getString("adjustment_create_user"));
+            record.setAdjustmentUpdateTime(rs.getTimestamp("adjustment_update_time"));
+            record.setAdjustmentUpdateUser(rs.getString("adjustment_update_user"));
+            record.setPickTime(rs.getTimestamp("pick_time"));
+            record.setApplyuserid(rs.getLong("apply_userid"));
+            record.setEdittime(rs.getString("edit_time"));
+
+            return record;
+        }
+
     }
 
     public long saveAdjustmentRecord(int chargeType, final DfAdjustmentRecord record, final String createUserName) {
@@ -136,7 +198,11 @@ public class DfAdjustmentRecordDAO {
 
                 ps.setInt(30, record.getDeliverystate());
 
-                ps.setTimestamp(31, new Timestamp(record.getEmaildate().getTime()));
+                if (record.getEmaildate() == null) {
+                    ps.setNull(31, Types.DATE);
+                }else {
+                    ps.setTimestamp(31, new Timestamp(record.getEmaildate().getTime()));
+                }
 
                 if (record.getCredate() == null) {
                     ps.setNull(32, Types.DATE);
@@ -177,4 +243,25 @@ public class DfAdjustmentRecordDAO {
         return keyHolder.getKey().longValue();
 
     }
+
+    public List<DfAdjustmentRecord> findByAdjustCondition(int chargerType, String cwb, Integer chargeType, Long branchOrUserId) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM ");
+        sql.append(getTableName(chargerType));
+        sql.append(" WHERE 1=1");
+        sql.append(" AND order_no = ?");
+        sql.append(" AND charge_type = ?");
+
+        if (chargerType == DfFeeService.DeliveryFeeChargerType.ORG.getValue()) {
+            sql.append(" AND deliverybranchid = ?");
+        } else {
+            sql.append(" AND deliver_id = ?");
+        }
+
+        Object[] params = new Object[]{cwb, chargeType, branchOrUserId};
+
+        List<DfAdjustmentRecord> fees = jdbcTemplate.query(sql.toString(), params, new DfAdjustmentRecordRowMapper());
+
+        return fees;
+    }
+
 }

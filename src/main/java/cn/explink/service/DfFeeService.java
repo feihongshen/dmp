@@ -8,6 +8,7 @@ import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.DfAdjustmentRecordDAO;
 import cn.explink.dao.DfFeeDAO;
 import cn.explink.dao.OrderFlowDAO;
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.express.CityDAO;
 import cn.explink.dao.express.CountyDAO;
@@ -16,6 +17,7 @@ import cn.explink.domain.ApplyEditDeliverystate;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
+import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.domain.deliveryFee.DfAdjustmentRecord;
@@ -25,6 +27,12 @@ import cn.explink.enumutil.BranchTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.util.JsonUtil;
+import cn.explink.util.ResourceBundleUtil;
+import com.pjbest.pjorganization.bizservice.service.SbOrgModel;
+import com.pjbest.pjorganization.bizservice.service.SbOrgService;
+import com.pjbest.pjorganization.bizservice.service.SbOrgServiceHelper;
+import com.vip.osp.core.exception.OspException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -32,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -62,7 +71,10 @@ public class DfFeeService {
     private DfAdjustmentRecordDAO dfAdjustmentRecordDAO;
     @Autowired
     private ApplyEditDeliverystateDAO applyEditDeliverystateDAO;
+    @Autowired
+    private SystemInstallDAO systemInstallDAO;
 
+    private static final String SYSTEM_INSTALL_CARRIERCODE = "CARRIERCODE";
     private static final int FROM_RESET_ORDER = 0;
     private static final int FROM_DISABLE_ORDER = 1;
     private static final int FROM_AUDIT_CONFIRMED = 2;
@@ -86,6 +98,14 @@ public class DfFeeService {
         DeliveryFeeRuleChargeType(int value, String text) {
             this.value = value;
             this.text = text;
+        }
+
+        public static String getTextByValue(int value) {
+            for (DeliveryFeeRuleChargeType chargeType : DeliveryFeeRuleChargeType.values()) {
+                if (chargeType.getValue() == value)
+                    return chargeType.getText();
+            }
+            return "";
         }
 
     }
@@ -223,6 +243,21 @@ public class DfFeeService {
                 city = order.getSendercity();
                 county = order.getSendercounty();
             }
+
+            //根据站点到TPS查找相应省份你的信息。
+            SbOrgModel orgModelFromTPS = findOrgByCarrierAndSiteCode(branchId);
+            if (orgModelFromTPS != null) {
+                if (StringUtils.isNotBlank(orgModelFromTPS.getProvinceName())) {
+                    province = orgModelFromTPS.getProvinceName();
+                }
+                if (StringUtils.isNotBlank(orgModelFromTPS.getCityName())) {
+                    city = orgModelFromTPS.getCityName();
+                }
+                if (StringUtils.isNotBlank(orgModelFromTPS.getRegionName())) {
+                    county = orgModelFromTPS.getRegionName();
+                }
+            }
+
             if (StringUtils.isBlank(province)) {
                 province = getEffectiveAddressId(senderAddr, allProvince, null);
             }
@@ -239,7 +274,7 @@ public class DfFeeService {
             if (order.getCollectorid() > 0) {
                 DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.STAFF.getValue(), cwb, chargeType, (long) order.getCollectorid());
                 if (null == fee) {
-                    logger.info("相同小件员ID{}，相同订单号{}，相同费用类型{}, 未能找到计费明细", order.getCollectorid(), DeliveryFeeChargerType.STAFF.getText(), cwb, chargeType);
+                    logger.info("相同小件员ID:{}，相同订单号:{}，相同费用类型:{}, 未能找到计费明细", order.getCollectorid(), cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
                     saveDeliveryFee(DeliveryFeeChargerType.STAFF, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                             order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
                             chargeType, order.getCollectorid(), userName, branchId, order.getCwbstate(),
@@ -248,15 +283,17 @@ public class DfFeeService {
                             order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
 
                 } else {
-                    logger.info("相同小件员ID{}，相同订单号{}，相同费用类型{}, 能找到计费明细", order.getCollectorid(), DeliveryFeeChargerType.STAFF.getText(), cwb, chargeType);
-                    saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.STAFF, fee, currentUser.getRealname());
+                    logger.info("相同小件员ID:{}，相同订单号:{}，相同费用类型:{}, 能找到计费明细, 不生成揽件费用", order.getCollectorid(), cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
+                    //commented by Steve PENG, 2016/08/03, 揽件费不需要调整记录。
+                    //saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.STAFF, fee, currentUser.getRealname());
+                    //commented by Steve PENG, 2016/08/03, end
                 }
             }
             //如果站点是加盟站点
             if (isJoinBranch(branchId)) {
                 DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.ORG.getValue(), cwb, chargeType, branchId);
                 if (null == fee) {
-                    logger.info("相同站点ID{}，相同订单号{}，相同费用类型{}, 未能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
+                    logger.info("相同站点ID:{}，相同订单号:{}，相同费用类型:{}, 未能找到计费明细", branchId, cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
                     saveDeliveryFee(DeliveryFeeChargerType.ORG, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                             order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
                             chargeType, order.getCollectorid(), userName, branchId, order.getCwbstate(),
@@ -264,8 +301,10 @@ public class DfFeeService {
                             pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
                             order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
                 } else {
-                    logger.info("相同站点ID{}，相同订单号{}，相同费用类型{}, 能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
-                    saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.ORG, fee, currentUser.getRealname());
+                    logger.info("相同站点ID:{}，相同订单号:{}，相同费用类型:{}, 能找到计费明细, 不生成揽件费用", branchId, cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
+                    //commented by Steve PENG, 2016/08/03, 揽件费不需要调整记录。
+                    //saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.ORG, fee, currentUser.getRealname());
+                    //commented by Steve PENG, 2016/08/03, end
                 }
             }
         }
@@ -291,8 +330,27 @@ public class DfFeeService {
                 String city = order.getCwbcity();
                 String county = order.getCwbcounty();
 
+                //根据站点到TPS查找相应省份你的信息。
+                SbOrgModel orgModelFromTPS = findOrgByCarrierAndSiteCode(branchId);
+                if (orgModelFromTPS != null) {
+                    if (StringUtils.isNotBlank(orgModelFromTPS.getProvinceName())) {
+                        province = orgModelFromTPS.getProvinceName();
+                    }
+                    if (StringUtils.isNotBlank(orgModelFromTPS.getCityName())) {
+                        city = orgModelFromTPS.getCityName();
+                    }
+                    if (StringUtils.isNotBlank(orgModelFromTPS.getRegionName())) {
+                        county = orgModelFromTPS.getRegionName();
+                    }
+                }
+
+                //如果没有匹配到省份，派件就拿本省的province code。
                 if (StringUtils.isBlank(province)) {
-                    province = getEffectiveAddressId(receiverAddr, allProvince, null);
+//                    province = getEffectiveAddressId(receiverAddr, allProvince, null);
+                    AdressVO currentProvince = provinceDAO.getProvinceByCode(ResourceBundleUtil.provinceCode);
+                    if(currentProvince != null){
+                        province = currentProvince.getName();
+                    }
                 }
                 if (StringUtils.isNotBlank(province) && StringUtils.isBlank(city)) {
                     String parentCode = getAddressCode(province, allProvince);
@@ -306,7 +364,7 @@ public class DfFeeService {
                 if (order.getDeliverid() > 0) {
                     DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.STAFF.getValue(), cwb, chargeType, order.getDeliverid());
                     if (null == fee) {
-                        logger.info("相同小件员ID{}，相同订单号{}，相同费用类型{}, 未能找到计费明细", order.getDeliverid(), DeliveryFeeChargerType.STAFF.getText(), cwb, chargeType);
+                        logger.info("相同小件员ID:{}，相同订单号:{}，相同费用类型:{}, 未能找到计费明细", order.getDeliverid(), cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
                         saveDeliveryFee(DeliveryFeeChargerType.STAFF, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                                 order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
                                 chargeType, order.getDeliverid(), userName, branchId, order.getCwbstate(),
@@ -314,14 +372,14 @@ public class DfFeeService {
                                 pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
                                 order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
                     } else {
-                        logger.info("相同小件员ID{}，相同订单号{}，相同费用类型{}, 能找到计费明细", order.getDeliverid(), DeliveryFeeChargerType.STAFF.getText(), cwb, chargeType);
+                        logger.info("相同小件员ID:{}，相同订单号:{}，相同费用类型:{}, 能找到计费明细", order.getDeliverid(), cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
                         saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.STAFF, fee, currentUser.getRealname());
                     }
                 }
 
                 if (isJoinBranch(branchId)) {
                     DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(DeliveryFeeChargerType.ORG.getValue(), cwb, chargeType, branchId);
-                    logger.info("相同小件员ID{}，相同订单号{}，相同费用类型{}, 未能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
+                    logger.info("相同站点ID:{}，相同订单号:{}，相同费用类型:{}, 未能找到计费明细", branchId, cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
                     if (null == fee) {
                         saveDeliveryFee(DeliveryFeeChargerType.ORG, cwb, order.getTranscwb(), order.getCwbordertypeid(), order.getCustomerid(), order.getSendcarnum(),
                                 order.getBackcarnum(), senderAddr, receiverAddr, realWeight, order.getCargovolume(),
@@ -330,12 +388,50 @@ public class DfFeeService {
                                 pick_time, deliveryState.getMobilepodtime(), deliveryState.getAuditingtime(), 0, 0, province, city, county,
                                 order.getPaybackfee(), order.getReceivablefee(), currentUser.getRealname(), order.getCartype());
                     } else {
-                        logger.info("相同站点ID{}，相同订单号{}，相同费用类型{}, 能找到计费明细", branchId, DeliveryFeeChargerType.ORG.getText(), cwb, chargeType);
+                        logger.info("相同站点ID:{}，相同订单号:{}，相同费用类型:{}, 能找到计费明细", branchId, cwb, DeliveryFeeRuleChargeType.getTextByValue(chargeType));
                         saveDeliveryAdjustmentFromFee(DeliveryFeeChargerType.ORG, fee, currentUser.getRealname());
                     }
                 }
             }
         }
+    }
+
+    private SbOrgModel findOrgByCarrierAndSiteCode(long branchId) {
+
+        Branch branch = branchDAO.getBranchById(branchId);
+
+        if (branch != null) {
+            String carrierCode = "";
+
+            SystemInstall carrierCodeSystemInstall = systemInstallDAO
+                    .getSystemInstall(SYSTEM_INSTALL_CARRIERCODE);
+            carrierCode = (carrierCodeSystemInstall == null ? ""
+                    : carrierCodeSystemInstall.getValue());
+            String carrierSiteCode = branch.getTpsbranchcode();
+
+            SbOrgService sbOrgService = new SbOrgServiceHelper.SbOrgServiceClient();
+            logger.info("查询机构服务 - 请求：carrierCode={}，carrierSiteCode={}",
+                    new Object[]{carrierCode, carrierSiteCode});
+            List<SbOrgModel> models = null;
+            try {
+                models = sbOrgService
+                        .findSbOrgByCarrierAndSelfStation(carrierCode, carrierSiteCode);
+            } catch (OspException e) {
+                e.printStackTrace();
+                logger.error("TPS 查询机构服务错误。 错误信息：" + e.getMessage());
+            }
+            try {
+                logger.info("查询机构服务 - 返回：" + JsonUtil.translateToJson(models));
+            } catch (IOException e) {
+                logger.error("TPS 查询机构服务错误, 转换为json时发生错误。");
+            }
+
+            if (CollectionUtils.isNotEmpty(models)) {
+                return models.get(0);
+            }
+        }
+
+        return null;
     }
 
     private String getAddressCode(String addressName, List<AdressVO> addresses) {
@@ -407,21 +503,56 @@ public class DfFeeService {
     }
 
     private void deleteFeeOrAddAdjust(DeliveryFeeChargerType chargerType, String cwb, Integer chargeType, Long branchOrUserId, User currentUser, int fromWhere) {
-        boolean isQulified = false;
-        if (branchOrUserId != null && branchOrUserId > 0) {
-            if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
-                if (isJoinBranch(branchOrUserId))
-                    isQulified = true;
-            } else
-                isQulified = true;
+        //是否适合删除派费记录或增加调整记录。
+        boolean isQualified = false;
+        //amended by Steve PENG, 2016/08/03, 揽件费不需要调整
+        if (DeliveryFeeRuleChargeType.GET.getValue() == chargeType) {
+            //揽件费不需要
+            isQualified = false;
+        } else {
+            if (branchOrUserId != null && branchOrUserId > 0) {
+                if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
+                    if (isJoinBranch(branchOrUserId)) {
+                        //加盟站点才需要
+                        isQualified = true;
+                    }
+                } else
+                    isQualified = true;
+            }
         }
+        //amended by Steve PENG, 2016/08/03, end
 
-        if (isQulified) {
+        if (isQualified) {
             //费用类型，同一配送站点或小件员
             DfBillFee fee = dfFeeDAO.findFeeByAdjustCondition(chargerType.getValue(), cwb, chargeType, branchOrUserId);
 
             if (fee != null) {
                 if (fee.getIsBilled() == 1) {
+                    //added by Steve PENG, 2016/07/29, 查找同一订单号，同一配送站点或小件员，同一费用类型的调整记录。
+                    //调整记录表，失效订单时，会插入负数的记录，先判断现在相同条件的记录的总数是否已经小于零，若是，则不插入。
+                    //现在不对归班审核和重置反馈加上如此校验，因为假设进入这个方法前（归班审核或重置反馈后），上游业务已经有不能重复插入的验证逻辑，这里不做对重复插入的校验。
+                    if (fromWhere == FROM_DISABLE_ORDER) {
+                        List<DfAdjustmentRecord> existingRecords = dfAdjustmentRecordDAO.findByAdjustCondition(chargerType.getValue(),
+                                cwb, chargeType, branchOrUserId);
+
+                        BigDecimal existingAdjustFee = BigDecimal.ZERO;
+                        if (CollectionUtils.isNotEmpty(existingRecords)) {
+                            for (DfAdjustmentRecord existingRecord : existingRecords) {
+                                existingAdjustFee = existingAdjustFee.add(existingRecord.getAdjustAmount());
+                            }
+                        }
+                        if (existingAdjustFee.compareTo(BigDecimal.ZERO) < 0) {
+                            if (DfFeeService.DeliveryFeeChargerType.ORG.equals(chargerType)) {
+                                logger.info("失效订单时，插入调整记录失败，订单号为{}，费用类型为{}，站点ID为{}的订单在调整记录表里的总金额小于零，所以不在插入调整记录。", cwb,
+                                        DeliveryFeeRuleChargeType.getTextByValue(chargeType), branchOrUserId);
+                            } else {
+                                logger.info("失效订单时，插入调整记录失败，订单号为{}，费用类型为{}，小件员ID为{}的订单在调整记录表里的总金额小于零，所以不在插入调整记录。", cwb,
+                                        DeliveryFeeRuleChargeType.getTextByValue(chargeType), branchOrUserId);
+                            }
+                            return;
+                        }
+                    }
+                    //added by Steve PENG, 2016/07/29, end
                     DfAdjustmentRecord adjustment = transformFeeToAdjustment(fee, fromWhere);
                     if (adjustment != null) {
                         if (fromWhere == FROM_RESET_ORDER) {
