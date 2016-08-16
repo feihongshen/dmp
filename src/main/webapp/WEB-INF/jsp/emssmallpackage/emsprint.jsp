@@ -202,6 +202,7 @@
 			if (result.result == 'success') {
 				closeWindow();
 				initDataGrid(list);
+				$('#scancwb').focus();
 			} else {
 				alert(result.result);
 			}
