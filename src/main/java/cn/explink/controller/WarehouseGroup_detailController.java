@@ -366,7 +366,13 @@ public class WarehouseGroup_detailController {
 			model.addAttribute("huizongcwbs", huizongcwbs);
 			return "warehousegroup/wuHanPickingListPrint";	
 		}
-		else if (printtemplate.getTemplatetype() == 2) {
+		// 武汉飞远退货交接单打印  add by vic.liang@pjbest.com 2016-08-16
+		else if (printtemplate.getTemplatetype() == 4 && printtemplate.getOpertatetype() == PrintTemplateOpertatetypeEnum.WuHanTuiHuoJiaoJieDan.getValue()) {//武汉飞远		
+		    OutChangePrintVo print = initPrintData(cwbList, Long.parseLong(nextbranchid), starttime, endtime, getSessionUser());
+		    model.addAttribute("cwbList",cwbList);
+		    model.addAttribute("print", print);
+			return "warehousegroup/outbackbillprinting_wuhan";
+		} else if (printtemplate.getTemplatetype() == 2) {
 
 			List<JSONObject> cwbJson = this.cwbDao.getDetailForChuKuPrint(cwbs);
 
@@ -380,12 +386,7 @@ public class WarehouseGroup_detailController {
 			model.addAttribute("cwbList", cwbJson);
 			model.addAttribute("cwbArr", cwbArr);
 			return "warehousegroup/outbillhuizongprinting_template";
-		} else if (this.printTemplateDAO.getPrintTemplate(printtemplateid).getTemplatetype() == 10) {//武汉飞远		
-		    OutChangePrintVo print = initPrintData(cwbList, Long.parseLong(nextbranchid), starttime, endtime, getSessionUser());
-		    model.addAttribute("cwbList",cwbList);
-		    model.addAttribute("print", print);
-			return "warehousegroup/outbackbillprinting_wuhan";
-		}
+		} 
 		return null;
 	}
 
@@ -674,6 +675,22 @@ public class WarehouseGroup_detailController {
 			}
 			model.addAttribute("huizongmap", hmap);
 			return "warehousegroup/outbillhuizongprinting_templatenew";
+		}
+		// 武汉飞远中转交接单打印  add by vic.liang@pjbest.com 2016-08-16
+		else if (printtemplate.getTemplatetype() == 4 && printtemplate.getOpertatetype() == PrintTemplateOpertatetypeEnum.WuHanZhongZhuanJiaoJieDan.getValue()) {//武汉飞远 中转
+			List<OutChangePrintVo> prints = new ArrayList<OutChangePrintVo>();
+			User user = getSessionUser();
+			if (map != null && !map.isEmpty()) {
+				for (Long key : map.keySet()) {
+					List<CwbOrder> list = map.get(key);
+					OutChangePrintVo print = initPrintData(list, key, starttime, endtime, user);
+				    prints.add(print);
+				}
+			}
+		    model.addAttribute("prints", prints);
+		    model.addAttribute("baleno",  baleno);
+			model.addAttribute("baleid",  baleid);
+			return "warehousegroup/outchangebillprinting_wuhan";
 		} else if (printtemplate.getTemplatetype() == 4) {
 			List<WarehouseGroupPrintDto> printlist = new ArrayList<WarehouseGroupPrintDto>();
 			WarehouseGroupPrintDto printDto = new WarehouseGroupPrintDto();
@@ -847,21 +864,7 @@ public class WarehouseGroup_detailController {
 			 */
 
 			return "warehousegroup/outbillanbaoprinting_templatenew";
-		} else if (printtemplate.getTemplatetype() == 11) {//武汉飞远 中转
-			List<OutChangePrintVo> prints = new ArrayList<OutChangePrintVo>();
-			User user = getSessionUser();
-			if (map != null && !map.isEmpty()) {
-				for (Long key : map.keySet()) {
-					List<CwbOrder> list = map.get(key);
-					OutChangePrintVo print = initPrintData(list, key, starttime, endtime, user);
-				    prints.add(print);
-				}
-			}
-		    model.addAttribute("prints", prints);
-		    model.addAttribute("baleno",  baleno);
-			model.addAttribute("baleid",  baleid);
-			return "warehousegroup/outchangebillprinting_wuhan";
-		}
+		} 
 		return null;
 	}
 
@@ -1267,7 +1270,7 @@ public class WarehouseGroup_detailController {
 		model.addAttribute(
 				"printtemplateList",
 				this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.ZhongZhuanChuZhanAnDan.getValue() + ","
-						+ PrintTemplateOpertatetypeEnum.ZhongZhuanChuZhanHuiZong.getValue()));
+						+ PrintTemplateOpertatetypeEnum.ZhongZhuanChuZhanHuiZong.getValue() + ","+PrintTemplateOpertatetypeEnum.WuHanZhongZhuanJiaoJieDan.getValue() ));
 		model.addAttribute("type", 2);
 		model.addAttribute("flowordertype", FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
 		model.addAttribute("time", "出站时间");
@@ -1354,7 +1357,7 @@ public class WarehouseGroup_detailController {
 		if (type == 2) {
 			// 中转出站
 			printtemplateList = this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.ZhongZhuanChuZhanAnDan.getValue() + ","
-					+ PrintTemplateOpertatetypeEnum.ZhongZhuanChuZhanHuiZong.getValue());
+					+ PrintTemplateOpertatetypeEnum.ZhongZhuanChuZhanHuiZong.getValue()+","+PrintTemplateOpertatetypeEnum.WuHanZhongZhuanJiaoJieDan.getValue());
 			List<Branch> removeList = new ArrayList<Branch>();
 			for (Branch b : blist) {// 去掉退货站
 				if (b.getSitetype() == BranchEnum.TuiHuo.getValue()) {
@@ -1557,6 +1560,18 @@ public class WarehouseGroup_detailController {
 			model.addAttribute("strtime", "");
 			model.addAttribute("endtime", "");
 			return "warehousegroup/wuHanPickingListPrint_history";		
+		}
+		// 武汉飞远 退货出站 历史打印  add by vic.liang@pjbest.com 2016-08-16
+		else if (printtemplate.getTemplatetype() == 4 && printtemplate.getOpertatetype() == PrintTemplateOpertatetypeEnum.WuHanTuiHuoJiaoJieDan.getValue()) {//武汉飞远 退货出站
+			OutChangePrintVo print = initPrintData(cwbList, nextbranchid,"","", getSessionUser());
+			model.addAttribute("print", print);
+			return "warehousegroup/outbackbillprintinghistory_wuhan";
+		} 
+		// 武汉飞远 中转出站 历史打印  add by vic.liang@pjbest.com 2016-08-16
+		else if (printtemplate.getTemplatetype() == 4 && printtemplate.getOpertatetype() == PrintTemplateOpertatetypeEnum.WuHanZhongZhuanJiaoJieDan.getValue()) {//武汉飞远 中转出站
+			OutChangePrintVo print = initPrintData(cwbList, nextbranchid,"","", getSessionUser());
+			model.addAttribute("print", print);
+			return "warehousegroup/outchangebillprintinghistory_wuhan";
 		}
 		else if (printtemplate.getTemplatetype() == 2) {
 
@@ -1761,15 +1776,7 @@ public class WarehouseGroup_detailController {
 				model.addAttribute("total", warehouseGroupPrintDtoTotal);
 			}
 			return "warehousegroup/outanbaoprinting_history";
-		} else if (printtemplate.getTemplatetype() == 10) {//武汉飞远 退货出站
-			OutChangePrintVo print = initPrintData(cwbList, nextbranchid,"","", getSessionUser());//TODO 出库时间
-			model.addAttribute("print", print);
-			return "warehousegroup/outbackbillprintinghistory_wuhan";
-		} else if (printtemplate.getTemplatetype() == 11) {//武汉飞远 中转出站
-			OutChangePrintVo print = initPrintData(cwbList, nextbranchid,"","", getSessionUser());//TODO 出库时间
-			model.addAttribute("print", print);
-			return "warehousegroup/outchangebillprintinghistory_wuhan";
-		}
+		} 
 		
 		return null;
 	}
@@ -2064,7 +2071,7 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("printList", printList);
 		model.addAttribute("type",1);
 		model.addAttribute("printtemplateList",
-				this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.TuiHuoChuZhanAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.TuiHuoChuZhanHuiZong.getValue()));
+				this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.TuiHuoChuZhanAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.TuiHuoChuZhanHuiZong.getValue()+ ","+PrintTemplateOpertatetypeEnum.WuHanTuiHuoJiaoJieDan.getValue()));
 		return "warehousegroup/returnlist";
 	}
 
@@ -2142,7 +2149,7 @@ public class WarehouseGroup_detailController {
 						.getBranchid()), page, Page.ONE_PAGE_NUMBER));
 
 		model.addAttribute("printtemplateList",
-				this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.TuiHuoChuZhanAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.TuiHuoChuZhanHuiZong.getValue()));
+				this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.TuiHuoChuZhanAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.TuiHuoChuZhanHuiZong.getValue()+","+PrintTemplateOpertatetypeEnum.WuHanTuiHuoJiaoJieDan.getValue()));
 		model.addAttribute("page", page);
 		return "warehousegroup/historyreturnlist";
 	}

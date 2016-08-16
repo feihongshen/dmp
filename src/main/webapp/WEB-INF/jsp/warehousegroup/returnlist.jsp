@@ -141,7 +141,7 @@ function cwbexport(){
 					<div style="float:right">  
 				        打印模版：<select name="templateid" id="templateid" class="select1">
 					  			<%for(PrintTemplate pt : pList){ %>
-					  				<option value="<%=pt.getId()%>"><%=pt.getName() %>（<%if(pt.getTemplatetype()==1){ %>按单<%}else if(pt.getTemplatetype()==2){ %>汇总<%} %>）</option>
+					  				<option value="<%=pt.getId()%>"><%=pt.getName() %>（<%if(pt.getTemplatetype()==1){ %>按单<%}else if(pt.getTemplatetype()==2){ %>汇总<%} else if(pt.getTemplatetype()==4) { %>武汉飞远<%} %>）</option>
 					  			<%} %>
 							</select>
 				      <input type="button" onclick="bdprint();" value="打印" class="input_button2" />
