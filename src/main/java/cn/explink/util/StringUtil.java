@@ -438,4 +438,60 @@ public class StringUtil {
 		}
 		return lastusername;
 	}
+	
+	/**
+	 * 数组转换层数据库in字段
+	 * @date 2016年8月11日 下午3:45:48
+	 * @param objs
+	 * @return
+	 */
+	public static String toDbInStr(String[] objs) {
+		StringBuilder objSb = new StringBuilder("");
+		for (String obj : objs) {
+			if (obj != null && obj.length() > 0) {
+				objSb.append("'").append(obj).append("'").append(",");
+			}
+		}
+		String objStr = objSb.toString();
+		if (objStr.endsWith(",")) {
+			objStr = objStr.substring(0, objStr.length() - 1);
+		}
+		return objStr;
+	}
+	
+	/**
+	 * 数组转换层数据库in字段
+	 * @date 2016年8月11日 下午3:45:48
+	 * @param objs
+	 * @return
+	 */
+	public static String toDbInStr(long[] objs) {
+		StringBuilder objSb = new StringBuilder("");
+		for (long obj : objs) {
+			objSb.append(obj).append(",");
+		}
+		String objStr = objSb.toString();
+		if (objStr.endsWith(",")) {
+			objStr = objStr.substring(0, objStr.length() - 1);
+		}
+		return objStr;
+	}
+	
+	/**
+	 * 数组转换层数据库in字段
+	 * @date 2016年8月11日 下午3:45:48
+	 * @param objs
+	 * @return
+	 */
+	public static String toDbInStr(int[] objs) {
+		StringBuilder objSb = new StringBuilder("");
+		for (long obj : objs) {
+			objSb.append(obj).append(",");
+		}
+		String objStr = objSb.toString();
+		if (objStr.endsWith(",")) {
+			objStr = objStr.substring(0, objStr.length() - 1);
+		}
+		return objStr;
+	}
 }
