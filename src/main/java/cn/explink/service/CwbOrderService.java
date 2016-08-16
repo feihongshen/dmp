@@ -2042,7 +2042,20 @@ public class CwbOrderService extends BaseOrderService {
 		// ======按包到货时更新扫描件数为发货件数zs=====
 		if (!newMPSOrder) {
 			if (!anbaochuku) {
-				this.cwbDAO.updateScannum(co.getCwb(), 1);
+				
+				/* *************modify begin********************/
+				//modify by neo01.huang，2016-8-15，原逻辑写死是1，修改后逻辑是动态计算
+				//this.cwbDAO.updateScannum(co.getCwb(), 1);
+				
+				//到货扫描数
+				int rightArriveScannum = transcwborderFlowDAO.getScanNumByTranscwbOrderFlow(null, cwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), user.getBranchid());
+				//到错货扫描数
+				int errorArriveScannum = transcwborderFlowDAO.getScanNumByTranscwbOrderFlow(null, cwb, FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), user.getBranchid());
+				logger.info("分站到货扫描计算扫描数->cwb:{}, rightArriveScannum:{}, errorArriveScannum:{}, 最终扫描数:{}", 
+						co.getCwb(), rightArriveScannum, errorArriveScannum, rightArriveScannum + errorArriveScannum + 1);
+				this.cwbDAO.updateScannum(co.getCwb(), rightArriveScannum + errorArriveScannum + 1);
+				/* *************modify end********************/
+				
 			} else {
 				this.cwbDAO.updateScannum(co.getCwb(), co.getSendcarnum());
 			}
