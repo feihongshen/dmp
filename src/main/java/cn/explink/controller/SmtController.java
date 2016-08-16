@@ -1,6 +1,5 @@
 package cn.explink.controller;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -13,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -25,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.dao.CwbDAO;
@@ -157,14 +158,16 @@ public class SmtController {
 	}
 
 	@RequestMapping("/smtorderdispatch")
-	public String smtOrderDispatch(Model model) {
+	public String smtOrderDispatch(Model model,
+			@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid) {
 		this.addBranchDelvierToModel(model);
 		// this.addTodayNotDispatchedData(model);
 		// 采用异步加载策略.
 		// this.addHistoryNotDispatchedData(model);
 		// this.addTodayDispatchData(model);
 		// this.addTodayOutAreaData(model);
-
+		// 主页面新增关联小件员查询 add by chunlei05.li 2016/8/16
+		model.addAttribute("deliverid", deliverid);
 		return "smt/smtorderdispatch";
 	}
 
@@ -189,13 +192,16 @@ public class SmtController {
 	}
 
 	@RequestMapping("/querysmtorder")
-	public @ResponseBody
-	SmtOrderContainer querySmtOrder(HttpServletRequest request) {
+	public @ResponseBody SmtOrderContainer querySmtOrder(HttpServletRequest request,
+			@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid, String tableId) {
 		OrderTypeEnum dataType = this.getDataType(request);
 		OptTimeTypeEnum timeType = this.getTimeType(request);
 		int page = this.getQueryPage(request);
 		boolean dispatched = this.getDipatched(request);
-
+		// 今日和历史新单派送，关联小件员 add by chunlei05.li 2016/8/16
+		if (StringUtils.equals(tableId, "today_table") || StringUtils.equals(tableId, "history_table")) {
+			return this.querySmtOrder(dataType, timeType, page, dispatched, deliverid);
+		}
 		return this.querySmtOrder(dataType, timeType, page, dispatched);
 	}
 
@@ -229,9 +235,12 @@ public class SmtController {
 
 	@RequestMapping("/querysmthistoryordercount")
 	@ResponseBody
-	public JSONObject querySmtHistoryOrderCount(HttpServletRequest request) {
-		int hNorNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.History, false);
-		int hTraNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Transfer, OptTimeTypeEnum.History, false);
+	public JSONObject querySmtHistoryOrderCount(HttpServletRequest request,
+			@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid) {
+		/** 订单查询关联小件员 modfiy by chunlei05.li 2016/8/16 **/
+		int hNorNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.History, false, deliverid);
+		int hTraNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Transfer, OptTimeTypeEnum.History, false, deliverid);
+		/** end **/
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("hNorNotDisCnt", hNorNotDisCnt);
 		jsonObj.put("hTraNotDisCnt", hTraNotDisCnt);
@@ -241,11 +250,13 @@ public class SmtController {
 
 	@RequestMapping("/querysmttodaynotdisordercount")
 	@ResponseBody
-	public JSONObject querySmtTodayNotDisOrderCount(HttpServletRequest request) {
-		int tNorNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, false);
-		int tTraNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Transfer, OptTimeTypeEnum.Today, false);
-		SmtOrderContainer tNotDisData = this.querySmtOrder(OrderTypeEnum.All, OptTimeTypeEnum.Today, 1, false);
-
+	public JSONObject querySmtTodayNotDisOrderCount(HttpServletRequest request,
+			@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid) {
+		/** 订单查询关联小件员 modfiy by chunlei05.li 2016/8/16 **/
+		int tNorNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, false, deliverid);
+		int tTraNotDisCnt = this.querySmtOrderCount(OrderTypeEnum.Transfer, OptTimeTypeEnum.Today, false, deliverid);
+		SmtOrderContainer tNotDisData = this.querySmtOrder(OrderTypeEnum.All, OptTimeTypeEnum.Today, 1, false, deliverid);
+		/** end **/
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("tNorNotDisCnt", tNorNotDisCnt);
 		jsonObj.put("tTraNotDisCnt", tTraNotDisCnt);
@@ -256,10 +267,12 @@ public class SmtController {
 
 	@RequestMapping("/querysmttodaydisordercount")
 	@ResponseBody
-	public JSONObject querySmtTodayDisOrderCount(HttpServletRequest request) {
-		int tNorDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, true);
-		int tTraDisCnt = this.querySmtOrderCount(OrderTypeEnum.Transfer, OptTimeTypeEnum.Today, true);
-
+	public JSONObject querySmtTodayDisOrderCount(HttpServletRequest request,
+			@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid) {
+		/** 订单查询关联小件员 modfiy by chunlei05.li 2016/8/16 **/
+		int tNorDisCnt = this.querySmtOrderCount(OrderTypeEnum.Normal, OptTimeTypeEnum.Today, true, deliverid);
+		int tTraDisCnt = this.querySmtOrderCount(OrderTypeEnum.Transfer, OptTimeTypeEnum.Today, true, deliverid);
+		/** end **/
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("tNorDisCnt", tNorDisCnt);
 		jsonObj.put("tTraDisCnt", tTraDisCnt);
@@ -418,9 +431,35 @@ public class SmtController {
 		model.addAttribute("tNorDisCnt", tNorDisCnt);
 		model.addAttribute("tTraDisCnt", tTraDisCnt);
 	}
-
+	
+	/**
+	 * 兼容旧方法
+	 * @author chunlei05.li
+	 * @date 2016年8月16日 下午3:54:28
+	 * @param dataType
+	 * @param timeType
+	 * @param page
+	 * @param dispatched
+	 * @param deliverid
+	 * @return
+	 */
 	private SmtOrderContainer querySmtOrder(OrderTypeEnum dataType, OptTimeTypeEnum timeType, int page, boolean dispatched) {
-		String sql = this.getOrderListQuerySql(dataType, timeType, page, dispatched);
+		return this.querySmtOrder(dataType, timeType, page, dispatched, 0);
+	}
+	
+	/**
+	 * 关联小件员查询
+	 * @author chunlei05.li
+	 * @date 2016年8月16日 下午5:03:14
+	 * @param dataType
+	 * @param timeType
+	 * @param page
+	 * @param dispatched
+	 * @param deliverid
+	 * @return
+	 */
+	private SmtOrderContainer querySmtOrder(OrderTypeEnum dataType, OptTimeTypeEnum timeType, int page, boolean dispatched, long deliverid) {
+		String sql = this.getOrderListQuerySql(dataType, timeType, page, dispatched, deliverid);
 
 		List<SmtOrder> orderList = this.cwbDAO.querySmtOrder(sql);
 		this.fillUserName(orderList);
@@ -455,9 +494,32 @@ public class SmtController {
 		}
 		return deliverIdList;
 	}
-
+	
+	/**
+	 * 兼容旧方法
+	 * @author chunlei05.li
+	 * @date 2016年8月16日 下午3:53:15
+	 * @param dataType
+	 * @param timeType
+	 * @param dispatched
+	 * @return
+	 */
 	private int querySmtOrderCount(OrderTypeEnum dataType, OptTimeTypeEnum timeType, boolean dispatched) {
-		String sql = this.getOrderCountQuerySql(dataType, timeType, dispatched);
+		return this.querySmtOrderCount(dataType, timeType, dispatched, 0);
+	}
+	
+	/**
+	 * 关联小件员查询
+	 * @author chunlei05.li
+	 * @date 2016年8月16日 下午5:02:56
+	 * @param dataType
+	 * @param timeType
+	 * @param dispatched
+	 * @param deliverid
+	 * @return
+	 */
+	private int querySmtOrderCount(OrderTypeEnum dataType, OptTimeTypeEnum timeType, boolean dispatched, long deliverid) {
+		String sql = this.getOrderCountQuerySql(dataType, timeType, dispatched, deliverid);
 
 		return this.cwbDAO.querySmtOrderCount(sql);
 	}
@@ -492,18 +554,18 @@ public class SmtController {
 		return this.userDAO.getUserByRolesAndBranchid(roleids, this.getSessionUser().getBranchid());
 	}
 
-	private String getOrderCountQuerySql(OrderTypeEnum dataType, OptTimeTypeEnum timeType, boolean dispatched) {
+	private String getOrderCountQuerySql(OrderTypeEnum dataType, OptTimeTypeEnum timeType, boolean dispatched, long deliverid) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(this.getSelectCountPart());
-		this.appendOrderQueryWhereCond(sql, dataType, timeType, dispatched);
+		this.appendOrderQueryWhereCond(sql, dataType, timeType, dispatched, deliverid);
 
 		return sql.toString();
 	}
 
-	private String getOrderListQuerySql(OrderTypeEnum dataType, OptTimeTypeEnum timeType, int page, boolean dispatched) {
+	private String getOrderListQuerySql(OrderTypeEnum dataType, OptTimeTypeEnum timeType, int page, boolean dispatched, long deliverid) {
 		StringBuilder sql = new StringBuilder();
 		sql.append(this.getSelectOrderPart());
-		this.appendOrderQueryWhereCond(sql, dataType, timeType, dispatched);
+		this.appendOrderQueryWhereCond(sql, dataType, timeType, dispatched, deliverid);
 		this.appendLimit(sql, page);
 
 		return sql.toString();
@@ -518,7 +580,7 @@ public class SmtController {
 		sql.append("limit " + start + "," + end);
 	}
 
-	private void appendOrderQueryWhereCond(StringBuilder sql, OrderTypeEnum dataType, OptTimeTypeEnum timeType, boolean dispatched) {
+	private void appendOrderQueryWhereCond(StringBuilder sql, OrderTypeEnum dataType, OptTimeTypeEnum timeType, boolean dispatched, long deliverid) {
 		// 站点查询条件.
 		this.appendBranchWhereCond(sql);
 		// 上门退订单查询条件.
@@ -531,6 +593,8 @@ public class SmtController {
 		this.appendTimeTypeWhereCond(sql, timeType);
 		// 转单数据可能存在多次分站到货.
 		// this.appendFlowNowWhereCond(sql, dataType);
+		// 小件员查询
+		this.appendDeliveridWhereCond(sql, deliverid);
 		// 加入订单失效条件.
 		this.appendEffectiveWhereCond(sql);
 	}
@@ -581,6 +645,21 @@ public class SmtController {
 			sql.append("<");
 		}
 		sql.append(this.getTodayZeroTimeString() + " ");
+	}
+	
+	/**
+	 * 增加小件员查询条件
+	 * @author chunlei05.li
+	 * @date 2016年8月16日 下午3:45:36
+	 * @param sql
+	 * @param timeType
+	 */
+	private void appendDeliveridWhereCond(StringBuilder sql, long deliverid) {
+		if (deliverid == 0) { // 没有选取小件员，则查询全部的
+			return;
+		}
+		// 选取了小件员，则查询匹配改小件员和未匹配小件员的
+		sql.append("and d.exceldeliverid in(0,").append(deliverid).append(") ");
 	}
 
 	@SuppressWarnings("unused")
