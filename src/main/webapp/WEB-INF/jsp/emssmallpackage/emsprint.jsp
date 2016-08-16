@@ -262,7 +262,11 @@
 		LODOP.ADD_PRINT_TEXT(128,24,150,20, "武汉市");
 		LODOP.ADD_PRINT_TEXT(151,24,150,20, cwbOrder.cwb);
 		LODOP.ADD_PRINT_TEXT(188,24,150,20, cwbOrder.consigneename);
-		LODOP.ADD_PRINT_TEXT(188,179,150,20, cwbOrder.consigneemobile);
+		var mobile = cwbOrder.consigneemobile; // 联系方式手机优先，电话其次
+		if (mobile == null || mobile == "") {
+			mobile = cwbOrder.consigneephone;
+		}
+		LODOP.ADD_PRINT_TEXT(188,179,150,20, mobile);
 		LODOP.ADD_PRINT_TEXT(236,24,300,20, cwbOrder.consigneeaddress);
 		LODOP.PRINT();
 	}
