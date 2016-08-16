@@ -224,7 +224,7 @@ h1, h2, h3, h4, h5, h6 {
 										</div>
 										<div style="padding-left: 30px;">
 											<input name="validateCode" type="text"
-												class="login_forminput" id="validateCode" maxlength="4"
+												class="login_forminput" id="validateCode" onfocus="changeImg();" maxlength="4"
 												style="width: 120px; height: 25px" />&nbsp;&nbsp;
 												<img id="randomImage" src="<%=request.getContextPath()%>/image?a=javascript:Math.random()">
 												<a href="javascript:changeImg();" style="color: red; font-size: 12px; text-decoration: none;">换一张</a>
