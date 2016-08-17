@@ -267,8 +267,10 @@
 			mobile = cwbOrder.consigneephone;
 		}
 		LODOP.ADD_PRINT_TEXT(188,179,150,20, mobile);
-		LODOP.ADD_PRINT_TEXT(236,24,300,20, cwbOrder.consigneeaddress);
+		console.log(cwbOrder.consigneeaddress);
+		LODOP.ADD_PRINT_TEXT(236,24,320,70, cwbOrder.consigneeaddress);
 		LODOP.PRINT();
+		//LODOP.PREVIEW();
 	}
  	
  	// 检测打印控件是否有效
