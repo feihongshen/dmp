@@ -244,17 +244,19 @@ public class DfFeeService {
                 county = order.getSendercounty();
             }
 
-            //根据站点到TPS查找相应省份你的信息。
-            SbOrgModel orgModelFromTPS = findOrgByCarrierAndSiteCode(branchId);
-            if (orgModelFromTPS != null) {
-                if (StringUtils.isNotBlank(orgModelFromTPS.getProvinceName())) {
-                    province = orgModelFromTPS.getProvinceName();
-                }
-                if (StringUtils.isNotBlank(orgModelFromTPS.getCityName())) {
-                    city = orgModelFromTPS.getCityName();
-                }
-                if (StringUtils.isNotBlank(orgModelFromTPS.getRegionName())) {
-                    county = orgModelFromTPS.getRegionName();
+            if(StringUtils.isBlank(province)){
+                //根据站点到TPS查找相应省份你的信息。
+                SbOrgModel orgModelFromTPS = findOrgByCarrierAndSiteCode(branchId);
+                if (orgModelFromTPS != null) {
+                    if (StringUtils.isNotBlank(orgModelFromTPS.getProvinceName())) {
+                        province = orgModelFromTPS.getProvinceName();
+                    }
+//                if (StringUtils.isNotBlank(orgModelFromTPS.getCityName())) {
+//                    city = orgModelFromTPS.getCityName();
+//                }
+//                if (StringUtils.isNotBlank(orgModelFromTPS.getRegionName())) {
+//                    county = orgModelFromTPS.getRegionName();
+//                }
                 }
             }
 
@@ -330,17 +332,19 @@ public class DfFeeService {
                 String city = order.getCwbcity();
                 String county = order.getCwbcounty();
 
-                //根据站点到TPS查找相应省份你的信息。
-                SbOrgModel orgModelFromTPS = findOrgByCarrierAndSiteCode(branchId);
-                if (orgModelFromTPS != null) {
-                    if (StringUtils.isNotBlank(orgModelFromTPS.getProvinceName())) {
-                        province = orgModelFromTPS.getProvinceName();
-                    }
-                    if (StringUtils.isNotBlank(orgModelFromTPS.getCityName())) {
-                        city = orgModelFromTPS.getCityName();
-                    }
-                    if (StringUtils.isNotBlank(orgModelFromTPS.getRegionName())) {
-                        county = orgModelFromTPS.getRegionName();
+                if (StringUtils.isBlank(province)) {
+                    //根据站点到TPS查找相应省份你的信息。
+                    SbOrgModel orgModelFromTPS = findOrgByCarrierAndSiteCode(branchId);
+                    if (orgModelFromTPS != null) {
+                        if (StringUtils.isNotBlank(orgModelFromTPS.getProvinceName())) {
+                            province = orgModelFromTPS.getProvinceName();
+                        }
+//                    if (StringUtils.isNotBlank(orgModelFromTPS.getCityName())) {
+//                        city = orgModelFromTPS.getCityName();
+//                    }
+//                    if (StringUtils.isNotBlank(orgModelFromTPS.getRegionName())) {
+//                        county = orgModelFromTPS.getRegionName();
+//                    }
                     }
                 }
 
