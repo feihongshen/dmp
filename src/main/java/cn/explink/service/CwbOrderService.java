@@ -5084,7 +5084,7 @@ public class CwbOrderService extends BaseOrderService {
 		this.validateAppTuihuoCheckStatus(cwb, flowOrderTypeEnum);// 退货领货校验
 
 		//快递单揽件入站   揽件站点和匹配站点一致，该站点可以领该快递单 2016-07-05 vic.liang@pjbest.com
-		validateExpress(co, deliveryUser);	
+		//validateExpress(co, deliveryUser);	
 		//快递单揽件入站   揽件站点和匹配站点一致，该站点可以领该快递单 end
 				
 		Branch userbranch = this.branchDAO.getBranchByBranchid(currentbranchid);
