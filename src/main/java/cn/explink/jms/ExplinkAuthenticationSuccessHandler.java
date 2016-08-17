@@ -70,7 +70,8 @@ public class ExplinkAuthenticationSuccessHandler extends SimpleUrlAuthentication
 							//String nhp = "http://" + hp.substring(0, index) + request.getContextPath() + getDefaultTargetUrl();
 							String nhp = "http://" + hp.substring(0, index) + request.getContextPath() + "/" ;
 							this.setDefaultTargetUrl(nhp);
-							System.out.println("use ssl login : " + nhp);
+							System.out.println("redirect to : " + nhp);
+							response.sendRedirect(nhp);
 						}
 					}
 				}
