@@ -160,9 +160,8 @@ function checkUseAutoAllocating() {
 		$('#autoallocating_switch').show();	
 	}
 	else {
+		$('useAutoAllocating').prop("checked", false);
 		$('#entryselect').val('-1');
-		$('#forward').attr('checked','checked');
-		$('#backward').removeAttr('checked');
 		$('#autoallocating_switch').hide();
 	}
 }
@@ -266,10 +265,19 @@ function checkUseAutoAllocating() {
 	 */
 	function submitIntoWarehouse(pname, scancwb, customerid, driverid,
 			requestbatchno, rk_switch, comment) {
-		if('${auto_allocat}'=="1" && $('#useAutoAllocating').attr('checked')=='checked' && $("#entryselect").val()=='-1'){
-			alert("请选择自动分拨机入口");
-			return;
+		if('${auto_allocat}'=="1") {
+			if('${auto_allocat}'=="1" && scancwb.indexOf("@rhk_")>-1){
+				var entranceValue = scancwb.split('_')[1];
+				handleAutoAllocationAndSelectEntrance(entranceValue);
+				return false;
+			}
+			
+			if('${auto_allocat}'=="1" && $('#useAutoAllocating').attr('checked')=='checked' && $("#entryselect").val()=='-1'){
+				alert("请选择自动分拨机入口");
+				return;
+			}
 		}
+		
 		if($("#emaildate").val()>0){
 			var flag=false;
 			$(".cwbids").each(function(i,val){
@@ -418,6 +426,24 @@ function checkUseAutoAllocating() {
 						});
 			}
 		}
+	}
+	
+	function handleAutoAllocationAndSelectEntrance(entranceValue) {
+// 		$("#updateswitch").prop("checked", true);
+		$("#useAutoAllocating").prop("checked", true);
+		checkUseAutoAllocating();
+		
+		$("#entryselect").val(entranceValue)
+		if($("#entryselect").val()!=entranceValue){
+			$("#msg1").html("         （异常扫描）扫描选择入货分拨机失败");
+			$("#entryselect").val(-1)
+			$('#find').dialog('open');
+			$("#scancwb").blur();
+		}else{
+			connect();
+			$("#msg1").html("");
+		}
+		$("#scancwb").val("");
 	}
 	/**
 	 * 入库扫描（包）
@@ -810,17 +836,17 @@ function flush(){
 				</div>
 				<div>					
 						<span id='autoallocating_use' type="text" style="display:none"><input type="checkbox" id="useAutoAllocating" name="useAutoAllocating" onclick="checkUseAutoAllocating();" />启用自动分拨</span>
-						<span id='autoallocating_switch' type="text" style="display:none;width:500px"> &nbsp;&nbsp;&nbsp;&nbsp;自动分拨机入口选择*：<select id="entryselect" name="entryselect" style="height: 20px; width: 150px">
+						<span id='autoallocating_switch' type="text" style="display:none;width:500px"> &nbsp;&nbsp;&nbsp;&nbsp;自动分拨机入口选择*：<select id="entryselect" name="entryselect" style="height: 20px; width: 200px" disabled="disabled">
 						<option value="-1" selected>请选择</option>
 						<%
 							for (Entrance e : eList) {
 						%>
-						<option value="<%=e.getEntranceno()%>"><%=e.getEntranceno()+"("+e.getEntranceip()+")"%></option>
+						<option value="<%=e.getEntranceno()%>"><%=e.getEntranceno()+" - ("+e.getEntranceip()+")"%></option>
 						<%
 							}
 						%>
 						</select> 
-						<input type="button" id="connect" onclick="connect()"  value="连接" />
+						<input type="button" id="connect" onclick="connect()"  value="重连" />
 						<!-- <input type="button" id="flush" onclick="flush()"  value="清空队列" /> -->
 						<!-- <input type="radio" name="direction" id="forward" value="0" checked="checked" />正向 -->
 						<!-- <input type="radio"  name="direction" id="backward" value="1" />逆向 -->

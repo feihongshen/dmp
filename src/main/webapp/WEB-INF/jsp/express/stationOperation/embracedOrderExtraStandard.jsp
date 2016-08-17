@@ -449,10 +449,11 @@
 							<input id="Radio1" type="radio" class="RadioClass" name="payment_method"  value="1" onchange="getFeeByCondition()"/>
 							<label id="Label1" for="Radio1" class="RadioLabelClass" ><font size="6px" >现付</font></label>
 						</td>
-						<td class="tdcenter">
+						<!-- 暂时去掉快递到付类型 modify by vic.liang@pjbest.com 2016-08-08  -->
+						<!-- <td class="tdcenter">
 							<input id="Radio2" type="radio" class="RadioClass" name="payment_method"  onchange="getFeeByCondition()" value="2"  />
 							<label id="Label2" for="Radio2" class="RadioLabelClass"><font size="6px">到付</font></label>
-						</td>
+						</td> -->
 						<td class="tdcenter">
 							<input id="Radio3" type="radio" class="RadioClass" name="payment_method"  value="0"/>
 							<label id="Label3" for="Radio3" class="RadioLabelClass"><font size="6px">月结</font></label>

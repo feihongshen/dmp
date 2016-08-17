@@ -35,7 +35,7 @@ public class EntranceDAO {
 	private JdbcTemplate jdbcTemplate;
 	
 	public List<Entrance> getAllEnableEntrances(){
-		String sql="select *  from express_set_entrance where enable=0";
+		String sql="select *  from express_set_entrance where enable=0 order by entranceno";
 		return this.jdbcTemplate.query(sql,new EntranceRowMapper());
 		
 	}

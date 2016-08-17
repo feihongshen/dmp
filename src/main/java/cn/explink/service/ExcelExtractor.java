@@ -1091,7 +1091,11 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 					continue;
 				}
 			} else if (this.getBoolean(temp.getDaofu(), temp.getXianfu(), temp.getYuejie())) {
-				if (ExcelExtractor.isPositiveNumber(temp.getDaofu().trim())) {
+				//导入模板不允许有到付类型  modify by vic.liang@pjbest.com	2016-08-08
+				this.createErrNote(temp.getOrderNo(), "系统目前不支持快到付类型快递订单", failList);
+				cwbOrders.remove(temp);
+				continue;
+				/*if (ExcelExtractor.isPositiveNumber(temp.getDaofu().trim())) {
 					temp.setPayment_method("2");
 					embracedOrdervo.setPayment_method("2");
 					embracedUpdateOrderVO.setPayment_method("2");
@@ -1102,8 +1106,8 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 					this.createErrNote(temp.getOrderNo(), "运费（到付）填写不符合要求", failList);
 					cwbOrders.remove(temp);
 					continue;
-				}
-
+				}*/
+				//end modify by vic.liang@pjbest.com	2016-08-08
 			} else if (this.getBoolean(temp.getYuejie(), temp.getDaofu(), temp.getXianfu())) {
 				if (ExcelExtractor.isPositiveNumber(temp.getYuejie().trim())) {
 					temp.setPayment_method("0");

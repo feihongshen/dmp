@@ -8952,7 +8952,7 @@ public class CwbDAO {
 			if(cwbsStr!=null && cwbsStr.startsWith("(") && cwbsStr.endsWith(")")) { //如果已有括号会报错
 				sql = "select * from express_ops_cwb_detail where cwb in " + cwbsStr;
 			}
-			return this.jdbcTemplate.query(sql, new CwbMapper(false));
+			return this.jdbcTemplate.query(sql, new CwbMapper());
 		} catch (Exception e) {
 			this.logger.error("", e);
 			return null;
