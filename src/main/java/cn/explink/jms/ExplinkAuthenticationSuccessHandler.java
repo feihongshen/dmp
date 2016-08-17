@@ -72,6 +72,7 @@ public class ExplinkAuthenticationSuccessHandler extends SimpleUrlAuthentication
 							this.setDefaultTargetUrl(nhp);
 							System.out.println("redirect to : " + nhp);
 							response.sendRedirect(nhp);
+							return;
 						}
 					}
 				}
