@@ -267,7 +267,6 @@
 			mobile = cwbOrder.consigneephone;
 		}
 		LODOP.ADD_PRINT_TEXT(188,179,150,20, mobile);
-		console.log(cwbOrder.consigneeaddress);
 		LODOP.ADD_PRINT_TEXT(236,24,320,70, cwbOrder.consigneeaddress);
 		LODOP.PRINT();
 		//LODOP.PREVIEW();
