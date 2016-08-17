@@ -160,14 +160,28 @@ public class SmtController {
 	@RequestMapping("/smtorderdispatch")
 	public String smtOrderDispatch(Model model,
 			@RequestParam(value = "deliverid", required = false, defaultValue = "0") long deliverid) {
-		this.addBranchDelvierToModel(model);
+		// 获取小件员列表 modiy by chunlei05.li 2016/8/17
+		List<User> deliverList = this.getCurrentBranchDeliver();
+		model.addAttribute("deliverList", deliverList);
+		
+		// 校检传递过来的小件员是否存在列表中 add by chunlei05.li 2016/8/17
+		long checkedDeliverid = 0;
+		if (deliverList != null) {
+			for (User deliver : deliverList) {
+				if (deliver.getUserid() == deliverid) {
+					checkedDeliverid = deliverid;
+					break;
+				}
+			}
+		}
 		// this.addTodayNotDispatchedData(model);
 		// 采用异步加载策略.
 		// this.addHistoryNotDispatchedData(model);
 		// this.addTodayDispatchData(model);
 		// this.addTodayOutAreaData(model);
+		
 		// 主页面新增关联小件员查询 add by chunlei05.li 2016/8/16
-		model.addAttribute("deliverid", deliverid);
+		model.addAttribute("deliverid", checkedDeliverid);
 		return "smt/smtorderdispatch";
 	}
 
@@ -543,10 +557,10 @@ public class SmtController {
 		return Boolean.valueOf(dispatched);
 	}
 
-	private void addBranchDelvierToModel(Model model) {
-		List<User> delivers = this.getCurrentBranchDeliver();
-		model.addAttribute("deliverList", delivers);
-	}
+//	private void addBranchDelvierToModel(Model model) {
+//		List<User> delivers = this.getCurrentBranchDeliver();
+//		model.addAttribute("deliverList", delivers);
+//	}
 
 	private List<User> getCurrentBranchDeliver() {
 		String roleids = "2,4";
