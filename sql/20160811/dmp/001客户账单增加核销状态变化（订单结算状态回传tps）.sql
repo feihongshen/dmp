@@ -1,0 +1,1 @@
+alter table fn_customer_bill  add column `state_change` int(2) DEFAULT '0' COMMENT '账单核销是否发生变化 0没有，1有';

@@ -27,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.b2c.pjwl.ExpressCwbOrderDataImportDAO;
 import cn.explink.dao.CwbDAO;
-import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressInfoDetailVO;
 import cn.explink.domain.VO.express.AdressVO;
@@ -47,10 +46,8 @@ import cn.explink.service.express.EmbracedOrderInputService;
 import cn.explink.service.express2.ReserveOrderService;
 import cn.explink.util.ExportUtil4Express;
 import cn.explink.util.Page;
-import cn.explink.util.StringUtil;
 
 import com.pjbest.deliveryorder.service.OmReserveOrderModel;
-import com.vip.osp.core.exception.OspException;
 
 /**
  *
@@ -330,11 +327,13 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 				reserveOrder = reserveOrderVO.getReserveOrderVoList().get(0);
 			}
 		}
+		boolean isRepeat = this.embracedOrderInputService.checkTranscwb(orderNo);//校验录入运单号是否与系统订单号/运单号重复 add by vic.liang@pjbest.com 2016-08-05
 		obj.put("embracedOrderVO", embracedOrderVO);
 		obj.put("expressWeigh", expressWeigh);
 		obj.put("branchid", this.getSessionUser().getBranchid());
 		obj.put("expressImage", expressImage);
 		obj.put("reserveOrder", reserveOrder);
+		obj.put("isRepeatTranscwb", isRepeat);
 		return obj;
 	}
 

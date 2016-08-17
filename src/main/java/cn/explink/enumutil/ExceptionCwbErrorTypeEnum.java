@@ -78,7 +78,8 @@ public enum ExceptionCwbErrorTypeEnum {
 			PEI_SONG_YUAN_WEI_PI_PEI(217, "此订单未匹配配送员，不能进行领货！"),
 			AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE(220, "连接自动分拨机失败，不能入库！请取消自动分拨功能，或重新连接。"),
 			DIFF_TUI_HUO_KU_ZUO_BACK_TO_CUSTOMER(222, "不在同一个退货库做退供货商出库"),
-			Ling_huo_EXPRESS_LIMIT(221,"非本站揽收/配送的快递单不能领货！");
+			Ling_huo_EXPRESS_LIMIT(221,"非本站揽收/配送的快递单不能领货！"),
+			PLEASE_RECEIVE_GOODS_FIRST(227, "请先做{0}");
 	
 
 	private int value;

@@ -133,6 +133,9 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 							$("#matchDeliver").html("订单匹配小件员：" + data.body.matchDeliver);
 						}
 						$("#receiveDeliver").html("领货小件员：" + data.body.receiveDeliver);
+					} else {
+						$("#matchDeliver").html("");
+						$("#receiveDeliver").html("");
 					}
 					if(data.body.cwbOrder.customercommand.indexOf('预约')>=0&&data.yuyuedaService=='yes')
 					{	
@@ -152,8 +155,11 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					if(data.body.showRemark!=null){
 					$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
 					}
+					alert(data.body.isChaoqu != true);
 					if(data.body.isChaoqu != true) {
 						$("#exceldeliverid").html(data.body.cwbdelivername);
+					} else {
+						$("#exceldeliverid").html("");
 					}
 					$("#deliver").html("已领货（"+data.body.cwbdelivername+"）");
 					

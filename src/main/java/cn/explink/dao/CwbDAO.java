@@ -3054,7 +3054,26 @@ public class CwbDAO {
 		return this.jdbcTemplate.query(sql, new CwbMapper(), (page - 1)
 				* Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
 	}
-
+	
+	/**
+	 * 根据条件查询站点到货时已到货数量
+	 * @author 刘武强
+	 * @date:2016年8月4日 上午10:49:34 
+	 * @params:@param flowordertypes
+	 * @params:@param branchid
+	 * @params:@param cwbs
+	 * @params:@return
+	 */
+	public long getHistoryDaoHuoByBranchidForCount(
+			String flowordertypes, long branchid,  String cwbs) {
+		String sql = "SELECT count(1) FROM express_ops_cwb_detail WHERE currentbranchid="
+				+ branchid
+				+ " and flowordertype in("
+				+ flowordertypes
+				+ ") and state=1  and cwb  in(" + cwbs + ") ";
+		return this.jdbcTemplate.queryForLong(sql);
+	}
+	
 	public List<CwbOrder> getHistoryDaoHuoByBranchidForList(String flowordertypes, long page, String cwbs) {
 		String sql = "SELECT * FROM express_ops_cwb_detail WHERE  flowordertype in(" + flowordertypes + ") and state=1  and cwb  in(" + cwbs + ") and cwbstate!=3  limit ?,? ";
 		return this.jdbcTemplate.query(sql, new CwbMapper(), (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
@@ -8938,7 +8957,7 @@ public class CwbDAO {
 			if(cwbsStr!=null && cwbsStr.startsWith("(") && cwbsStr.endsWith(")")) { //如果已有括号会报错
 				sql = "select * from express_ops_cwb_detail where cwb in " + cwbsStr;
 			}
-			return this.jdbcTemplate.query(sql, new CwbMapper(false));
+			return this.jdbcTemplate.query(sql, new CwbMapper());
 		} catch (Exception e) {
 			this.logger.error("", e);
 			return null;
@@ -10021,12 +10040,12 @@ public class CwbDAO {
 	
 	// 分站到货统计查询订单list
 	@DataSource(DatabaseType.REPLICA)
-	public List<CwbOrder> getDaoHuoByPage(long page, String customerids, String cwbordertypeids, String kufangids, String flowordertypes, String sqlOrderFlowLimit) {
+	public List<CwbOrder> getDaoHuoByPage(long page, String customerids, String cwbordertypeids, String kufangids, String flowordertypes, String sqlOrderFlow) {
 		//在order flow里分页
-		sqlOrderFlowLimit = sqlOrderFlowLimit.replace(OrderFlowDAO.LIMIT_FLAG, " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+		//sqlOrderFlow = sqlOrderFlowLimit.replace(OrderFlowDAO.LIMIT_FLAG, " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 		
 		StringBuffer sbSql = new StringBuffer();
-		sbSql.append("select a.* from express_ops_cwb_detail a, (").append(sqlOrderFlowLimit).append(") b where b.cwb = a.cwb and a.state=1 ");
+		sbSql.append("select a.* from express_ops_cwb_detail a, (").append(sqlOrderFlow).append(") b where b.cwb = a.cwb and a.state=1 ");
 		
 		if (!customerids.equals("0")) {
 			sbSql.append(" and a.customerid in(").append(customerids).append(") ");
@@ -10046,26 +10065,20 @@ public class CwbDAO {
 			sbSql.append(" and a.flowordertype in(").append(flowordertypes).append(") ");
 		}
 		
+		sbSql.append(" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+		
 		logger.info("CwbDAO getDaoHuoByPage sql:{}", sbSql);
 		
 		return this.jdbcTemplate.query(sbSql.toString(), new CwbMapper());
 	}
-
 	
 	/**
-	 * 查询订单，不过滤信息
-	 * @date 2016年8月10日 下午7:48:57
+	 * 查询订单号是否存在  add by vic.liang@pjbest.com 2016-08-05
 	 * @param cwb
 	 * @return
 	 */
-	public CwbOrder getCwbByCwbWithoutFilterUserInfo(String cwb) {
-		try {
-			return this.jdbcTemplate
-					.queryForObject(
-							"SELECT * from express_ops_cwb_detail where cwb=? and state=1 limit 0,1",
-							new CwbMapper(false), cwb);
-		} catch (EmptyResultDataAccessException e) {
-			return null;
-		}
+	public int getCountByCwb (String cwb) {
+		String sql = "select count(1) from express_ops_cwb_detail where state = 1 and cwb = ? ";
+		return this.jdbcTemplate.queryForInt(sql,cwb);
 	}
 }

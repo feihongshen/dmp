@@ -1,7 +1,7 @@
 <%@page import="cn.explink.controller.DeliveryStateDTO"%>
 <%@page import=" cn.explink.domain.Branch"%>
 <%@page import=" cn.explink.domain.User"%>
-<%@ page language="java" import="java.util.*,java.text.SimpleDateFormat" pageEncoding="UTF-8"%>
+<%@ page language="java" import="java.util.*,java.text.SimpleDateFormat, java.math.*" pageEncoding="UTF-8"%>
 <%
 	DeliveryStateDTO dsDTO = request.getAttribute("deliveryStateDTO")==null?null:(DeliveryStateDTO)request.getAttribute("deliveryStateDTO");
 	Branch b = 	request.getAttribute("branch")==null?null:(Branch)request.getAttribute("branch");
@@ -244,7 +244,7 @@ String usedeliverpayup = request.getAttribute("usedeliverpayup")==null?"no":(Str
 										<strong>
 										pos收款:<%=dsDTO.getPos_amount() %>元　
 										支付宝COD扫码收款:<%=dsDTO.getCodpos_amount() %>元　
-										其他收款:<%=dsDTO.getTotal().subtract(dsDTO.getPos_amount()).subtract(dsDTO.getCodpos_amount()) %>元　
+										其他收款:<%=dsDTO.getTotal().subtract(dsDTO.getPos_amount()).subtract(dsDTO.getCodpos_amount()).subtract(new BigDecimal(dsDTO.getAmountNotZanbuchuli(dsDTO.getFankui_tuihuoList()))) %>元　
 										实收运费:<%=dsDTO.getSmtcgfare_amount().add(dsDTO.getSmtjtfare_amount()) %>元
 										</strong>
 									</td>

@@ -7462,6 +7462,8 @@ function BuprintTag(scpath){
 		//武汉飞远35*35
 		printIntowarehousewuhan(scancwb);
 	}
+	
+	$('#scancwbprint').val('') //补打后删除输入框内容 add by vic.liang@pjbest.com 2016-08-13
 	/*	
 	if(scancwb==null){
 		alert("请输入单号！");

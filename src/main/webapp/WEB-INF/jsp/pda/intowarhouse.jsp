@@ -571,6 +571,7 @@ function callfunction(cwb){//getEmailDateByIds
 			$('#find').dialog('open');
 			$("#scancwb").blur();
 		}else{
+			connect();
 			$("#msg1").html("");
 		}
 		$("#scancwb").val("");

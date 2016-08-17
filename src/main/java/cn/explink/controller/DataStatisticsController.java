@@ -749,6 +749,10 @@ public class DataStatisticsController {
 
 			String customerids = this.dataStatisticsService.getStrings(customerid);
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
+			// add by jian_xie 2016-08-09，当选定了小件员，站点过滤不需要。兼容小件员跳槽到其它站点问题。
+			if(deliverid > 0){
+				dispatchbranchid = new String[0];
+			}
 			List<String> orderFlowLastList = this.deliveryStateDAO
 					.getDeliveryStateByCredateAndFlowordertype(begindate, enddate, isauditTime, isaudit, operationOrderResultTypes, dispatchbranchid, deliverid, 1, customerids, firstlevelreasonid);
 			if (orderFlowLastList.size() > 0) {
@@ -1182,7 +1186,7 @@ public class DataStatisticsController {
 			String flowordertypes   = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
 			String currentBranchids = this.dataStatisticsService.getStrings(currentBranchid);
 			String sqlOrderFlow      = this.orderFlowDAO.genSqlOrderFlowBySome(begindate, enddate, flowordertypes, currentBranchids, isnowdata, false);
-			String sqlOrderFlowLimit = this.orderFlowDAO.genSqlOrderFlowBySome(begindate, enddate, flowordertypes, currentBranchids, isnowdata, true);
+			//String sqlOrderFlowLimit = this.orderFlowDAO.genSqlOrderFlowBySome(begindate, enddate, flowordertypes, currentBranchids, isnowdata, true);
 			
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
 			String kufangids       = this.dataStatisticsService.getStrings(kufangid);
@@ -1197,7 +1201,8 @@ public class DataStatisticsController {
 			// 获取订单中金额
 			sum   = this.cwbDAO.getDaoHuoSum(customerid, cwbordertypeids, kufangids, "", sqlOrderFlow);
 			//获取订单明细
-			clist = this.cwbDAO.getDaoHuoByPage(page, customerid, cwbordertypeids, kufangids, "", sqlOrderFlowLimit);
+			//clist = this.cwbDAO.getDaoHuoByPage(page, customerid, cwbordertypeids, kufangids, "", sqlOrderFlowLimit);
+			clist = this.cwbDAO.getDaoHuoByPage(page, customerid, cwbordertypeids, kufangids, "", sqlOrderFlow);
 			
 			/*
 			List<String> orderFlowList = this.orderFlowDAO
