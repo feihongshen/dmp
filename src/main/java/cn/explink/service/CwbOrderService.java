@@ -493,6 +493,9 @@ public class CwbOrderService extends BaseOrderService {
 	@Autowired
 	private TpsCwbFlowService tpsCwbFlowService;
 	
+	@Autowired
+	private UserService userService;
+	
 	private static final String MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.receivegoods.orderFlow";
 	private static final String MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow";
 	public void insertCwbOrder(final CwbOrderDTO cwbOrderDTO, final long customerid, final long warhouseid, final User user, final EmailDate ed) {
@@ -10398,7 +10401,7 @@ public class CwbOrderService extends BaseOrderService {
 		CwbOrderTypeIdEnum cwbOrderType = CwbOrderTypeIdEnum.getByValue(cwbOrder.getCwbordertypeid());
 		vo.setOrderTypeVal(cwbOrderType == null ? null : cwbOrderType.getText());
 		if(cwbOrder.getDeliverybranchid() != 0) {
-			List<User> courierList = this.userDao.getUserByRoleAndBranchid(2, cwbOrder.getDeliverybranchid());
+			List<User> courierList = this.userService.getDeliverList(cwbOrder.getDeliverybranchid());
 			vo.setCourierList(courierList);
 		}
 		return vo;
