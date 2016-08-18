@@ -357,6 +357,9 @@ public class JobUtil {
 	
 		//快递单操作推TPS
 		JobUtil.threadMap.put("resendExpressToTps", 0);
+		
+		//add by zhouhuan 订单数据从临时表转主表 2016-08-05
+		JobUtil.threadMap.put("cwbInsertToOrderDetail", 0);
 	}
 
 	/**
@@ -408,6 +411,9 @@ public class JobUtil {
 		
 		//快递单操作推TPS
 		JobUtil.threadMap.put("resendExpressToTps", 0);
+		
+		//add by zhouhuan 订单数据从临时表转主表 2016-08-05
+		JobUtil.threadMap.put("cwbInsertToOrderDetail", 0);
 	}
 
 	/**
@@ -1985,5 +1991,29 @@ public class JobUtil {
 
 		this.logger.info("执行了获取resendExpressToTps订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 		
+	}
+	
+	
+	//add by zhouhuan tps对接新增非唯品会订单转业务定时器，查询临时表，插入数据到detail表中 2016-08-05
+	public void getCwbTempInsert_Task() {
+		if (JobUtil.threadMap.get("cwbInsertToOrderDetail") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环cwbInsertToOrderDetail");
+			return;
+		}
+		JobUtil.threadMap.put("cwbInsertToOrderDetail", 1);
+
+		long starttime = 0;
+		long endtime = 0;
+		try {
+			starttime = System.currentTimeMillis();
+			this.vipshopInsertCwbDetailTimmer.selectAllTempAndInsertToCwbDetails();
+			endtime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行cwbInsertToOrderDetail定时器异常", e);
+		} finally {
+			JobUtil.threadMap.put("cwbInsertToOrderDetail", 0);
+		}
+
+		this.logger.info("执行了获取cwbInsertToOrderDetail订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 }

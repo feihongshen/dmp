@@ -212,6 +212,7 @@ public class AutoDispatchStatusService {
 			return resultMap;
 		}
 
+		boolean needHebao=this.autoUserService.getHebaoFlag()==1?false:true;
 		AutoPickStatusVo currentVo=null;
 		for(AutoPickStatusMsgVo msgVo:msgVoList){
 			AutoPickStatusVo vo=msgVo.getAutoPickStatusVo();
@@ -221,7 +222,7 @@ public class AutoDispatchStatusService {
 					autoInWarehouseService.autoInWarehouse(vo,user);
 					logger.info("模拟入库成功,cwb:"+vo.getOrder_sn()+",transcwb:"+vo.getBox_no());
 				}else if(OPERATE_TYPE_OUT.equals(vo.getOperate_type())){
-					autoOutWarehouseService.autOutWarehouse(vo,user);
+					autoOutWarehouseService.autOutWarehouse(vo,user,needHebao);
 					logger.info("模拟出库成功,cwb:"+vo.getOrder_sn()+",transcwb:"+vo.getBox_no());
 				}else{
 					throw new RuntimeException("分拣状态报文中未明的操作类型:"+vo.getOperate_type());

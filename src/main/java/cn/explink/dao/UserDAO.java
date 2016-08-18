@@ -1216,4 +1216,36 @@ public class UserDAO {
 		});
 		return deliverMap;
 	}
+	
+	/**
+	 * 根据姓名和所属站点id查询用户 add by vic.liang@pjbest.com 2016-08-03
+	 * @param realname
+	 * @param branchid
+	 * @return
+	 */
+	public User getUserByRealNameBranchid(String realname, int branchid) {
+		String sql = "select * from express_set_user where realname=? and branchid = ? and userDeleteFlag=1 ";
+		try {
+			return this.jdbcTemplate.queryForObject(sql,new UserRowMapper(),realname,branchid);
+		} catch (DataAccessException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * 根据姓名查询用户 add by vic.liang@pjbest.com 2016-08-03
+	 * @param realname
+	 * @param branchid
+	 * @return
+	 */
+	public User getUserByRealName(String realname) {
+		String sql = "select * from express_set_user where realname=? and userDeleteFlag=1 ";
+		try {
+			return this.jdbcTemplate.queryForObject(sql,new UserRowMapper(),realname);
+		} catch (DataAccessException e) {
+			return null;
+		}
+	}
+	
+	
 }

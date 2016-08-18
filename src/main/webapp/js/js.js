@@ -7052,7 +7052,9 @@ if($('#cp').val()==''){
 	alert('请输入电话');
 	return false;
 }
-if($('#ccity').val()==''){
+/****begin****/
+ //vic.liang@pjbest.com 2016-07-13 工单导入取消必填项
+/*if($('#ccity').val()==''){
 	alert('请输入城市');
 	return false;
 }
@@ -7070,8 +7072,8 @@ if($('#skhfl').val()==-1){
 if($('#callerremark').val()==''){
 	alert('请输入备注');
 	return false;
-}
-	
+}*/
+/****end****/	
 	
 	return true;
 	 

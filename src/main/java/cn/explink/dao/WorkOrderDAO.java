@@ -201,7 +201,14 @@ public class WorkOrderDAO {
 		String sql="insert into cs_complaint_accept(handle_user,accept_no,order_no,cwbstate,flowordertype,currentbrannch,complaint_state,cod_org_id,complaint_user,complaint_one_level,complaint_two_level,complaint_result,content,accpet_time,phone_one,province,customerid,cuijian_num) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		this.jt.update(sql,c.getHandleUser(),c.getAcceptNo(),c.getOrderNo(),c.getCwbstate(),c.getFlowordertype(),c.getCurrentBranch(),c.getComplaintState(),c.getCodOrgId(),c.getComplaintUser(),c.getComplaintOneLevel(),c.getComplaintTwoLevel(),c.getComplaintResult(),c.getContent(),c.getAcceptTime(),c.getPhoneOne(),c.getProvence(),c.getCustomerid(),c.getCuijianNum());
 	}
-
+	/**
+	 * 批量导入新增/处理工单
+	 * @param c
+	 */
+	public void saveComplainWorkOrderForImport(CsComplaintAccept c){     
+		String sql="insert into cs_complaint_accept(handle_user,accept_no,order_no,cwbstate,flowordertype,currentbrannch,complaint_state,cod_org_id,complaint_user,complaint_one_level,complaint_two_level,complaint_result,content,accpet_time,phone_one,province,customerid,cuijian_num,jiean_user,heshi_user,remark,heshi_time,jiean_remark,jiean_time) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?  ,?,?,?,?,?,?)";
+		this.jt.update(sql,c.getHandleUser(),c.getAcceptNo(),c.getOrderNo(),c.getCwbstate(),c.getFlowordertype(),c.getCurrentBranch(),c.getComplaintState(),c.getCodOrgId(),c.getComplaintUser(),c.getComplaintOneLevel(),c.getComplaintTwoLevel(),c.getComplaintResult(),c.getContent(),c.getAcceptTime(),c.getPhoneOne(),c.getProvence(),c.getCustomerid(),c.getCuijianNum()  ,c.getJieanUser(),c.getHeshiUser(),c.getRemark(),c.getHeshiTime(),c.getJieanremark(),c.getJieanTime());
+	}
 
 	public void updateComplainWorkOrderF(CsComplaintAccept c){
 		String sql="update cs_complaint_accept set";

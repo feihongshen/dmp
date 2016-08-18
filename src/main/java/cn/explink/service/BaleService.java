@@ -101,6 +101,8 @@ import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
 import net.sf.json.JSONObject;
+import cn.explink.support.transcwb.TransCwbDao;
+import cn.explink.support.transcwb.TranscwbView;
 
 import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
 
@@ -170,6 +172,8 @@ public class BaleService {
 	AutoUserService autoUserService;
 	@Autowired
 	UserService userService;
+	@Autowired
+	TransCwbDao transCwbDao;
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -2065,6 +2069,29 @@ public class BaleService {
 			String cwb=this.cwbOrderService.translateCwb(scancwb);
 			if(!scancwb.equals(cwb)){
 				bale=baleDAO.getBaleOnwayBycwb(cwb);
+			}
+			
+			//add by jianrong.gao at 2010-08-08
+			//合包时扫的是箱号，但到站时扫的是订单号(一票一件时允许扫订单号)
+			if(bale==null){
+				CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+				if(co!=null){
+					if(co.getSendcarnum()==1||co.getBackcarnum()==1){
+						List<TranscwbView> transcwbList=transCwbDao.getTransCwbByCwb(cwb);
+						if(transcwbList!=null&&transcwbList.size()>0&&transcwbList.size()<3){
+							String transcwb=null;
+							for(TranscwbView v:transcwbList){
+								if(!cwb.equals(v.getTranscwb())){
+									transcwb=v.getTranscwb();
+									break;
+								}
+							}
+							if(transcwb!=null){
+								bale=baleDAO.getBaleOnwayBycwb(transcwb);
+							}
+						}
+					}
+				}
 			}
 		}
 		

@@ -40,6 +40,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 							<input type ="radio" id="batchnoOpenFlag1" name ="batchnoOpenFlag" value="1"  <%if(tpsAutoCfg.getBatchnoOpenFlag()==1){%>checked<%}%> >开启
 							<input type ="radio" id="batchnoOpenFlag2" name ="batchnoOpenFlag" value="0"  <%if(tpsAutoCfg.getBatchnoOpenFlag()==0){%>checked<%}%> >关闭
 						</li>
+						<li><span>开启合包出库：</span>
+							<input type ="radio" id="hebaoFlag1" name ="hebaoFlag" value="0"  <%if(tpsAutoCfg.getHebaoFlag()==0){%>checked<%}%> >开启
+							<input type ="radio" id="hebaoFlag2" name ="hebaoFlag" value="1"  <%if(tpsAutoCfg.getHebaoFlag()==1){%>checked<%}%> >关闭
+						</li>
 						<li><span>密码：</span>
 	 						<input type ="password" id="password" name ="password"  maxlength="30" size="20" >* 
 						</li>
@@ -62,6 +66,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>开启交接单号：</span>
 							<input type ="radio" id="batchnoOpenFlag1" name ="batchnoOpenFlag" value="1" >开启
 							<input type ="radio" id="batchnoOpenFlag2" name ="batchnoOpenFlag" value="0" checked>关闭
+						</li>
+						<li><span>开启合包出库：</span>
+							<input type ="radio" id="hebaoFlag1" name ="hebaoFlag" value="0" checked>开启
+							<input type ="radio" id="hebaoFlag2" name ="hebaoFlag" value="1" >关闭
 						</li>
 						<li><span>密码：</span>
 	 						<input type ="password" id="password" name ="password"  maxlength="30" size="20" >* 

@@ -210,11 +210,12 @@ public class BaleController {
 
 		try {
 			if (co != null) {
+				/***************mod by yurong.liang 2016-07-08 ********/
 				// 合包出库扫描快递单时提示：不允许在这里操作快递单！
-				if (this.isExpressOrder(co)) {
+				/*if (this.isExpressOrder(co)) {
 					throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), "不允许在这里操作快递单！");
-				}
-
+				}*/
+				/****************mod end******************************/
 				long nextbranchid = co.getNextbranchid();
 				String nextbranchname = "";
 				long deliverybranchid = co.getDeliverybranchid();
@@ -539,9 +540,9 @@ public class BaleController {
 				throw new CwbException(cwb, FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 			} else {
 				// 合包出库扫描快递单时提示：不允许在这里操作快递单！
-				if (this.isExpressOrder(co)) {
+				/*if (this.isExpressOrder(co)) {
 					throw new CwbException(cwb, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), "不允许在这里操作快递单！");
-				}
+				}*/
 			
 				long nextbranchid = co.getNextbranchid();
 				String nextbranchname = "";
@@ -1047,7 +1048,12 @@ public class BaleController {
 		JSONObject obj = new JSONObject();
 		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
 		if (!"".equals(baleno.trim()) && !"".equals(cwb.trim())) {
-			Bale isbale = this.baleDAO.getBaleOnway(baleno.trim());
+			
+			/***mod by yurong.liang  2016-08-11***/
+			//Bale isbale = this.baleDAO.getBaleOnway(baleno.trim());
+			Bale isbale = this.baleService.getBaleForHebaoDaohuo(request, baleno, FlowOrderTypeEnum.ZhongZhuanZhanRuKu);
+			/***mod end***/
+			
 			//CwbOrder iscwb = this.cwbDAO.getCwbByCwb(cwb);
 			if ("0".equals(baleno) || (isbale == null)) {
 				obj.put("errorinfo", "(合包到货异常)" + baleno + "包号不存在");

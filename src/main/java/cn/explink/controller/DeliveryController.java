@@ -650,6 +650,9 @@ public class DeliveryController {
 			parameters.put("changereasonid", changereasonid);
 			parameters.put("firstchangereasonid", firstchangereasonid);
 			parameters.put("transcwb", transcwb);
+			
+			//Added by leoliao at 2016-08-12 增加从DMP界面进行反馈标识
+			parameters.put("comefrompage", "1");
 
 			Map<String, Object> paywayParams = this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
 
