@@ -321,7 +321,7 @@ public class UserService {
 	 */
 	public User getBranchDeliverByDeliverName(long branchId, String deliverName) {
 		User deliver = this.userDAO.getUserByUsername(deliverName);
-		if(deliver == null || deliver.getBranchid() != branchId || deliver.getRoleid() != 2) {
+		if(deliver == null || deliver.getBranchid() != branchId || this.isDeliver(deliver.getRoleid()) == false) {
 			return null;
 		}
 		return deliver;
