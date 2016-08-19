@@ -254,22 +254,27 @@
  		}
  		LODOP.PRINT_INITA(0,0,"230mm", "127.2mm","邮政面单打印");
  		LODOP.SET_PRINT_PAGESIZE(0, 2300, 1272, "A4");
- 		LODOP.SET_PRINT_STYLE("FontSize",12);
+ 		LODOP.SET_PRINT_STYLE("FontSize",13);   //modify by vic.liang 2016-08-18
  		LODOP.NewPage();
 		LODOP.ADD_PRINT_TEXT(78,24,150,20, "武汉飞远");
 		LODOP.ADD_PRINT_TEXT(78,179,150,20, "027-82668066");
+		LODOP.ADD_PRINT_TEXT(78,600,150,20, cwbOrder.cwbcity);//modify by vic.liang 2016-08-18
 		LODOP.ADD_PRINT_TEXT(105,24,150,20, "武汉飞远");
 		LODOP.ADD_PRINT_TEXT(105,259,150,20, "42010301326000");
 		LODOP.ADD_PRINT_TEXT(128,24,150,20, "武汉市");
-		LODOP.ADD_PRINT_TEXT(151,24,150,20, cwbOrder.cwb);
+		LODOP.ADD_PRINT_TEXT(148,26,150,20, cwbOrder.cwb);//modify by vic.liang 2016-08-18
 		LODOP.ADD_PRINT_TEXT(188,24,150,20, cwbOrder.consigneename);
 		var mobile = cwbOrder.consigneemobile; // 联系方式手机优先，电话其次
 		if (mobile == null || mobile == "") {
 			mobile = cwbOrder.consigneephone;
 		}
 		LODOP.ADD_PRINT_TEXT(188,179,150,20, mobile);
-		LODOP.ADD_PRINT_TEXT(236,24,300,20, cwbOrder.consigneeaddress);
+		LODOP.ADD_PRINT_TEXT(236,24,320,70, cwbOrder.consigneeaddress);
+		LODOP.ADD_PRINT_TEXT(330,100,150,20, "500");//modify by vic.liang 2016-08-18
+		LODOP.ADD_PRINT_TEXT(340,600,150,20, "双洞门");//modify by vic.liang 2016-08-18
+		
 		LODOP.PRINT();
+		//LODOP.PREVIEW();
 	}
  	
  	// 检测打印控件是否有效

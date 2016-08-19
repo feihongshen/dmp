@@ -202,4 +202,55 @@ public class OrderPartGoodsReturnService {
 		}
 		return "{\"errorCode\":0,\"error\":\"订单部分退成功\"}";
 	}
+	
+	/**
+	 * 上门退订单拒退或上门退成功时,修改货物实际退货数量等字段
+	 * @author leo01.liao
+	 * @param cwb
+	 * @param deliveryState
+	 */
+	public void processOrderGoods(String cwb, long deliveryState){
+		try{
+			logger.error("归班反馈拒退或上门退成功时修改货物实际退货数量等字段：cwb={},deliveryState={}", cwb, deliveryState);
+			
+			List<OrderGoods> listOrderGood = orderGoodsDao.getOrderGoodsList(cwb);
+			if(listOrderGood == null || listOrderGood.isEmpty()){
+				return;
+			}
+			
+			if(deliveryState == DeliveryStateEnum.ShangMenTuiChengGong.getValue()){
+				//上门退成功
+				for(OrderGoods orderGood: listOrderGood){
+					String goodsNum = orderGood.getGoods_num();
+					if(goodsNum == null || goodsNum.trim().equals("")){
+						continue;
+					}
+					
+					int weiTuiCount = 0;
+					int shiTuiCount = Integer.parseInt(goodsNum);
+					
+					orderGood.setWeituicount(weiTuiCount);
+					orderGood.setShituicount(shiTuiCount);
+				}
+			}else if(deliveryState == DeliveryStateEnum.ShangMenJuTui.getValue()){
+				//上门拒退
+				for(OrderGoods orderGood: listOrderGood){
+					String goodsNum = orderGood.getGoods_num();
+					if(goodsNum == null || goodsNum.trim().equals("")){
+						continue;
+					}
+					
+					int weiTuiCount = Integer.parseInt(goodsNum);
+					int shiTuiCount = 0;
+					
+					orderGood.setWeituicount(weiTuiCount);
+					orderGood.setShituicount(shiTuiCount);
+				}
+			}
+			
+			this.updateOrderGoods(listOrderGood);
+		}catch(Exception ex){
+			logger.error("拒退或上门退成功时修改商品表异常：cwb="+cwb, ex);
+		}
+	}
 }
