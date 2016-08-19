@@ -230,7 +230,7 @@ function nowprint(){
 				
 				<div class="content_1">
 				     <span>打印：</span>
-				     <span>${branch.username} （${branch.username}）</span>
+				     <span>${branch.username}</span>
 				     <span style="word-spacing:1mm;">&nbsp;</span>
 				     <span>${branch.printtime}</span>
 				</div>

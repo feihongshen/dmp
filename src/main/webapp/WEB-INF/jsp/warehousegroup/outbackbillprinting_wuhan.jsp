@@ -183,7 +183,7 @@ function nowprint(){
 	.AutoNewline{
 	  font-size: 10px;
       word-break: break-all;/*必须*/
-      width:20mm;
+      width:30mm;
     }
     .index_num{
       font-size: 10px;
@@ -235,7 +235,7 @@ function nowprint(){
 				
 				<div class="content_1">
 				     <span>打印：</span>
-				     <span>${print.username} （${print.username}）</span>
+				     <span>${print.username}</span>
 				     <span style="word-spacing:1mm;">&nbsp;</span>
 				     <span>${print.printtime}</span>
 				</div>
