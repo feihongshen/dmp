@@ -150,7 +150,7 @@ function nowprint(){
 				
 				<div class="content_1">
 				     <span>打印：</span>
-				     <span>${print.username} （${print.username}）</span>
+				     <span>${print.username}</span>
 				     <span style="word-spacing:1mm;">&nbsp;</span>
 				     <span>${print.printtime}</span>
 				</div>
