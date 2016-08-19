@@ -159,7 +159,7 @@ public class HxgdmsService {
 
 		if (orderlist == null || orderlist.size() == 0) {
 			logger.warn("好享购DMS-请求没有封装参数，订单号可能为空");
-			return buildResponseJSON("0", "运单重复");
+			return buildResponseJSON("0", "运单重复或者是部分不需要的回单");
 		}
 
 		long warehouseid = dms.getWarehouseid(); // 订单导入的库房Id
@@ -185,6 +185,15 @@ public class HxgdmsService {
 			}
 
 			int WorkType = dmsOrder.getWorkType(); // 0:正常，1：换货运单，2：退货单（拒收）
+			
+			/*************mod yurong.liang 2016-08-18**************/
+			if(WorkType==WorkTypeEnum.TuiHuoDan.getDmsState()||WorkType==WorkTypeEnum.TuiHuoDan_posun.getDmsState()
+					||WorkType==WorkTypeEnum.TuiHuo_cancel.getDmsState()){
+				logger.warn("该好享购订单为dmp系统不需要的回单，系统不处理,cwb={},WorkType={}", dmsOrder.getWorkCode(),WorkType);
+				return null;
+			}
+			/*************mod end**************/
+			
 			int cwbordertypeid = 1;
 			cwbordertypeid = getCwbOrdertypeId(WorkType, cwbordertypeid);
 			double replCost = dmsOrder.getReplCost().doubleValue();
