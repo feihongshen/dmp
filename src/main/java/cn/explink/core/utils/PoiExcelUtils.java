@@ -48,6 +48,10 @@ public class PoiExcelUtils {
 		// 字段宽度
 		private int width;
 		
+		public ColDef() {
+			
+		}
+		
 		public ColDef(String field, String title, int width){
 			this.field = field;
 			this.title = title;

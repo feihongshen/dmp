@@ -25,11 +25,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Component;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.b2c.vipshop.oxo.response.TpsOxoPickStateVo;
 import cn.explink.domain.Branch;
+import cn.explink.domain.CwbOrderBranchMatchVo;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbOrderAndCustomname;
 import cn.explink.domain.MatchExceptionOrder;
@@ -8952,7 +8957,7 @@ public class CwbDAO {
 			if(cwbsStr!=null && cwbsStr.startsWith("(") && cwbsStr.endsWith(")")) { //如果已有括号会报错
 				sql = "select * from express_ops_cwb_detail where cwb in " + cwbsStr;
 			}
-			return this.jdbcTemplate.query(sql, new CwbMapper(false));
+			return this.jdbcTemplate.query(sql, new CwbMapper());
 		} catch (Exception e) {
 			this.logger.error("", e);
 			return null;

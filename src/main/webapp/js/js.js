@@ -7052,7 +7052,9 @@ if($('#cp').val()==''){
 	alert('请输入电话');
 	return false;
 }
-if($('#ccity').val()==''){
+/****begin****/
+ //vic.liang@pjbest.com 2016-07-13 工单导入取消必填项
+/*if($('#ccity').val()==''){
 	alert('请输入城市');
 	return false;
 }
@@ -7070,8 +7072,8 @@ if($('#skhfl').val()==-1){
 if($('#callerremark').val()==''){
 	alert('请输入备注');
 	return false;
-}
-	
+}*/
+/****end****/	
 	
 	return true;
 	 
@@ -7441,16 +7443,27 @@ function BuprintTag(scpath){
 	var rk_switch=$("#updateswitch").val();
 	if (rk_switch == "rkbq_01") {
 		$("#printcwb",parent.document).attr("src",pname + "/printcwb?scancwb="+ scancwb + "&a="+ new Date());
-	//广州通路
 	}else if (rk_switch == "rkbq_03") {
+		//广州通路
 		printIntowarehouse(scancwb);
-	//重庆华宇
-	}else if (rk_switch == "rkbq_05") {
+	}
+	else if (rk_switch == "rkbq_04") {						
+		$("#printcwb",parent.document).attr("src",pname + "/printcwb/printCwbruku?scancwb="+ scancwb + "&a="+ new Date());
+	}
+	else if (rk_switch == "rkbq_05") {
+		//重庆华宇
 		printIntowarehouseNew(scancwb);
-	//福建飞远30*25
-	}else if (rk_switch == "rkbq_06") {						
+	}
+	else if (rk_switch == "rkbq_06") {	
+		//福建飞远30*25
 		printIntowarehouse3025(scancwb);
-	} 
+	}
+	else if (rk_switch == "rkbq_07") {	
+		//武汉飞远35*35
+		printIntowarehousewuhan(scancwb);
+	}
+	
+	$('#scancwbprint').val('') //补打后删除输入框内容 add by vic.liang@pjbest.com 2016-08-13
 	/*	
 	if(scancwb==null){
 		alert("请输入单号！");

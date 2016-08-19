@@ -39,6 +39,7 @@ import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.OrderBackCheckDAO;
 import cn.explink.dao.OrgBillDetailDao;
 import cn.explink.dao.ReasonDao;
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.ZhiFuApplyDao;
 import cn.explink.domain.ApplyEditDeliverystate;
@@ -61,6 +62,8 @@ import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
+import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.enumutil.SettlementModeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.SignTypeEnum;
@@ -129,7 +132,10 @@ public class ApplyEditDeliverystateController {
 	OrderBackCheckDAO orderBackCheckDao;
 
 	@Autowired
-    DfFeeService dfFeeService;
+     DfFeeService dfFeeService;
+
+	@Autowired
+	SystemInstallDAO systemInstallDAO;
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -306,6 +312,10 @@ public class ApplyEditDeliverystateController {
 		boolean ycflag = false;
 		String cwbStr = "已做过重置审核订单:";
 		if (cwbdata.length() > 0) {
+			
+			int currentMode = this.editCwbService.getCurrentSettleModeFromSysConfig();
+			int autoReceivedOfPOS = this.editCwbService.getPosCodAutoRechargeFlagFromSysConfig();
+			
 			for (String cwb : cwbdata.split(",")) {
 				try {
 					long edituserid = this.getSessionUser().getUserid();
@@ -337,6 +347,12 @@ public class ApplyEditDeliverystateController {
 								if (!todayStr.equals(autitingDateStr)) {// 归班审核时间与重置反馈时间不在同一天生成订单调整记录
 									// 重置反馈状态生成调整记录(目前是为了站点签收余额报表增加的方法)
 									this.editCwbService.createFnOrgOrderAdjustRecord(cwb, ec_dsd);
+									//  V4.2.16资金归集代扣。POSCOD自动回款，如果订单支付类型为POS 或者 COD时，当订单被重置反馈时，需写入一条回款调整记录到调整表 gordon.zhou
+									if(ec_dsd.getNewpaywayid() == PaytypeEnum.Pos.getValue() || ec_dsd.getNewpaywayid() == PaytypeEnum.CodPos.getValue()){
+										if(currentMode == SettlementModeEnum.SignRptMode.getValue() && autoReceivedOfPOS == 1){
+											this.editCwbService.createFnOrgRechargesAdjustRecord(cwb, ec_dsd);
+										}
+									}
 								}
 							}
 						}

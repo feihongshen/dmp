@@ -165,8 +165,10 @@ public class DeliveryCashController {
 			@RequestParam(value = "dispatchbranchidArr", required = false, defaultValue = "") String[] dispatchbranchidArr, @PathVariable("page") int page) {
 		List<Customer> customerList = customerDAO.getAllCustomers();
 
-		List<User> deliverList = userDAO.getAllUserByRolesAndBranchids("2,4", dispatchbranchid);
-
+//		List<User> deliverList = userDAO.getAllUserByRolesAndBranchids("2,4", dispatchbranchid);
+		// modify by jian_xie 20160816  不显示不在职的数据
+		List<User> deliverList = userDAO.getAllUserByRolesAndBranchids(dispatchbranchid);
+		
 		model.addAttribute("deliverList", deliverList);
 		model.addAttribute("customerList", customerList);
 		model.addAttribute("branchList", branchDAO.getAllBranches());
@@ -198,8 +200,9 @@ public class DeliveryCashController {
 			@RequestParam(value = "customerid", required = false, defaultValue = "0") Long customerId) {
 		List<Customer> customerList = customerDAO.getAllCustomers();
 
-		List<User> deliverList = userDAO.getAllUserByRolesAndBranchids("2,4", dispatchbranchid);
-
+//		List<User> deliverList = userDAO.getAllUserByRolesAndBranchids("2,4", dispatchbranchid);
+		// modify by jian_xie 20160816  不显示不在职的数据
+		List<User> deliverList = userDAO.getAllUserByRolesAndBranchids(dispatchbranchid);
 		model.addAttribute("deliverList", deliverList);
 		model.addAttribute("customerList", customerList);
 

@@ -289,13 +289,13 @@ public class CwbOrderPDAController {
 			logger.error("", e);
 		}
 	}
-
+	
 	@RequestMapping("/newPDA")
 	public @ResponseBody PDAResponse PDA_NEW(HttpServletResponse response, HttpServletRequest request, @RequestParam("deviceid") String deviceid, @RequestParam("authtoken") String authtoken,
 			@RequestParam("clientversion") String clientversion, @RequestParam("requestparam") String requestparam, @RequestParam(value = "cwb", required = false, defaultValue = "") String cwb,
 			@RequestParam(value = "requestbatchno", required = false, defaultValue = "0") long requestbatchno) throws Exception {
 
-		this.logger.info("PDA--开始进行扫描");
+		this.logger.info("PDA--开始进行扫描,cwb={}", cwb);
 		String scancwb = cwb;
 		try {
 			User u = this.getSessionUser();

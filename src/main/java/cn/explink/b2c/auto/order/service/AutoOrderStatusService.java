@@ -24,6 +24,7 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.domain.Branch;
 import cn.explink.enumutil.AutoCommonStatusEnum;
 import cn.explink.service.CwbRouteService;
+import cn.explink.service.KufangBranchMappingService;
 import net.sf.json.JSONArray;
 
 
@@ -46,6 +47,9 @@ public class AutoOrderStatusService {
 	
 	@Autowired
 	private AutoExceptionService autoExceptionService;
+	
+	@Autowired
+	KufangBranchMappingService kufangBranchMappingService;
 	
 	private final static String ORDER_STATUS_TMP_SAVE_SQL="insert into express_auto_order_status_tmp (cwb,transportno,operatetype,msg,createtime,status) values(?,?,?,?,?,?)";
 	//private final static String ORDER_STATUS_TMP_UPDATE_SQL="update express_auto_order_status_tmp set status=? where cwb=? and operatetype=? and status=1";
@@ -124,10 +128,13 @@ public class AutoOrderStatusService {
 		if(deliveryBranchId<1){
 			return 0;
 		}
-		
-		this.cwbRouteService.reload();//?????
-		long nextbranchid = this.cwbRouteService.getNextBranch(currentBranchId, deliveryBranchId);
-		
+		//检查是否要到二级分拣库
+		long nextbranchid = kufangBranchMappingService.getNextBranch(deliveryBranchId);
+		if(nextbranchid==0){
+			//常规的路由
+			this.cwbRouteService.reload();//?????
+			nextbranchid = this.cwbRouteService.getNextBranch(currentBranchId, deliveryBranchId);
+		}
 		return nextbranchid;
 	}
 	

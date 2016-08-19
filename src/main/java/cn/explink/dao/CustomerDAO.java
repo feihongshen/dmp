@@ -488,4 +488,19 @@ public class CustomerDAO {
 			return null;
 		}
 	}
+	
+	/**
+	 * 获取客户对象
+	 * @param name
+	 * @return
+	 */
+	public Customer getCustomerByName(String name) {
+		String sql = "select * from express_set_customer_info where customername=? limit 0,1";
+		try {
+			Customer customer = this.jdbcTemplate.queryForObject(sql, new CustomerRowMapper(), name);
+			return customer;
+		} catch (DataAccessException e) {
+			return null;
+		}
+	}
 }

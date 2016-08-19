@@ -43,7 +43,7 @@ public class AutoOutWarehouseService {
 	private BaleDao baleDAO;
 	
 	@Transactional
-	public void autOutWarehouse(AutoPickStatusVo data,User user){
+	public void autOutWarehouse(AutoPickStatusVo data,User user,boolean needHebao){
 			String cwb=null;//
 			//String scancwb = null;
 			long driverid=0;
@@ -144,7 +144,7 @@ public class AutoOutWarehouseService {
 				if(boxno!=null&&isypdjusetranscwb==1){
 					scannum=boxno;
 				}
-				if(baleno==null){
+				if(baleno==null||!needHebao){
 					//非按包出库
 					cwbOrder = this.cwborderService.outWarehous(user, cwb, scannum, driverid, truckid, branchid,
 								requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0 : Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, false, anbaochuku);

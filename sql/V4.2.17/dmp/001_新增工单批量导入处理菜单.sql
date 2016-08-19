@@ -1,0 +1,2 @@
+INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`) 
+    VALUES ('601520', 2, '工单批量导入/处理', '601520', 'workorder/WorkManageBatch?', '6015');

@@ -72,8 +72,14 @@ public enum ExceptionCwbErrorTypeEnum {
 			PEI_SONG_YUAN_BU_PI_PEI(211, "此订单匹配的是{0}，{1}不能进行领货！"),
 			PEI_SONG_YUAN_WEI_PI_PEI(212, "此订单未匹配配送员，不能进行领货！"),
 			AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE(220, "连接自动分拨机失败，不能入库！请取消自动分拨功能，或重新连接。"),
-			PLEASE_RECEIVE_GOODS_FIRST(221, "请先做{0}"),
-			;
+			FEI_PEI_SONG_BANG_DING_EMS_TRANS(221,"非配送单不允许绑定邮政运单号！"),
+			BU_SHI_GAI_PEI_SONG_ZHAN_EMS_CWB(222,"订单目的站点不是邮政站点！"),
+			DAI_SHOU_HUO_KUAN_DA_LING(223,"订单代收货款大于0或者到付运费大0，不能绑定邮政运单号！"),
+			DING_DAN_ZHUANG_TAI_BU_SHI_CHU_KU(224,"订单当前操作状态不是出库，不能绑定邮政运单号！"),
+			JI_DAN_BU_FA_SONG_YOU_ZHENG(225,"订单为集单模式，不能绑定邮政运单号！"),
+			DING_DAN_BANG_DING_SHU_CHAO_CHU(226,"一票多件绑定次数已经超出订单发货数量！"),
+			PLEASE_RECEIVE_GOODS_FIRST(227, "请先做{0}"),
+			Ling_huo_EXPRESS_LIMIT(228,"非本站揽收/配送的快递单不能领货！");
 	
 
 	private int value;

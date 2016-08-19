@@ -442,4 +442,19 @@ public class VipshopInsertCwbDetailTimmer {
 		}
 	}
 	
+	//add by zhouhuan tps对接新增非唯品会订单转业务定时器，查询临时表，插入数据到detail表中 2016-08-05
+	public void selectAllTempAndInsertToCwbDetails(){
+		for (B2cEnum enums : B2cEnum.values()) { // 遍历唯品会enum，可能有多个枚举
+			if (enums.getMethod().contains("tpsother")) {
+				int isOpenFlag = jointService.getStateForJoint(enums.getKey());
+				if (isOpenFlag == 0) {
+					logger.info("未开启vipshop[" + enums.getKey() + "]对接！");
+					continue;
+				}
+				selectTempAndInsertToCwbDetail(enums.getKey());
+			}
+		}
+		
+	}
+	
 }

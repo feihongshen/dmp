@@ -1,0 +1,1 @@
+SELECT 'express_set_system_install修改数据' AS '脚本注释',IF((SELECT COUNT(1) FROM express_set_system_install WHERE name = 'eapUrl' and value like 'https://%' )= 1 ,'success','failed') AS '执行结果'

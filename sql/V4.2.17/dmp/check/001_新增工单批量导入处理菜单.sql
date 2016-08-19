@@ -1,0 +1,1 @@
+SELECT * FROM dmp40_function WHERE ID = '601520';

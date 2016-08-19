@@ -1,0 +1,1 @@
+insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('printdeliveryuser','0', '入库打印是否打印快递员(0:不打印，1：打印)');

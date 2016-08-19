@@ -1,4 +1,4 @@
-l<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@page import="cn.explink.enumutil.DeliveryStateEnum"%>
 <%@page import="cn.explink.enumutil.CwbFlowOrderTypeEnum"%>
 <%@page import="cn.explink.enumutil.CwbStateEnum"%>
@@ -43,6 +43,7 @@ String ifshowtag=(String)request.getAttribute("ifshowtag");
 <script src="<%=request.getContextPath()%>/js/intowarehousePrint.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/intowarehousePrintNew.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/intowarehousePrintFor3025.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/intowarehousePrintForwuhan.js" type="text/javascript"></script>
 
 <link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
 <script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
@@ -87,13 +88,15 @@ $(function(){
 
 function checkUseAutoAllocating() {
 	if($('#useAutoAllocating').attr('checked')=='checked'){
-		$('#autoallocating_switch').show();	
+		$('#autoallocating_switch').show();
+		$('#allocateAgain_span').show();
 	}
 	else {
+		$('useAutoAllocating').prop("checked", false);
 		$('#entryselect').val('-1');
-		$('#forward').attr('checked','checked');
-		$('#backward').removeAttr('checked');
 		$('#autoallocating_switch').hide();
+		$('#autoAllocateAgain').prop("checked", false);
+		$('#allocateAgain_span').hide();
 	}
 }
 
@@ -317,12 +320,36 @@ function callfunction(cwb){//getEmailDateByIds
 	 */
 	function submitIntoWarehouse(pname, scancwb, customerid, driverid,
 			requestbatchno, rk_switch, comment) {
+		if('${auto_allocat}'=="1") {
+			//扫码选择入货口
+			if('${auto_allocat}'=="1" && scancwb.indexOf("@rhk_")>-1){	// “入货口”的的拼音rhk
+				var entranceValue = scancwb.split('_')[1];
+				handleAutoAllocationAndSelectEntrance(entranceValue);
+				return false;
+			}
+			
+			//扫码选中二次分拨
+			if('${auto_allocat}'=="1" && $('#useAutoAllocating').attr('checked')=='checked' && scancwb == "@ecfb"){	// “二次分拨”的拼音ecfb
+				$('#autoAllocateAgain').prop("checked", true);
+				$("#scancwb").val("");
+				return false;
+			}
+			
+			// 二次入库
+			if('${auto_allocat}'=="1" && $('#useAutoAllocating').attr('checked')=='checked' && $('#autoAllocateAgain').attr('checked')=='checked'){
+				handleAutoAllocateAgain(pname, scancwb);
+				//二次入库后取消勾选checkbox
+				$('#autoAllocateAgain').prop("checked", false);
+				return false;
+			}
+			
+			if('${auto_allocat}'=="1" && $('#useAutoAllocating').attr('checked')=='checked' && $("#entryselect").val()=='-1'){
+				alert("请选择自动分拨机入口");
+				return;
+			}
+		}
 		
 		var flag=false;
-		if('${auto_allocat}'=="1" && $('#useAutoAllocating').attr('checked')=='checked' && $("#entryselect").val()=='-1'){
-			alert("请选择自动分拨机入口");
-			return;
-		}
 		if (scancwb.length > 0) {
 			$("#close_box").hide();
 
@@ -422,6 +449,10 @@ function callfunction(cwb){//getEmailDateByIds
 										}else if (rk_switch == "rkbq_06") {						
 											printIntowarehouse3025(scancwb);
 										} 
+										//武汉飞远35*35
+										else if (rk_switch == "rkbq_07") {	
+											printIntowarehousewuhan(scancwb);
+										}
 									}
 
 									$("#scansuccesscwb").val(scancwb);
@@ -495,15 +526,15 @@ function callfunction(cwb){//getEmailDateByIds
 												$("#scancwb").blur();
 											}
 										}
-	}else if(data.statuscode=="103"){
-								$("#scancwb").val("");
-								if("${isOpenDialog}" != "open"){
-									$("#msg").html(data.errorinfo);
-								}else{
-									$("#msg1").html(data.errorinfo);
-									$('#find').dialog('open');
-									$("#scancwb").blur();
-								}
+									}else if(data.statuscode=="103"){
+										$("#scancwb").val("");
+										if("${isOpenDialog}" != "open"){
+											$("#msg").html(data.errorinfo);
+										}else{
+											$("#msg1").html(data.errorinfo);
+											$('#find').dialog('open');
+											$("#scancwb").blur();
+										}
 									}
 									else{
 										$("#scancwb").val("");
@@ -527,6 +558,101 @@ function callfunction(cwb){//getEmailDateByIds
 		}
 	}
 }
+	
+	function handleAutoAllocationAndSelectEntrance(entranceValue) {
+		$("#updateswitch").prop("checked", true);
+		$("#useAutoAllocating").prop("checked", true);
+		checkUseAutoAllocating();
+		
+		$("#entryselect").val(entranceValue)
+		if($("#entryselect").val()!=entranceValue){
+			$("#msg1").html("         （异常扫描）扫描选择入货分拨机失败");
+			$("#entryselect").val(-1)
+			$('#find').dialog('open');
+			$("#scancwb").blur();
+		}else{
+			connect();
+			$("#msg1").html("");
+		}
+		$("#scancwb").val("");
+	}
+	
+	function handleAutoAllocateAgain(pname, scancwb) {
+		$.ajax({
+			type : "POST",
+			url : pname + "/PDA/autoAllocateAgainWithoutIntoWarehouse/" + scancwb,
+			data : {
+				"autoallocatid":$("#entryselect").val()
+			},
+			dataType : "json",
+			success : function(data) {
+				if (data.statuscode == "000000") {
+					$("#msg").val("");
+					$("#scancwb").val("");
+//						$("#cwbgaojia").hide();
+
+					$("#excelbranch").show();
+					$("#customername").show();
+//						$("#damage").show();
+//						$("#multicwbnum").show();
+
+					$("#customerid").val(data.body.cwbOrder.customerid);
+
+					if(data.body.showRemark!=null){
+						$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
+						}
+					if (data.body.cwbOrder.deliverybranchid != 0) {
+						$("#excelbranch").html("目的站："+ data.body.cwbdeliverybranchname
+												+ "<br/>下一站："+ data.body.cwbbranchname);
+					} else {
+						$("#excelbranch").html("尚未匹配站点");
+					}
+					$("#customername").html(
+							data.body.cwbcustomername);
+					$("#multicwbnum").val(
+							data.body.cwbOrder.sendcarnum);
+					$("#msg").html(scancwb+ data.errorinfo + "（共"+ data.body.cwbOrder.sendcarnum
+									+ "件，已扫"+ data.body.cwbOrder.scannum+ "件）" );
+					
+					$("#scansuccesscwb").val(scancwb);
+					$("#showcwb").html("订 单 号：" + data.body.cwbOrder.cwb);
+					$("#consigneeaddress").html("地 址："+ data.body.cwbOrder.consigneeaddress);
+					if(data.body.showRemark!=null){
+					$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
+					}
+					if(data.body.cwbOrder.emaildateid==0){
+						$("#morecwbnum").html(parseInt($("#morecwbnum").html()) + 1);
+					}
+				} else {
+					$("#excelbranch").hide();
+					$("#customername").hide();
+					$("#cwbgaojia").hide();
+					$("#damage").hide();
+					$("#multicwbnum").hide();
+					$("#multicwbnum").val("1");
+					$("#showcwb").html("");
+					$("#cwbDetailshow").html("");
+					$("#consigneeaddress").html("");
+					$("#scancwb").html("");
+					$("#msg").html("");
+					$("#scancwb").val("");
+					if("${isOpenDialog}" != "open"){
+						$("#msg").html("（异常扫描）" + data.errorinfo);
+					}else{
+						$("#msg1").html("（异常扫描）" + data.errorinfo);
+						$('#find').dialog('open');
+						$("#scancwb").blur();
+							
+					}
+				}
+				
+				$("#youhuowudanflag").val("0");
+				$("#responsebatchno").val(data.responsebatchno);
+				batchPlayWav(data.wavList);
+			}
+		});
+	}
+	
 	/**
 	 * 入库备注提交
 	 */
@@ -1024,21 +1150,22 @@ function flush(){
 						%>
 						</span>
 						<span id='autoallocating_use' type="text" style="display:none"><input type="checkbox" id="useAutoAllocating" name="useAutoAllocating" onclick="checkUseAutoAllocating();" />启用自动分拨 </span>
-						<span id='autoallocating_switch' type="text" style="display:none;width:500px"> &nbsp;&nbsp;&nbsp;&nbsp;自动分拨机入口选择*：<select id="entryselect" name="entryselect" style="height: 20px; width: 150px">
+						<span id='autoallocating_switch' type="text" style="display:none;width:500px"> &nbsp;&nbsp;&nbsp;&nbsp;自动分拨机入口选择*：<select id="entryselect" name="entryselect" style="height: 20px; width: 200px" disabled="disabled">
 						<option value="-1" selected>请选择</option>
 						<%
 							for (Entrance e : eList) {
 						%>
-						<option value="<%=e.getEntranceno()%>"><%=e.getEntranceno()+"("+e.getEntranceip()+")"%></option>
+						<option value="<%=e.getEntranceno()%>"><%=e.getEntranceno()+" - ("+e.getEntranceip()+")"%></option>
 						<%
 							}
 						%>
 						</select> 
-						<input type="button" id="connect" onclick="connect()"  value="连接" />
+						<input type="button" id="connect" onclick="connect()"  value="重连" />
 						<!-- <input type="button" id="flush" onclick="flush()"  value="清空队列" /> -->
 						<!-- <input type="radio" name="direction" id="forward" value="0" checked="checked" />正向 -->
 						<!-- <input type="radio"  name="direction" id="backward" value="1" />逆向 -->
-						</span>					
+						</span>		
+						<span id='allocateAgain_span' type="text" style="display:none">&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="autoAllocateAgain" name="autoAllocateAgain" />二次分拨 </span>			
 					</div>
 			<div class="saomiao_inwrith2">
 				<div class="saomiao_left2">								
@@ -1058,8 +1185,8 @@ function flush(){
 					<input type="checkbox" id="cwbnohide" />
 					<span>入库标签补签</span>
 					<div style="display: none" id="div0011">
-					<input type="text" name="scancwbprint" id="scancwbprint" class="saomiao_inputtxt" />			
-					<input type="button" value="生成" onclick="javascript:BuprintTag('<%=request.getContextPath()%>');"/> 
+					<input type="text" name="scancwbprint" id="scancwbprint" class="saomiao_inputtxt" onKeyDown="if(event.keyCode==13&&$(this).val().length>0){BuprintTag('<%=request.getContextPath()%>')}"/>			
+					<%-- <input type="button" value="生成" onclick="javascript:BuprintTag('<%=request.getContextPath()%>');"/>  modify by vic.liang@pjbest.com 2016-08-08--%>
 					</div>
 					<%
 					}

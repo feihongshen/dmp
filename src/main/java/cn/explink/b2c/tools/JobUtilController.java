@@ -49,6 +49,7 @@ import cn.explink.b2c.telecomsc.TelecomInsertCwbDetailTimmer;
 import cn.explink.b2c.tmall.TmallInsertCwbDetailTimmer;
 import cn.explink.b2c.tools.b2cmonntor.B2cAutoDownloadMonitorDAO;
 import cn.explink.b2c.vipshop.VipShopService;
+import cn.explink.b2c.vipshop.VipshopInsertCwbDetailTimmer;
 import cn.explink.b2c.yangguang.YangGuangInsertCwbDetailTimmer;
 import cn.explink.b2c.yangguang.YangGuangService_download;
 import cn.explink.b2c.yihaodian.YihaodianService;
@@ -152,6 +153,8 @@ public class JobUtilController {
 	AcquisitionOrderService acquisitionOrderService;
 	@Autowired
 	FlowExpService flowExpService;
+	@Autowired
+	VipshopInsertCwbDetailTimmer vipshopInsertCwbDetailTimmer;
 	
 	// public static Map<String, Integer> threadMap;
 	public static RedisMap<String, Integer> threadMap;	
@@ -1328,5 +1331,29 @@ public class JobUtilController {
 		} 
 
 		this.logger.info("执行sendFlow定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
+	
+	//add by zhouhuan 执行获取vipshop临时表插入主表(不区分客户) 2016-08-05
+	@RequestMapping("/getCwbTempInsert")
+	public void getCwbTempInsert_Task() {
+		if (JobUtil.threadMap.get("cwbInsertToOrderDetail") == 1) {
+			this.logger.warn("本地定时器没有执行完毕，跳出循环cwbInsertToOrderDetail");
+			return;
+		}
+		JobUtil.threadMap.put("cwbInsertToOrderDetail", 1);
+
+		long starttime = 0;
+		long endtime = 0;
+		try {
+			starttime = System.currentTimeMillis();
+			this.vipshopInsertCwbDetailTimmer.selectAllTempAndInsertToCwbDetails();
+			endtime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行cwbInsertToOrderDetail定时器异常", e);
+		} finally {
+			JobUtil.threadMap.put("cwbInsertToOrderDetail", 0);
+		}
+
+		this.logger.info("执行了获取cwbInsertToOrderDetail订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 }

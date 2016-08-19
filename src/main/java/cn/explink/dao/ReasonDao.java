@@ -236,4 +236,32 @@ public class ReasonDao {
 		});
 
 	}
+	
+	/**
+	 * 
+	 * 查询工单投诉一级分类
+	 * @param content
+	 * @return
+	 */
+	public Reason getWorkFirstReasonByContent(String content) {
+		String sql = "select * from express_set_reason where reasontype = 13 and whichreason = 1 and reasoncontent = ?";
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new ReasonRowMapper(), content);
+		} catch (DataAccessException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * 查询工单投诉二级分类与一级分类关联
+	 * @return
+	 */
+	public Reason getWorkSecondReasonByContent(int parentId, String content) {
+		String sql = "select * from express_set_reason where whichreason=2 and parentid=? and reasoncontent = ?";
+		try {
+			return this.jdbcTemplate.queryForObject(sql, new ReasonRowMapper(), parentId, content);
+		} catch (DataAccessException e) {
+			return null;
+		}
+	}
 }

@@ -208,6 +208,36 @@ public class TranscwbOrderFlowDAO {
 		Map<String, Object> resultMap = resultList.get(0);
 		Object countObj = resultMap.get(TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT);
 		scannum = Integer.parseInt(countObj.toString());
+//		// 当前运单扫描次数
+//		Integer currentTransCwbCount = Integer.valueOf(0);
+//		// 兄弟运单
+//		Map<String, Integer> siblingTransCwbMap = new HashMap<String, Integer>();
+//		for (Map<String, Object> resultMap : resultList) {
+//			Object transcwbObj = resultMap.get(TranscwbOrderFlowDAO.SCANNUM_MAP_SCANCWB);
+//			Object countObj = resultMap.get(TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT);
+//			Integer count = Integer.valueOf(0);
+//			if (transcwbObj != null) {
+//				String transcwb = (String) transcwbObj;
+//				// 当前扫描的运单
+//				if (scancwb.equals(transcwb)) {
+//					currentTransCwbCount = Integer.parseInt(((Long) countObj).toString());
+//					continue;
+//				}
+//				if (countObj != null) {
+//					count = Integer.parseInt(((Long) countObj).toString());
+//				}
+//				siblingTransCwbMap.put(transcwb, count);
+//			}
+//		}
+//
+//		int scannum = 0;
+//		Set<String> siblingTransCwbKeySet = siblingTransCwbMap.keySet();
+//		for (String siblingTransCwbKey : siblingTransCwbKeySet) {
+//			// 当前运单某个操作状态扫描次数比某个兄弟运单的小，说明兄弟运单扫描过，所以++
+//			if (currentTransCwbCount.compareTo(siblingTransCwbMap.get(siblingTransCwbKey)) < 0) {
+//				scannum++;
+//			}
+//		}
 		return scannum;
 	}
 	
@@ -268,6 +298,13 @@ public class TranscwbOrderFlowDAO {
 	 * @return key:运单号 value:扫描次数
 	 */
 	private List<Map<String, Object>> getScanCwbCountMapByTranscwbOrderFlow(String cwb, long flowordertype, long branchid) {
+//		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+//		String sql = "SELECT " + TranscwbOrderFlowDAO.SCANNUM_MAP_SCANCWB + ",count(scancwb) as " + TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT
+//				+ " FROM express_ops_transcwb_orderflow WHERE cwb=? AND flowordertype=? AND branchid=? " + " group by scancwb ";
+//		try {
+//			result = this.jdbcTemplate.queryForList(sql, cwb, flowordertype, branchid);
+//		} catch (DataAccessException e) {
+//		}
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 		String sql = "SELECT " + TranscwbOrderFlowDAO.SCANNUM_MAP_CWB + ",count(DISTINCT scancwb) as " + TranscwbOrderFlowDAO.SCANNUM_MAP_COUNT
 				+ " FROM express_ops_transcwb_orderflow WHERE cwb=? AND flowordertype=? AND branchid=? and isnow=1 ";
@@ -354,6 +391,15 @@ public class TranscwbOrderFlowDAO {
 	}
 	
 	/**
+	 * 用过订单查询运单是否都是处于同一操作流程   add by vic.liang@pjbest.com 2016-07-26
+	 * @return
+	 */
+	public int getTransScanTimeByCwbFlowordertype(String cwb, int flowordertype) {
+		String sql = "select count(1) from express_ops_transcwb_orderflow where cwb = ? and flowordertype = ? and isnow = 1";
+		return this.jdbcTemplate.queryForInt(sql, cwb, flowordertype);
+	}
+	
+		/**
 	 * 根据订单号删除运单轨迹
 	 * @author leo01.liao
 	 * @param cwb

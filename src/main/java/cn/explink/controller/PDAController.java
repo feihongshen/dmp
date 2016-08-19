@@ -6180,6 +6180,41 @@ public class PDAController {
 		}
 		return explinkResponse;
 	}
+	
+	
+	@RequestMapping("/querycwbbranchcode")
+	public @ResponseBody String querycwbbranchcode(HttpServletRequest request, @RequestParam(value = "cwb", required=true) String cwb) 
+			throws JsonGenerationException, JsonMappingException, IOException {
+		cwb = this.cwbOrderService.translateCwb(cwb);
+		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+
+		JSONObject obj = new JSONObject();
+		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
+		PrintStyle print = new PrintStyle();
+
+		String str = this.systemInstallDAO.getSystemInstall("cqhy_print").getValue();
+
+		print = JacksonMapper.getInstance().readValue(str, PrintStyle.class);
+		obj.put("print", print);
+		Branch branch = this.branchDAO.getBranchById(cwbOrder.getDeliverybranchid());
+		obj.put("branch", JSONObject.fromObject(branch));
+		
+		String value = this.systemInstallDAO.getSystemInstall("printdeliveryuser").getValue();
+		if ("1".equals(value)) {
+			User user = this.userDAO.getUserByUserid(cwbOrder.getExceldeliverid());
+			obj.put("deliveryuser", user.getRealname() == null ? "" : user.getRealname());
+		} else {
+			obj.put("deliveryuser", "");
+		}
+		ExplinkResponse explinkResponse = new ExplinkResponse("000000", "", obj);
+		if (explinkResponse.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
+			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
+		} else {
+			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl());
+		}
+		String result = JacksonMapper.getInstance().writeValueAsString(explinkResponse); 
+		return result;
+	}
 
 	@RequestMapping("/cwbscancwbbranchnew1")
 	public @ResponseBody String cwbbranchfinishchangeexportnew1(HttpServletRequest request, @RequestParam(value = "cwb", required=true) String cwb) 
@@ -11395,11 +11430,13 @@ public class PDAController {
 			logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
 			if(null==sc||sc.Clientstate.State!=2){
 				logger.info("尝试连接中间件 ："+entranceIP);
-				sc=this.autoAllocationService.startConnect(entranceIP, PORT);
+				sc=this.autoAllocationService.startConnect(entranceIP);
 				socketMap.put(entranceIP, sc);
 			}
 			
 			sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+			this.autoAllocationService.init(entranceIP);	//初始化连接
+			
 			socketMap=this.autoAllocationService.getSocketMap();
 			sc=socketMap.get(entranceIP);
 			logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
@@ -11654,12 +11691,15 @@ public class PDAController {
 			SocketClient sc=socketMap.get(e.getEntranceip());
 			if(null==sc||sc.Clientstate.State!=2){
 				logger.info("尝试连接中间件："+e.getEntranceip());
-				sc=this.autoAllocationService.startConnect(e.getEntranceip(), PORT);
+				sc=this.autoAllocationService.startConnect(e.getEntranceip());
 				socketMap.put(e.getEntranceip(), sc);
 			}
 		}
 		
 		sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+		
+		this.autoAllocationService.init(eList);	//初始化连接
+		
 		for(Entrance e:eList){
 			Map<String, SocketClient> socketMap=this.autoAllocationService.getSocketMap();
 			SocketClient sc=socketMap.get(e.getEntranceip());
@@ -11708,10 +11748,12 @@ public class PDAController {
 				logger.info("中间件[" + entranceIP + "]连接状态：" + (sc==null? "" : sc.Clientstate.State) + ".（注：0没任何登录，1已连接未登录，2已登录，3已触发关闭引擎。）");
 				if(null==sc||sc.Clientstate.State!=2){
 					logger.info("尝试连接中间件："+entranceIP);
-					sc=this.autoAllocationService.startConnect(entranceIP, PORT);
+					sc=this.autoAllocationService.startConnect(entranceIP);
 					socketMap.put(entranceIP, sc);
 					
 					sleepAfterConnect();		// 连接后线程睡眠一段时间，以获得准确的连接状态
+					
+					this.autoAllocationService.init(entranceIP);	//初始化连接
 				}
 				
 				//再次检查是否连接断开，若仍然未连上则抛出异常，不能入库
@@ -11766,5 +11808,106 @@ public class PDAController {
 		
 		return listBranch;
 	}
+	
+	/**
+	 * 二次分拨（不入库，只上自动分拨）
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param cwb
+	 */
+	@RequestMapping("/autoAllocateAgainWithoutIntoWarehouse/{cwb}")
+	public @ResponseBody ExplinkResponse autoAllocateAgainWithoutIntoWarehouse(Model model, HttpServletRequest request, HttpServletResponse response, @PathVariable("cwb") String cwb,
+			@RequestParam(value = "autoallocatid", defaultValue = "-1") String entranceno){
+		if(isAutoAllocatingButDisconnected(entranceno)){
+			throw new CwbException(cwb, FlowOrderTypeEnum.RuKu.getValue(), ExceptionCwbErrorTypeEnum.AUTO_ALLOCATING_BUT_DISCOUNTED_PLEASE_HANDLE);
+		}
+		
+		long startTime = System.currentTimeMillis();
+		ExplinkResponse resp = null;
+		String scancwb = cwb;
+		CwbOrder cwbOrder = new CwbOrder();
 
+		String branchName="";//配送站点名称
+		String outputNo="";//出货口编号
+		
+		cwb = this.cwbOrderService.translateCwb(cwb);
+		cwbOrder = this.cwbDAO.getCwbByCwb(cwb);
+		
+		if (cwbOrder == null) {
+			throw new CwbException(cwb, FlowOrderTypeEnum.RuKu.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
+		
+		try{
+			JSONObject obj = new JSONObject();
+			resp = new ExplinkResponse("000000", CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype()).getText(), obj);
+			
+			obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
+			obj.put("cwbcustomername", this.customerDAO.getCustomerById(cwbOrder.getCustomerid()).getCustomername());
+
+			if (cwbOrder.getNextbranchid() != 0) {
+				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getNextbranchid());
+				obj.put("cwbbranchname", branch.getBranchname());
+			} else {
+				obj.put("cwbbranchname", "");
+			}
+			
+			/*
+			 * 单票成功订单，有站点提示语音的，忽略通用提示音
+			 */
+			// 通用提示音
+			String wavPath = null;
+			// 一票多件提示音乐
+			String multiTipPath = null;
+			if (resp.getStatuscode().equals(CwbOrderPDAEnum.OK.getCode())) {
+				wavPath = this.getErrorWavFullPath(request, CwbOrderPDAEnum.OK.getVediourl());
+			} else {
+				wavPath = this.getErrorWavFullPath(request, CwbOrderPDAEnum.SYS_ERROR.getVediourl());
+			}
+			if ((cwbOrder.getSendcarnum() > 1) || (cwbOrder.getBackcarnum() > 1)) {
+				resp.setErrorinfo(resp.getErrorinfo() + "\n一票多件");
+				if (this.isPlayYPDJSound()) {
+					multiTipPath = this.getErrorWavFullPath(request, CwbOrderPDAEnum.YI_PIAO_DUO_JIAN.getVediourl());
+					resp.addLongWav(multiTipPath);
+				}
+			}
+			if (cwbOrder.getDeliverybranchid() != 0) {
+				// 如果存在站点声音，忽略通用提示音
+				Branch branch = this.branchDAO.getBranchByBranchid(cwbOrder.getDeliverybranchid());
+				branchName=branch.getBranchname();//站点中文名
+				outputNo=branch.getOutputno();//站点出货口
+				obj.put("cwbdeliverybranchname", branch.getBranchname());
+				if (!this.isStringEmpty(branch.getBranchwavfile())) {
+					String fullPath = this.getWavFullPath(request, branch.getBranchwavfile());
+					resp.addLastWav(fullPath);
+					obj.put("cwbdeliverybranchnamewav", fullPath);
+				} else {
+					// 存在站点,但未设置声音，也使用通用提示音
+					resp.addLongWav(wavPath);
+				}
+			} else {
+				// 如果不存在站点声音，使用通用提示音
+				resp.addLongWav(wavPath);
+				obj.put("cwbdeliverybranchname", "");
+				obj.put("cwbdeliverybranchnamewav", "");
+			}
+			/**
+			 * 对接自动分拨的中间件
+			 */
+			this.addQueue(outputNo, entranceno, cwb, branchName, scancwb, Constants.INTOWAHOUSE_TYPE_AUTO_ALLOCATE_AGAIN);		
+		
+			this.logger.info("二次分拣扫描的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
+			return resp;
+		} catch (CwbException e) {
+			this.logger.error("cwb="+cwb,e);
+			ExplinkResponse explinkResponse = new ExplinkResponse(e.getError().getValue() + "", e.getMessage(), null);
+			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl());
+			// 添加货物类型声音.
+			this.addGoodsTypeWaveJSON(request, cwbOrder, explinkResponse);
+			// 单号不存在异常.
+			this.addNoOrderWav(request, e, explinkResponse);
+			explinkResponse.addShortWav(this.getErrorWavFullPath(request, CwbOrderPDAEnum.SYS_ERROR.getVediourl()));
+			return explinkResponse;
+		}
+	}
 }

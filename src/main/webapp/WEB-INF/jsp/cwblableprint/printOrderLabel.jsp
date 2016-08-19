@@ -117,7 +117,7 @@ function nowprint(){
 			    					<div style="line-height:10px;font-family: 黑体;font-size: 8px;padding-left: 0px;padding-right: 2px;">
 				    					<font style="font-size: 10px;">${cwb.senderprovince }${cwb.sendercity }${cwb.sendercounty }</font>${cwb.senderaddress }
 				    					<br>
-				    					${cwb.sendername }  ${cwb.sendercellphone }
+				    					${cwb.sendername }  <c:choose><c:when test="${empty cwb.sendercellphone }">${cwb.sendertelephone }</c:when><c:otherwise>${cwb.sendercellphone }</c:otherwise></c:choose>
 			    					</div>
 			    				</td>
 			    			</tr>
@@ -129,7 +129,7 @@ function nowprint(){
 			    		<table class="inner_table" width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
 			    			<tr>
 			    				<td style="width:42mm;">
-			    					<div style="font-family: 黑体;font-size: 8px;">收件人：${cwb.consigneename }  ${cwb.consigneemobile }</div>
+			    					<div style="font-family: 黑体;font-size: 8px;">收件人：${cwb.consigneename }  <c:choose><c:when test="${empty cwb.consigneemobile }">${cwb.consigneephone }</c:when><c:otherwise>${cwb.consigneemobile }</c:otherwise></c:choose></div>
 			    				</td>
 			    				<td>
 			    					<div style="font-family: 黑体;font-size: 8px;">订单号：${cwb.cwb }</div>
@@ -170,7 +170,7 @@ function nowprint(){
 			    								<div style="line-height:10px;font-family: 黑体;font-size: 8px;">
 				    								<font style="line-height:10px;font-family: 黑体;font-weight: bold;font-size: 10px;">${cwb.cwbprovince }${cwb.cwbcity }${cwb.cwbcounty }</font>${cwb.consigneeaddress }
 				    								<br>
-				    								${cwb.consigneename }  ${cwb.consigneemobile }
+				    								${cwb.consigneename }  <c:choose><c:when test="${empty cwb.consigneemobile }">${cwb.consigneephone }</c:when><c:otherwise>${cwb.consigneemobile }</c:otherwise></c:choose>
 			    								</div>
 			    							</td>
 			    						</tr>
@@ -262,7 +262,7 @@ function nowprint(){
 			    					<div style="line-height:10px;font-family: 黑体;font-size: 8px;padding-left: 0px;padding-right: 2px;">
 				    					<font style="font-size: 10px;">${cwb.senderprovince }${cwb.sendercity }${cwb.sendercounty }</font>${cwb.senderaddress }
 				    					<br>
-				    					${cwb.sendername }  ${cwb.sendercellphone }
+				    					${cwb.sendername }  <c:choose><c:when test="${empty cwb.sendercellphone }">${cwb.sendertelephone }</c:when><c:otherwise>${cwb.sendercellphone }</c:otherwise></c:choose>
 			    					</div>
 			    				</td>
 			          		</tr>
