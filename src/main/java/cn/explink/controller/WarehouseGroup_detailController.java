@@ -1484,8 +1484,8 @@ public class WarehouseGroup_detailController {
 			mapForOperatorName.put(of.getCwb(), this.userDAO.getUserByUserid(of.getUserid()).getRealname());
 		}
 		model.addAttribute("map", mapForOperatorName);
-
-		model.addAttribute("template", this.printTemplateDAO.getPrintTemplate(printtemplateid));
+		PrintTemplate printtemplate = this.printTemplateDAO.getPrintTemplate(printtemplateid);
+		model.addAttribute("template", printtemplate);
 		Branch localbranch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
 		model.addAttribute("localbranchname", localbranch.getBranchname());
 		long nextbranchid = this.outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid).getBranchid();
@@ -1498,7 +1498,6 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("islinghuo", islinghuo);
 		model.addAttribute("branchlist", this.branchDAO.getAllEffectBranches());
 		model.addAttribute("operatetype", this.outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid).getOperatetype());
-		PrintTemplate printtemplate = this.printTemplateDAO.getPrintTemplate(printtemplateid);
 		if (printtemplate.getTemplatetype() == 1) {
 			/**
 			 * 按包逻辑完善：真实订单、显示打印用订单 list
@@ -1793,7 +1792,7 @@ public class WarehouseGroup_detailController {
 	private OutChangePrintVo initPrintData (List<CwbOrder> cwbList,long nextbranchid, String starttime, String endtime, User user) {
 		String userbranchname = this.branchDAO.getBranchName(user.getBranchid());
 		String nextbranchname = this.branchDAO.getBranchName(nextbranchid);
-	    String username = user.getUsername();
+	    String username = user.getRealname();
 		OutChangePrintVo print = new OutChangePrintVo();
 		Map<Integer,List<String>> map = new HashMap<Integer, List<String>>();
 	    int count = 0;//订单数

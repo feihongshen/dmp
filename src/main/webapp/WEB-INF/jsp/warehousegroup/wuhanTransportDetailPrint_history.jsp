@@ -53,24 +53,27 @@ function nowprint(){
 		width: 75mm;
 	}
 	.inner_box {
-		margin: 5mm;
+		left-margin : 3mm;
+		right-margin : 9 mm;
 	}
 	.title {
 		font-size: 14px;
-		width:100%;
+		width:84%;
 		text-align:center;
+		word-wrap: break-word; 
+		word-break: normal;
 	}
 	.content_1 {
 		font-size: 12px;
 	}
 	.content_2 {
-		font-size: 10px;
+		font-size: 12px;
 		font-weight: bold;
 		padding-left: 3mm;
 		margin-top:1mm;
 	}
 	.content_3 {
-		font-size: 10px;
+		font-size: 12px;
 		margin-left: 3mm;
 		margin-top:1mm;
 	}
@@ -108,7 +111,7 @@ function nowprint(){
 			<div class="inner_box">
 				<div class="title">（${vo.branchname }）至（${vo.nextBranchname }）运输交接单（补打）</div>
 				<div class="dashed"></div>
-				<div class="content_1">出库时间：- 至 -</div>
+				<!-- <div class="content_1">出库时间：- 至 -</div> -->
 				<div class="content_1">出库：共${vo.outstockOrderNum }单${vo.outstockSendNum }件（其中单独交接0单0件）</div>
 				<div class="dashed"></div>
 				<div class="content_2">分拣中心填写区：</div>
@@ -118,7 +121,7 @@ function nowprint(){
 				<div class="content_2">运输部填写区：</div>
 				<div class="content_3">
 					<span class="float_left">封签码与车辆是否一致：</span>
-					<div class="float_right" style="width:8mm;">&nbsp;</div>
+					<div class="float_right" style="width:12mm;">&nbsp;</div>
 					<span class="float_right">否</span>
 					<div class="square float_right"></div>
 					<div class="float_right" style="width:2mm;">&nbsp;</div>
@@ -128,7 +131,7 @@ function nowprint(){
 				</div>
 				<div class="content_3">
 					<span class="float_left">封签码是否完好：</span>
-					<div class="float_right" style="width:8mm;">&nbsp;</div>
+					<div class="float_right" style="width:12mm;">&nbsp;</div>
 					<span class="float_right">否</span>
 					<div class="square float_right"></div>
 					<div class="float_right" style="width:2mm;">&nbsp;</div>
@@ -159,7 +162,7 @@ function nowprint(){
 				</div>
 				<div class="content_3">
 					<span class="float_left">差异处理：现场寻找差异</span>
-					<div class="float_right" style="width:8mm;">&nbsp;</div>
+					<div class="float_right" style="width:12mm;">&nbsp;</div>
 					<span class="float_right">否</span>
 					<div class="square float_right"></div>
 					<div class="float_right" style="width:2mm;">&nbsp;</div>
@@ -170,7 +173,7 @@ function nowprint(){
 				<div class="content_3">
 					<div class="float_left" style="width:13mm;">&nbsp;</div>
 					<span class="float_left">是否逐单二次扫描</span>
-					<div class="float_right" style="width:8mm;">&nbsp;</div>
+					<div class="float_right" style="width:12mm;">&nbsp;</div>
 					<span class="float_right">否</span>
 					<div class="square float_right"></div>
 					<div class="float_right" style="width:2mm;">&nbsp;</div>
@@ -199,7 +202,7 @@ function nowprint(){
 				<div class="content_3">车辆封签码：<span class="underline" style="word-spacing:40.5mm;">&nbsp;</span></div>
 				<div class="content_3">
 					<span class="float_left">封签码与车辆是否一致：</span>
-					<div class="float_right" style="width:8mm;">&nbsp;</div>
+					<div class="float_right" style="width:12mm;">&nbsp;</div>
 					<span class="float_right">否</span>
 					<div class="square float_right"></div>
 					<div class="float_right" style="width:2mm;">&nbsp;</div>
@@ -209,7 +212,7 @@ function nowprint(){
 				</div>
 				<div class="content_3">
 					<span class="float_left">封签码是否完好：</span>
-					<div class="float_right" style="width:8mm;">&nbsp;</div>
+					<div class="float_right" style="width:12mm;">&nbsp;</div>
 					<span class="float_right">否</span>
 					<div class="square float_right"></div>
 					<div class="float_right" style="width:2mm;">&nbsp;</div>
@@ -219,7 +222,7 @@ function nowprint(){
 				</div>
 				<div class="content_3">
 					<span class="float_left">司机全程监督卸货扫描：</span>
-					<div class="float_right" style="width:8mm;">&nbsp;</div>
+					<div class="float_right" style="width:12mm;">&nbsp;</div>
 					<span class="float_right">否</span>
 					<div class="square float_right"></div>
 					<div class="float_right" style="width:2mm;">&nbsp;</div>
@@ -228,8 +231,8 @@ function nowprint(){
 					<div style="clear:both;"></div>
 				</div>
 				<div class="content_3">
-					<span class="float_left">差异（不勾选视为无差异）：</span>
-					<div class="float_right" style="width:8mm;">&nbsp;</div>
+					<span class="float_left">差异(不勾选视为无差异):</span>
+					<div class="float_right" style="width:12mm;">&nbsp;</div>
 					<span class="float_right">否</span>
 					<div class="square float_right"></div>
 					<div class="float_right" style="width:2mm;">&nbsp;</div>

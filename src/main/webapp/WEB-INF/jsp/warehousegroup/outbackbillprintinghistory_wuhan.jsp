@@ -52,12 +52,15 @@ function nowprint(){
 		width: 75mm;
 	}
 	.inner_box {
-		margin: 5mm;
+		left-margin : 3mm;
+		right-margin : 9 mm;
 	}
 	.title {
 		font-size: 14px;
-		width:100%;
+		width:84%;
 		text-align:center;
+		word-wrap: break-word;
+		word-break: normal;
 	}
 	.content_1 {
 		font-size: 12px;
@@ -98,8 +101,8 @@ function nowprint(){
 	}
 	.content_sign {
 		font-size: 12px;
-		padding-top : 1.5mm;
-		padding-bottom : 1.5mm;
+		padding-top : 1.3mm;
+		padding-bottom : 1.3mm;
 	}
 	
 	.AutoNewline{
@@ -154,7 +157,7 @@ function nowprint(){
 				
 				<div class="content_1">
 				     <span>打印：</span>
-				     <span>${print.username} （${print.username}）</span>
+				     <span>${print.username}</span>
 				     <span style="word-spacing:1mm;">&nbsp;</span>
 				     <span>${print.printtime}</span>
 				</div>

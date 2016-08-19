@@ -68,15 +68,18 @@ function nowprint(){
 		width: 75mm;
 	}
 	.inner_box {
-		margin: 5mm;
+		left-margin : 3mm;
+		right-margin : 9 mm;
 	}
 	.title {
 		font-size: 14px;
-		width:100%;
+		width:84%;
 		text-align:center;
+		word-wrap: break-word;
+		word-break: normal;
 	}
 	.content_1 {
-		font-size: 11px;
+		font-size: 12px;
 	}
 	.dashed {
 		border-top:1px dashed #585656;
@@ -102,13 +105,13 @@ function nowprint(){
 		float:right;
 	}
 	.cwb th {
-		font-size: 11px;
+		font-size: 12px;
 		font-weight: normal;
 		text-align:left;
 		border-bottom:1px dashed #585656;
 	}
 	.cwb td {
-		font-size: 10px;
+		font-size: 12px;
 		font-weight: normal;
 		text-align:left;
 		vertical-align: top;
@@ -122,16 +125,16 @@ function nowprint(){
 	<div id="printTable">
 		<div class="out_box preview_box">
 			<div class="inner_box">
-				<div class="title">武汉飞远速递领货签收单</div>
+				<div class="title">武汉飞远领货签收单</div>
 				<div class="content_1">
 					<span>站点：${branchname }</span>
 					<span style="word-spacing:1mm;">&nbsp;</span>
-					<span>快递员：${delivername }</span>
+					<span>小件员：${delivername }</span>
 					<span style="word-spacing:1mm;">&nbsp;</span>
 					<span>第1/1页</span>
 				</div>
 				<div class="content_1">
-					<span>打印：${username }</span>
+					<span>打印：${username}</span>
 					<span style="word-spacing:1mm;">&nbsp;</span>
 					<span>时间：<fmt:formatDate value="${printTime }" pattern="yyyy-MM-dd HH:mm:dd"/></span>
 				</div>
@@ -140,8 +143,8 @@ function nowprint(){
 					<table class="cwb" width="100%" border="0" cellspacing="0" cellpadding="0">
 						<tr>
 							<th width="10%">序号</th>
-							<th width="45%">条码</th>
-							<th width="45%">条码</th>
+							<th width="45%">单号1</th>
+							<th width="45%">单号2</th>
 						</tr>
 						<c:forEach var="cwbArray" items="${cwbArrayList }" varStatus="status">
 							<tr>
