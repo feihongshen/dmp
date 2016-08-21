@@ -44,7 +44,7 @@
 						<th field="transcwb" align="center" width="120px;">运单号</th>
 						<th field="email_num" align="center" width="120px;">邮政运单号</th>
 						<th field="deliveryBranchName" align="center" width="150px;">配送站点</th>
-						<th field="outWarehouseTime" align="center" width="120px;">出库时间</th>
+						<th field="bingTime" align="center" width="120px;">打印时间</th>
 						<th field="consigneename" align="center" width="100px;">收件人</th>
 						<th field="consigneeaddress" align="center" width="450px;">收件地址</th>
 					</tr>
@@ -198,10 +198,10 @@
 		success : function(data) {
 			layer.close(layEle);
 			var result = JSON.parse(data.result);
-			var list = data.list;
+			//var list = data.list;
 			if (result.result == 'success') {
 				closeWindow();
-				initDataGrid(list);
+				initDataGrid();
 				$('#scancwb').focus();
 			} else {
 				alert(result.result);
@@ -210,44 +210,57 @@
 	});
  }
  
- function initDataGrid(gridData) {
+ function initDataGrid() {
 	  $("#dg").datagrid('loadData',[]); // 清空数据
-	  $('#dg').datagrid({loadFilter:pagerFilter}).datagrid('loadData', gridData);//加载数据
+	  //$('#dg').datagrid({loadFilter:pagerFilter}).datagrid('loadData', gridData);//加载数据
+	  queryOrderDetail(1,10);//加载数据
  }
  
- function pagerFilter(data){
-    if (typeof data.length == 'number' && typeof data.splice == 'function'){ // 判断数据是否是数组
-	     data = {
-	         total: data.length,
-	         rows: data
-	     }
-	}
-	var dg = $("#dg");
-    var opts = dg.datagrid('options');
-    var pager = dg.datagrid('getPager');
-    pager.pagination({
-	        onSelectPage:function(pageNum, pageSize){
-	            opts.pageNumber = pageNum;
-	            opts.pageSize = pageSize;
-	            pager.pagination('refresh',{
-	                pageNumber:pageNum,
-	                pageSize:pageSize
-	            });
-	            dg.datagrid('loadData',data);
-	     }
+ function queryOrderDetail(page, pageSize){
+	//数据加载动画
+	var layEle = layer.load({
+		type:3
 	});
-	if (!data.originalRows){
-	     data.originalRows = (data.rows);
+	var param = {
+		page : page,
+		pageSize : pageSize
 	}
-	var start = (opts.pageNumber-1)*parseInt(opts.pageSize);
-    var end = start + parseInt(opts.pageSize);
-	data.rows = (data.originalRows.slice(start, end));
-	return data;
- }
+	$.ajax({
+			type : "post",
+			async : false, //设为false就是同步请求
+			url : _ctx + "/emsSmallPackage/queryCwbList",
+			data : param,
+			datatype : "json",
+			success : function(result) {
+				layer.close(layEle);
+				var data = JSON.parse(result);
+				var dg = $("#dg");
+				dg.datagrid('loadData', data);
+				var opts = dg.datagrid('options');
+				var pager = dg.datagrid('getPager');
+				pager.pagination({
+							onSelectPage : function(pageNum, pageSize) {
+								opts.pageNumber = pageNum;
+					            opts.pageSize = pageSize;
+								//_pageSize = pageSize;
+								pager.pagination('refresh',{
+									 pageNumber:pageNum,
+						             pageSize:pageSize
+	                            });
+								queryOrderDetail(pageNum, pageSize);
+							}
+				});
+			}
+	});
+  }
  
- 	// 打印
- 	function printEmsLabel(cwbOrder){
- 		var LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM')); 
+ $(function() {
+	 initDataGrid();
+ });
+ 
+	// 打印
+	function printEmsLabel(cwbOrder) {
+		var LODOP = getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM')); 
  		if(!LODOP.VERSION) {
  			downlodLodop();
  			return;

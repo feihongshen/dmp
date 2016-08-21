@@ -1589,4 +1589,9 @@ public class OrderFlowDAO {
 		
 		return sbSql.toString();
 	}
+	
+	public long getFlowCount(String cwb, int flowordertype, long branchid) {
+		String sql = "select count(1) from express_ops_order_flow where cwb = ? and flowordertype = ? and branchid = ?";
+		return this.jdbcTemplate.queryForLong(sql,cwb,flowordertype,branchid);
+	}
 }

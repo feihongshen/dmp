@@ -27,7 +27,7 @@
 						<th field="transcwb" align="center" width="120px;">运单号</th>
 						<th field="email_num" align="center" width="120px;">邮政运单号</th>
 						<th field="deliveryBranchName" align="center" width="150px;">配送站点</th>
-						<th field="outWarehouseTime" align="center" width="120px;">出库时间</th>
+						<th field="bingTime" align="center" width="120px;">打印时间</th>
 						<th field="consigneename" align="center" width="100px;">收件人</th>
 						<th field="consigneeaddress" align="center" width="450px;">收件地址</th>
 					</tr>
@@ -50,7 +50,7 @@
 				          <label><textarea id="querycwb" rows="3" cols="20"></textarea></label>
 				          </td>
 				          <td style="text-align:left;vertical-align:middle;height:30px;font-size:12px;">
-				                                   出库时间： <input type="text" name="starttime" id="starttime" style="width: 200px;height: 30px;"
+				                                   打印时间： <input type="text" name="starttime" id="starttime" style="width: 200px;height: 30px;"
 								onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" /> 至
 							   <input type="text" name="endtime" id="endtime" style="width: 200px;height: 30px;"
 								onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
@@ -58,7 +58,7 @@
 				          <td></td>
 				       </tr>
 				       <tr>
-				           <td style="text-align:left;vertical-align:middle;height:40px;font-size:12px;display:none">推送状态： <select id="status"><option value="0">全部</option><option value="1">未推送</option><option value="2">已推送</option></select></td> 
+				          <td style="text-align:left;vertical-align:middle;height:40px;font-size:12px;display:none">推送状态： <select id="status"><option value="0">全部</option><option value="1">未推送</option><option value="2">已推送</option></select></td> 
 				          <td></td>
 				       </tr>
 				      </div> 
@@ -84,7 +84,7 @@
  var export_endtime;
  var export_status; 
  
- function query() {
+ function query(page,pageSize) {
 	var cwbType = $("input[name='cwbType']:checked").val();
 	var querycwb = $("#querycwb").val().replace(/\n/g,",");
 	var starttime = $("#starttime").val();
@@ -116,7 +116,6 @@
 			return;
 		}
 	}
-	
 	if (!starttime && !endtime) {
 		if (!querycwb) {
 			alert("请输入订单号或者出库时间查询！");
@@ -128,130 +127,124 @@
 			}
 		}
 	}
+	export_cwbType = cwbType;
+	export_querycwb = querycwb;
+	export_starttime = starttime;
+	export_endtime = endtime;
+	export_status = status;
 	
-	 export_cwbType = cwbType;
-	 export_querycwb = querycwb;
-	 export_starttime = starttime;
-	 export_endtime = endtime;
-	 export_status = status;
-	
-	//数据加载动画
-	var layEle = layer.load({
-		type:3
-	});
-	var url =  _ctx+"/emsSmallPackage/queryCwbList?cwbtype="+cwbType+"&querycwb="+querycwb+"&starttime="+starttime+"&endtime="+endtime+"&status="+status;
-	$.ajax({
-		type: "POST",
-		url:url,
-		dataType : "json",
-		success : function(data) {
-			layer.close(layEle);
-			var result = JSON.parse(data.result)
-			var list = data.list;
-			if (result.result == 'success') {
-				initDataGrid(list);
-			} else {
-				alert(result.result);
-			}
-		}
-	});
+	initDataGrid(cwbType,querycwb,starttime,endtime,status);
  }
  
- function initDataGrid(gridData) {
+ function initDataGrid(cwbType,querycwb,starttime,endtime,status) {
 	  $("#dg").datagrid('loadData',[]); // 清空数据
-	  $('#dg').datagrid({loadFilter:pagerFilter}).datagrid('loadData', gridData);//加载数据
- }
-
- function pagerFilter(data){
-   if (typeof data.length == 'number' && typeof data.splice == 'function'){ // 判断数据是否是数组
-	     data = {
-	         total: data.length,
-	         rows: data
-	     }
-	}
-   var dg = $("#dg");
-   var opts = dg.datagrid('options');
-   var pager = dg.datagrid('getPager');
-   pager.pagination({
-	        onSelectPage:function(pageNum, pageSize){
-	            opts.pageNumber = pageNum;
-	            opts.pageSize = pageSize;
-	            pager.pagination('refresh',{
-	                pageNumber:pageNum,
-	                pageSize:pageSize
-	            });
-	            dg.datagrid('loadData',data);
-	     }
-	});
-   if (!data.originalRows){
-	     data.originalRows = (data.rows);
-   }
-   var start = (opts.pageNumber-1)*parseInt(opts.pageSize);
-   var end = start + parseInt(opts.pageSize);
-   data.rows = (data.originalRows.slice(start, end));
-   return data;
+	  //$('#dg').datagrid({loadFilter:pagerFilter}).datagrid('loadData', gridData);//加载数据
+	  queryOrderDetail(cwbType,querycwb,starttime,endtime,status,1,10);//加载数据
  }
  
- function exportExcel() {
-	var fieldDef = new Array();
-	var fields = $('#dg').datagrid('getColumnFields');
-	for (var i = 0; i < fields.length; i++) {
-		var col = $('#dg').datagrid('getColumnOption', fields[i]);
-		fieldDef.push({
-			field:col.field,
-			width:col.width,
-			title:col.title,
-			rowspan:col.rowspan,
-			colspan:col.colspan
-		})
-	}
-	
-	var form = $("<form>");   //定义一个form表单
-	form.attr('style', 'display:none');   //在form表单中添加查询参数
-	form.attr('target', 'exportFrame');
-	form.attr('method', 'post');
-	form.attr('action', _ctx + "/emsSmallPackage/export");
-
-	var input1 = $('<input>');
-	input1.attr('type', 'hidden');
-	input1.attr('name', 'cwbtype');
-	input1.attr('value', export_cwbType);
-	form.append(input1);
-	
-	var input2 = $('<input>');
-	input2.attr('type', 'hidden');
-	input2.attr('name', 'querycwb');
-	input2.attr('value', export_querycwb);
-	form.append(input2);	
-	
-	var input3 = $('<input>');
-	input3.attr('type', 'hidden');
-	input3.attr('name', 'starttime');
-	input3.attr('value', export_starttime);
-	form.append(input3);
-	
-	var input4 = $('<input>');
-	input4.attr('type', 'hidden');
-	input4.attr('name', 'endtime');
-	input4.attr('value', export_endtime);
-	form.append(input4);
-	
-	var input5 = $('<input>');
-	input5.attr('type', 'hidden');
-	input5.attr('name', 'status');
-	input5.attr('value', export_status);
-	form.append(input5);
-	
-	var input6 = $('<input>');
-	input6.attr('type', 'hidden');
-	input6.attr('name', 'columnDefs');
-	input6.attr('value', JSON.stringify(fieldDef));
-	form.append(input6);
-	
-	$('body').append(form); 
-	form.submit();
-} 
  
+	function queryOrderDetail(cwbType,querycwb,starttime,endtime,status,page,pageSize) {
+		//数据加载动画
+		var layEle = layer.load({
+			type : 3
+		});
+		 var param = {
+					page : page,
+					pageSize : pageSize,
+					cwbtype : cwbType,
+					querycwb :querycwb,
+					starttime : starttime,
+					endtime : endtime,
+					status : status
+		}
+		$.ajax({
+			type : "post",
+			async : false, //设为false就是同步请求
+			url : _ctx + "/emsSmallPackage/queryCwbList",
+			data : param,
+			datatype : "json",
+			success : function(result) {
+				layer.close(layEle);
+				var data = JSON.parse(result);
+				var dg = $("#dg");
+				dg.datagrid('loadData', data);
+				var opts = dg.datagrid('options');
+				var pager = dg.datagrid('getPager');
+				pager.pagination({
+					onSelectPage : function(pageNum, pageSize) {
+						opts.pageNumber = pageNum;
+						opts.pageSize = pageSize;
+						//_pageSize = pageSize;
+						pager.pagination('refresh', {
+							pageNumber : pageNum,
+							pageSize : pageSize
+						});
+						queryOrderDetail(cwbType,querycwb,starttime,endtime,status,pageNum,pageSize);
+					}
+				});
+			}
+		});
+	}
+
+	function exportExcel() {
+		var fieldDef = new Array();
+		var fields = $('#dg').datagrid('getColumnFields');
+		for (var i = 0; i < fields.length; i++) {
+			var col = $('#dg').datagrid('getColumnOption', fields[i]);
+			fieldDef.push({
+				field : col.field,
+				width : col.width,
+				title : col.title,
+				rowspan : col.rowspan,
+				colspan : col.colspan
+			})
+		}
+
+		var form = $("<form>"); //定义一个form表单
+		form.attr('style', 'display:none'); //在form表单中添加查询参数
+		form.attr('target', 'exportFrame');
+		form.attr('method', 'post');
+		form.attr('action', _ctx + "/emsSmallPackage/export");
+
+		var input1 = $('<input>');
+		input1.attr('type', 'hidden');
+		input1.attr('name', 'cwbtype');
+		input1.attr('value', export_cwbType);
+		form.append(input1);
+
+		var input2 = $('<input>');
+		input2.attr('type', 'hidden');
+		input2.attr('name', 'querycwb');
+		input2.attr('value', export_querycwb);
+		form.append(input2);
+
+		var input3 = $('<input>');
+		input3.attr('type', 'hidden');
+		input3.attr('name', 'starttime');
+		input3.attr('value', export_starttime);
+		form.append(input3);
+
+		var input4 = $('<input>');
+		input4.attr('type', 'hidden');
+		input4.attr('name', 'endtime');
+		input4.attr('value', export_endtime);
+		form.append(input4);
+
+		var input5 = $('<input>');
+		input5.attr('type', 'hidden');
+		input5.attr('name', 'status');
+		input5.attr('value', export_status);
+		form.append(input5);
+
+		var input6 = $('<input>');
+		input6.attr('type', 'hidden');
+		input6.attr('name', 'columnDefs');
+		input6.attr('value', JSON.stringify(fieldDef));
+		form.append(input6);
+
+		$('body').append(form);
+		form.submit();
+	}
 </script>
 </body>
 </HTML>

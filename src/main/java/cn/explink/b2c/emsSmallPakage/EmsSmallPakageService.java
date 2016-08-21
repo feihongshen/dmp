@@ -17,17 +17,22 @@ import org.springframework.util.StringUtils;
 
 import cn.explink.b2c.ems.EMSDAO;
 import cn.explink.b2c.ems.SendToEMSOrder;
+import cn.explink.core.common.model.json.DataGridReturn;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.TranscwbOrderFlowDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.SystemInstall;
+import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.exception.CwbException;
+import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbTranslator;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.StringUtil;
 import cn.explink.util.Tools;
 
@@ -45,6 +50,10 @@ public class EmsSmallPakageService {
 	List<CwbTranslator> cwbTranslators;
 	@Autowired
 	SystemInstallDAO systemInstallDAO;
+	@Autowired
+	CwbOrderService cwbOrderService;
+	@Autowired
+	OrderFlowDAO orderFlowDAO;
 	
 	/*
 	 * @author zhouhuan
@@ -205,8 +214,9 @@ public class EmsSmallPakageService {
 	 * @param transcwb 扫描号码
 	 * @param emscwb 扫描ems运单号
 	 */
-	public void bingCwb(String cwb, String scancwb, String emscwb) {
+	public void bingCwb(User user, String cwb, String scancwb, String emscwb) {
 		CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
+		String bingTime = DateTimeUtil.getNowTime();
 		if (cwbOrder.getSendcarnum() > 1) { //一票多件扫描运单号检验
 			if (cwb.equals(scancwb)) {//一票多件扫订单号
 				List<SendToEMSOrder> transcwbs = this.eMSDAO.getTransListByCwb(cwb);
@@ -214,12 +224,29 @@ public class EmsSmallPakageService {
 					throw new CwbException(scancwb,
 							ExceptionCwbErrorTypeEnum.DING_DAN_BANG_DING_SHU_CHAO_CHU);
 				else 
-				    this.eMSDAO.saveEMSEmailnoAndDMPTranscwb(cwb, cwb + "-" + (transcwbs.size() + 1), emscwb);// 订单运单表运单不能为空，一票多件扫订单号生成运单号，规则为订单号+"-i"
+					saveTransAndCreFlow(user, cwbOrder, cwb, cwb + "-" + (transcwbs.size() + 1), emscwb, bingTime);// 订单运单表运单不能为空，一票多件扫订单号生成运单号，规则为订单号+"-i"
 			} else {
-				this.eMSDAO.saveEMSEmailnoAndDMPTranscwb(cwb, scancwb, emscwb);//一票多件 扫描运单号
+				saveTransAndCreFlow(user, cwbOrder, cwb, scancwb, emscwb, bingTime);//一票多件 扫描运单号
 			}
 		} else { 
-			this.eMSDAO.saveEMSEmailnoAndDMPTranscwb(cwb, scancwb, emscwb);//一票一件
+			saveTransAndCreFlow(user, cwbOrder, cwb, scancwb, emscwb, bingTime);//一票一件
+		}
+	}
+	
+	/**
+	 * 绑定邮政小包运单号和创建操作流程 add by vic.liang@pjbest.com 2016-08-20
+	 * @param user
+	 * @param cwbOrder
+	 * @param cwb
+	 * @param scancwb
+	 * @param emscwb
+	 * @param bingTime
+	 */
+	private void saveTransAndCreFlow (User user, CwbOrder cwbOrder, String cwb, String scancwb, String emscwb, String bingTime) {
+		this.eMSDAO.saveEMSEmailnoAndDMPTranscwb(cwb, scancwb, emscwb, bingTime);
+		long count = this.orderFlowDAO.getFlowCount(cwb, FlowOrderTypeEnum.BingEmsTrans.getValue(), user.getBranchid());
+		if (count == 0) {
+			this.cwbOrderService.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.BingEmsTrans, "", System.currentTimeMillis());
 		}
 	}
 	
@@ -238,8 +265,25 @@ public class EmsSmallPakageService {
 	 * @param cwb
 	 * @return
 	 */
+	public DataGridReturn getEMSViewListByTransCwb(int page,int pageSize,String cwbType,String cwb, String starttime,String endtime,String status) {
+		List<EmsSmallPackageViewVo> rows = this.eMSDAO.getEMSViewListByTransCwb(page,pageSize,cwbType,cwb,starttime,endtime,status);
+		int total = this.eMSDAO.getCountEMSViewListByTransCwb(cwbType, cwb, starttime, endtime, status);
+				
+	    DataGridReturn dg = new DataGridReturn();
+		dg.setRows(rows);
+		dg.setTotal(total);
+		
+		return dg;
+	}
+	
+	/**
+	 * 查询已经绑定邮政运单关系的订单   add by vic.liang@pjbest.com 2016-07-26
+	 * @param cwb
+	 * @return
+	 */
 	public List<EmsSmallPackageViewVo> getEMSViewListByTransCwb(String cwbType,String cwb, String starttime,String endtime,String status) {
-		return this.eMSDAO.getEMSViewListByTransCwb(cwbType,cwb,starttime,endtime,status);
+		List<EmsSmallPackageViewVo> rows = this.eMSDAO.getEMSViewListByTransCwb(cwbType,cwb,starttime,endtime,status);
+		return rows;
 	}
 	
 	/**

@@ -896,9 +896,9 @@ public class EMSService {
 	    		logger.info("该运单号已获取对应的ems运单号！dmp运单号为：{}",transcwb);
 				return;
 	    	}
-	    	
+	    	String bingTime = DateTimeUtil.getNowTime();
 	    	//解析并将获取的运单号信息存储到dmp与ems运单对照关系表
-			eMSDAO.saveEMSEmailnoAndDMPTranscwb(cwb,transcwb,emsAndDmpTranscwb.getBillno());
+			eMSDAO.saveEMSEmailnoAndDMPTranscwb(cwb,transcwb,emsAndDmpTranscwb.getBillno(), bingTime);
 			
 			//更新订单临时表"获取运单状态字段"值
 			List<SendToEMSOrder> orderList = eMSDAO.getSendOrderByTranscwb(transcwb);
