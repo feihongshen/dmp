@@ -4,6 +4,7 @@
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
 	Map usermap = (Map) session.getAttribute("usermap");
+    String loginFlag = (String)session.getAttribute("loginFlag");
 %>
 <!DOCTYPE html >
 <html>
@@ -51,6 +52,7 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/express/stationOperation.js"></script>
 <script src="<%=request.getContextPath()%>/js/datePlugin/My97DatePicker/WdatePicker.js"
 	type="text/javascript"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
 
 <style type="text/css">
 .navbar {
@@ -138,6 +140,10 @@
 							<div onclick="addTab('修改密码','passwordupdate?&clickFunctionId=10001','folder')">
 								<i class="icon-lock" style="position: relative; left: -25px;"></i>修改密码
 							</div>
+							<div class="menu-sep"></div>
+							<div onclick="addTab('历史版本','taskShow/historyList/1?&clickFunctionId=10001','folder')">
+								<i class="icon-lock" style="position: relative; left: -25px;"></i>历史版本
+							</div>
 						</div>
 						<div id="layout_north_zxMenu" style="width: 100px; display: none;">
 							<div
@@ -174,5 +180,35 @@
 					$("#playSearch").val('');
 					}
 			});
+	$(document).ready(function() {
+		console.log(<%=loginFlag%>)
+		//获取最新版本说明
+		$.ajax({
+			async : false,
+			cache : false,
+			type : 'POST',
+			url : "<%=request.getContextPath()%>/taskShow/getLatestVersion",
+			success : function(data) {
+				console.log(data.latestVersion)
+				console.log(data.latestVersion.isSuccess)
+				console.log(data.latestVersion.data)
+				console.log(data.latestVersion.data.id)
+				/* openWindow(data); */
+			}
+		});
+	});
+	function openWindow(d) {
+        //图片显示
+        $.layer({
+        	 type: 2,
+        	  title: false,
+        	  area: ['630px', '360px'],
+        	  shade: 0.8,
+        	  closeBtn: 0,
+        	  shadeClose: true,
+        	  content: 'http://player.youku.com/embed/XMjY3MzgzODg0'
+        });
+        
+    }
 </script>
 </html>
