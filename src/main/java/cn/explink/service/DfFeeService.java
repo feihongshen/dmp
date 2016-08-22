@@ -665,5 +665,17 @@ public class DfFeeService {
 
         return adjustmentRecord;
     }
+    
+    /**
+     * @author zhili01.liang on 20160816
+     * 根据条件获取计费记录
+     * @param cwb 订单号
+     * @param isCalculted 是否已计费，0未，1已计费
+     * @param chargerType  DeliveryFeeChargerType。ORG/DeliveryFeeChargerType.STAFF
+     * @return
+     */
+    public List<DfBillFee> findByCwbAndCalculted(String cwb,int isCalculted,int chargerType,int begin, int interval){
+    	return dfFeeDAO.findByCwbAndCalculted(cwb, isCalculted, chargerType, begin, interval);
+    }
 
 }

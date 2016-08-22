@@ -264,5 +264,17 @@ public class DfFeeDAO {
         sql.append(" WHERE id=? ");
         jdbcTemplate.update(sql.toString(), id);
     }
+    
+    /**
+     * 根据条件获取计费记录
+     * @param cwb 订单号
+     * @param isCalculted 是否已计费，0未，1已计费
+     * @param chargerType  DeliveryFeeChargerType。ORG/DeliveryFeeChargerType.STAFF
+     * @return
+     */
+    public List<DfBillFee> findByCwbAndCalculted(String cwb,int isCalculted,int chargerType,int begin, int interval){
+    	String sql = "select * from "+getTableName(chargerType)+" where order_no=? and is_calculted=? limit ?, ? ";
+    	return jdbcTemplate.query(sql, new DfBillFeeRowMapper(), cwb,isCalculted,begin,interval);
+    }
 
 }
