@@ -8,6 +8,7 @@ import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.DfAdjustmentRecordDAO;
 import cn.explink.dao.DfFeeDAO;
 import cn.explink.dao.OrderFlowDAO;
+import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.express.CityDAO;
 import cn.explink.dao.express.CountyDAO;
@@ -16,6 +17,7 @@ import cn.explink.domain.ApplyEditDeliverystate;
 import cn.explink.domain.Branch;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
+import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.domain.deliveryFee.DfAdjustmentRecord;
@@ -25,6 +27,12 @@ import cn.explink.enumutil.BranchTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.util.JsonUtil;
+import cn.explink.util.ResourceBundleUtil;
+import com.pjbest.pjorganization.bizservice.service.SbOrgModel;
+import com.pjbest.pjorganization.bizservice.service.SbOrgService;
+import com.pjbest.pjorganization.bizservice.service.SbOrgServiceHelper;
+import com.vip.osp.core.exception.OspException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -32,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -62,7 +71,10 @@ public class DfFeeService {
     private DfAdjustmentRecordDAO dfAdjustmentRecordDAO;
     @Autowired
     private ApplyEditDeliverystateDAO applyEditDeliverystateDAO;
+    @Autowired
+    private SystemInstallDAO systemInstallDAO;
 
+    private static final String SYSTEM_INSTALL_CARRIERCODE = "CARRIERCODE";
     private static final int FROM_RESET_ORDER = 0;
     private static final int FROM_DISABLE_ORDER = 1;
     private static final int FROM_AUDIT_CONFIRMED = 2;
@@ -231,6 +243,23 @@ public class DfFeeService {
                 city = order.getSendercity();
                 county = order.getSendercounty();
             }
+
+            if(StringUtils.isBlank(province)){
+                //根据站点到TPS查找相应省份你的信息。
+                SbOrgModel orgModelFromTPS = findOrgByCarrierAndSiteCode(branchId);
+                if (orgModelFromTPS != null) {
+                    if (StringUtils.isNotBlank(orgModelFromTPS.getProvinceName())) {
+                        province = orgModelFromTPS.getProvinceName();
+                    }
+//                if (StringUtils.isNotBlank(orgModelFromTPS.getCityName())) {
+//                    city = orgModelFromTPS.getCityName();
+//                }
+//                if (StringUtils.isNotBlank(orgModelFromTPS.getRegionName())) {
+//                    county = orgModelFromTPS.getRegionName();
+//                }
+                }
+            }
+
             if (StringUtils.isBlank(province)) {
                 province = getEffectiveAddressId(senderAddr, allProvince, null);
             }
@@ -304,7 +333,28 @@ public class DfFeeService {
                 String county = order.getCwbcounty();
 
                 if (StringUtils.isBlank(province)) {
-                    province = getEffectiveAddressId(receiverAddr, allProvince, null);
+                    //根据站点到TPS查找相应省份你的信息。
+                    SbOrgModel orgModelFromTPS = findOrgByCarrierAndSiteCode(branchId);
+                    if (orgModelFromTPS != null) {
+                        if (StringUtils.isNotBlank(orgModelFromTPS.getProvinceName())) {
+                            province = orgModelFromTPS.getProvinceName();
+                        }
+//                    if (StringUtils.isNotBlank(orgModelFromTPS.getCityName())) {
+//                        city = orgModelFromTPS.getCityName();
+//                    }
+//                    if (StringUtils.isNotBlank(orgModelFromTPS.getRegionName())) {
+//                        county = orgModelFromTPS.getRegionName();
+//                    }
+                    }
+                }
+
+                //如果没有匹配到省份，派件就拿本省的province code。
+                if (StringUtils.isBlank(province)) {
+//                    province = getEffectiveAddressId(receiverAddr, allProvince, null);
+                    AdressVO currentProvince = provinceDAO.getProvinceByCode(ResourceBundleUtil.provinceCode);
+                    if(currentProvince != null){
+                        province = currentProvince.getName();
+                    }
                 }
                 if (StringUtils.isNotBlank(province) && StringUtils.isBlank(city)) {
                     String parentCode = getAddressCode(province, allProvince);
@@ -348,6 +398,44 @@ public class DfFeeService {
                 }
             }
         }
+    }
+
+    private SbOrgModel findOrgByCarrierAndSiteCode(long branchId) {
+
+        Branch branch = branchDAO.getBranchById(branchId);
+
+        if (branch != null) {
+            String carrierCode = "";
+
+            SystemInstall carrierCodeSystemInstall = systemInstallDAO
+                    .getSystemInstall(SYSTEM_INSTALL_CARRIERCODE);
+            carrierCode = (carrierCodeSystemInstall == null ? ""
+                    : carrierCodeSystemInstall.getValue());
+            String carrierSiteCode = branch.getTpsbranchcode();
+
+            SbOrgService sbOrgService = new SbOrgServiceHelper.SbOrgServiceClient();
+            logger.info("查询机构服务 - 请求：carrierCode={}，carrierSiteCode={}",
+                    new Object[]{carrierCode, carrierSiteCode});
+            List<SbOrgModel> models = null;
+            try {
+                models = sbOrgService
+                        .findSbOrgByCarrierAndSelfStation(carrierCode, carrierSiteCode);
+            } catch (OspException e) {
+                e.printStackTrace();
+                logger.error("TPS 查询机构服务错误。 错误信息：" + e.getMessage());
+            }
+            try {
+                logger.info("查询机构服务 - 返回：" + JsonUtil.translateToJson(models));
+            } catch (IOException e) {
+                logger.error("TPS 查询机构服务错误, 转换为json时发生错误。");
+            }
+
+            if (CollectionUtils.isNotEmpty(models)) {
+                return models.get(0);
+            }
+        }
+
+        return null;
     }
 
     private String getAddressCode(String addressName, List<AdressVO> addresses) {
@@ -428,7 +516,7 @@ public class DfFeeService {
         } else {
             if (branchOrUserId != null && branchOrUserId > 0) {
                 if (chargerType.equals(DeliveryFeeChargerType.ORG)) {
-                    if (isJoinBranch(branchOrUserId)){
+                    if (isJoinBranch(branchOrUserId)) {
                         //加盟站点才需要
                         isQualified = true;
                     }

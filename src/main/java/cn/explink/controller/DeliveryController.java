@@ -828,6 +828,10 @@ public class DeliveryController {
 					parameters.put("changereasonid", changereasonid);
 					parameters.put("losereasonid", losereasonid);
 					parameters.put("fankuileixing", "PEISONG");// 添加的
+					
+					//Added by leoliao at 2016-08-12 增加从DMP界面进行反馈标识
+					parameters.put("comefrompage", "1");
+					
 					this.cwborderService.deliverStatePod(this.getSessionUser(), cwb, scancwb, parameters);
 					obj.put("cwbOrder", JSONObject.fromObject(this.cwbDAO.getCwbByCwb(cwb)));
 					obj.put("errorcode", "000000");
@@ -1524,6 +1528,9 @@ public class DeliveryController {
 					if (deliverystate == DeliveryStateEnum.ShangMenTuiChengGong.getValue()) {
 						parameters.put("infactfare", cwbOrder.getShouldfare());
 					}
+					
+					//Added by leoliao at 2016-08-12 增加从DMP界面进行反馈标识
+					parameters.put("comefrompage", "1");
 
 					this.logger.info("上门退订单再次批量反馈cwb={},infactfare={},shouldfare=" + cwbOrder.getShouldfare(), scancwb, parameters.get("infactfare"));
 					this.cwborderService.deliverStatePod(this.getSessionUser(), scancwb, scancwb, parameters);
