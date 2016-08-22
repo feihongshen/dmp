@@ -128,12 +128,15 @@ function nowprint(){
 		width: 75mm;
 	}
 	.inner_box {
-		margin: 5mm;
+		left-margin : 3mm;
+		right-margin : 9 mm;
 	}
 	.title {
 		font-size: 14px;
-		width:100%;
+		width:84%;
 		text-align:center;
+		word-wrap: break-word;
+		word-break: normal;
 	}
 	.content_1 {
 		font-size: 12px;
@@ -174,8 +177,8 @@ function nowprint(){
 	}
 	.content_sign {
 		font-size: 12px;
-		padding-top : 1.5mm;
-		padding-bottom : 1.5mm;
+		padding-top : 1.3mm;
+		padding-bottom : 1.3mm;
 	}
 	.AutoNewline{
 	  font-size: 10px;
@@ -195,8 +198,12 @@ function nowprint(){
 	    <div id="printTable_${status.index}">
 		<div class="out_box preview_box">
 			<div class="inner_box">
+				<c:if test="${status.index >= 1}">
+				<div style="width:65mm;height:30mm;"></div>
+				</c:if>
 				<div class="title">（${branch.userbranchname}）至（${branch.nextbranchname}）交接清单</div>
-				<div class="content_1">出站时间：${branch.starttime}至${branch.endtime}</div>
+				<div class="content_1">出站时间：${branch.starttime}</div>
+				<div class="content_1">至${branch.endtime}</div>
 				<div class="content_1"> 
 				    <span >序号</span>
 				    <span style="word-spacing:8mm;">&nbsp;</span>

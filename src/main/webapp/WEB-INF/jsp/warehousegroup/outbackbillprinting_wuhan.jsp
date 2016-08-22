@@ -130,12 +130,15 @@ function nowprint(){
 		width: 75mm;
 	}
 	.inner_box {
-		margin: 5mm;
+		left-margin : 3mm;
+		right-margin : 9 mm;
 	}
 	.title {
 		font-size: 14px;
-		width:100%;
+		width:84%;
 		text-align:center;
+		word-wrap: break-word;
+		word-break: normal;
 	}
 	.content_1 {
 		font-size: 12px;
@@ -176,8 +179,8 @@ function nowprint(){
 	}
 	.content_sign {
 		font-size: 12px;
-		padding-top : 1.5mm;
-		padding-bottom : 1.5mm;
+		padding-top : 1.3mm;
+		padding-bottom : 1.3mm;
 	}
 	
 	.AutoNewline{
@@ -201,7 +204,8 @@ function nowprint(){
 		<div class="out_box preview_box">
 			<div class="inner_box">
 				<div class="title">（${print.userbranchname}）至（${print.nextbranchname}）交接清单</div>
-				<div class="content_1">出库时间：${print.starttime}至${print.endtime}</div>
+				<div class="content_1">出库时间：${print.starttime}</div>
+				<div class="content_1">至${print.endtime}</div>
 				<div class="content_1"> 
 				    <span >序号</span>
 				    <span style="word-spacing:8mm;">&nbsp;</span>
