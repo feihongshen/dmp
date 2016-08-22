@@ -191,7 +191,10 @@ public class EmsSmallPackageController {
 			@RequestParam(value = "status", required = true, defaultValue="") String status,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 			
+		long startTime = System.currentTimeMillis();
 		DataGridReturn dg = this.emsSmallPakageService.getEMSViewListByTransCwb(page,pageSize,cwbtype,querycwb,starttime,endtime,status);
+		long endTime = System.currentTimeMillis();
+		logger.info("查询邮政订单信息 耗时：" + (endTime-startTime) + "毫秒");
 		Tools.outData2Page(Tools.obj2json(dg), response);
 	}
 	
