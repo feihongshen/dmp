@@ -1,0 +1,1 @@
+alter table express_ems_dmp_transcwb  drop column `bing_time`;
