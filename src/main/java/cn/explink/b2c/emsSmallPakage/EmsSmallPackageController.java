@@ -217,7 +217,10 @@ public class EmsSmallPackageController {
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		//DataGridReturn dg = this.orderLifeCycleReportService.getOrderLifecycleReportData(customers,queryDate);
+		long startTime = System.currentTimeMillis();
 		List<EmsSmallPackageViewVo> list = this.emsSmallPakageService.getEMSViewListByTransCwb(cwbtype,querycwb,starttime,endtime,status);
+		long endTime = System.currentTimeMillis();
+		logger.info("导出邮政订单信息查询 耗时：" + (endTime-startTime) + "毫秒");
 		// 列定义
 		List<ColDef> colDefs = PoiExcelUtils.getExcelColDefFromRequest(request);
 		Workbook workbook = new HSSFWorkbook();
@@ -233,7 +236,6 @@ public class EmsSmallPackageController {
 		style.setWrapText(true);
 		Sheet sheet = workbook.createSheet("Sheet1");
 		Row row1 = sheet.createRow(0);
-		
 		
 		for (int i = 0; i < colDefs.size(); i++) {
 			ColDef colDef = colDefs.get(i);
