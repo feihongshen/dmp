@@ -51,6 +51,7 @@ import cn.explink.dao.NoPiPeiCwbDetailDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.RemarkDAO;
+import cn.explink.dao.SmtCwbDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.dao.TuihuoRecordDAO;
@@ -68,6 +69,7 @@ import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.SetExportField;
+import cn.explink.domain.SmtCwb;
 import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
@@ -162,6 +164,9 @@ public class DataImportService {
 	@Autowired
 	private MqExceptionDAO mqExceptionDAO;
 	
+	@Autowired
+	private SmtCwbDAO smtCwbDAO;
+	
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	protected static ObjectMapper jacksonmapper = JacksonMapper.getInstance();
 
@@ -216,6 +221,17 @@ public class DataImportService {
 			cwbOrderValidator.validate(cwbOrderDTO);
 		}
 		this.insertCwb(cwbOrderDTO, ed.getCustomerid(), ed.getBranchid(), user, ed, isReImport);
+		
+		/**订单导入模板新增退货地址，及商家退货号 add by chunlei05.li 2016/8/22*/
+		if (cwbOrderDTO.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
+			SmtCwb smtCwb = new SmtCwb();
+			smtCwb.setCwb(cwbOrderDTO.getCwb());
+			smtCwb.setReturnNo(cwbOrderDTO.getReturnno());
+			smtCwb.setReturnAddress(cwbOrderDTO.getReturnaddress());
+			this.smtCwbDAO.saveSmtCwb(smtCwb);
+		}
+		/***************** end **************/
+		
 		// 如果手动分配了地址，就不会自动调用地址库
 		if ((cwbOrderDTO.getExcelbranch() == null) || (cwbOrderDTO.getExcelbranch().length() == 0) || (cwbOrderDTO.getDeliverybranchid() == 0)) {
 			HashMap<String, Object> map = new HashMap<String, Object>();

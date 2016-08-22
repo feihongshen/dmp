@@ -92,6 +92,7 @@ import cn.explink.domain.Remark;
 import cn.explink.domain.SetExportField;
 import cn.explink.domain.ShangMenTuiCwbDetail;
 import cn.explink.domain.ShiXiao;
+import cn.explink.domain.SmtCwb;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.TuihuoRecord;
@@ -115,6 +116,7 @@ import cn.explink.service.DataStatisticsService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.LogToDayService;
+import cn.explink.service.SmtCwbService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.support.transcwb.TranscwbView;
 import cn.explink.util.DateTimeUtil;
@@ -224,6 +226,9 @@ public class CwbOrderController {
 	TransCwbDetailDAO transCwbDetailDAO;
 	@Autowired
 	TranscwbOrderFlowDAO transcwbOrderFlowDAO;
+	
+	@Autowired
+	private SmtCwbService smtCwbService;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -641,6 +646,9 @@ public class CwbOrderController {
 			// 转大写中文
 			String cnTotalfee = NumberToCN.number2CNMontrayUnit(totalfee);
 			printVo.setCnTotalfee(cnTotalfee);
+			// 上门退信息
+			SmtCwb smtCwb = this.smtCwbService.getSmtCwbByCwb(cwbOrder.getCwb());
+			printVo.setSmtCwb(smtCwb);
 			printVoList.add(printVo);
 		}
 		model.addAttribute("printVoList", printVoList);

@@ -37,14 +37,15 @@ function createOneFormPage(){
 		strBodyHtml = strBodyHtml.replace("preview_box", "");
 		LODOP.ADD_PRINT_HTM("10mm","10mm","RightMargin:10mm","BottomMargin:10mm", '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">' + strBodyStyle + "<body>" + strBodyHtml + "</body>");
 		var cwb = $("#cwb_" + i).val();
+		var addressNo = $("#addressNo_" + i).val();
 		var boxTop = $("#box_" + i).offset().top;
 		var cwbBarcodeTop = parseInt($("#cwbBarcode_" + i).offset().top);
 		var cwbBarcodePositionTop = cwbBarcodeTop - boxTop + 5; // 微调5
 		var backBarcodeTop = parseInt($("#backBarcode_" + i).offset().top);
 		var backBarcodePositionTop = backBarcodeTop - boxTop + 30; // 微调
 		LODOP.SET_PRINT_STYLEA(0,"FontSize",10);
-		LODOP.ADD_PRINT_BARCODE(cwbBarcodePositionTop,"140mm","50mm","15mm","128Auto",cwb);
-		LODOP.ADD_PRINT_BARCODE(backBarcodePositionTop,"140mm","50mm","15mm","128Auto","123456743338");
+		addBarcode(cwbBarcodePositionTop,"140mm","50mm","15mm","128Auto", cwb);
+		addBarcode(backBarcodePositionTop,"140mm","50mm","15mm","128Auto",addressNo);
 		var maxHeight = 520; // A4纸半页的高度为561,中间保留一定的宽度80，约20mm
 		var boxHeight = $("#box_" + i).outerHeight();
 		// A4纸高度为297mm，折半之后为148mm，再增加5mm预留高度，防止换页
@@ -52,15 +53,21 @@ function createOneFormPage(){
 		if (maxHeight < boxHeight) { // 如果一页不能显示两联的话，就分页显示
 			LODOP.NewPage();
 			var box2Top = "10mm";
-			LODOP.ADD_PRINT_BARCODE(cwbBarcodePositionTop,"140mm","50mm","15mm","128Auto",cwb);
-			LODOP.ADD_PRINT_BARCODE(backBarcodePositionTop,"140mm","50mm","15mm","128Auto","123456743338");
+			addBarcode(cwbBarcodePositionTop,"140mm","50mm","15mm","128Auto",cwb);
+			addBarcode(backBarcodePositionTop,"140mm","50mm","15mm","128Auto",addressNo);
 		} else {
-			LODOP.ADD_PRINT_BARCODE(cwbBarcodePositionTop + 540,"140mm","50mm","15mm","128Auto",cwb);
-			LODOP.ADD_PRINT_BARCODE(backBarcodePositionTop + 540,"140mm","50mm","15mm","128Auto","123456743338");
+			addBarcode(cwbBarcodePositionTop + 540,"140mm","50mm","15mm","128Auto",cwb);
+			addBarcode(backBarcodePositionTop + 540,"140mm","50mm","15mm","128Auto",addressNo);
 		}
 		LODOP.ADD_PRINT_HTM(box2Top,"10mm","RightMargin:10mm","BottomMargin:10mm", '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">' + strBodyStyle + "<body>" + strBodyHtml + "</body>");
 	}
 };
+
+function addBarcode(top, left, width, height, type, barcode) {
+	if (barcode != null && barcode != "") { // 防止出现空条形码
+		LODOP.ADD_PRINT_BARCODE(top, left, width, height, type, barcode);
+	}
+}
 
 function nowprint(){
 	var con = confirm("您确认要打印该页吗？");
@@ -119,6 +126,7 @@ function nowprint(){
 		<c:set var="cwb" value="${vo.cwbOrder }"></c:set>
 		<div id="printTable_${status.index}" class="preview_box">
 			<input type="hidden" id="cwb_${status.index }" value="${cwb.cwb }">
+			<input type="hidden" id="addressNo_${status.index }" value="${vo.smtCwb.returnNo }">
 			<div id="box_${status.index}" class="box">
 				<table class="out_box" cellpadding="0" cellspacing="0">
 					<tr>
@@ -191,7 +199,7 @@ function nowprint(){
 							<table class="inner_box" cellpadding="0" cellspacing="0">
 								<tr>
 									<td width="60%">
-										退货地址：${cwb.remark1 }
+										退货地址：${vo.smtCwb.returnAddress }
 									</td>
 									<td>
 										<div id="backBarcode_${status.index}"></div>

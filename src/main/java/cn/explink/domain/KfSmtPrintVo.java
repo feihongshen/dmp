@@ -15,6 +15,11 @@ public class KfSmtPrintVo {
 	private CwbOrder cwbOrder;
 	
 	/**
+	 * 上门退信息
+	 */
+	private SmtCwb smtCwb;
+	
+	/**
 	 * 客户、供货商
 	 */
 	private Customer customer;
@@ -72,5 +77,20 @@ public class KfSmtPrintVo {
 
 	public void setTotalfee(BigDecimal totalfee) {
 		this.totalfee = totalfee;
+	}
+
+	public SmtCwb getSmtCwb() {
+		return smtCwb;
+	}
+
+	public void setSmtCwb(SmtCwb smtCwb) {
+		this.smtCwb = smtCwb;
+	}
+
+	@Override
+	public String toString() {
+		return "KfSmtPrintVo [cwbOrder=" + cwbOrder + ", smtCwb=" + smtCwb + ", customer=" + customer
+				+ ", consigneemobile=" + consigneemobile + ", totalfee=" + totalfee + ", cnTotalfee=" + cnTotalfee
+				+ "]";
 	}
 }
