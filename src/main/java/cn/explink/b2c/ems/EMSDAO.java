@@ -95,6 +95,7 @@ public class EMSDAO {
 			obj.setDeliveryBranchName(rs.getString("branchname"));
 			obj.setConsigneename(rs.getString("consigneename"));
 			obj.setConsigneeaddress(rs.getString("consigneeaddress"));
+			obj.setRealweight(rs.getDouble("realweight"));
 			return obj; 
 		}
 	}
@@ -321,7 +322,7 @@ public class EMSDAO {
 	}
 	
 	public int getCountEMSViewListByTransCwb(String cwbType,String cwb, String starttime,String endtime,String status) {
-		String sql  = "select count(1) from express_ems_dmp_transcwb ems inner join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb and cwb.state = 1"
+		String sql  = "select count(1) from express_ems_dmp_transcwb ems left join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb and cwb.state = 1"
                       +" left join express_set_branch branch on cwb.deliverybranchid = branch.branchid "
                       +" where 1=1";
 		sql += getWhereSql(cwbType, cwb, starttime, endtime, status);
@@ -366,8 +367,8 @@ public class EMSDAO {
 	 * @return
 	 */
 	public List<EmsSmallPackageViewVo> getEMSViewListByTransCwb(int page,int pageSize,String cwbType,String cwb, String starttime,String endtime,String status) {
-		String sql  = "select ems.*,branch.branchname,cwb.consigneename,cwb.consigneeaddress" 
-                      +" from express_ems_dmp_transcwb ems inner join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb and cwb.state = 1"
+		String sql  = "select ems.*,branch.branchname,cwb.consigneename,cwb.consigneeaddress,cwb.realweight" 
+                      +" from express_ems_dmp_transcwb ems left join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb and cwb.state = 1"
                       +" left join express_set_branch branch on cwb.deliverybranchid = branch.branchid "
                       +" where 1=1";
                       sql += getWhereSql(cwbType, cwb, starttime, endtime, status);
@@ -382,8 +383,8 @@ public class EMSDAO {
 	 * @return
 	 */
 	public List<EmsSmallPackageViewVo> getEMSViewListByTransCwb(String cwbType,String cwb, String starttime,String endtime,String status) {
-		String sql  = "select ems.*,branch.branchname,cwb.consigneename,cwb.consigneeaddress" 
-                      +" from express_ems_dmp_transcwb ems inner join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb and cwb.state = 1"
+		String sql  = "select ems.*,branch.branchname,cwb.consigneename,cwb.consigneeaddress,cwb.realweight" 
+                      +" from express_ems_dmp_transcwb ems left join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb and cwb.state = 1"
                       +" left join express_set_branch branch on cwb.deliverybranchid = branch.branchid "
                       +" where 1=1";
                       sql += getWhereSql(cwbType, cwb, starttime, endtime, status);

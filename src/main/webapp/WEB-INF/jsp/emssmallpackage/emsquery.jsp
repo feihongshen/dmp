@@ -26,10 +26,11 @@
 						<th field="cwb" align="center" width="120px;">订单号</th>
 						<th field="transcwb" align="center" width="120px;">运单号</th>
 						<th field="email_num" align="center" width="120px;">邮政运单号</th>
-						<th field="deliveryBranchName" align="center" width="150px;">配送站点</th>
+						<th field="deliveryBranchName" align="center" width="120px;">配送站点</th>
 						<th field="bingTime" align="center" width="120px;">打印时间</th>
 						<th field="consigneename" align="center" width="100px;">收件人</th>
-						<th field="consigneeaddress" align="center" width="450px;">收件地址</th>
+					    <th field="realweight" align="center" width="110px;">实际重量（kg）</th>
+						<th field="consigneeaddress" align="center" width="370px;">收件地址</th>
 					</tr>
 				</thead>
 			</table>

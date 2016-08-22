@@ -32,6 +32,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.b2c.ems.SendToEMSOrder;
 import cn.explink.core.common.model.json.DataGridReturn;
 import cn.explink.core.utils.PoiExcelUtils;
@@ -176,6 +179,7 @@ public class EmsSmallPackageController {
 	
 	
 	@RequestMapping("/queryCwbList")
+	@DataSource(DatabaseType.REPLICA)
 	@ResponseBody
 	public void querycwbList(Model model,
 			@RequestParam(value = "page", required = false, defaultValue="1") int page,
@@ -199,6 +203,7 @@ public class EmsSmallPackageController {
 	 * @return
 	 */
 	@RequestMapping("/export")
+	@DataSource(DatabaseType.REPLICA)
 	@ResponseBody
 	public void export2Excel(
 			@RequestParam(value = "cwbtype", required = true, defaultValue="") String cwbtype,
