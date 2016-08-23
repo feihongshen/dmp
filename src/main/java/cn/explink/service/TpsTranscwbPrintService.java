@@ -67,7 +67,7 @@ public class TpsTranscwbPrintService {
 		try {
 			InvocationContext.Factory.getInstance().setTimeout(60000);
 			IdAllocationService service = new IdAllocationServiceHelper.IdAllocationServiceClient();
-			IdAllocationModel model = service.getDeliveryId("DMP", (byte) 1, ResourceBundleUtil.provinceCode, num);
+			IdAllocationModel model = service.getDeliveryId("DMP", (byte) 9, ResourceBundleUtil.provinceCode, num);
 			
 			long startId=model.getStartId()==null?0:Long.parseLong(model.getStartId());
 			long endId=model.getEndId()==null?0:Long.parseLong(model.getEndId());

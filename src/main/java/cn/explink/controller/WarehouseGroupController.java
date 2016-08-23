@@ -310,7 +310,7 @@ public class WarehouseGroupController {
 		model.addAttribute("page", page);
 
 		model.addAttribute("printtemplateList",
-				this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.LingHuoAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.LingHuoHuiZong.getValue()));
+				this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.LingHuoAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.LingHuoHuiZong.getValue() + "," + PrintTemplateOpertatetypeEnum.WuHanLinHuoDan.getValue()));
 		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 
 		return "warehousegroup/deliverlist";
@@ -381,7 +381,7 @@ public class WarehouseGroupController {
 
 		model.addAttribute("deliverList", deliverList);
 		model.addAttribute("printtemplateList",
-				this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.LingHuoAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.LingHuoHuiZong.getValue()));
+				this.printTemplateDAO.getPrintTemplateByOpreatetype(PrintTemplateOpertatetypeEnum.LingHuoAnDan.getValue() + "," + PrintTemplateOpertatetypeEnum.LingHuoHuiZong.getValue() + "," + PrintTemplateOpertatetypeEnum.WuHanLinHuoDan.getValue()));
 		return "warehousegroup/historydeliverlist";
 	}
 
@@ -838,8 +838,6 @@ public class WarehouseGroupController {
 					cwbsString=cwbsString+"-H-"+string;
 				}
 				cwbsString=cwbsString.substring(3);
-
-
 				this.cwbOrderService.checkResponseBatchno(this.getSessionUser(), 0, branchid, driverid, 0, OutWarehouseGroupEnum.FengBao.getValue(), operatetype, cwbsString, customerid);
 				return "{\"errorCode\":0,\"error\":\"成功\"}";
 			} else {
@@ -888,7 +886,6 @@ public class WarehouseGroupController {
 					}
 					branchAndCwbs.put(branchid, sbf.toString());
 				}
-
 				for (Long branchid : branchList) {
 					if((null!=baleno)&&(baleno.length()>0)){
 						Bale bale=null;
