@@ -90,7 +90,19 @@
 	<div class="tishi_box"></div>
 	<!-- 顶部-->
 	<div region="north" border="false" id="main_top_div" title="工具栏"
-		style="height: 90px; overflow: hidden;">
+		style="height: 120px; overflow: hidden;">
+		<div id="noticeDiv" height="10px">
+			<table id="noticeTable" width="100%">
+				<tr width="100%">
+					<td width="10px" align="left">
+						<img src="<%=request.getContextPath()%>/images/horn.png" alt="" />
+					</td>
+					<td align="right">
+						<marquee id="noticeMarquee" direction="left" behavior="scroll" scrollamount="3" width="100%" onmouseover="this.stop();" onmouseout="this.start();"></marquee>
+					</td>
+				</tr>
+			</table>
+		</div>
 		<div class="navbar" id="main_top_container">
 			<div class="navbar-inner">
 				<div class="container">
@@ -284,5 +296,27 @@
 		});
 	}
 	
+	// added by wangwei, 20160823, 页面滚动公告栏, start
+	$(function() {
+		showNotice();
+		var tenMinutes = 1000 * 60 * 10;
+		setInterval("showNotice()", tenMinutes);
+	}); 
+	
+	function showNotice(){
+		$.ajax({
+			type: "POST",
+			url:"<%=request.getContextPath()%>/taskShow/getLatestNoticeContent",
+			dataType:"json",
+			success : function(data) {
+				if(!!data && !!data.message){
+					var noticeContent = data.message;
+					var noticeContentHtml = '<font color="blue">' + noticeContent + '</font>';
+					$('#noticeMarquee').html(noticeContentHtml)			
+				}
+			}                 
+		});	
+	}
+	// added by wangwei, 20160823, 页面滚动公告栏, end
 </script>
 </html>

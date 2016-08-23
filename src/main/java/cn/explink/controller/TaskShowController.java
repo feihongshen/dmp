@@ -1,6 +1,8 @@
 package cn.explink.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +18,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.service.taskshow.TaskShowService;
+import cn.explink.util.AjaxResult;
 
+import com.pjbest.osp.cfg.system.service.HandbookRespone;
+import com.pjbest.osp.cfg.system.service.NearestViewRecordRespone;
+import com.pjbest.osp.cfg.system.service.NoticeRespone;
+import com.pjbest.osp.cfg.system.service.SysVersionModel;
 import com.pjbest.osp.cfg.system.service.VersionInfoRespone;
 import com.pjbest.osp.cfg.system.service.ViewRecordRespone;
 
@@ -64,4 +71,60 @@ public class TaskShowController {
 		
 	}
 	
+	
+	@RequestMapping("/getNearestViewRecord")
+	@ResponseBody
+	public List<SysVersionModel> getNearestViewRecord(Model model, HttpServletRequest req)throws Exception{
+		List<SysVersionModel> sysVersionModels = new ArrayList<SysVersionModel>();
+		NearestViewRecordRespone nearestViewRecord = this.taskShowService.getNearestViewRecord();
+		if(nearestViewRecord != null) {
+			if (nearestViewRecord.getIsSuccess() == false) {
+				logger.error(nearestViewRecord.getErrorMsg());
+			} else if(nearestViewRecord.getData() != null) {
+				sysVersionModels = nearestViewRecord.getData();
+			}
+		}
+		
+		return sysVersionModels;
+	}
+	
+	@RequestMapping("/getLatestHandbookUrl")
+	@ResponseBody
+	public AjaxResult getLatestHandbookUrl(Model model, HttpServletRequest req)throws Exception{
+		String handbookUrl = "";
+		HandbookRespone handbook = this.taskShowService.getLatestHandbook();
+		if(handbook != null) {
+			if (handbook.getIsSuccess() == false) {
+				logger.error(handbook.getErrorMsg());
+				//return new AjaxResult(false, handbook.getErrorMsg());
+			} else {
+				if(handbook.getData() != null && handbook.getData().getUrl() != null) {
+					handbookUrl = handbook.getData().getUrl();
+				}
+			}
+		}
+		
+		return new AjaxResult(true, handbookUrl);
+	}
+	
+	@RequestMapping("/getLatestNoticeContent")
+	@ResponseBody
+	public AjaxResult getLatestNoticeContent(Model model, HttpServletRequest req)throws Exception{
+		String noticeContent = "";
+		NoticeRespone notice = this.taskShowService.getLatestNotice();
+		if(notice != null) {
+			if(notice != null) {
+				if (notice.getIsSuccess() == false) {
+					logger.error(notice.getErrorMsg());
+					//return new AjaxResult(false, notice.getErrorMsg());
+				} else {
+					if(notice.getData() != null && notice.getData().getContent() != null) {
+						noticeContent = notice.getData().getContent();
+					}
+				}
+			}
+		}
+		
+		return new AjaxResult(true, noticeContent);
+	}
 }

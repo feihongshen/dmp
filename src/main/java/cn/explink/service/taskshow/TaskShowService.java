@@ -1,7 +1,5 @@
 package cn.explink.service.taskshow;
 
-import java.util.Date;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +15,13 @@ import cn.explink.domain.User;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.ResourceBundleUtil;
 
+import com.pjbest.osp.cfg.system.service.HandbookRespone;
+import com.pjbest.osp.cfg.system.service.NearestViewRecordRespone;
+import com.pjbest.osp.cfg.system.service.NoticeRespone;
+import com.pjbest.osp.cfg.system.service.SysHandbookService;
+import com.pjbest.osp.cfg.system.service.SysHandbookServiceHelper;
+import com.pjbest.osp.cfg.system.service.SysNoticeService;
+import com.pjbest.osp.cfg.system.service.SysNoticeServiceHelper;
 import com.pjbest.osp.cfg.system.service.SysVersionService;
 import com.pjbest.osp.cfg.system.service.SysVersionServiceHelper;
 import com.pjbest.osp.cfg.system.service.SysVersioninfoViewrecordService;
@@ -25,11 +30,12 @@ import com.pjbest.osp.cfg.system.service.VersionInfoRequest;
 import com.pjbest.osp.cfg.system.service.VersionInfoRespone;
 import com.pjbest.osp.cfg.system.service.ViewRecordRequest;
 import com.pjbest.osp.cfg.system.service.ViewRecordRespone;
-import com.vip.osp.core.exception.OspException;
 
 @Service
 public class TaskShowService {
 	private static Logger logger = LoggerFactory.getLogger(TaskShowController.class);
+	final private static String SYSTEM_CODE = "DMP";
+	
 	@Autowired
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	@Autowired
@@ -83,6 +89,39 @@ public class TaskShowService {
 			return viewRecordRespone;
 		} catch (Exception e) {
 			logger.info("调用ops服务：用户浏览记录上报异常{}",e.getMessage());
+			throw e;
+		}
+	}
+	
+	public NearestViewRecordRespone getNearestViewRecord() throws Exception {
+		SysVersionService sysVersionService = new SysVersionServiceHelper.SysVersionServiceClient();	
+		try {
+			NearestViewRecordRespone nearestViewRecord = sysVersionService.getNearestViewRecord(SYSTEM_CODE);
+			return nearestViewRecord;
+		} catch (Exception e) {
+			logger.info("调用ops服务：获取历史版本说明异常{}",e.getMessage());
+			throw e;
+		}
+	}
+	
+	public HandbookRespone getLatestHandbook() throws Exception {
+		SysHandbookService sysHandbookService = new SysHandbookServiceHelper.SysHandbookServiceClient();	
+		try {
+			HandbookRespone handbook = sysHandbookService.getLatestHandbook(SYSTEM_CODE);
+			return handbook;
+		} catch (Exception e) {
+			logger.info("调用ops服务：获取最新用户手册异常{}",e.getMessage());
+			throw e;
+		}
+	}
+	
+	public NoticeRespone getLatestNotice() throws Exception {
+		SysNoticeService sysNoticeService = new SysNoticeServiceHelper.SysNoticeServiceClient();	
+		try {
+			NoticeRespone notice = sysNoticeService.getLatestNotice(SYSTEM_CODE);
+			return notice;
+		} catch (Exception e) {
+			logger.info("调用ops服务：获取最新系统公告异常{}",e.getMessage());
 			throw e;
 		}
 	}
