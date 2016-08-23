@@ -320,6 +320,7 @@ function selectAll(selectorId)
 			<th field="applyTime" align="center" width="130px" >申请时间</th>
 			<th field="reviewUsername" align="center" width="50px" >审核人</th>
 			<th field="reviewTime" align="center" width="130px" >审核时间</th>
+			<th field="reviewStatusName" align="center" width="80px" >审核结果</th>
 			<th field="remark" align="center" width="130px" >备注</th>
          </thead>
    	  </table>

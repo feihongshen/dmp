@@ -230,9 +230,10 @@ public class ApplyEditCartypeController {
 		String allCwb = formatCwbs(cwbs);
 		List<ApplyEditCartypeVO> list = applyEditCartypeService.queryApplyEditCartype(allCwb, branchid, applyUserid, isReview,
 											reviewStatus, startApplyTime, endApplyTime);
-		String[]cloumnZ = new String[]{"订单号","运单号","客户","订/运单类型","原货物类型","申请修改货物类型","长宽高（mm）","重量（kg）","申请机构","申请人","申请时间","审核人","审核时间"};
+		String[]cloumnZ = new String[]{"订单号","运单号","客户","订/运单类型","原货物类型","申请修改货物类型","长宽高（mm）","重量（kg）","申请机构",
+											"申请人","申请时间","审核人","审核时间","审核结果","备注"};
 		String[]cloumnName = new String[]{"Cwb","Transcwb","Customername","DoTypeName","OriginalCartype","ApplyCartype","Carsize","Carrealweight","ApplyBranchname",
-											"ApplyUsername","ApplyTime","ReviewUsername","ReviewTime"};
+											"ApplyUsername","ApplyTime","ReviewUsername","ReviewTime","ReviewStatusName","Remark"};
 		//设置订单类型名称
 		formatApplyList(list);
 		try {
@@ -250,10 +251,11 @@ public class ApplyEditCartypeController {
 	private void formatApplyList(List<ApplyEditCartypeVO> list){
 		if(list!=null && !list.isEmpty()){
 			for(ApplyEditCartypeVO vo : list){
-				vo.setDoTypeName(CwbOrderTypeIdEnum.getTextByValue(vo.getDoType()));
 				if(vo.getCarrealweight()!=null && vo.getCarrealweight().floatValue() <0.01f){
 					vo.setCarrealweight(null);
 				}
+				vo.setDoTypeName(CwbOrderTypeIdEnum.getTextByValue(vo.getDoType()));
+				vo.setReviewStatusName(ApplyEditCartypeReviewStatusEnum.getByValue(vo.getReviewStatus()).getText());
 			}
 		}
 	}

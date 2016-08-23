@@ -24,5 +24,14 @@ public enum ApplyEditCartypeReviewStatusEnum {
 	public String getText() {
 		return text;
 	}
+	
+	public static ApplyEditCartypeReviewStatusEnum getByValue(int value) {
+		for (ApplyEditCartypeReviewStatusEnum applyEditCartypeReviewStatusEnum : ApplyEditCartypeReviewStatusEnum.values()) {
+			if (value == applyEditCartypeReviewStatusEnum.getValue()) {
+				return applyEditCartypeReviewStatusEnum;
+			}
+		}
+		return ApplyEditCartypeReviewStatusEnum.unsolve;
+	}
 
 }

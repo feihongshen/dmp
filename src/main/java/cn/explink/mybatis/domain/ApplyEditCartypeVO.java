@@ -36,6 +36,8 @@ public class ApplyEditCartypeVO {
 	//下面的字段不从数据表里获取
 	@Transient
 	private String doTypeName;//订单类型名称，对应关系可查看CwbOrderTypeIdEnum.java
+	@Transient
+	private String reviewStatusName;//审核状态名称
 	
 	
 	public long getId() {
@@ -166,6 +168,16 @@ public class ApplyEditCartypeVO {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
+	
+	
+	
+	
+	public String getReviewStatusName() {
+		return reviewStatusName;
+	}
+	public void setReviewStatusName(String reviewStatusName) {
+		this.reviewStatusName = reviewStatusName;
+	}
 	@Override
 	public String toString() {
 		return "ApplyEditCartypeVO [id=" + id + ", cwb=" + cwb + ", transcwb=" + transcwb + ", customerid=" + customerid
@@ -174,8 +186,11 @@ public class ApplyEditCartypeVO {
 				+ ", applyBranchid=" + applyBranchid + ", applyBranchname=" + applyBranchname + ", applyUserid="
 				+ applyUserid + ", applyUsername=" + applyUsername + ", applyTime=" + applyTime + ", reviewUserid="
 				+ reviewUserid + ", reviewUsername=" + reviewUsername + ", reviewTime=" + reviewTime + ", reviewStatus="
-				+ reviewStatus + ", remark=" + remark + ", doTypeName=" + doTypeName + "]";
+				+ reviewStatus + ", remark=" + remark + ", doTypeName=" + doTypeName + ", reviewStatusName="
+				+ reviewStatusName + "]";
 	}
+
+	
 	
 
 }
