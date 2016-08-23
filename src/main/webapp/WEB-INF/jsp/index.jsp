@@ -4,7 +4,6 @@
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
 	Map usermap = (Map) session.getAttribute("usermap");
-    String loginFlag = (String)session.getAttribute("loginFlag");
 %>
 <!DOCTYPE html >
 <html>
@@ -151,6 +150,14 @@
 								<i class="icon-off" style="position: relative; left: -25px;"></i>退出系统
 							</div>
 						</div>
+						<div id="dlg" class="easyui-dialog" title="新增版本发布说明" style="width:700px;height:550px;padding:10px" data-options="closed:true";>
+					   		<div id="showDetail" style="width:600px;height:400px;padding:10px">
+					   		</div>
+					   		<div style="margin-bottom:10px;height:50px;" >
+					   		    <div style="float:left"><input id="readBut" onclick="" type="checkbox">本人已阅读此版本发布说明</div>
+					   		    <div style="float:right"><input id="closeBut" onclick="beforeCloseDialog()" type="button" value="关闭"></div>
+					   		</div>
+					    </div>
 					</div>
 				</div>
 			</div>
@@ -181,34 +188,100 @@
 					}
 			});
 	$(document).ready(function() {
-		console.log(<%=loginFlag%>)
 		//获取最新版本说明
 		$.ajax({
 			async : false,
 			cache : false,
 			type : 'POST',
 			url : "<%=request.getContextPath()%>/taskShow/getLatestVersion",
-			success : function(data) {
-				console.log(data.latestVersion)
-				console.log(data.latestVersion.isSuccess)
-				console.log(data.latestVersion.data)
-				console.log(data.latestVersion.data.id)
-				/* openWindow(data); */
+			success : function(result) {
+				if(result.latestVersion.isSuccess==false){
+					alert("从tps获取当前版本发布说明异常！")
+				}else if(result.latestVersion.data!=null&&result.latestVersion.data.versionNo!=""){
+					$('#dlg').dialog('open');
+					openWindow(result.latestVersion.data);
+				}
+				
 			}
 		});
+		
 	});
-	function openWindow(d) {
-        //图片显示
-        $.layer({
-        	 type: 2,
-        	  title: false,
-        	  area: ['630px', '360px'],
-        	  shade: 0.8,
-        	  closeBtn: 0,
-        	  shadeClose: true,
-        	  content: 'http://player.youku.com/embed/XMjY3MzgzODg0'
-        });
-        
-    }
+	//根据返回内容新建对话框
+	function openWindow(data){
+		var date = new Date(data.onlineTime);
+		var updateTime = "";
+		if(data.onlineTime!=null&&data.onlineTime!=undefined){
+			Y = date.getFullYear() + '/';
+			M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '/';
+			D = date.getDate() + ' ';
+			updateTime=Y+M+D;
+		}
+		var showTime = new Date().getTime();
+		var divshow = $("#showDetail");
+		divshow.append("<div><b>上线时间："+updateTime+"</b></div>");
+		divshow.append("<div style='display:none' id='showTime'><b>"+showTime+"</b></div>");
+		divshow.append("<div><b>版本名称："+data.name+"</b></div>");
+		divshow.append("<div style='display:none' id='versionNo'><b>"+data.versionNo+"</b></div>");
+		divshow.append("<br/>");
+		divshow.append("<div>"+data.added+"</div>");
+	}
+	//点击对话框字段关闭按钮事件
+	$('#dlg').dialog({
+		onBeforeClose:function(){
+			if($('#readBut').attr('checked')!='checked'){
+				alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
+				return false;
+			};
+	    }
+	});
+	//点击关闭按钮事件
+	function beforeCloseDialog(){
+		if($('#readBut').attr('checked')!='checked'){
+			alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
+			return false;
+		}else{
+			$('#dlg').dialog('close');
+		};
+	};
+	
+	//点击对话框字段关闭按钮事件
+	$('#dlg').dialog({
+		onBeforeClose:function(){
+			if($('#readBut').attr('checked')!='checked'){
+				alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
+				return false;
+			}else{
+				sendReadRecord();
+			};
+	    }
+	});
+	//点击关闭按钮事件
+	function beforeCloseDialog(){
+		if($('#readBut').attr('checked')!='checked'){
+			alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
+			return false;
+		}else{
+			$('#dlg').dialog('close');
+			sendReadRecord();
+		};
+	};
+	
+	function sendReadRecord(){
+		var versionNo = $("#versionNo").text();
+		var showTime = $("#showTime").text();
+		$.ajax({
+			async : false,
+			cache : false,
+			type : 'POST',
+			data : {
+				versionNo:versionNo,
+				showTime:showTime
+			},
+			url : "<%=request.getContextPath()%>/taskShow/sendReadRecord",
+			success : function(result) {
+			}
+		});
+	}
+	
 </script>
 </html>

@@ -1,7 +1,6 @@
 package cn.explink.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,15 +12,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import cn.explink.domain.Customer;
-import cn.explink.schedule.Constants;
 import cn.explink.service.taskshow.TaskShowService;
-import cn.explink.util.StringUtil;
 
-import com.pjbest.osp.cfg.system.service.SysVersionModel;
 import com.pjbest.osp.cfg.system.service.VersionInfoRespone;
+import com.pjbest.osp.cfg.system.service.ViewRecordRespone;
 
 
 @RequestMapping("/taskShow")
@@ -39,13 +36,32 @@ public class TaskShowController {
 	@RequestMapping("/getLatestVersion")
 	private @ResponseBody Map<String,Object> getLatestVersion(Model model, HttpServletRequest req)throws Exception{
 		VersionInfoRespone latestVersion = this.taskShowService.getLatestVersion();
-		SysVersionModel sysVersionModel= new SysVersionModel();
-		sysVersionModel.setId(123);
-		sysVersionModel.setAdded("232");
-		latestVersion.setData(sysVersionModel);
 		Map<String,Object> map = new HashMap<String, Object>();
 		map.put("latestVersion",latestVersion);
 		return  map;
+	}
+	
+	//用户浏览记录上报
+	@RequestMapping("/sendReadRecord")
+	private @ResponseBody String sendReadRecord(Model model, 
+			@RequestParam(value = "versionNo", required = true) String versionNo,
+			@RequestParam(value = "showTime", required = true) long showTime){
+		ViewRecordRespone viewRecordRespone;
+		try {
+			viewRecordRespone = this.taskShowService.getAddVersionViewRecord(versionNo,showTime);
+			if(viewRecordRespone!=null&&viewRecordRespone.getIsSuccess()!=false){
+				logger.info("用户浏览记录上报成功,版本号为：{}",versionNo);
+				return "{\"success\":0,\"successdata\":\"用户浏览记录上报成功\"}";
+			}else{
+				logger.info("用户浏览记录上报失败，失败原因：{},版本号为：{}",viewRecordRespone.getErrorMsg(),versionNo);
+				return "{\"success\":1,\"successdata\":\""+viewRecordRespone.getErrorMsg()+"\"}";
+			}
+		} catch (Exception e) {
+			logger.info("用户浏览记录上报失败，失败原因：{},版本号为：{}",e.getMessage(),versionNo);
+			return "{\"success\":1,\"successdata\":\""+e.getMessage()+"\"}";
+		}
+		
+		
 	}
 	
 }
