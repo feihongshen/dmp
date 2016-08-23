@@ -31,31 +31,33 @@
 		<embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 companyname="北京易普联科信息技术有限公司" license="653717070728688778794958093190"></embed>
 	</object>
 	<script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
+
 </HEAD>
 <body class="easyui-layout" leftmargin="0" topmargin="0">
     <div data-options="region:'center'" style="height:100%;overflow-x: auto; overflow-y: auto;">
-		<table id="dg"
-				class="easyui-datagrid" toolbar="#cwb_toolbar" rownumbers="true" pagination="true" fit="true"
-		  		url="" pageSize="10" pageList="[10,20,50,100]" showFooter="true" fitColumns="false" singleSelect="false" 
-				width="100%">
+		<table id="dg" class="easyui-datagrid" toolbar="#cwb_toolbar" width="100%">
 				<thead>
 					<tr>
-						<th field="cwb" align="center" width="120px;">订单号</th>
+						<!-- <th field="cwb" align="center" width="120px;">订单号</th>
 						<th field="transcwb" align="center" width="120px;">运单号</th>
 						<th field="email_num" align="center" width="120px;">邮政运单号</th>
 						<th field="deliveryBranchName" align="center" width="120px;">配送站点</th>
 						<th field="bingTime" align="center" width="120px;">打印时间</th>
 						<th field="consigneename" align="center" width="100px;">收件人</th>
 						<th field="realweight" align="center" width="110px;">实际重量（kg）</th>
-						<th field="consigneeaddress" align="center" width="370px;">收件地址</th>
+						<th field="consigneeaddress" align="center" width="370px;">收件地址</th> -->
 					</tr>
 				</thead>
-			</table>
+		</table>
 			<div id="cwb_toolbar">
-				<div class="form-inline" style="padding:10px">
-				    <label style="width:400px;">订单/运单号：<input type="text" class="saomiao_inputtxt" id="scancwb" name="scancwb" value="" style="width:296px;height:45px;" onKeyDown='if(event.keyCode==13&&$(this).val().length>0){scanCwbConfirm()}'/></label>
+				<div class="form-inline" style="padding:10px;height:200px;">
+				    <div style="margin-top:30px;">
 				    <label style="width:100px;"><input id="printButton" name="print" type="checkbox" value="0" onclick="checkIsInstall()" checked="checked"/>打印面单 </label>
 				    <label style="width:100px;"><input name="print" type="checkbox" value="1" />重新绑定 </label>
+				    </div>
+				    <div style="margin-top:40px;"}>
+				    <label style="width:400px;">订单/运单号：<input class="saomiao_inputtxt" style="width:295px; height:43px;" type="text" id="scancwb" name="scancwb" value=""  onKeyDown='if(event.keyCode==13&&$(this).val().length>0){scanCwbConfirm()}'/></label>
+				    </div>
 				</div>
 		</div>
 	</div>
@@ -255,9 +257,10 @@
 	});
   }
  
-/*  $(function() {
-	 initDataGrid();
- }); */
+$(function() {
+	 //initDataGrid();
+	$('#scancwb').focus();
+}); 
  
 	// 打印
 	function printEmsLabel(cwbOrder) {
