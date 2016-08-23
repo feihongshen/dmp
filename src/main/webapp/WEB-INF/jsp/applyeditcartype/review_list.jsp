@@ -19,17 +19,14 @@
 
 $(function(){
 	
-	  
-	$("#branchid").multipleSelect({
-        placeholder: "请选择",
-        filter: true,
-        single: false
-    });
+	 
+	
 	$("#applyUserid").multipleSelect({
 		placeholder: "全部",
         filter: true,
         single: false
     });
+	
 	//机构级联用户下拉菜单
 	$("#branchid").change(function(){
 		
@@ -54,6 +51,14 @@ $(function(){
 			}
 		});
 	});
+	//全选branchid
+	selectAll("branchid"); 
+	//放到这里是为了selectAll后再进行初始化
+	$("#branchid").multipleSelect({
+        placeholder: "请选择",
+        filter: true,
+        single: false
+    });
 	//搜索按钮单击事件
 	$("#btnSearch").click(function(){
 		var startApplyTime = $("#startApplyTime").datetimebox('getValue');
@@ -84,13 +89,14 @@ $(function(){
 		$("#searchForm").attr('action',action);
 		$("#searchForm").submit();
 	});
+
 	$.DgPage.init({
 		url: "${pageContext.request.contextPath}/applyediteditcartype/apiReviewList",
 		formId: "searchForm",
 		dgId: "dg",
 		pageParamName: "page",
 		pageSizeParamName: "pageSize",
-		loadNow:false
+		loadNow:true
 	});
 	/* 如果需重写数据处理方法，可参照下面的定义
 	$.DgPage.formatDgPageData = function(data){
@@ -201,6 +207,13 @@ function appendDataList($result,dataList){
 }
 function appendResult($result, message) {
 	$result.append("<font size=4>" + message + "</font>");
+}
+
+function selectAll(selectorId)
+{
+	
+ 	$("#"+selectorId).children().each(function(){$(this).attr("selected","selected")});
+ 	$("#"+selectorId).change();
 }
 </script>
 </head>
