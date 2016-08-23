@@ -45,6 +45,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
+
 import cn.explink.aspect.OrderFlowOperation;
 import cn.explink.b2c.auto.order.service.AutoUserService;
 import cn.explink.b2c.maisike.branchsyn_json.Stores;
@@ -131,6 +133,8 @@ import cn.explink.domain.ChangeGoodsTypeResult;
 import cn.explink.domain.Common;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbApplyZhongZhuan;
+import cn.explink.domain.CwbDetailView;
+import cn.explink.domain.CwbOrderBranchMatchVo;
 import cn.explink.domain.CwbDiuShi;
 import cn.explink.domain.CwbKuaiDi;
 import cn.explink.domain.CwbOrder;
@@ -490,6 +494,9 @@ public class CwbOrderService extends BaseOrderService {
 	@Autowired
 	private TpsCwbFlowService tpsCwbFlowService;
 	
+	@Autowired
+	private UserService userService;
+
 	@Autowired
 	OrderPartGoodsReturnService orderPartGoodsReturnService;
 	
@@ -10447,7 +10454,7 @@ public class CwbOrderService extends BaseOrderService {
 		CwbOrderTypeIdEnum cwbOrderType = CwbOrderTypeIdEnum.getByValue(cwbOrder.getCwbordertypeid());
 		vo.setOrderTypeVal(cwbOrderType == null ? null : cwbOrderType.getText());
 		if(cwbOrder.getDeliverybranchid() != 0) {
-			List<User> courierList = this.userDao.getUserByRoleAndBranchid(2, cwbOrder.getDeliverybranchid());
+			List<User> courierList = this.userService.getDeliverList(cwbOrder.getDeliverybranchid());
 			vo.setCourierList(courierList);
 		}
 		return vo;

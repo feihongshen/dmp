@@ -321,7 +321,7 @@ public class UserService {
 	 */
 	public User getBranchDeliverByDeliverName(long branchId, String deliverName) {
 		User deliver = this.userDAO.getUserByUsername(deliverName);
-		if(deliver == null || deliver.getBranchid() != branchId || deliver.getRoleid() != 2) {
+		if(deliver == null || deliver.getBranchid() != branchId || this.isDeliver(deliver.getRoleid()) == false) {
 			return null;
 		}
 		return deliver;
@@ -383,5 +383,24 @@ public class UserService {
 			userList = new ArrayList<User>();
 		}
 		return userList;
+	}
+	
+	/**
+	 * 获取小件员列表
+	 * @author chunlei05.li
+	 * @date 2016年8月18日 下午5:06:51
+	 * @param branchid
+	 * @return
+	 */
+	public List<User> getDeliverList(long branchid) {
+		String roleids = "2,4";
+		List<Role> roles = this.roleDAO.getRolesByIsdelivery();
+		if ((roles != null) && (roles.size() > 0)) {
+			for (Role r : roles) {
+				roleids += "," + r.getRoleid();
+			}
+		}
+		List<User> courierList = this.userDAO.getUserByRolesAndBranchid(roleids, branchid);
+		return courierList;
 	}
 }

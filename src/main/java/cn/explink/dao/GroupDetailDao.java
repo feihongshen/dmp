@@ -3,18 +3,20 @@ package cn.explink.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
-import com.pjbest.splitting.aspect.DataSource;
-import com.pjbest.splitting.routing.DatabaseType;
-
 import cn.explink.domain.GroupDetail;
 import cn.explink.enumutil.BaleStateEnum;
 import cn.explink.util.Page;
+
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
 
 @Component
 public class GroupDetailDao {
@@ -442,6 +444,20 @@ public class GroupDetailDao {
 	public List<GroupDetail> getGroupDetailListByCwb(String cwb) {
 		String sql = "SELECT * FROM express_ops_groupdetail WHERE cwb=?";
 		return jdbcTemplate.query(sql, new GroupDetailMapper(), cwb);
+	}
+	
+	/**
+	 * 获取订单号中出库时间最大最小值  add by vic.liang@pjbest.com 2016-08-11
+	 * @param cwbs
+	 * @return
+	 */
+	public Map<String,Object> getGroupDetailDateTime (String cwbs) {
+		String sql = "select max(createtime) as endtime, min(createtime) as starttime from express_ops_groupdetail where cwb in("+cwbs+")";
+		try {
+			return this.jdbcTemplate.queryForMap(sql);
+		} catch (DataAccessException e) {
+			return null;
+		}
 	}
 	
 }

@@ -1,0 +1,4 @@
+INSERT INTO `express_set_print_template` (`name`, `detail`, `shownum`, `templatetype`, `opertatetype`, `customname`) VALUES ('运输交接单', '[{"width":"100","columnName":"订单号","field":"cwb"}]', '1', '4', '16', '武汉飞远');
+INSERT INTO `express_set_print_template` (`name`, `detail`, `shownum`, `templatetype`, `opertatetype`, `customname`) VALUES ('领货交接单', '[{"width":"100","columnName":"订单号","field":"cwb"}]', '1', '4', '17', '武汉飞远');
+INSERT INTO `express_set_print_template` (`name`, `detail`, `shownum`, `templatetype`, `opertatetype`, `customname`) VALUES ('退货交接单', '[{"width":"100","columnName":"订单号","field":"cwb"}]', '1', '4', '18', '武汉飞远');
+INSERT INTO `express_set_print_template` (`name`, `detail`, `shownum`, `templatetype`, `opertatetype`, `customname`) VALUES ('中转交接单', '[{"width":"100","columnName":"订单号","field":"cwb"}]', '1', '4', '19', '武汉飞远');
