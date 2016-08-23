@@ -229,6 +229,7 @@ function printByOrder(){
 			<option value="1">国美模版</option>
 			<option value="2" >家有购物模版</option>
 			<option value="3"  selected="selected">唯品会模版</option>
+			<option value="4">上门退打印模板</option>
 		 </select>
 	      <%if(cwbList!=null&&cwbList.size()>0){ %>
 	      <input type="button" onclick="bdprint();" value="打印" class="input_button2" />

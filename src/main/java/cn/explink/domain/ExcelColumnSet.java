@@ -61,6 +61,12 @@ public class ExcelColumnSet {
 	int consignoraddressindex; // 取件地址
 	int tmall_notifyidindex; // tmall发送数据唯一标示
 	int multi_shipcwbindex; // 多个运单号逗号隔开
+	
+	/**订单导入模板新增退货地址，及商家退货号 add by chunlei05.li 2016/8/22*/
+	private int returnnoindex;
+	
+	private int returnaddressindex;
+	
 	public int getMpsallarrivedflagindex() {
 		return mpsallarrivedflagindex;
 	}
@@ -553,5 +559,21 @@ public class ExcelColumnSet {
 
 	public void setVipclubindex(int vipclubindex) {
 		this.vipclubindex = vipclubindex;
+	}
+
+	public int getReturnnoindex() {
+		return returnnoindex;
+	}
+
+	public void setReturnnoindex(int returnnoindex) {
+		this.returnnoindex = returnnoindex;
+	}
+
+	public int getReturnaddressindex() {
+		return returnaddressindex;
+	}
+
+	public void setReturnaddressindex(int returnaddressindex) {
+		this.returnaddressindex = returnaddressindex;
 	}
 }

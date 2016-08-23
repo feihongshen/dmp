@@ -2,21 +2,17 @@ package cn.explink.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.tools.ant.types.CommandlineJava.SysProperties;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.dao.CustomerDAO;
@@ -162,7 +158,19 @@ public class ExcelColumnController {
 		excelcolumnset.setRemark5index(Integer.parseInt(request.getParameter("remark5index")));
 		excelcolumnset.setPaywayindex(Integer.parseInt(request.getParameter("paywayindex")));
 		excelcolumnset.setShouldfareindex(Integer.parseInt(request.getParameter("shouldfareindex")));
-
+		
+		/**订单导入模板新增退货地址，及商家退货号 add by chunlei05.li 2016/8/22*/
+		// 为防止报错，采用兼容模式
+		String returnnoindex = request.getParameter("returnnoindex");
+		if (StringUtils.isNotBlank(returnnoindex)) {
+			excelcolumnset.setReturnnoindex(Integer.parseInt(returnnoindex));
+		}
+		String returnaddressindex = request.getParameter("returnaddressindex");
+		if (StringUtils.isNotBlank(returnaddressindex)) {
+			excelcolumnset.setReturnaddressindex(Integer.parseInt(returnaddressindex));
+		}
+		/**************end*****************/
+		
 		/*
 		 * excelcolumnset.setUpdateuserid(Integer.parseInt(request.getParameter(
 		 * "updateuserid")));
