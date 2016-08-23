@@ -98,10 +98,10 @@ public final class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseS
 		long currentBranchid = cwbOrder.getCurrentbranchid(); //当前站点id
 		String transcwb = StringUtils.trim(cwbOrder.getTranscwb()); //运单号
 		long customerId = cwbOrder.getCustomerid(); //客户id
-		logger.info("{}scancwb:{}, currentUserBranchid:{}, flowordertype:{}, deliverystate:{}, \n"
+		logger.info("{}cwb:{}, scancwb:{}, currentUserBranchid:{}, flowordertype:{}, deliverystate:{}, \n"
 				+ "ismpsflag:{}, sendcarnum:{}, cwbordertypeid:{}, cwbstate:{}, transcwb:{}, \n"
 				+ "currentBranchid:{}, customerId:{}", 
-				logPrefix, scancwb, currentUserBranchid, flowordertype, deliverystate, 
+				logPrefix, cwbOrder.getCwb(), scancwb, currentUserBranchid, flowordertype, deliverystate, 
 				ismpsflag, sendcarnum, cwbordertypeid, cwbstate, transcwb,
 				currentBranchid, customerId);
 		
@@ -154,14 +154,36 @@ public final class DeliverTakeGoodsMPSReleaseService extends AbstractMPSReleaseS
 		*/
 		/* ***************modify end*********************/
 		
+		/* ***************modify begin*********************/
+		//modify by neo01.huang,2016-8-19,加入判断第一件已经领货，其他件做了其他操作的场景
+		//获取运单领货的轨迹
+		Map<String, Object> firstReceiveGoodsParamMap = new HashMap<String, Object>();
+		firstReceiveGoodsParamMap.put("flowordertype", FlowOrderTypeEnum.FenZhanLingHuo.getValue());
+		firstReceiveGoodsParamMap.put("isnow", 1);
+		firstReceiveGoodsParamMap.put("cwb", cwbOrder.getCwb());
+		firstReceiveGoodsParamMap.put("branchid", currentUserBranchid);
+		//运单领货的轨迹
+		/*
+		 * SELECT * FROM express_ops_transcwb_orderflow t  WHERE t.flowordertype=9 AND t.isnow=1  AND t.cwb=?  AND t.branchid=?
+		 */
+		List<TranscwbOrderFlow> firstReceiveGoodsFlowList = transcwbOrderFlowDAO.queryTranscwbOrderFlow(firstReceiveGoodsParamMap, null);
+		//运单已领货的轨迹数量
+		int firstReceiveGoodsFlowListSize = 0;
+		if (firstReceiveGoodsFlowList != null) {
+			firstReceiveGoodsFlowListSize = firstReceiveGoodsFlowList.size();
+ 		}
+		logger.info("{}{},firstReceiveGoodsFlowListSize:{}", logPrefix, cwbOrder.getCwb(), firstReceiveGoodsFlowListSize);
+		
 		//是否属于到站集齐领货
-		boolean isAllArrived = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() == flowordertype ||
-				FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() == flowordertype;
+		boolean isAllArrived = (FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() == flowordertype ||
+				FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue() == flowordertype) && firstReceiveGoodsFlowListSize == 0;
 		logger.info("{}是否属于到站集齐领货:{}", logPrefix, isAllArrived);
 		
 		//是否已经进行第一次领货
-		boolean isFirstReceiveGoodsFinished = FlowOrderTypeEnum.FenZhanLingHuo.getValue() == flowordertype;
+		boolean isFirstReceiveGoodsFinished = FlowOrderTypeEnum.FenZhanLingHuo.getValue() == flowordertype ||
+				firstReceiveGoodsFlowListSize != 0;
 		logger.info("{}是否已经进行第一次领货:{}", logPrefix, isFirstReceiveGoodsFinished);
+		/* ***************modify end*********************/
 		
 		//是否为分站滞留
 		boolean isBranchLeft = FlowOrderTypeEnum.YiShenHe.getValue() == flowordertype &&
