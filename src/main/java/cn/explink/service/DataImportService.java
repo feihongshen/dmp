@@ -51,7 +51,6 @@ import cn.explink.dao.NoPiPeiCwbDetailDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.RemarkDAO;
-import cn.explink.dao.SmtCwbDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.dao.TuihuoRecordDAO;
@@ -69,7 +68,6 @@ import cn.explink.domain.MqExceptionBuilder;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
 import cn.explink.domain.SetExportField;
-import cn.explink.domain.SmtCwb;
 import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
@@ -165,7 +163,7 @@ public class DataImportService {
 	private MqExceptionDAO mqExceptionDAO;
 	
 	@Autowired
-	private SmtCwbDAO smtCwbDAO;
+	private DataImportSingleService dataImportSingleService;
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	protected static ObjectMapper jacksonmapper = JacksonMapper.getInstance();
@@ -217,20 +215,11 @@ public class DataImportService {
 
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public void importSingleData(User user, EmailDate ed, boolean isReImport, CwbOrderDTO cwbOrderDTO) {
-		for (CwbOrderValidator cwbOrderValidator : this.importValidationManager.getCommonValidators()) {
-			cwbOrderValidator.validate(cwbOrderDTO);
-		}
-		this.insertCwb(cwbOrderDTO, ed.getCustomerid(), ed.getBranchid(), user, ed, isReImport);
-		
-		/**订单导入模板新增退货地址，及商家退货号 add by chunlei05.li 2016/8/22*/
-		if (cwbOrderDTO.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
-			SmtCwb smtCwb = new SmtCwb();
-			smtCwb.setCwb(cwbOrderDTO.getCwb());
-			smtCwb.setReturnNo(cwbOrderDTO.getReturnno());
-			smtCwb.setReturnAddress(cwbOrderDTO.getReturnaddress());
-			this.smtCwbDAO.saveSmtCwb(smtCwb);
-		}
-		/***************** end **************/
+		/**
+		 * 本方法存在内部调用，而方法内部调用无法产生新的事务，抽象出来，使数据库操作部分支持事务
+		 * add by chunlei05.li 2016/8/23
+		 */
+		this.dataImportSingleService.importSingleData(user, ed, isReImport, cwbOrderDTO);
 		
 		// 如果手动分配了地址，就不会自动调用地址库
 		if ((cwbOrderDTO.getExcelbranch() == null) || (cwbOrderDTO.getExcelbranch().length() == 0) || (cwbOrderDTO.getDeliverybranchid() == 0)) {
@@ -275,32 +264,6 @@ public class DataImportService {
 		
 			}
 		}
-	}
-
-	/**
-	 * 正常导入
-	 *
-	 * @param cwbOrderDTO
-	 * @param customerid
-	 *            供货商
-	 * @param branchid
-	 * @param operatoruserid操作员
-	 */
-	private void insertCwb(final CwbOrderDTO cwbOrderDTO, final long customerid, long warhouseid, User user, EmailDate ed, boolean isReImport) {
-		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwbOrderDTO.getCwb());
-		if (cwbOrder == null) {
-			this.cwbOrderService.insertCwbOrder(cwbOrderDTO, customerid, warhouseid, user, ed);
-			return;
-		}
-		
-		if (cwbOrder.getEmaildateid() > 0) {
-			if (!isReImport) {
-				throw new RuntimeException("重复单号");
-			} else if (ed.getEmaildateid() != cwbOrder.getEmaildateid()) {
-				throw new RuntimeException("重复单号");
-			}
-		}
-		this.cwbOrderService.updateExcelCwb(cwbOrderDTO, customerid, warhouseid, user, ed, isReImport);
 	}
 
 	@Produce(uri = "jms:topic:loseCwb")
