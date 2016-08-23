@@ -322,9 +322,9 @@ public class EMSDAO {
 	}
 	
 	public int getCountEMSViewListByTransCwb(String cwbType,String cwb, String starttime,String endtime,String status) {
-		String sql  = "select count(1) from express_ems_dmp_transcwb ems left join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb and cwb.state = 1"
+		String sql  = "select count(1) from express_ems_dmp_transcwb ems left join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb"
                       +" left join express_set_branch branch on cwb.deliverybranchid = branch.branchid "
-                      +" where 1=1";
+                      +" where 1=1 and cwb.state = 1";
 		sql += getWhereSql(cwbType, cwb, starttime, endtime, status);
 		return this.jdbcTemplate.queryForInt(sql);
 	}
@@ -368,9 +368,9 @@ public class EMSDAO {
 	 */
 	public List<EmsSmallPackageViewVo> getEMSViewListByTransCwb(int page,int pageSize,String cwbType,String cwb, String starttime,String endtime,String status) {
 		String sql  = "select ems.*,branch.branchname,cwb.consigneename,cwb.consigneeaddress,cwb.realweight" 
-                      +" from express_ems_dmp_transcwb ems left join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb and cwb.state = 1"
-                      +" left join express_set_branch branch on cwb.deliverybranchid = branch.branchid "
-                      +" where 1=1";
+                      +" from express_ems_dmp_transcwb ems left join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb"
+                      +" left join express_set_branch branch on cwb.deliverybranchid = branch.branchid"
+                      +" where 1=1 and cwb.state = 1 ";
                       sql += getWhereSql(cwbType, cwb, starttime, endtime, status);
                       sql += " order by ems.bing_time desc limit ?,?";
 		List<EmsSmallPackageViewVo> list = this.jdbcTemplate.query(sql, new EMSCwbInfoViewMapper(), ((page - 1) * pageSize), pageSize);
@@ -384,9 +384,9 @@ public class EMSDAO {
 	 */
 	public List<EmsSmallPackageViewVo> getEMSViewListByTransCwb(String cwbType,String cwb, String starttime,String endtime,String status) {
 		String sql  = "select ems.*,branch.branchname,cwb.consigneename,cwb.consigneeaddress,cwb.realweight" 
-                      +" from express_ems_dmp_transcwb ems left join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb and cwb.state = 1"
+                      +" from express_ems_dmp_transcwb ems left join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb"
                       +" left join express_set_branch branch on cwb.deliverybranchid = branch.branchid "
-                      +" where 1=1";
+                      +" where 1=1 and cwb.state = 1";
                       sql += getWhereSql(cwbType, cwb, starttime, endtime, status);
                       sql += " order by ems.bing_time desc ";
 		List<EmsSmallPackageViewVo> list = this.jdbcTemplate.query(sql, new EMSCwbInfoViewMapper());
