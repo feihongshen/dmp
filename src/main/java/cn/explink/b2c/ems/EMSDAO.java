@@ -399,8 +399,8 @@ public class EMSDAO {
 	 * @param emscwbOld
 	 * @return
 	 */
-	public int updateEmscwb (String emscwb, String emscwbOld, String bingTime) {
-		String sql = "update express_ems_dmp_transcwb set email_num = ?, bing_time = ? where email_num = ?";
-		return this.jdbcTemplate.update(sql,emscwb,bingTime,emscwbOld);
+	public int updateEmscwb (String transcwb, String scanems, String bingTime) {
+		String sql = "update express_ems_dmp_transcwb set email_num = ?, bing_time = ? where transcwb = ?";
+		return this.jdbcTemplate.update(sql,scanems,bingTime,transcwb);
 	}
 }

@@ -153,14 +153,14 @@ public class EmsSmallPackageController {
 	@RequestMapping("/rebingCwb")
 	@ResponseBody
 	public Map<String,Object> rebingcwb(Model model,
-			@RequestParam(value = "emscwb", required = true, defaultValue="") String emscwb,
-			@RequestParam(value = "emscwbOld", required = true, defaultValue="") String emscwbOld,
+			@RequestParam(value = "transcwb", required = true, defaultValue="") String transcwb,
+			@RequestParam(value = "scanems", required = true, defaultValue="") String scanems,
 			HttpServletRequest request, HttpServletResponse response) {
-		emscwb = emscwb.trim();
-		emscwbOld = emscwbOld.trim();
+		transcwb = transcwb.trim();
+		scanems = scanems.trim();
 		Map<String,Object> map = new HashMap<String, Object>();
 		try {
-			this.emsSmallPakageService.rebingCwb(emscwb, emscwbOld);
+			this.emsSmallPakageService.rebingCwb(transcwb, scanems);
 			//map.put("list", this.emsSmallPakageService.getEMSViewListByTransCwb("","","","",""));
 		} catch (CwbException e) {
 			logger.error("绑定邮政小包运单号发生异常", e);

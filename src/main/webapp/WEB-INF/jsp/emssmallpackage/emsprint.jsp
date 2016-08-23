@@ -107,7 +107,7 @@
 	if (isrebing) {
 	    $("#emscwb_old").empty();
 	    $.each(list, function(index,item) {
-		   $("#emscwb_old").append("<option value='"+item.email_num+"'>"+item.email_num+"</option>");
+		   $("#emscwb_old").append("<option value='"+item.transcwb+"'>"+item.email_num+"</option>");
 	    });
 	    $("#rebingContainer").show();
 	    $("#bingContainer").hide();
@@ -176,12 +176,12 @@
 	var url;
 	if (isrebing) {//重新绑定
 		scanemscwb = $('#scanemscwbrebing').val();
-		var emscwbOld = $("#emscwb_old").val();
-	    if (!emscwbOld) {
+		var transcwb = $("#emscwb_old").val();
+	    if (!transcwb) {
 	    	alert("请选择已绑定的邮政运单号！");
 	    	return;
 	    }
-	    url = _ctx+"/emsSmallPackage/rebingCwb?emscwb="+scanemscwb+"&emscwbOld="+emscwbOld; 
+	    url = _ctx+"/emsSmallPackage/rebingCwb?scanems="+scanemscwb+"&transcwb="+transcwb; 
 	} else {
 	    scanemscwb = $('#scanemscwb').val();
 	    url = _ctx+"/emsSmallPackage/bingCwb?scancwb="+cwb+"&scantranscwb="+scancwb+"&emsscancwb="+scanemscwb;

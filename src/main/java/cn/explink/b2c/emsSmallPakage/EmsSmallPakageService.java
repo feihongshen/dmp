@@ -256,9 +256,9 @@ public class EmsSmallPakageService {
 	 * @param transcwb
 	 * @param emscwb
 	 */
-	public void rebingCwb(String emscwb, String emscwbOld) {
+	public void rebingCwb(String transcwb, String scanems) {
 		String bingTime = DateTimeUtil.getNowTime();
-		this.eMSDAO.updateEmscwb(emscwb, emscwbOld, bingTime);
+		this.eMSDAO.updateEmscwb(transcwb, scanems, bingTime);
 	}
 	
 	/**
