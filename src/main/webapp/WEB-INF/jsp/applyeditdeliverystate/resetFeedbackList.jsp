@@ -290,7 +290,6 @@ function resetData(){
 												<option value ="<%=CwbOrderTypeIdEnum.Peisong.getValue() %>"><%=CwbOrderTypeIdEnum.Peisong.getText() %></option>
 												<option value ="<%=CwbOrderTypeIdEnum.Shangmentui.getValue() %>"><%=CwbOrderTypeIdEnum.Shangmentui.getText() %></option>
 												<option value ="<%=CwbOrderTypeIdEnum.Shangmenhuan.getValue() %>"><%=CwbOrderTypeIdEnum.Shangmenhuan.getText() %></option>
-												<option value ="<%=CwbOrderTypeIdEnum.Express.getValue() %>"><%=CwbOrderTypeIdEnum.Express.getText() %></option>
 											</select>
 										</td>
 										<td>
