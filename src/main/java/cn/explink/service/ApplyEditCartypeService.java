@@ -212,10 +212,10 @@ public class ApplyEditCartypeService {
 			OrderFlow chongzhiOrderFlow = chongZhiHistory.get(0);
 			startDate = chongzhiOrderFlow.getCredate();
 		}
-		//
-		List<OrderFlow> fanKuiHistory = orderFlowDAO.getOrderFlowByCerterias(FlowOrderTypeEnum.YiFanKui.getValue(), 
+		//查看是否有归班审核归集
+		List<OrderFlow> shenheHistory = orderFlowDAO.getOrderFlowByCerterias(FlowOrderTypeEnum.YiShenHe.getValue(), 
 																			cwbOrder.getCwb(),startDate, 0, 1);
-		if(fanKuiHistory!=null && !fanKuiHistory.isEmpty()){
+		if(shenheHistory!=null && !shenheHistory.isEmpty()){
 			opsResult.setRemark(ApplyEditCartypeResultView.REMARK_CWB_YIGUIBANSHENHE);
 			return opsResult;
 		}

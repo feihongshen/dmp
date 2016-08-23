@@ -254,19 +254,19 @@ function selectAll(selectorId)
 
 <td  align="right">审核结果： </td>
 <td  >
-<select style="width:100%" id="isReview" name="isReview" >
-	<option value =""> 全部</option>
-	<option value ="false" <c:if test="${not empty param.isReview && param.isReview==false}">selected="selected"</c:if>>未审核</option>
-	<option value ="true" <c:if test="${not empty param.isReview && param.isReview==true}">selected="selected"</c:if>>已审核</option>
-</select>
-</td>
-<td  align="right" > 审核状态： </td>
-<td  >
 <select style="width:100%" id="reviewStatus" name="reviewStatus" >
 	<option value =""> 全部</option>
 	<c:forEach var="reviewStatus" items="${reviewStatusList}">
 		<option value="${reviewStatus.value}" <c:if test="${not empty param.reviewStatus &&  param.reviewStatus==reviewStatus.value}">selected="selected"</c:if>>${reviewStatus.text}</option>
 	</c:forEach>
+</select>
+</td>
+<td  align="right" > 审核状态： </td>
+<td  >
+<select style="width:100%" id="isReview" name="isReview" >
+	<option value =""> 全部</option>
+	<option value ="false" <c:if test="${not empty param.isReview && param.isReview==false}">selected="selected"</c:if>>未审核</option>
+	<option value ="true" <c:if test="${not empty param.isReview && param.isReview==true}">selected="selected"</c:if>>已审核</option>
 </select>
 </td>
 <td  align="right"> 申请时间(止)：</td>

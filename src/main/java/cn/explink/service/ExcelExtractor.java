@@ -677,6 +677,11 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 				for (CwbOrderValidator cwbOrderValidator : vailidators) {
 					cwbOrderValidator.validate(cwbOrder);
 				}
+				//zhili01.liang V4.2.18 货物类型修改：默认为普件=====Begin===
+				if(StringUtils.isEmpty(cwbOrder.getCargotype())){
+					cwbOrder.setCargotype("普件");
+				}
+				//zhili01.liang V4.2.18货物类型修改：默认为普件=====End===
 				cwbOrders.add(cwbOrder);
 				if ((count % 100) == 0) {
 					ExcelExtractor.logger.info("parsed {} orders", count);
