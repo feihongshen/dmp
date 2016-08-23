@@ -233,7 +233,7 @@
 				alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
 				return false;
 			};
-	    }
+	    },
 	});
 	//点击关闭按钮事件
 	function beforeCloseDialog(){
@@ -241,7 +241,7 @@
 			alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
 			return false;
 		}else{
-			$('#dlg').dialog('close');
+			$('#dlg').dialog('destroy');
 		};
 	};
 	
