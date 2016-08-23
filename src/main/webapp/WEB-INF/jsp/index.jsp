@@ -196,7 +196,8 @@
 			url : "<%=request.getContextPath()%>/taskShow/getLatestVersion",
 			success : function(result) {
 				if(result.latestVersion.isSuccess==false){
-					alert("从tps获取当前版本发布说明异常！")
+					return;
+					//alert("从tps获取当前版本发布说明异常！")
 				}else if(result.latestVersion.data!=null&&result.latestVersion.data.versionNo!=""){
 					$('#dlg').dialog('open');
 					openWindow(result.latestVersion.data);
