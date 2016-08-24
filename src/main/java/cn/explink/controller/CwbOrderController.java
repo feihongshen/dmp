@@ -113,6 +113,7 @@ import cn.explink.service.AdjustmentRecordService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbRouteService;
 import cn.explink.service.DataStatisticsService;
+import cn.explink.service.EditCwbService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.LogToDayService;
@@ -229,6 +230,9 @@ public class CwbOrderController {
 	
 	@Autowired
 	private SmtCwbService smtCwbService;
+	
+	@Autowired
+	EditCwbService editCwbService;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -1898,6 +1902,9 @@ public class CwbOrderController {
 
 				//买单结算的客户订单失效需要判断是否已经生成客户账单，如果生成了客户账单，要生成客户调整账单
 				this.adjustmentRecordService.createAdjustmentForLosecwbBatch(co);
+				
+				//生成订单调整记录（余额报表） added by gordon.zhou 2016/08/24
+				this.editCwbService.createFnOrgOrderAdjustRecordForDisabledOrder(co);
 
                 //added by Steve PENG. 失效订单需要进行派费相关操作。 start
                 //注释掉因为手动失效订单不需要执行相关的派费的操作。所有失效操作只在接口完成。
