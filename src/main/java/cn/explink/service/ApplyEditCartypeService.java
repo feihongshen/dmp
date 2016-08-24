@@ -83,13 +83,14 @@ public class ApplyEditCartypeService {
 		//存放订单号，记录处理结果，主要用于检查运单是否重复
 		Map<String,String> allCwbResult = new HashMap<String,String>();
 		String[] cwbstrs = cwbs.split(",");
-		for(String cwbOrTranscwb:cwbstrs){
-			//传入的可能是订单号，也可能是运单号
-			cwbOrTranscwb = cwbOrTranscwb.trim();
+		for(String cwb:cwbstrs){
+			
+			cwb = cwb.trim();
 			//订单号为空，去掉
-			if(StringUtils.isEmpty(cwbOrTranscwb)){
+			if(StringUtils.isEmpty(cwb)){
 				continue;
 			}
+			/*
 			//运单号，默认为空号
 			String transCwb = "";
 			//假设传入的是运单号
@@ -99,14 +100,15 @@ public class ApplyEditCartypeService {
 			}else{
 				cwb = cwbOrTranscwb;
 			}
+			*/
 			CwbOrder cwbOrder = cwbOrderService.getCwbByCwb(cwb);
 			
 			//单个申请的操作结果
-			ApplyEditCartypeResultView opsResult = validateApplyInfo(cwbOrTranscwb,cwbOrder,allCwbResult);
+			ApplyEditCartypeResultView opsResult = validateApplyInfo(cwb,cwbOrder,allCwbResult);
 			//成功，则进行数据保存操作
 			if(opsResult.isValid()){
 				try{
-					createApply(cwbOrder,transCwb,applyUser,applyCartype,remark);
+					createApply(cwbOrder,cwbOrder.getTranscwb(),applyUser,applyCartype,remark);
 				}catch(Exception e){
 					opsResult.setValid(false);
 					opsResult.setRemark(ApplyEditCartypeResultView.REMARK_APPLY_EXCEPTION);
@@ -174,20 +176,7 @@ public class ApplyEditCartypeService {
 		String cwb = cwbOrder.getCwb();
 		//重复订单处理逻辑
 		if(isExistCwb(cwb,allCwbReslut)){
-			/*此逻辑由杨建提出，但与文档描述不一致，暂时先按文档逻辑处理
-			boolean isSuccessCwb = allCwbReslut.get(cwb);
-			//如果上一个订单处理是校验成功的，本单也记录为申请成功
-			if(isSuccessCwb){
-				opsResult.setValid(true);
-				opsResult.setNeedApply(false);
-			//如果上一个订单处理是校验失败的，则标记为失败
-			}else{
-				opsResult.setRemark(ApplyEditCartypeResultView.REMARK_CWB_REPEAT);
-			}
-			*/
-			
 			opsResult.setRemark(ApplyEditCartypeResultView.REMARK_CWB_REPEAT);
-			
 			return opsResult;
 		}
 		//订单的货物类型不为普件处理逻辑
@@ -212,10 +201,10 @@ public class ApplyEditCartypeService {
 			OrderFlow chongzhiOrderFlow = chongZhiHistory.get(0);
 			startDate = chongzhiOrderFlow.getCredate();
 		}
-		//
-		List<OrderFlow> fanKuiHistory = orderFlowDAO.getOrderFlowByCerterias(FlowOrderTypeEnum.YiFanKui.getValue(), 
+		//查看是否有归班审核归集
+		List<OrderFlow> shenheHistory = orderFlowDAO.getOrderFlowByCerterias(FlowOrderTypeEnum.YiShenHe.getValue(), 
 																			cwbOrder.getCwb(),startDate, 0, 1);
-		if(fanKuiHistory!=null && !fanKuiHistory.isEmpty()){
+		if(shenheHistory!=null && !shenheHistory.isEmpty()){
 			opsResult.setRemark(ApplyEditCartypeResultView.REMARK_CWB_YIGUIBANSHENHE);
 			return opsResult;
 		}
@@ -367,7 +356,8 @@ public class ApplyEditCartypeService {
 		//添加订单操作记录
 		String comment = String.format("类型从%s改为%s", applyEditCartype.getOriginalCartype(),applyEditCartype.getApplyCartype());
 		cwbOrderService.createFloworder(reviewUser, reviewUser.getBranchid(), cwbOrder, 
-										FlowOrderTypeEnum.XiuGaiHuoWuLeiXingTongGuo, comment, System.currentTimeMillis());
+										FlowOrderTypeEnum.XiuGaiHuoWuLeiXingTongGuo, comment, System.currentTimeMillis(),cwbOrder.getCwb(),false);
+		
 		//待处理：财务报表逻辑
 		
 	}
@@ -454,7 +444,7 @@ public class ApplyEditCartypeService {
 			//添加订单操作记录
 			String comment = String.format("类型从%s改为%s", applyEditCartype.getOriginalCartype(),applyEditCartype.getApplyCartype());
 			cwbOrderService.createFloworder(reviewUser, reviewUser.getBranchid(), cwbOrder, 
-											FlowOrderTypeEnum.XiuGaiHuoWuLeiXingBuTongGuo, comment, System.currentTimeMillis());
+											FlowOrderTypeEnum.XiuGaiHuoWuLeiXingBuTongGuo, comment, System.currentTimeMillis(),cwbOrder.getCwb(),false);
 
 		}
 		
