@@ -112,12 +112,12 @@
 							<table>
 								<tr>
 									<td colspan="3">
-										<div style="float:left">
+										<div style="float:right">
+											<img src="<%=request.getContextPath()%>/images/horn.png" alt="" />
+										</div>
+										<div style="float:right">
 											<marquee id="noticeMarquee" direction="left" behavior="scroll" scrollamount="3" onmouseover="this.stop();" onmouseout="this.start();" style="width:850px">
 											</marquee>
-										</div>
-										<div style="float:left">
-											<img src="<%=request.getContextPath()%>/images/horn.png" alt="" />
 										</div>
 									</td>
 								</tr>
@@ -167,8 +167,9 @@
 					   		<div id="showDetail" style="width:600px;height:400px;padding:10px">
 					   		</div>
 					   		<div style="margin-bottom:10px;height:50px;" >
+					   			<hr>
 					   		    <div style="float:left"><input id="readBut" onclick="" type="checkbox">本人已阅读此版本发布说明</div>
-					   		    <div style="float:right"><input id="closeBut" onclick="beforeCloseDialog()" type="button" value="关闭"></div>
+					   		    <div style="float:right"><input id="closeBut" onclick="closeDlg()" type="button" value="关闭"></div>
 					   		</div>
 					    </div>
 					</div>
@@ -200,7 +201,21 @@
 					$("#playSearch").val('');
 					}
 			});
+	
 	$(document).ready(function() {
+		//点击对话框字段关闭按钮事件
+		$('#dlg').dialog({
+			onBeforeClose:function(){
+				if($('#readBut').attr('checked')!='checked'){
+					alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
+					return false;
+				}
+		    },
+		    onClose:function(){
+		    	sendReadRecord();
+		    }
+		});
+		
 		//获取最新版本说明
 		$.ajax({
 			async : false,
@@ -212,14 +227,13 @@
 					return;
 					//alert("从tps获取当前版本发布说明异常！")
 				}else if(result.latestVersion.data!=null&&result.latestVersion.data.versionNo!=""){
-					$('#dlg').dialog('open');
 					openWindow(result.latestVersion.data);
 				}
 				
 			}
 		});
-		
 	});
+	
 	//根据返回内容新建对话框
 	function openWindow(data){
 		var date = new Date(data.onlineTime);
@@ -238,47 +252,15 @@
 		divshow.append("<div style='display:none' id='versionNo'><b>"+data.versionNo+"</b></div>");
 		divshow.append("<br/>");
 		divshow.append("<div>"+data.added+"</div>");
+		
+		$('#readBut').removeAttr('checked');
+		$('#dlg').dialog('open');
 	}
-	//点击对话框字段关闭按钮事件
-	$('#dlg').dialog({
-		onBeforeClose:function(){
-			if($('#readBut').attr('checked')!='checked'){
-				alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
-				return false;
-			};
-	    },
-	});
-	//点击关闭按钮事件
-	function beforeCloseDialog(){
-		if($('#readBut').attr('checked')!='checked'){
-			alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
-			return false;
-		}else{
-			$('#dlg').dialog('destroy');
-		};
-	};
 	
-	//点击对话框字段关闭按钮事件
-	$('#dlg').dialog({
-		onBeforeClose:function(){
-			if($('#readBut').attr('checked')!='checked'){
-				alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
-				return false;
-			}else{
-				sendReadRecord();
-			};
-	    }
-	});
 	//点击关闭按钮事件
-	function beforeCloseDialog(){
-		if($('#readBut').attr('checked')!='checked'){
-			alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
-			return false;
-		}else{
-			$('#dlg').dialog('close');
-			sendReadRecord();
-		};
-	};
+	function closeDlg() {
+		$('#dlg').dialog('close');
+	}
 	
 	function sendReadRecord(){
 		var versionNo = $("#versionNo").text();
