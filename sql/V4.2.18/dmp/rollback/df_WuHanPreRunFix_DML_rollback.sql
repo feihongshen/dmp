@@ -1,0 +1,1 @@
+DELETE FROM `dmp40_function` WHERE ID = '809113' AND functionname = '妥投考核报表';
