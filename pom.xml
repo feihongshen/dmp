@@ -103,11 +103,16 @@
   			<artifactId>osp-core</artifactId>
   			<version>2.4.13</version>
 		</dependency>
+		<dependency>
+  			<groupId>com.vip.osp</groupId>
+  			<artifactId>osp-core</artifactId>
+  			<version>2.4.13</version>
+		</dependency>
 		
 		<dependency>
-		  <groupId>com.vip.osp</groupId>
-		  <artifactId>osp-basic</artifactId>
-		  <version>2.4.11</version>
+		  <groupId>com.pjbest.osp.cfg</groupId>
+		  <artifactId>osp-cfg-service-api</artifactId>
+		  <version>2.1.0_13</version>
 		</dependency>
 		
 		<dependency>

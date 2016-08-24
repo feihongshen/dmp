@@ -51,6 +51,7 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/express/stationOperation.js"></script>
 <script src="<%=request.getContextPath()%>/js/datePlugin/My97DatePicker/WdatePicker.js"
 	type="text/javascript"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
 
 <style type="text/css">
 .navbar {
@@ -110,6 +111,19 @@
 						<div style="float: right; margin-top: 10px;">
 							<table>
 								<tr>
+									<td colspan="3">
+										<div style="float:right">
+											<img src="<%=request.getContextPath()%>/images/horn.png" alt="" />
+										</div>
+										<div style="float:right">
+											<marquee id="noticeMarquee" direction="left" behavior="scroll" scrollamount="3" onmouseover="this.stop();" onmouseout="this.start();" style="width:850px">
+											</marquee>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td style="width:300">
+									</td>
 									<td><div>
 											<strong>用户：<%=usermap.get("realname")%>&nbsp;&nbsp;部门：<%=usermap.get("branchname") == null ? "-" : usermap
 					.get("branchname")%>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -138,6 +152,10 @@
 							<div onclick="addTab('修改密码','passwordupdate?&clickFunctionId=10001','folder')">
 								<i class="icon-lock" style="position: relative; left: -25px;"></i>修改密码
 							</div>
+							<div class="menu-sep"></div>
+							<div onclick="addTab('历史版本','taskShow/historyList/1?&clickFunctionId=10001','folder')">
+								<i class="icon-lock" style="position: relative; left: -25px;"></i>历史版本
+							</div>
 						</div>
 						<div id="layout_north_zxMenu" style="width: 100px; display: none;">
 							<div
@@ -145,6 +163,15 @@
 								<i class="icon-off" style="position: relative; left: -25px;"></i>退出系统
 							</div>
 						</div>
+						<div id="dlg" class="easyui-dialog" title="新增版本发布说明" style="width:700px;height:550px;padding:10px" data-options="closed:true";>
+					   		<div id="showDetail" style="width:600px;height:400px;padding:10px">
+					   		</div>
+					   		<div style="margin-bottom:10px;height:50px;" >
+					   			<hr>
+					   		    <div style="float:left"><input id="readBut" onclick="" type="checkbox">本人已阅读此版本发布说明</div>
+					   		    <div style="float:right"><input id="closeBut" onclick="closeDlg()" type="button" value="关闭"></div>
+					   		</div>
+					    </div>
 					</div>
 				</div>
 			</div>
@@ -174,5 +201,105 @@
 					$("#playSearch").val('');
 					}
 			});
+	
+	$(document).ready(function() {
+		//点击对话框字段关闭按钮事件
+		$('#dlg').dialog({
+			onBeforeClose:function(){
+				if($('#readBut').attr('checked')!='checked'){
+					alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
+					return false;
+				}
+		    },
+		    onClose:function(){
+		    	sendReadRecord();
+		    }
+		});
+		
+		//获取最新版本说明
+		$.ajax({
+			async : false,
+			cache : false,
+			type : 'POST',
+			url : "<%=request.getContextPath()%>/taskShow/getLatestVersion",
+			success : function(result) {
+				if(result.latestVersion.isSuccess==false){
+					return;
+					//alert("从tps获取当前版本发布说明异常！")
+				}else if(result.latestVersion.data!=null&&result.latestVersion.data.versionNo!=""){
+					openWindow(result.latestVersion.data);
+				}
+				
+			}
+		});
+	});
+	
+	//根据返回内容新建对话框
+	function openWindow(data){
+		var date = new Date(data.onlineTime);
+		var updateTime = "";
+		if(data.onlineTime!=null&&data.onlineTime!=undefined){
+			Y = date.getFullYear() + '/';
+			M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '/';
+			D = date.getDate() + ' ';
+			updateTime=Y+M+D;
+		}
+		var showTime = new Date().getTime();
+		var divshow = $("#showDetail");
+		divshow.append("<div><b>上线时间："+updateTime+"</b></div>");
+		divshow.append("<div style='display:none' id='showTime'><b>"+showTime+"</b></div>");
+		divshow.append("<div><b>版本名称："+data.name+"</b></div>");
+		divshow.append("<div style='display:none' id='versionNo'><b>"+data.versionNo+"</b></div>");
+		divshow.append("<br/>");
+		divshow.append("<div>"+data.added+"</div>");
+		
+		$('#readBut').removeAttr('checked');
+		$('#dlg').dialog('open');
+	}
+	
+	//点击关闭按钮事件
+	function closeDlg() {
+		$('#dlg').dialog('close');
+	}
+	
+	function sendReadRecord(){
+		var versionNo = $("#versionNo").text();
+		var showTime = $("#showTime").text();
+		$.ajax({
+			async : false,
+			cache : false,
+			type : 'POST',
+			data : {
+				versionNo:versionNo,
+				showTime:showTime
+			},
+			url : "<%=request.getContextPath()%>/taskShow/sendReadRecord",
+			success : function(result) {
+			}
+		});
+	}
+	
+	// added by wangwei, 20160823, 页面滚动公告栏, start
+	$(function() {
+		showNotice();
+		var tenMinutes = 1000 * 60 * 10;		//每10分钟刷新一次
+		setInterval("showNotice()", tenMinutes);
+	}); 
+	
+	function showNotice(){
+		$.ajax({
+			type: "POST",
+			url:"<%=request.getContextPath()%>/taskShow/getLatestNoticeContent",
+			dataType:"json",
+			success : function(data) {
+				if(!!data && !!data.message){
+					var noticeContent = data.message;
+					var noticeContentHtml = '<font color="blue">' + noticeContent + '</font>';
+					$('#noticeMarquee').html(noticeContentHtml)			
+				}
+			}                 
+		});	
+	}
+	// added by wangwei, 20160823, 页面滚动公告栏, end
 </script>
 </html>
