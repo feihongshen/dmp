@@ -277,6 +277,11 @@ public class DataImportService {
 			return;
 		}
 		
+		// 只有flowordertype 为1才允许再导入 add by jian_xie 2016-08-24
+		if(cwbOrder.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()){
+			throw new RuntimeException("flowordertype不为1不允许导入");
+		}
+		
 		if (cwbOrder.getEmaildateid() > 0) {
 			if (!isReImport) {
 				throw new RuntimeException("重复单号");
