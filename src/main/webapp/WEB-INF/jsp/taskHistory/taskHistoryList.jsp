@@ -73,7 +73,7 @@ function downloadHandbook(){
 				</td>
 			</tr>
 		</table>
-		<div id="recordsDiv" class="easyui-accordion" data-options="multiple:true">
+		<div id="recordsDiv" class="easyui-accordion" data-options="multiple:true" style="padding:10px">
 		</div>		
 	</div>
 </body>
