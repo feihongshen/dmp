@@ -1,0 +1,1 @@
+insert into express_set_system_install (`chinesename`,`name`,`value`) values ('应付甲方余额报表批量','BranceReportBatchSize','2000') ;
