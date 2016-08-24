@@ -90,19 +90,7 @@
 	<div class="tishi_box"></div>
 	<!-- 顶部-->
 	<div region="north" border="false" id="main_top_div" title="工具栏"
-		style="height: 120px; overflow: hidden;">
-		<div id="noticeDiv" height="10px">
-			<table id="noticeTable" width="100%">
-				<tr width="100%">
-					<td width="10px" align="left">
-						<img src="<%=request.getContextPath()%>/images/horn.png" alt="" />
-					</td>
-					<td align="right">
-						<marquee id="noticeMarquee" direction="left" behavior="scroll" scrollamount="3" width="100%" onmouseover="this.stop();" onmouseout="this.start();"></marquee>
-					</td>
-				</tr>
-			</table>
-		</div>
+		style="height: 90px; overflow: hidden;">
 		<div class="navbar" id="main_top_container">
 			<div class="navbar-inner">
 				<div class="container">
@@ -123,6 +111,19 @@
 						<div style="float: right; margin-top: 10px;">
 							<table>
 								<tr>
+									<td colspan="3">
+										<div style="float:left">
+											<marquee id="noticeMarquee" direction="left" behavior="scroll" scrollamount="3" onmouseover="this.stop();" onmouseout="this.start();" style="width:850px">
+											</marquee>
+										</div>
+										<div style="float:left">
+											<img src="<%=request.getContextPath()%>/images/horn.png" alt="" />
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td style="width:300">
+									</td>
 									<td><div>
 											<strong>用户：<%=usermap.get("realname")%>&nbsp;&nbsp;部门：<%=usermap.get("branchname") == null ? "-" : usermap
 					.get("branchname")%>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -299,7 +300,7 @@
 	// added by wangwei, 20160823, 页面滚动公告栏, start
 	$(function() {
 		showNotice();
-		var tenMinutes = 1000 * 60 * 10;
+		var tenMinutes = 1000 * 60 * 10;		//每10分钟刷新一次
 		setInterval("showNotice()", tenMinutes);
 	}); 
 	

@@ -24,7 +24,7 @@ function createAccordionByRecords(records){
 		
 		var titleValue = item.versionNo + " " + item.name + " " + getDateStringByTimestamp(item.onlineTime);
 		var contentValue = item.added;
-		var selectedValue = (i < 3);
+		var selectedValue = (i < 3);	//最近3次的内容展开，3次之外的内容折叠
 		$('#recordsDiv').accordion('add', {
 			title: titleValue,
 			content: contentValue,
@@ -61,11 +61,11 @@ function downloadHandbook(){
 		<table id="descTable" width="100%">
 			<tr width="100%">
 				<td width="50%" align="left">
-					<img src="<%=request.getContextPath()%>/images/mail.png" alt="" style="height: 30px;" />
+					<img src="<%=request.getContextPath()%>/images/mail.png" alt="" style="height: 20px;" />
 					<label><b>历史版本 Update List</b></label>
 				</td>
 				<td width="50%" align="right">
-					<img src="<%=request.getContextPath()%>/images/doc.png" alt="" style="height: 30px;" />
+					<img src="<%=request.getContextPath()%>/images/doc.png" alt="" style="height: 20px;" />
 					<a href="javascript:downloadHandbook();">《DMP操作手册》</a>
 					<!-- <input type="button" id="downloadHandbook" onclick="downloadHandbook()"  value="查看" /> -->
 				</td>
