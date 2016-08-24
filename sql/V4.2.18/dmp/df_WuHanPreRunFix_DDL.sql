@@ -38,3 +38,10 @@ CREATE TABLE `fn_df_confirm_rate_subsidy_detail` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='妥投率补贴明细';
+
+
+ALTER TABLE `fn_df_bill_staff` ADD COLUMN `confirm_rate_subsidy_sanction` decimal(18,2) NOT NULL DEFAULT '0.00' COMMENT '妥投率补贴奖罚';
+
+alter table `fn_df_rule_subsidy`
+ADD COLUMN  `start_val` decimal(18,3) NULL COMMENT '妥投率补贴范围起始值',
+ADD COLUMN  `end_val` decimal(18,3) NULL COMMENT '妥投率补贴范围结束值';
