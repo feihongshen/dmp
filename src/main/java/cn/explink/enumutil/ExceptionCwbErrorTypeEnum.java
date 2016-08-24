@@ -79,8 +79,9 @@ public enum ExceptionCwbErrorTypeEnum {
 			JI_DAN_BU_FA_SONG_YOU_ZHENG(225,"订单为集单模式，不能绑定邮政运单号！"),
 			DING_DAN_BANG_DING_SHU_CHAO_CHU(226,"一票多件绑定次数已经超出订单发货数量！"),
 			PLEASE_RECEIVE_GOODS_FIRST(227, "请先做{0}"),
-			Ling_huo_EXPRESS_LIMIT(228,"非本站揽收/配送的快递单不能领货！");
-	
+			Ling_huo_EXPRESS_LIMIT(228,"非本站揽收/配送的快递单不能领货！"),
+			FeiYundanluruAndLanjianruzhanAndRukuNotallowshixiao(229, "非运单录入或揽件入站或入库订单不允许失效"),
+			FeiYundanluruAndLanjianruzhanNotallowshixiao(230, "非运单录入或揽件入站订单不允许失效");
 
 	private int value;
 	private String text;
