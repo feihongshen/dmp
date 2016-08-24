@@ -48,6 +48,8 @@ function downloadHandbook(){
 			if(!!data && !!data.message){
 				var handbookUrl = data.message;
 				window.open(handbookUrl);
+			} else {
+				alert('找不到文件！');
 			}
 		}                 
 	});	
