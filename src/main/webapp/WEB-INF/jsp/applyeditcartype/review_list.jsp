@@ -61,10 +61,7 @@ $(function(){
     });
 	//搜索按钮单击事件
 	$("#btnSearch").click(function(){
-		var startApplyTime = $("#startApplyTime").datetimebox('getValue');
-		var endApplyTime = $("#endApplyTime").datetimebox('getValue');
-		if(startApplyTime>endApplyTime && endApplyTime !=''){
-			alert("开始时间不能大于结束时间");
+		if(!isFormValidate()){
 			return;
 		}
 		$.DgPage.searchPage();
@@ -79,10 +76,7 @@ $(function(){
 	});
 	//导出excel单击事件
 	$("#btnExport").click(function(){
-		var startApplyTime = $("#startApplyTime").datetimebox('getValue');
-		var endApplyTime = $("#endApplyTime").datetimebox('getValue');
-		if(startApplyTime>endApplyTime && endApplyTime !=''){
-			alert("开始时间不能大于结束时间");
+		if(!isFormValidate()){
 			return;
 		}
 		var action="${pageContext.request.contextPath}/applyediteditcartype/exportExcel";
@@ -108,6 +102,37 @@ $(function(){
 	*/
 
 });
+
+function isFormValidate(){
+	var startApplyTime = $.trim($("#startApplyTime").datetimebox('getValue'));
+	var endApplyTime = $.trim($("#endApplyTime").datetimebox('getValue'));
+	
+	if(startApplyTime.length!=19 || !isDateTime(startApplyTime)){
+		alert("请输入正确的申请时间(起)");
+		$("#startApplyTime").focus();
+		return false;
+	}
+	if(endApplyTime.length!=19 || !isDateTime(endApplyTime)){
+		alert("请输入正确的申请时间(止)");
+		$("#endApplyTime").focus();
+		return false;
+	}
+	var startDate = strToDate(startApplyTime);
+	var endDate = strToDate(endApplyTime);
+	if(startDate.getTime()>endDate.getTime()){
+		alert("申请时间(止)不能大于申请时间(起)");
+		$("#startApplyTime").focus();
+		return false;
+	}
+	//1天等于24小时*60分钟*60秒*1000毫秒
+	var dayDiff = (endDate.getTime() - startDate.getTime())/(24*60*60*1000);
+	if(dayDiff>30){
+		alert("申请时间跨度不能大于30天");
+		$("#startApplyTime").focus();
+		return false;
+	}
+	return true;
+}
 
 //提交审核申请（通过/不通过）
 function submitForReview(isReviewPass){
@@ -215,6 +240,31 @@ function selectAll(selectorId)
  	$("#"+selectorId).children().each(function(){$(this).attr("selected","selected")});
  	$("#"+selectorId).change();
 }
+
+//字符串转换为日期，格式为"yyyy-MM-dd hh:mm:ss"
+function strToDate(dateStr){
+	try{
+		return new Date(Date.parse(dateStr.replace(/-/g, "/")));
+	}catch(e){
+		return null;
+	}
+}
+//函数名：isDateTime  
+//功能介绍：检查是否为日期时间  
+function isDateTime(str){  
+	var reg = /^(\d+)-(\d{1,2})-(\d{1,2}) (\d{1,2}):(\d{1,2}):(\d{1,2})$/;  
+	var r = str.match(reg);  
+	if(r==null)return false;  
+	r[2]=r[2]-1;  
+	var d= new Date(r[1], r[2],r[3], r[4],r[5], r[6]);  
+	if(d.getFullYear()!=r[1])return false;  
+	if(d.getMonth()!=r[2])return false;  
+	if(d.getDate()!=r[3])return false;  
+	if(d.getHours()!=r[4])return false;  
+	if(d.getMinutes()!=r[5])return false;  
+	if(d.getSeconds()!=r[6])return false;  
+	return true;  
+} 
 </script>
 </head>
 
@@ -243,9 +293,9 @@ function selectAll(selectorId)
 		</c:forEach>
 </select>
 </td>
-<td width="9%" align="right">申请时间(起)：</td>
+<td width="9%" align="right">申请时间(起)<font color="red">*</font>：</td>
 <td width="13%" >
-<input type ="text" name ="startApplyTime" id="startApplyTime"  value="${param.startApplyTime}" maxlength="19" style="width:150px" class="easyui-datetimebox"/>
+<input type ="text" name ="startApplyTime" id="startApplyTime"  value="${startApplyTime}" maxlength="19" style="width:150px" class="easyui-datetimebox"/>
 </td>
 <td width="6%"> </td>
 </tr>
@@ -269,9 +319,9 @@ function selectAll(selectorId)
 	<option value ="true" <c:if test="${not empty param.isReview && param.isReview==true}">selected="selected"</c:if>>已审核</option>
 </select>
 </td>
-<td  align="right"> 申请时间(止)：</td>
+<td  align="right"> 申请时间(止)<font color="red">*</font>：</td>
 <td>
-<input type ="text" name ="endApplyTime" id="endApplyTime"  value="${param.endApplyTime}" maxlength="19" style="width:150px" class="easyui-datetimebox"/>
+<input type ="text" name ="endApplyTime" id="endApplyTime"  value="${endApplyTime}" maxlength="19" style="width:150px" class="easyui-datetimebox"/>
 </td>
 </tr>
 <tr>

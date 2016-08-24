@@ -34,6 +34,7 @@ import cn.explink.service.ApplyEditCartypeService;
 import cn.explink.service.BranchService;
 
 import cn.explink.service.ExplinkUserDetail;
+import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtilsHandler;
 
 
@@ -125,6 +126,8 @@ public class ApplyEditCartypeController {
 		}
 		
 		model.addAttribute("isCS", isCS);
+		model.addAttribute("startApplyTime", DateTimeUtil.getDateBefore(30));
+		model.addAttribute("endApplyTime", DateTimeUtil.getNowTime());
 		model.addAttribute("branchList", branchList);
 		model.addAttribute("reviewStatusList", ApplyEditCartypeReviewStatusEnum.values());
 		

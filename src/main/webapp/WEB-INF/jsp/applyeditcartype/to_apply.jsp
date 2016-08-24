@@ -176,7 +176,7 @@ p {
 		var $result = $("#result");
 		$result.empty();
 		if (submitOrders.length == 0) {
-			$result.append(" <p>请输入订/运单号!</p>");
+			$result.append(" <p>请输入订单号!</p>");
 			return false;
 		}
 		if (goodsType == undefined) {
@@ -230,7 +230,7 @@ p {
 				
 			</div>
 			<hr />
-			<div class="orderNo">订/运单号</div>
+			<div class="orderNo">订单号</div>
 			<div>
 				<textarea id="order_text_area" class="orderTextArea"></textarea>
 				<div class="orderNo">备注<font color="red">(限50字内)</font></div>
