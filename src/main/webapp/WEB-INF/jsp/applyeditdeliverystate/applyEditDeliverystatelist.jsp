@@ -1,28 +1,24 @@
-<%@page import="cn.explink.dao.AbnormalWriteBackDAO"%>
-<%@page import="cn.explink.domain.ApplyEditDeliverystate"%>
-<%@page import="cn.explink.util.DateTimeUtil"%>
-<%@page import="cn.explink.domain.AbnormalType"%>
-<%@page import="cn.explink.domain.AbnormalOrder"%>
-<%@page import="cn.explink.enumutil.*"%>
-<%@page import="cn.explink.domain.Branch"%>
-<%@page import="cn.explink.domain.CwbOrder"%>
+<%@page import="cn.explink.domain.Reason"%>
+<%@page import="cn.explink.controller.CwbOrderView"%>
 <%@page import="cn.explink.domain.User"%>
+<%@page import="cn.explink.domain.ApplyEditDeliverystate"%>
+<%@page import="cn.explink.enumutil.*"%>
+<%@page import="cn.explink.domain.CwbOrder"%>
+<%@page import="cn.explink.domain.Branch"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
-<%@page import="cn.explink.dao.CwbDAO"%>
 
 <%@page import="cn.explink.util.Page"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
+List<CwbOrder> cwbList = (List<CwbOrder>)request.getAttribute("cwbList");
 List<ApplyEditDeliverystate> applyEditDeliverystateList = (List<ApplyEditDeliverystate>)request.getAttribute("applyEditDeliverystateList");
-List<User> userList = (List<User>)request.getAttribute("userList");
-List<Branch> branchlist = (List<Branch>)request.getAttribute("branchList");
-Page page_obj = (Page)request.getAttribute("page_obj");
-ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext()); 
-CwbDAO cwbDAO=ctx.getBean(CwbDAO.class);
-String starttime=request.getParameter("begindate")==null?DateTimeUtil.getDateBefore(1):request.getParameter("begindate");
-String endtime=request.getParameter("enddate")==null?DateTimeUtil.getNowTime():request.getParameter("enddate");
-%>
+List<Reason> reasonList = (List<Reason>)request.getAttribute("reasonList");	
+  List<Branch> branchlist = (List<Branch>)request.getAttribute("branchList");
+  List<User> userList = (List<User>)request.getAttribute("userList");
+  Page page_obj = (Page)request.getAttribute("page_obj");
+  List<CwbOrderView> covList = (List<CwbOrderView>)request.getAttribute("covList");
+  ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext()); %>
 
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -33,16 +29,7 @@ String endtime=request.getParameter("enddate")==null?DateTimeUtil.getNowTime():r
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css">
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/js.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js" type="text/javascript"></script>
-<link href="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiSelect.css" rel="stylesheet" type="text/css" />
-
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.18.custom.css" type="text/css" media="all" />
-<script src="<%=request.getContextPath()%>/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/jquery.ui.datepicker-zh-CN.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
+<script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 <script language="javascript">
 $(function(){
 	var $menuli = $(".kfsh_tabbtn ul li");
@@ -55,79 +42,91 @@ $(function(){
 	});
 	
 })
-
-
-$(function() {
-	$("#strtime").datetimepicker({
-	    changeMonth: true,
-	    changeYear: true,
-	    hourGrid: 4,
-		minuteGrid: 10,
-	    timeFormat: 'hh:mm:ss',
-	    dateFormat: 'yy-mm-dd'
-	});
-	$("#endtime").datetimepicker({
-	    changeMonth: true,
-	    changeYear: true,
-	    hourGrid: 4,
-		minuteGrid: 10,
-	    timeFormat: 'hh:mm:ss',
-	    dateFormat: 'yy-mm-dd'
-	});
+//处理第一次修改时的状态
+function sub(id){
 	
-	
-});
-
-
-function check(){
-	if($("#strtime").val()>$("#endtime").val() && $("#endtime").val() !=''){
-		alert("开始时间不能大于结束时间");
+	if($("#editnowdeliverystate"+id).val()==-1){
+		alert("请选择要更改的配送结果！");
 		return false;
 	}
-	else{
-		return true;
+	if($("#reasonid"+id).val()==0){
+		alert("请选择原因备注!");
+		return false;
 	}
-}
-function getThisBox(id){
+	if($("#editreason"+id).val().length==0){
+		alert("请填写备注！");
+		return false;
+	}
+	
 	$.ajax({
 		type: "POST",
-		url:$("#handle"+id).val(),
-		dataType:"html",
+		url:'<%=request.getContextPath()%>/applyeditdeliverystate/submitCreateApplyEditDeliverystate/'+id,
+		data:{editnowdeliverystate:$("#editnowdeliverystate"+id).val(),
+			reasonid:$("#reasonid"+id).val(),
+			editreason:$("#editreason"+id).val()},
+		dataType:"json",
 		success : function(data) {
-			$("#alert_box",parent.document).html(data);
-			
-		},
-		complete:function(){
-			viewBox();
+			if(data.errorCode==0){
+				alert("提交成功！");
+				//parent.refreshState();
+			}else{
+				alert(data.error);
+			}
+			$("#cwb").val("");
+			$("#searchForm").submit();
 		}
 	});
+	
 }
+//处理之前已经修改过之后产生新状态
+<%-- function sub2(cwbstr,id){
+	
+	$.ajax({
+		type: "POST",
+		url:'<%=request.getContextPath()%>/applyeditdeliverystate/toCreateApplyEditDeliverystateAgin',
+		data:{cwbss:cwbstr,
+			  editnowdeliverystate:$("#editnowdeliverystate"+id).val(),
+			  editreason:$("#editreason"+id).val()
+		     },
+		dataType:"html",
+		success : function(data) {
+			if(data.errorCode==0){
+				alert("问题件成功提交：1单");
+			}else{
+				alert("问题件成功提交：1单");
+			}
+			//searchForm.submit();
+		}
+	});
+	
+} --%>
 
 
-function editSuccess(data){
-	window.parent.closeBox();
+function  search(){
+	if($("#cwb").val()=='查询多个订单用回车隔开' || $("#cwb").val()=='' ){
+		alert('请输入订单号');
+		return false;
+	}
 	$("#searchForm").submit();
 }
 
-function sub(){
-	if(check()){
-		//applyeditdeliverystate
-		$("#searchForm").submit();
-	}
+function changereasonremark(obj,opscwbid){
+	$("#reasonid"+opscwbid).empty();
+	$.ajax({
+		type:"post",
+		url:"<%=request.getContextPath()%>/applyeditdeliverystate/finddeliveryreason",
+		data:{"deliverytype":$(obj).val()},
+		dataType:"json",
+		success:function(data){
+			var optstr="<option value='0'>==请选择==</option>";
+			$.each(data,function(i,a){
+				optstr+="<option value='"+a.reasonid+"' >"+a.reasoncontent+"</option>";
+				});
+				$("#reasonid"+opscwbid).append(optstr);
+			}
+		});
 }
-
-function exportField(){
- 	if(<%=applyEditDeliverystateList!=null&&!applyEditDeliverystateList.isEmpty()%>){
- 		$("#btnval").attr("disabled","disabled"); 
-	 	$("#btnval").val("请稍后……");
-		$("#searchForm").attr("action","<%=request.getContextPath()%>/applyeditdeliverystate/createApplyeditExportExcel");	
-		$("#searchForm").submit();
-		$("#searchForm").attr("action","1");
-	}else{
-		alert("没有做申请操作，不能导出！");
-	} 
-}
-
+	
 </script>
 </head>
 <body style="background:#f5f5f5;overflow: hidden;" marginwidth="0" marginheight="0">
@@ -135,8 +134,8 @@ function exportField(){
 	<div style="background:#FFF">
 		<div class="kfsh_tabbtn">
 			<ul>
-				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/toCreateApplyEditDeliverystate/1" >反馈状态修改申请</a></li>
-				<li><a href="#" class="light">反馈状态修改列表</a></li>
+				<li><a href="#" class="light">反馈状态修改申请</a></li>
+				<li><a href="<%=request.getContextPath()%>/applyeditdeliverystate/getApplyEditDeliverystateList/1">反馈状态修改列表</a></li>
 			</ul>
 		</div>
 		<div class="tabbox">
@@ -144,66 +143,105 @@ function exportField(){
 					<div style="position:absolute;  z-index:99; width:100%" class="kf_listtop">
 						<div class="kfsh_search">
 							<form action="1" method="post" id="searchForm">
-								申请时间：
-								<input type ="text" name ="begindate" id="strtime"  value="<%=starttime %>" class="input_text1" style="height:20px;"/>
-									到
-									<input type ="text" name ="enddate" id="endtime"  value="<%=endtime %>" class="input_text1" style="height:20px;"/>
-									<input id="isnow" name="isnow" type="hidden" value="1" />
-								处理状态:
-								<select name="ishandle" id="ishandle" class="select1">
-									<option value="-1">请选择</option>
-									<option value="<%=ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue()%>">未处理</option>
-									<option value="<%=ApplyEditDeliverystateIshandleEnum.YiChuLi.getValue()%>">已处理</option>
-								</select>
-									<input type="button" value="查询" class="input_button2" onclick="sub();">
-									<input id="btnval" type="button" value="导出" onclick="exportField();" class="input_button2">
+								<table>
+									<tr>
+										<td>
+											订单号：
+										</td>
+										<td>
+											<textarea id="cwb" class="kfsh_text" onblur="if(this.value==''){this.value='查询多个订单用回车隔开'}" onfocus="if(this.value=='查询多个订单用回车隔开'){this.value=''}" rows="3" name="cwb"><%=request.getParameter("cwb")==null?"查询多个订单用回车隔开":request.getParameter("cwb")%></textarea>
+											<input type="button" value="申请" class="input_button2" onclick="search();">
+										</td>
+									</tr>
+								</table>
 							</form>
 						</div>
 						<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
 							<tbody>
 								<tr class="font_1" height="30" >
 									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">订单号</td>
-									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">申请时间</td>
-									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">当前站点</td>
-									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">申请站点</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">订单类型</td>
+									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">当前站点</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">配送结果</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">小件员</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理状态</td>
 									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">处理人</td>
-									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">修改配送结果</td>
-									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">原因备注</td>
-									<td align="100" valign="middle" bgcolor="#eef6ff">备注</td>
+									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">修改配送结果</td>
+									<td width="120" align="center" valign="middle" bgcolor="#eef6ff">原因备注</td>
+									<td width="100" align="center" valign="middle" bgcolor="#eef6ff">备注</td>
+									<td width="80" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 								</tr>
-								<%for(ApplyEditDeliverystate adse : applyEditDeliverystateList){ %>
-								<% CwbOrder co = cwbDAO.getCwbByCwb(adse.getCwb()); %>
-									<tr height="30" >
-										<td width="120" align="center" valign="middle"><%=adse.getCwb() %></td>
-										<td width="120" align="center" valign="middle"><%=adse.getApplytime() %></td>
-										<td width="100" align="center" valign="middle"><%if(branchlist!=null&&branchlist.size()>0)for(Branch b : branchlist){if(co.getStartbranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
-										<td width="100" align="center" valign="middle"><%if(branchlist!=null&&branchlist.size()>0)for(Branch b : branchlist){if(adse.getApplybranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %></td>
-										<td width="100" align="center" valign="middle"><%for(DeliveryStateEnum dse : DeliveryStateEnum.values()){if(adse.getNowdeliverystate()==dse.getValue()){ %><%=dse.getText() %><%}} %></td>
-										<td width="100" align="center" valign="middle"><%if(userList!=null&&userList.size()>0)for(User u : userList){if(adse.getDeliverid()==u.getUserid()){ %><%=u.getRealname() %><%}} %></td>
-										<td width="100" align="center" valign="middle">
-										<%if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.WeiChuLi.getValue())
-											{ 
-													if(adse.getAudit()==0){out.print("未处理");}
-												else if(adse.getAudit()==1){out.print("审核已通过");}
-												else if(adse.getAudit()==2){out.print("审核未通过");}
-											}
-										else if(adse.getIshandle()==ApplyEditDeliverystateIshandleEnum.YiChuLi.getValue())
-											{ out.print("<font color='red'>已处理</font>");}
-											%>
-										</td>
-										<td width="100" align="center" valign="middle"><%if(userList!=null&&userList.size()>0)for(User u : userList){if(adse.getEdituserid()==u.getUserid()){ %><font color="red"><%=u.getRealname() %></font><%}} %></td>
-										<td align="120" valign="middle"><%=DeliveryStateEnum.getByValue((int)adse.getEditnowdeliverystate()).getText() %></td>
-										<td align="130" valign="middle"><%=adse.getReasoncontent() %></td>
-										<td align="120" valign="middle"><%=adse.getEditreason() %></td>
-									</tr>
-								<%} %>
+								<%if(covList!=null&&covList.size()>0){
+								for(CwbOrderView cwb : covList){ %>
+								<tr height="30" >
+									<td width="120" align="center" valign="middle"><%=cwb.getCwb() %></td>
+									<td width="100" align="center" valign="middle"><%=cwb.getCwbordertypename()%></td>
+									<td width="120" align="center" valign="middle"><%=cwb.getBranchname()%></td>
+									<td width="100" align="center" valign="middle"><%=cwb.getDeliveryname() %></td>
+									<td width="100" align="center" valign="middle"><%=cwb.getDelivername() %></td>
+									<td width="100" align="center" valign="middle"><%=cwb.getRemark1()%></td>
+									<td width="100" align="center" valign="middle"><%=cwb.getRemark2()%></td>
+									<td width="120" align="center" valign="middle">
+										<select name="editnowdeliverystate<%=cwb.getOpscwbid() %>" id="editnowdeliverystate<%=cwb.getOpscwbid() %>" onchange="changereasonremark(this,'<%=cwb.getOpscwbid() %>')" style="width: 140px;">
+											<option value ="-1">==请选择==</option>
+						                   <%if(Integer.parseInt(cwb.getCwbordertypeid()) == CwbOrderTypeIdEnum.Peisong.getValue()){%>
+						                   		<option value ="<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>" <%if(cwb.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.PeiSongChengGong.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
+						                    <%}else if(Integer.parseInt(cwb.getCwbordertypeid()) == CwbOrderTypeIdEnum.Express.getValue()){%>
+						                   		<option value ="<%=DeliveryStateEnum.PeiSongChengGong.getValue() %>" <%if(cwb.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.PeiSongChengGong.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
+						                   <%}else if(Integer.parseInt(cwb.getCwbordertypeid()) == CwbOrderTypeIdEnum.Shangmenhuan.getValue()){ %>
+						                   		<option value ="<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenHuanChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenHuanChengGong.getText() %></option>
+						                   		<option value ="<%=DeliveryStateEnum.JuShou.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.JuShou.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.JuShou.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.BuFenTuiHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.BuFenTuiHuo.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
+						                   <%}else if(Integer.parseInt(cwb.getCwbordertypeid()) == CwbOrderTypeIdEnum.Shangmentui.getValue()){ %>
+						                   		<option value ="<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenTuiChengGong.getText() %></option>
+						                   		<option value ="<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ShangMenJuTui.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ShangMenJuTui.getText() %></option>
+						                   		<option value ="<%=DeliveryStateEnum.FenZhanZhiLiu.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.FenZhanZhiLiu.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.FenZhanZhiLiu.getText() %></option>
+						                 		<%-- 
+						                 			hps_Concerto 注释  2016年5月25日12:06:43
+						                 		<option value ="<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.HuoWuDiuShi.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.HuoWuDiuShi.getText() %></option> --%>
+												<option value ="<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.DaiZhongZhuan.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.DaiZhongZhuan.getText() %></option>
+												<option value ="<%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue() %>"<%if(cwb.getDeliverystate()==DeliveryStateEnum.ZhiLiuZiDongLingHuo.getValue()){ %>selected<%} %>><%=DeliveryStateEnum.ZhiLiuZiDongLingHuo.getText() %></option>
+						                   <%} %>
+										</select>
+									</td>
+									<td width="120" align="center" valign="middle">
+										<select id="reasonid<%=cwb.getOpscwbid()%>" style="width: 140px"/>
+											<option value="0">==请选择==</option>
+											<%if(reasonList!=null){for(Reason reason:reasonList){ %>
+											<option value="<%=reason.getReasonid()%>" <%if(cwb.getReasonid()==reason.getReasonid()){%>selected<%}%>><%=reason.getReasoncontent() %></option>
+											<%} }%>
+										</select>
+									</td>
+									<td width="100" align="center" valign="middle"><input name="editreason<%=cwb.getOpscwbid() %>" id="editreason<%=cwb.getOpscwbid() %>" type="text" value="<%=cwb.getRemark3()%>"></td>
+									<td width="80" align="center" valign="middle">
+									<%if(cwb.getState()==0){ %>
+									<input name="提交" type="button" class="input_button2" onclick="sub(<%=cwb.getOpscwbid() %>);" value="提交">
+									<%}else{ %>
+									<input type="button"  value="已提交" <%-- onclick="sub2('<%=cwb.getCwb() %>',<%=cwb.getOpscwbid() %>); --%>">
+									<%} %>
+									</td>
+								</tr>
+								<%} }%>
 							</tbody>
 						</table>
 					</div>
-					<!-- <div style="height:70px"></div> -->
+					<div style="height:105px"></div>
 				</div>
 				<%if(page_obj.getMaxpage()>1){ %>
 				<div class="iframe_bottom">
@@ -231,8 +269,12 @@ function exportField(){
 </div>
 <script type="text/javascript">
 $("#selectPg").val(<%=request.getAttribute("page") %>);
-$("#ishandle").val(<%=request.getParameter("ishandle")==null?-1:Long.parseLong(request.getParameter("ishandle"))%>);
-$("#applybranchid").val(<%=request.getParameter("applybranchid")==null?0:Long.parseLong(request.getParameter("applybranchid"))%>);
+function show(){
+	if(<%=request.getAttribute("errorCwbs")!=null && !"".equals(request.getAttribute("errorCwbs")) %>){
+		alert('<%=request.getAttribute("errorCwbs")%>');
+	}
+}
+show();
 </script>
 </body>
 </html>
