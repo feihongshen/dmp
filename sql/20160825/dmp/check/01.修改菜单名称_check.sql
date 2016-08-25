@@ -1,2 +1,1 @@
-UPDATE dmp40_function SET functionname='派费结算' WHERE ID='8080';
-UPDATE dmp40_function SET functionname='小件员派费结算' WHERE ID='8091';
+SELECT '修改菜单名称' AS '脚本注释',IF((SELECT COUNT(1) FROM dmp40_function s WHERE s.ID='8080' AND s.functionname='派费结算（作废）') + (SELECT COUNT(1) FROM dmp40_function s WHERE s.ID='8091' AND s.functionname='派费结算') = 2,'success','failed') AS '执行结果';
