@@ -1854,19 +1854,35 @@ public class CwbOrderController {
 								throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiDiYiCiRuKuBuNengShiXiao);
 							}
 						}
-						if ((co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) && (co.getFlowordertype() != FlowOrderTypeEnum.RuKu.getValue())) {
-							throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiDaorushujuandrukunotallowshixiao);
+						if(co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()){//如果是快递单，那么可以失效的环节有：运单录入、揽件入站（可能有入库，不过快递单没有导入数据状态）--刘武强20160822
+							if ((co.getFlowordertype() != FlowOrderTypeEnum.RuKu.getValue()) && co.getFlowordertype() != FlowOrderTypeEnum.LanJianRuZhan.getValue() && co.getFlowordertype() != FlowOrderTypeEnum.YunDanLuRu.getValue()) {
+								throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiYundanluruAndLanjianruzhanAndRukuNotallowshixiao);
+							}
+						}else{
+							if ((co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) && (co.getFlowordertype() != FlowOrderTypeEnum.RuKu.getValue())) {
+								throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiDaorushujuandrukunotallowshixiao);
+							}
 						}
 					} else {
-						if (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) {
-							throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiDaorushujunotallowshixiao);
-
+						if(co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()){//如果是快递单，那么可以失效的环节有：运单录入、揽件入站（可能有入库，不过快递单没有导入数据状态）--刘武强20160822
+							if (co.getFlowordertype() != FlowOrderTypeEnum.LanJianRuZhan.getValue() && co.getFlowordertype() != FlowOrderTypeEnum.YunDanLuRu.getValue()) {
+								throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiYundanluruAndLanjianruzhanNotallowshixiao);
+							}
+						}else{
+							if (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) {
+								throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiDaorushujunotallowshixiao);
+							}
 						}
 					}
 				} else {
-					if (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) {
-						throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiDaorushujunotallowshixiao);
-
+					if(co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()){//如果是快递单，那么可以失效的环节有：运单录入、揽件入站（可能有入库，不过快递单没有导入数据状态）--刘武强20160822
+						if (co.getFlowordertype() != FlowOrderTypeEnum.LanJianRuZhan.getValue() && co.getFlowordertype() != FlowOrderTypeEnum.YunDanLuRu.getValue()) {
+							throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiYundanluruAndLanjianruzhanNotallowshixiao);
+						}
+					}else{
+						if (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) {
+							throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiDaorushujunotallowshixiao);
+						}
 					}
 				}
 				/*	if (orderFlowDAO.getOrderFlowByCwbAndFlowordertype(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), cwb).size() > 0) {
