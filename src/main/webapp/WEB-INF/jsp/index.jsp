@@ -1,6 +1,6 @@
 <%@ taglib prefix="t" uri="/easyui-tags"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page language="java" import="java.util.List,java.util.ArrayList,java.util.Map"%>
+<%@ page language="java" import="java.util.*"%>
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
 	Map usermap = (Map) session.getAttribute("usermap");
@@ -164,7 +164,7 @@
 							</div>
 						</div>
 						<div id="dlg" class="easyui-dialog" title="新增版本发布说明" style="width:700px;height:550px;padding:10px" data-options="closed:true";>
-					   		<div id="showDetail" style="width:600px;height:400px;padding:10px">
+					   		<div id="showDetail" style="width:600px;height:400px;resizable:true;padding:10px">
 					   		</div>
 					   		<div style="margin-bottom:10px;height:50px;" >
 					   			<hr>
@@ -203,36 +203,52 @@
 			});
 	
 	$(document).ready(function() {
-		//点击对话框字段关闭按钮事件
-		$('#dlg').dialog({
-			onBeforeClose:function(){
-				if($('#readBut').attr('checked')!='checked'){
-					alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
-					return false;
+		if(isLoginFlag()) {
+			//点击对话框字段关闭按钮事件
+			$('#dlg').dialog({
+				onBeforeClose:function(){
+					if($('#readBut').attr('checked')!='checked'){
+						alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
+						return false;
+					}
+			    },
+			    onClose:function(){
+			    	sendReadRecord();
+			    }
+			});
+			
+			//获取最新版本说明
+			$.ajax({
+				async : false,
+				cache : false,
+				type : 'POST',
+				url : "<%=request.getContextPath()%>/taskShow/getLatestVersion",
+				success : function(result) {
+					if(result.latestVersion.isSuccess==false){
+						return;
+						//alert("从tps获取当前版本发布说明异常！")
+					}else if(result.latestVersion.data!=null&&result.latestVersion.data.versionNo!=""){
+						openWindow(result.latestVersion.data);
+					}
+					
 				}
-		    },
-		    onClose:function(){
-		    	sendReadRecord();
-		    }
-		});
-		
-		//获取最新版本说明
-		$.ajax({
-			async : false,
-			cache : false,
-			type : 'POST',
-			url : "<%=request.getContextPath()%>/taskShow/getLatestVersion",
-			success : function(result) {
-				if(result.latestVersion.isSuccess==false){
-					return;
-					//alert("从tps获取当前版本发布说明异常！")
-				}else if(result.latestVersion.data!=null&&result.latestVersion.data.versionNo!=""){
-					openWindow(result.latestVersion.data);
-				}
-				
-			}
-		});
+			});
+			
+			resetLoginFlag();
+		}
 	});
+	
+	function isLoginFlag() {
+		if(<%=("1".equals(session.getAttribute("loginFlag")))%>) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	function resetLoginFlag() {
+		<%session.setAttribute("loginFlag", "0");%>
+	}
 	
 	//根据返回内容新建对话框
 	function openWindow(data){
