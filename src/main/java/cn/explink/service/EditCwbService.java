@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1970,95 +1969,6 @@ public class EditCwbService {
 		}
 	}
 	
-	
-	/**
-	 * 当快递订单被失效时，若余额报表存在快递运费的记录，则需生成该订单的快递运费调整记录，调整金额=-应收运费（到付/现付）
-	 * @param cwb
-	 */
-	public void createFnOrgOrderAdjustRecordForDisabledOrder(CwbOrder order) {
-		
-		//只有现付的快递订单才 生成调整记录
-		if (order != null && CwbOrderTypeIdEnum.Express.getValue() == order.getCwbordertypeid() && order.getPaymethod() == 1) {
-			
-			int isadditionflag = order.getIsadditionflag(); //是否补录完成
-			String completedatetime = order.getCompletedatetime(); //补录完成时间
-			if(StringUtils.isBlank(completedatetime)){
-				//补录完成时间为空 不生成调整记录
-				return;
-			}
-			String todayStr = DateTimeUtil.formatDate(new Date(), DateTimeUtil.DEF_DATE_FORMAT);
-			String completedatetimeStr = DateTimeUtil.translateFormatDate(completedatetime, DateTimeUtil.DEF_DATETIME_FORMAT, DateTimeUtil.DEF_DATE_FORMAT);
-			if (isadditionflag == 1 && !todayStr.equals(completedatetimeStr)) {//已补录完成 且 补录完成时间与快递运费修改时间不在同一天生成订单调整记录
-				
-				List<FnOrgRecharges> fnOrgRechargesList = new ArrayList<FnOrgRecharges>();
-				
-				int currentSettleMode = this.getCurrentSettleModeFromSysConfig();
-				
-				OrgOrderAdjustmentRecord record = new OrgOrderAdjustmentRecord();
-				// 根据不同的订单类型
-				record.setOrderNo(order.getCwb());
-				record.setBillNo("");
-				record.setBillId(0L);
-				record.setAdjustBillNo("");
-				record.setCustomerId(order.getCustomerid());
-				record.setReceiveFee(order.getReceivablefee());
-				record.setRefundFee(order.getPaybackfee());
-				// 是否修改过支付方式的标识PayMethodSwitchEnum.No.getValue()
-				record.setPayWayChangeFlag(PayMethodSwitchEnum.No.getValue());
-				record.setDeliverId(Long.valueOf(order.getCollectorid()));
-				record.setCreator(this.getSessionUser().getUsername());
-				record.setCreateTime(new Date());
-				record.setOrderType(order.getCwbordertypeid());
-				// 订单的支付方式可能是新的支付方式
-				Long oldPayWay = Long.valueOf(order.getPaywayid()) == null ? 1L : Long.valueOf(order.getPaywayid());
-				Long newPayWay = order.getNewpaywayid() == null ? 0L : Long.valueOf(order.getNewpaywayid());
-				if (oldPayWay.intValue() == newPayWay.intValue()) {
-					record.setPayMethod(oldPayWay.intValue());
-				} else {
-					record.setPayMethod(newPayWay.intValue());
-				}
-				record.setDeliverybranchid(order.getInstationid());
-			
-				record.setPayWayChangeFlag(0);
-				// 调整金额为货款调整
-				record.setAdjustType(BillAdjustTypeEnum.ExpressFee.getValue());
-				// 记录运费
-				record.setFreightAmount(order.getShouldfare() == null ? BigDecimal.ZERO : order.getShouldfare());			
-				// 修改前的运费
-				record.setModifyFee(order.getShouldfare() == null ? BigDecimal.ZERO : order.getShouldfare());
-				//修改金额
-				record.setAdjustAmount(order.getShouldfare().negate());
-				//设置收款状态
-				record.setStatus(FnCwbStatusEnum.Received.getIndex());
-				
-				this.fnOrgOrderAdjustRecordDAO.creOrderAdjustmentRecord(record);
-
-				
-				if(currentSettleMode == SettlementModeEnum.SignRptMode.getValue()){
-											
-						BigDecimal rechargeAmount =  record.getAdjustAmount().abs();
-						fnOrgRechargesList.add(this.buildFnOrgRecharges(order, OrgRechargeSourceEnum.FreightAdjust, rechargeAmount, rechargeAmount));
-					
-						//更新快递运费收款状态为未收款
-						FnCwbState fnCwbState = new FnCwbState();
-						fnCwbState.setCwb(order.getCwb());
-						fnCwbState.setExpressfreightflag(FnCwbStatusEnum.Unreceive.getIndex());
-						fnCwbState.setExpressfreightTime(null);
-						
-						List<FnCwbState> expressFreightStateList = new ArrayList<FnCwbState>();
-						expressFreightStateList.add(fnCwbState); //更新快递运费收款状态 
-						
-						fnCwbStateDao.batchUpdateExpressfreightflag(expressFreightStateList);
-					
-						
-				}
-				
-				if(!fnOrgRechargesList.isEmpty()){
-					fnOrgRechargesRptmodeDAO.batchInsertOrgRecharges(fnOrgRechargesList);
-				}
-			}
-		}
-	}
 	
 	/**
 	 * POS、COD支付方式订单重置反馈后新增 回款 调整记录 

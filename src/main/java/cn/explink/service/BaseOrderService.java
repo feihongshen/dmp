@@ -228,8 +228,14 @@ public class BaseOrderService {
 			User user = userDAO.getUserByUsername("admin");
 			return user;
 		}else{
-			ExplinkUserDetail userDetail = (ExplinkUserDetail) authen.getPrincipal();
-			return userDetail.getUser();
+			Object obj = authen.getPrincipal();
+			if(obj != null && obj instanceof ExplinkUserDetail){
+				ExplinkUserDetail userDetail = (ExplinkUserDetail) authen.getPrincipal();
+				return userDetail.getUser();
+			} else {
+				User user = userDAO.getUserByUsername("admin");
+				return user;
+			}
 		}
 	}
 }
