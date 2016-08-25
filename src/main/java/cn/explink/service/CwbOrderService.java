@@ -5523,6 +5523,10 @@ public class CwbOrderService extends BaseOrderService {
 		if (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Express.getValue()) {
 			this.validatorVipshopSMT(cwb, co);// 验证唯品会揽退单如果上一个状态未完成，则抛异常
 		}
+		// 只能反馈本站订单 add by jian_xie 2016-08-25
+		if(co.getCurrentbranchid() != user.getBranchid()){
+			new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
+		}
 		// 上门退、上门换订单，不能反馈为配送成功
 		if (((co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmenhuan.getValue()) || (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue())) && (podresultid == DeliveryStateEnum.PeiSongChengGong
 				.getValue())) {
