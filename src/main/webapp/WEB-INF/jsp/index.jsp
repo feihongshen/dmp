@@ -166,11 +166,11 @@
 						<div id="dlg" class="easyui-dialog" title="新增版本发布说明" style="width:700px;height:550px;padding:10px" data-options="closed:true";>
 					   		<div id="showDetail" style="width:600px;height:400px;padding:10px">
 					   		</div>
-					   		<div style="margin-bottom:10px;height:50px;" >
+					   		<!-- <div style="margin-bottom:10px;height:50px;float:bottom;" >
 					   			<hr>
 					   		    <div style="float:left"><input id="readBut" onclick="" type="checkbox">本人已阅读此版本发布说明</div>
 					   		    <div style="float:right"><input id="closeBut" onclick="closeDlg()" type="button" value="关闭"></div>
-					   		</div>
+					   		</div> -->
 					    </div>
 					</div>
 				</div>
@@ -252,6 +252,10 @@
 		divshow.append("<div style='display:none' id='versionNo'><b>"+data.versionNo+"</b></div>");
 		divshow.append("<br/>");
 		divshow.append("<div>"+data.added+"</div>");
+		divshow.append("<hr>");
+		divshow.append("<div style=\"float:left\"><input id=\"readBut\" type=\"checkbox\">本人已阅读此版本发布说明</div>");
+		divshow.append("<div style=\"float:right\"><input id=\"closeBut\" onclick=\"closeDlg()\" type=\"button\" value=\"关闭\"></div>");
+		    
 		
 		$('#readBut').removeAttr('checked');
 		$('#dlg').dialog('open');
