@@ -659,7 +659,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 		List<Common> commonList = this.commonDAO.getAllCommons();
 		Customer customer = this.customerDAO.getCustomerById(customerId);
 		List<CwbOrderDTO> cwbOrders = new ArrayList<CwbOrderDTO>();
-		List<CwbOrderValidator> vailidators = this.importValidationManager.getExcelImportVailidators(excelColumnSet);// 增加验证发货数量和运单数量 modify by vic.liang@pjbest.com 2016-08-23
+		List<CwbOrderValidator> vailidators = this.importValidationManager.getExcelImportVailidators(excelColumnSet,customer);// 增加验证发货数量和运单数量 modify by vic.liang@pjbest.com 2016-08-23
 		
 		// prepare global values
 		// 订单类型
