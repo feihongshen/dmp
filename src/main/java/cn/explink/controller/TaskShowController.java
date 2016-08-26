@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import cn.explink.service.taskshow.TaskShowService;
 import cn.explink.util.AjaxResult;
 
+import com.pjbest.osp.cfg.system.service.HandbookOnLine;
 import com.pjbest.osp.cfg.system.service.HandbookRespone;
 import com.pjbest.osp.cfg.system.service.NearestViewRecordRespone;
 import com.pjbest.osp.cfg.system.service.NoticeRespone;
@@ -88,23 +89,23 @@ public class TaskShowController {
 		return sysVersionModels;
 	}
 	
-	@RequestMapping("/getLatestHandbookUrl")
+	@RequestMapping("/getLatestHandbook")
 	@ResponseBody
-	public AjaxResult getLatestHandbookUrl(Model model, HttpServletRequest req)throws Exception{
-		String handbookUrl = "";
+	public HandbookOnLine getLatestHandbookUrl(Model model, HttpServletRequest req)throws Exception{
+		HandbookOnLine handbookOnLine = null;
 		HandbookRespone handbook = this.taskShowService.getLatestHandbook();
 		if(handbook != null) {
 			if (handbook.getIsSuccess() == false) {
 				logger.error(handbook.getErrorMsg());
 				//return new AjaxResult(false, handbook.getErrorMsg());
 			} else {
-				if(handbook.getData() != null && handbook.getData().getUrl() != null) {
-					handbookUrl = handbook.getData().getUrl();
+				if(handbook.getData() != null) {
+					handbookOnLine = handbook.getData();
 				}
 			}
 		}
 		
-		return new AjaxResult(true, handbookUrl);
+		return handbookOnLine;
 	}
 	
 	@RequestMapping("/getLatestNoticeContent")
