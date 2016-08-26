@@ -32,6 +32,7 @@ CREATE TABLE `fn_df_confirm_rate_subsidy_detail` (
   `mobilepodtime` datetime DEFAULT NULL COMMENT '归班反馈时间',
   `auditingtime` datetime DEFAULT NULL COMMENT '归班审核时间',
   `consigneeaddress` varchar(200) DEFAULT NULL COMMENT '收件人地址',
+  `is_confirmed` tinyint(1) DEFAULT NULL COMMENT '是否妥投 0否，1是',
   `create_user` varchar(50) DEFAULT '' COMMENT '创建人',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) DEFAULT '' COMMENT '更新人',
@@ -41,6 +42,7 @@ CREATE TABLE `fn_df_confirm_rate_subsidy_detail` (
 
 
 ALTER TABLE `fn_df_bill_staff` ADD COLUMN `confirm_rate_subsidy_sanction` decimal(18,2) NOT NULL DEFAULT '0.00' COMMENT '妥投率补贴奖罚';
+ALTER TABLE `fn_df_bill_org` ADD COLUMN `confirm_rate_subsidy_sanction` decimal(18,2) NOT NULL DEFAULT '0.00' COMMENT '妥投率补贴奖罚';
 
 alter table `fn_df_rule_subsidy`
 ADD COLUMN  `start_val` decimal(18,3) NULL COMMENT '妥投率补贴范围起始值',
