@@ -166,11 +166,6 @@
 						<div id="dlg" class="easyui-dialog" title="新增版本发布说明" style="width:700px;height:550px;padding:10px" data-options="closed:true";>
 					   		<div id="showDetail" style="width:600px;height:400px;resizable:true;padding:10px">
 					   		</div>
-					   		<!-- <div style="margin-bottom:10px;height:50px;float:bottom;" >
-					   			<hr>
-					   		    <div style="float:left"><input id="readBut" onclick="" type="checkbox">本人已阅读此版本发布说明</div>
-					   		    <div style="float:right"><input id="closeBut" onclick="closeDlg()" type="button" value="关闭"></div>
-					   		</div> -->
 					    </div>
 					</div>
 				</div>
@@ -211,6 +206,9 @@
 						alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
 						return false;
 					}
+					if(!window.confirm("确认新版本发布功能学习完毕，需关闭当前窗口？")){
+						return false;
+					}
 			    },
 			    onClose:function(){
 			    	sendReadRecord();
@@ -226,7 +224,6 @@
 				success : function(result) {
 					if(result.latestVersion.isSuccess==false){
 						return;
-						//alert("从tps获取当前版本发布说明异常！")
 					}else if(result.latestVersion.data!=null&&result.latestVersion.data.versionNo!=""){
 						openWindow(result.latestVersion.data);
 					}
@@ -269,8 +266,8 @@
 		divshow.append("<br/>");
 		divshow.append("<div>"+data.added+"</div>");
 		divshow.append("<hr>");
-		divshow.append("<div style=\"float:left\"><input id=\"readBut\" type=\"checkbox\">本人已阅读此版本发布说明</div>");
-		divshow.append("<div style=\"float:right\"><input id=\"closeBut\" onclick=\"closeDlg()\" type=\"button\" value=\"关闭\"></div>");
+		divshow.append("<div style='float:left'><input id='readBut' type='checkbox'>本人已阅读此版本发布说明</div>");
+		divshow.append("<div style='float:right'><input id='closeBut' onclick='closeDlg()' type='button' class='button' value='关闭'></div>");
 		    
 		
 		$('#readBut').removeAttr('checked');
