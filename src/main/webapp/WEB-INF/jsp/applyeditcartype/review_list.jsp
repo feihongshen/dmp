@@ -95,7 +95,7 @@ $(function(){
 	/* 如果需重写数据处理方法，可参照下面的定义
 	$.DgPage.formatDgPageData = function(data){
 		return {
-			total:data.total ,
+			total:data.totalCount ,
     		rows: data.list
 		};
 	}

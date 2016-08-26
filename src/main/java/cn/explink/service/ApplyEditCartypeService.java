@@ -2,43 +2,36 @@ package cn.explink.service;
 
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 
 import cn.explink.core.utils.StringUtils;
+import cn.explink.dao.ApplyEditCartypeDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.domain.ApplyEditCartypeResultView;
+import cn.explink.domain.ApplyEditCartypeVO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
-import cn.explink.domain.DeliveryState;
 import cn.explink.domain.User;
 import cn.explink.domain.deliveryFee.DfBillFee;
-import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.ApplyEditCartypeReviewStatusEnum;
 import cn.explink.enumutil.CarTypeEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
-import cn.explink.mybatis.domain.ApplyEditCartypeVO;
-import cn.explink.mybatis.mapper.ApplyEditCartypeMapper;
-import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.DfFeeService.DeliveryFeeChargerType;
 import cn.explink.util.DateTimeUtil;
+import cn.explink.util.express.Page;
 
 
 /**
@@ -51,10 +44,8 @@ public class ApplyEditCartypeService {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
-	//@Autowired
-	//ApplyEditCartypeDAO applyEditCartypeDAO;
 	@Autowired
-	ApplyEditCartypeMapper applyEditCartypeMapper;
+	ApplyEditCartypeDAO applyEditCartypeDAO;
 	@Autowired
 	CwbOrderService cwbOrderService;
 	@Autowired
@@ -94,17 +85,6 @@ public class ApplyEditCartypeService {
 			if(StringUtils.isEmpty(cwb)){
 				continue;
 			}
-			/*
-			//运单号，默认为空号
-			String transCwb = "";
-			//假设传入的是运单号
-			String cwb = cwbOrderService.translateCwb(cwbOrTranscwb);
-			if(	!StringUtils.isEmpty(cwb)){
-				transCwb = cwbOrTranscwb;
-			}else{
-				cwb = cwbOrTranscwb;
-			}
-			*/
 			CwbOrder cwbOrder = cwbOrderService.getCwbByCwb(cwb);
 			
 			//单个申请的操作结果
@@ -139,6 +119,7 @@ public class ApplyEditCartypeService {
 		ApplyEditCartypeVO vo = new ApplyEditCartypeVO();
 		vo.setCwb(cwbOrder.getCwb());
 		vo.setTranscwb(cwbOrder.getTranscwb());
+		vo.setDoType(cwbOrder.getCwbordertypeid());
 		vo.setApplyUserid(applyUser.getUserid());
 		vo.setCustomerid(cwbOrder.getCustomerid());
 		vo.setApplyUsername(applyUser.getRealname());
@@ -157,9 +138,9 @@ public class ApplyEditCartypeService {
 		if(customer!=null){
 			vo.setCustomername(customer.getCustomername());
 		}
-		//applyEditCartypeDAO.createApplyEditCartype(vo);
+		applyEditCartypeDAO.createApplyEditCartype(vo);
 			
-		applyEditCartypeMapper.insert(vo);
+		//applyEditCartypeMapper.insert(vo);
 	}
 	
 	/**
@@ -189,10 +170,8 @@ public class ApplyEditCartypeService {
 			return opsResult;
 		}
 		//重复提交申请逻辑
-		//List<ApplyEditCartypeVO> applyHistory = applyEditCartypeDAO.queryApplyEditCartype(cwb, 0, 0, 1);
-		Page<ApplyEditCartypeVO> page = PageHelper.startPage(1, 1,false);
-		applyEditCartypeMapper.queryApplyEditCartype(cwb, null, null,null, ApplyEditCartypeReviewStatusEnum.unsolve.getValue(), null, null, null);
-		if(page!=null && page.getResult()!=null && page.getResult().size()>0){
+		List<ApplyEditCartypeVO> applyHistory = applyEditCartypeDAO.queryApplyEditCartype(cwb, 0, 0, 1);
+		if(applyHistory!=null && applyHistory.size()>0){
 			opsResult.setRemark(ApplyEditCartypeResultView.REMARK_APPLY_REPEAT);
 			return opsResult;
 		}
@@ -218,17 +197,15 @@ public class ApplyEditCartypeService {
 	 * @return
 	 */
 	private boolean isHitGuiBanShenHeLogic(CwbOrder cwbOrder) {
-		//查找最新一条归班审核记录
-		List<OrderFlow> shenheHistory = orderFlowDAO.getOrderFlowByCerterias(FlowOrderTypeEnum.YiShenHe.getValue(),
-				cwbOrder.getCwb(), null, 0, 1);
-		//如果有归班审核的记录
-		if (shenheHistory != null && !shenheHistory.isEmpty()) {
-			//如果此时订单状态不为配送或中转，则不允许提交申请
-			if(cwbOrder.getCwbstate()!=CwbStateEnum.PeiShong.getValue() 
-					&& cwbOrder.getCwbstate()!=CwbStateEnum.ZhongZhuan.getValue() ){
-				
-				return true;
-			}
+		
+		if(cwbOrder.getFlowordertype()==FlowOrderTypeEnum.YiShenHe.getValue() 
+				&& (cwbOrder.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue() ||
+						cwbOrder.getDeliverystate()==DeliveryStateEnum.ShangMenTuiChengGong.getValue() ||
+						cwbOrder.getDeliverystate()==DeliveryStateEnum.ShangMenHuanChengGong.getValue() ||
+						cwbOrder.getDeliverystate()==DeliveryStateEnum.BuFenTuiHuo.getValue()
+						)){
+			
+			return true;
 		}
 		return false;
 
@@ -253,23 +230,20 @@ public class ApplyEditCartypeService {
 		}
 	}
 	
-	public PageInfo<ApplyEditCartypeVO> queryApplyEditCartype(String cwbs,String branchid,String applyUserid,
+	public Page<ApplyEditCartypeVO> queryApplyEditCartype(String cwbs,String branchid,String applyUserid,
 															Boolean isReview,Integer reviewStatus,
 															String startApplyTime,String endApplyTime,
 															int page, int pageSize){
 		
-		//return applyEditCartypeDAO.queryApplyEditCartypeByPage(cwbs, branchid, userids, isReview, reviewStatus, startApplyTime, endApplyTime, begin, interval);
-		PageHelper.startPage(page, pageSize);
-		List<ApplyEditCartypeVO> list = applyEditCartypeMapper.queryApplyEditCartype(null, cwbs, applyUserid, branchid, reviewStatus, isReview, startApplyTime, endApplyTime);
-		PageInfo<ApplyEditCartypeVO> pageInfo = new PageInfo<ApplyEditCartypeVO>(list);
-		return pageInfo;
+		int begin = (page - 1) * pageSize;
+		return applyEditCartypeDAO.queryApplyEditCartypeByPage(cwbs, branchid, applyUserid, isReview, reviewStatus, startApplyTime, endApplyTime, begin, pageSize);
 	}
 	
 	public List<ApplyEditCartypeVO> queryApplyEditCartype(String cwbs,String branchid,String applyUserid,
 															Boolean isReview,Integer reviewStatus,
 															String startApplyTime,String endApplyTime){
 
-		return applyEditCartypeMapper.queryApplyEditCartype(null, cwbs, applyUserid, branchid, reviewStatus, isReview, startApplyTime, endApplyTime);
+		return applyEditCartypeDAO.queryApplyEditCartypeByList(cwbs, branchid, applyUserid, isReview, reviewStatus, startApplyTime, endApplyTime);
 	}
 	
 	/**
@@ -291,8 +265,8 @@ public class ApplyEditCartypeService {
 			return returnMap;
 		}
 		for(Long applyId : applyIds){
-			//ApplyEditCartypeVO applyEditCartype = applyEditCartypeDAO.getApplyEditCartypeVOById(applyId);
-			ApplyEditCartypeVO applyEditCartype = applyEditCartypeMapper.selectByPrimaryKey(applyId);
+			ApplyEditCartypeVO applyEditCartype = applyEditCartypeDAO.getApplyEditCartypeVOById(applyId);
+			//ApplyEditCartypeVO applyEditCartype = applyEditCartypeMapper.selectByPrimaryKey(applyId);
 			CwbOrder cwbOrder = cwbOrderService.getCwbByCwb(applyEditCartype.getCwb());
 			ApplyEditCartypeResultView reviewResult = validateReviewPass(cwbOrder, applyEditCartype);
 			//成功，则进行数据保存操作
@@ -394,8 +368,7 @@ public class ApplyEditCartypeService {
 			return returnMap;
 		}
 		for(Long applyId : applyIds){
-			//ApplyEditCartypeVO applyEditCartype = applyEditCartypeDAO.getApplyEditCartypeVOById(applyId);
-			ApplyEditCartypeVO applyEditCartype = applyEditCartypeMapper.selectByPrimaryKey(applyId);
+			ApplyEditCartypeVO applyEditCartype = applyEditCartypeDAO.getApplyEditCartypeVOById(applyId);
 			CwbOrder cwbOrder = cwbOrderService.getCwbByCwb(applyEditCartype.getCwb());
 			ApplyEditCartypeResultView reviewResult = validateReviewDenied(applyEditCartype);
 			//成功，则进行数据保存操作
@@ -473,8 +446,7 @@ public class ApplyEditCartypeService {
 		applyEditCartype.setReviewUsername(reviewUser.getRealname());
 		applyEditCartype.setReviewTime(DateTimeUtil.getNowTime());
 		applyEditCartype.setReviewStatus(reviewStatus);
-		//applyEditCartypeDAO.update(applyEditCartype);
-		applyEditCartypeMapper.updateByPrimaryKey(applyEditCartype);
+		applyEditCartypeDAO.updateReview(applyEditCartype);
 	}
 	
 	/**
