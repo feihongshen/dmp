@@ -91,10 +91,11 @@ public class EMSDAO {
 			obj.setCwb(rs.getString("cwb"));
 			obj.setTranscwb(rs.getString("transcwb"));
 			obj.setEmail_num(rs.getString("email_num"));
-			obj.setOutWarehouseTime(rs.getString("outwarehousetime"));
+			obj.setBingTime(rs.getString("bing_time"));
 			obj.setDeliveryBranchName(rs.getString("branchname"));
 			obj.setConsigneename(rs.getString("consigneename"));
 			obj.setConsigneeaddress(rs.getString("consigneeaddress"));
+			obj.setRealweight(rs.getDouble("realweight"));
 			return obj; 
 		}
 	}
@@ -148,14 +149,14 @@ public class EMSDAO {
 	}
 
 	//保存ems运单与dmp运单对照关系
-	public void saveEMSEmailnoAndDMPTranscwb(final String cwb,final String transcwb,final String billno) {
-		this.jdbcTemplate
-		.update("insert into express_ems_dmp_transcwb(cwb,transcwb,email_num) values(?,?,?)", new PreparedStatementSetter() {
+	public void saveEMSEmailnoAndDMPTranscwb(final String cwb,final String transcwb,final String billno,final String bingTime) {
+		this.jdbcTemplate.update("insert into express_ems_dmp_transcwb(cwb,transcwb,email_num,bing_time) values(?,?,?,?)", new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setString(1, cwb);
 				ps.setString(2, transcwb);
 				ps.setString(3, billno);
+				ps.setString(4, bingTime);
 			}
 		});
 	}
@@ -319,45 +320,75 @@ public class EMSDAO {
 		List<SendToEMSOrder> list = this.jdbcTemplate.query(sql, new EMSTranscwbMapper(), transcwb);
 		return list;
 	}
+	
+	public int getCountEMSViewListByTransCwb(String cwbType,String cwb, String starttime,String endtime,String status) {
+		String sql  = "select count(1) from express_ems_dmp_transcwb ems left join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb"
+                      +" left join express_set_branch branch on cwb.deliverybranchid = branch.branchid "
+                      +" where 1=1 and cwb.state = 1";
+		sql += getWhereSql(cwbType, cwb, starttime, endtime, status);
+		return this.jdbcTemplate.queryForInt(sql);
+	}
+	
+	private String getWhereSql (String cwbType,String cwb, String starttime,String endtime,String status) {
+		String whereSql = ""; 
+		if (!StringUtil.isEmpty(cwb)) {
+       	  StringBuilder sb = new StringBuilder();
+       	  for (String cwbNo : cwb.split(",")) {
+       		  if (!"".equals(cwbNo.trim())) {
+       			  if (sb.length() > 0) {
+       				  sb.append(",'").append(cwbNo).append("'");
+       			  } else {
+       				  sb.append("'").append(cwbNo).append("'");
+       			  }
+       		  }
+       	  }
+       	  if (sb.length() > 0) {
+       		  if ("0".equals(cwbType)) {
+       			whereSql += " and ems.cwb in ("+sb.toString()+")";
+           	  } else if ("1".equals(cwbType)) {
+           		whereSql += " and ems.transcwb in ("+sb.toString()+")";
+           	  } else if ("2".equals(cwbType)) {
+           		whereSql += " and ems.email_num in ("+sb.toString()+")";
+           	  }
+       	  }
+         }
+         if (!StringUtil.isEmpty(starttime)) {
+        	 whereSql += " and ems.bing_time > '"+starttime+"'";
+         }
+         if (!StringUtil.isEmpty(endtime)) {
+        	 whereSql += " and ems.bing_time <= '"+endtime+"'";
+         }
+         return whereSql;
+	}
+	
+	/**
+	 * 根据订单查询订单邮政运单关系集合   add by vic.liang@pjbest.com 2016-07-26
+	 * @param cwb
+	 * @return
+	 */
+	public List<EmsSmallPackageViewVo> getEMSViewListByTransCwb(int page,int pageSize,String cwbType,String cwb, String starttime,String endtime,String status) {
+		String sql  = "select ems.*,branch.branchname,cwb.consigneename,cwb.consigneeaddress,cwb.realweight" 
+                      +" from express_ems_dmp_transcwb ems left join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb"
+                      +" left join express_set_branch branch on cwb.deliverybranchid = branch.branchid"
+                      +" where 1=1 and cwb.state = 1 ";
+                      sql += getWhereSql(cwbType, cwb, starttime, endtime, status);
+                      sql += " order by ems.bing_time desc limit ?,?";
+		List<EmsSmallPackageViewVo> list = this.jdbcTemplate.query(sql, new EMSCwbInfoViewMapper(), ((page - 1) * pageSize), pageSize);
+		return list;
+	}
+	
 	/**
 	 * 根据订单查询订单邮政运单关系集合   add by vic.liang@pjbest.com 2016-07-26
 	 * @param cwb
 	 * @return
 	 */
 	public List<EmsSmallPackageViewVo> getEMSViewListByTransCwb(String cwbType,String cwb, String starttime,String endtime,String status) {
-		String sql  = "select ems.*,date_format(flow.credate,'%Y-%c-%d %h:%i:%s') as outwarehousetime,branch.branchname ,cwb.consigneename,cwb.consigneeaddress" 
-                      +" from express_ems_dmp_transcwb ems inner join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb and cwb.state = 1"
-                      +" left join express_ops_order_flow flow on cwb.cwb = flow.cwb and flow.flowordertype = 6"
+		String sql  = "select ems.*,branch.branchname,cwb.consigneename,cwb.consigneeaddress,cwb.realweight" 
+                      +" from express_ems_dmp_transcwb ems left join express_ops_cwb_detail cwb on ems.cwb = cwb.cwb"
                       +" left join express_set_branch branch on cwb.deliverybranchid = branch.branchid "
-                      +" where 1=1";
-                      if (!StringUtil.isEmpty(cwb)) {
-                    	  StringBuilder sb = new StringBuilder();
-                    	  for (String cwbNo : cwb.split(",")) {
-                    		  if (!"".equals(cwbNo.trim())) {
-                    			  if (sb.length() > 0) {
-                    				  sb.append(",'").append(cwbNo).append("'");
-                    			  } else {
-                    				  sb.append("'").append(cwbNo).append("'");
-                    			  }
-                    		  }
-                    	  }
-                    	  if (sb.length() > 0) {
-                    		  if ("0".equals(cwbType)) {
-                        		  sql += " and ems.cwb in ("+sb.toString()+")";
-                        	  } else if ("1".equals(cwbType)) {
-                        		  sql += " and ems.transcwb in ("+sb.toString()+")";
-                        	  } else if ("2".equals(cwbType)) {
-                        		  sql += " and ems.email_num in ("+sb.toString()+")";
-                        	  }
-                    	  }
-                      }
-                      if (!StringUtil.isEmpty(starttime)) {
-                    	  sql += " and flow.credate > '"+starttime+"'";
-                      }
-                      if (!StringUtil.isEmpty(endtime)) {
-                    	  sql += " and flow.credate <= '"+endtime+"'";
-                      }
-                      sql += " order by flow.credate desc ";
+                      +" where 1=1 and cwb.state = 1";
+                      sql += getWhereSql(cwbType, cwb, starttime, endtime, status);
+                      sql += " order by ems.bing_time desc ";
 		List<EmsSmallPackageViewVo> list = this.jdbcTemplate.query(sql, new EMSCwbInfoViewMapper());
 		return list;
 	}
@@ -368,8 +399,8 @@ public class EMSDAO {
 	 * @param emscwbOld
 	 * @return
 	 */
-	public int updateEmscwb (String emscwb, String emscwbOld) {
-		String sql = "update express_ems_dmp_transcwb set email_num = ? where email_num = ?";
-		return this.jdbcTemplate.update(sql,emscwb,emscwbOld);
+	public int updateEmscwb (String transcwb, String scanems, String bingTime) {
+		String sql = "update express_ems_dmp_transcwb set email_num = ?, bing_time = ? where transcwb = ?";
+		return this.jdbcTemplate.update(sql,scanems,bingTime,transcwb);
 	}
 }

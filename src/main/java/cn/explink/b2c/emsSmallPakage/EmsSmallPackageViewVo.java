@@ -6,7 +6,7 @@ public class EmsSmallPackageViewVo extends CwbOrder{
 	private String cwb;//订单号
 	private String transcwb;//运单号
 	private String email_num;//邮政运单号
-	private String outWarehouseTime;//出库时间
+	private String bingTime;//打印时间
 	private String deliveryBranchName;//配送站点名称
 	
 	public String getCwb() {
@@ -27,11 +27,11 @@ public class EmsSmallPackageViewVo extends CwbOrder{
 	public void setEmail_num(String email_num) {
 		this.email_num = email_num;
 	}
-	public String getOutWarehouseTime() {
-		return outWarehouseTime;
+	public String getBingTime() {
+		return bingTime;
 	}
-	public void setOutWarehouseTime(String outWarehouseTime) {
-		this.outWarehouseTime = outWarehouseTime;
+	public void setBingTime(String bingTime) {
+		this.bingTime = bingTime;
 	}
 	public String getDeliveryBranchName() {
 		return deliveryBranchName;

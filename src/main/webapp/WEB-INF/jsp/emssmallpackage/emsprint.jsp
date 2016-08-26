@@ -31,30 +31,33 @@
 		<embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 companyname="北京易普联科信息技术有限公司" license="653717070728688778794958093190"></embed>
 	</object>
 	<script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
+
 </HEAD>
 <body class="easyui-layout" leftmargin="0" topmargin="0">
     <div data-options="region:'center'" style="height:100%;overflow-x: auto; overflow-y: auto;">
-		<table id="dg"
-				class="easyui-datagrid" toolbar="#cwb_toolbar" rownumbers="true" pagination="true" fit="true"
-		  		url="" pageSize="10" pageList="[10,20,50,100]" showFooter="true" fitColumns="false" singleSelect="false" 
-				width="100%">
+		<table id="dg" class="easyui-datagrid" toolbar="#cwb_toolbar" width="100%">
 				<thead>
 					<tr>
-						<th field="cwb" align="center" width="120px;">订单号</th>
+						<!-- <th field="cwb" align="center" width="120px;">订单号</th>
 						<th field="transcwb" align="center" width="120px;">运单号</th>
 						<th field="email_num" align="center" width="120px;">邮政运单号</th>
-						<th field="deliveryBranchName" align="center" width="150px;">配送站点</th>
-						<th field="outWarehouseTime" align="center" width="120px;">出库时间</th>
+						<th field="deliveryBranchName" align="center" width="120px;">配送站点</th>
+						<th field="bingTime" align="center" width="120px;">打印时间</th>
 						<th field="consigneename" align="center" width="100px;">收件人</th>
-						<th field="consigneeaddress" align="center" width="450px;">收件地址</th>
+						<th field="realweight" align="center" width="110px;">实际重量（kg）</th>
+						<th field="consigneeaddress" align="center" width="370px;">收件地址</th> -->
 					</tr>
 				</thead>
-			</table>
+		</table>
 			<div id="cwb_toolbar">
-				<div class="form-inline" style="padding:10px">
-				    <label style="width:400px;">订单/运单号：<input type="text" class="saomiao_inputtxt" id="scancwb" name="scancwb" value="" style="width:296px;height:45px;" onKeyDown='if(event.keyCode==13&&$(this).val().length>0){scanCwbConfirm()}'/></label>
+				<div class="form-inline" style="padding:10px;height:200px;">
+				    <div style="margin-top:30px;">
 				    <label style="width:100px;"><input id="printButton" name="print" type="checkbox" value="0" onclick="checkIsInstall()" checked="checked"/>打印面单 </label>
 				    <label style="width:100px;"><input name="print" type="checkbox" value="1" />重新绑定 </label>
+				    </div>
+				    <div style="margin-top:40px;"}>
+				    <label style="width:400px;">订单/运单号：<input class="saomiao_inputtxt" style="width:295px; height:43px;" type="text" id="scancwb" name="scancwb" value=""  onKeyDown='if(event.keyCode==13&&$(this).val().length>0){scanCwbConfirm()}'/></label>
+				    </div>
 				</div>
 		</div>
 	</div>
@@ -104,7 +107,7 @@
 	if (isrebing) {
 	    $("#emscwb_old").empty();
 	    $.each(list, function(index,item) {
-		   $("#emscwb_old").append("<option value='"+item.email_num+"'>"+item.email_num+"</option>");
+		   $("#emscwb_old").append("<option value='"+item.transcwb+"'>"+item.email_num+"</option>");
 	    });
 	    $("#rebingContainer").show();
 	    $("#bingContainer").hide();
@@ -173,12 +176,12 @@
 	var url;
 	if (isrebing) {//重新绑定
 		scanemscwb = $('#scanemscwbrebing').val();
-		var emscwbOld = $("#emscwb_old").val();
-	    if (!emscwbOld) {
+		var transcwb = $("#emscwb_old").val();
+	    if (!transcwb) {
 	    	alert("请选择已绑定的邮政运单号！");
 	    	return;
 	    }
-	    url = _ctx+"/emsSmallPackage/rebingCwb?emscwb="+scanemscwb+"&emscwbOld="+emscwbOld; 
+	    url = _ctx+"/emsSmallPackage/rebingCwb?scanems="+scanemscwb+"&transcwb="+transcwb; 
 	} else {
 	    scanemscwb = $('#scanemscwb').val();
 	    url = _ctx+"/emsSmallPackage/bingCwb?scancwb="+cwb+"&scantranscwb="+scancwb+"&emsscancwb="+scanemscwb;
@@ -198,10 +201,10 @@
 		success : function(data) {
 			layer.close(layEle);
 			var result = JSON.parse(data.result);
-			var list = data.list;
+			//var list = data.list;
 			if (result.result == 'success') {
 				closeWindow();
-				initDataGrid(list);
+				//initDataGrid(); 绑定邮政运单后不刷新列表数据
 				$('#scancwb').focus();
 			} else {
 				alert(result.result);
@@ -210,44 +213,58 @@
 	});
  }
  
- function initDataGrid(gridData) {
+ function initDataGrid() {
 	  $("#dg").datagrid('loadData',[]); // 清空数据
-	  $('#dg').datagrid({loadFilter:pagerFilter}).datagrid('loadData', gridData);//加载数据
+	  //$('#dg').datagrid({loadFilter:pagerFilter}).datagrid('loadData', gridData);//加载数据
+	  queryOrderDetail(1,10);//加载数据
  }
  
- function pagerFilter(data){
-    if (typeof data.length == 'number' && typeof data.splice == 'function'){ // 判断数据是否是数组
-	     data = {
-	         total: data.length,
-	         rows: data
-	     }
-	}
-	var dg = $("#dg");
-    var opts = dg.datagrid('options');
-    var pager = dg.datagrid('getPager');
-    pager.pagination({
-	        onSelectPage:function(pageNum, pageSize){
-	            opts.pageNumber = pageNum;
-	            opts.pageSize = pageSize;
-	            pager.pagination('refresh',{
-	                pageNumber:pageNum,
-	                pageSize:pageSize
-	            });
-	            dg.datagrid('loadData',data);
-	     }
+ function queryOrderDetail(page, pageSize){
+	//数据加载动画
+	var layEle = layer.load({
+		type:3
 	});
-	if (!data.originalRows){
-	     data.originalRows = (data.rows);
+	var param = {
+		page : page,
+		pageSize : pageSize
 	}
-	var start = (opts.pageNumber-1)*parseInt(opts.pageSize);
-    var end = start + parseInt(opts.pageSize);
-	data.rows = (data.originalRows.slice(start, end));
-	return data;
- }
+	$.ajax({
+			type : "post",
+			async : false, //设为false就是同步请求
+			url : _ctx + "/emsSmallPackage/queryCwbList",
+			data : param,
+			datatype : "json",
+			success : function(result) {
+				layer.close(layEle);
+				var data = JSON.parse(result);
+				var dg = $("#dg");
+				dg.datagrid('loadData', data);
+				var opts = dg.datagrid('options');
+				var pager = dg.datagrid('getPager');
+				pager.pagination({
+							onSelectPage : function(pageNum, pageSize) {
+								opts.pageNumber = pageNum;
+					            opts.pageSize = pageSize;
+								//_pageSize = pageSize;
+								pager.pagination('refresh',{
+									 pageNumber:pageNum,
+						             pageSize:pageSize
+	                            });
+								queryOrderDetail(pageNum, pageSize);
+							}
+				});
+			}
+	});
+  }
  
- 	// 打印
- 	function printEmsLabel(cwbOrder){
- 		var LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM')); 
+$(function() {
+	 //initDataGrid();
+	$('#scancwb').focus();
+}); 
+ 
+	// 打印
+	function printEmsLabel(cwbOrder) {
+		var LODOP = getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM')); 
  		if(!LODOP.VERSION) {
  			downlodLodop();
  			return;

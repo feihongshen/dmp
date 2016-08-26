@@ -40,6 +40,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.b2c.ems.EMSDAO;
+import cn.explink.b2c.ems.SendToEMSOrder;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.AbnormalOrderDAO;
@@ -190,6 +192,8 @@ public class OrderSelectController {
 	JointService jointService;
 	@Autowired
 	TransCwbDetailDAO tc;
+	@Autowired
+	EMSDAO eMSDAO;
 	private Logger logger = LoggerFactory.getLogger(OrderSelectController.class);
 
 	@Autowired
@@ -1433,6 +1437,22 @@ public class OrderSelectController {
 			}
 			// ============================add
 			// end=========================================================
+			
+			// add by vic.liang@pjbest.com 2016-08-20
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.BingEmsTrans.getValue()) {
+				List<SendToEMSOrder> list = this.eMSDAO.getTransListByCwb(orderFlowAll.getCwb());
+				String emsTrans = "";
+				if (list != null) {
+					for (SendToEMSOrder ems : list) {
+						if (emsTrans.isEmpty())
+							emsTrans += ems.getEmail_num();
+						else 
+							emsTrans += "," + ems.getEmail_num();
+					}
+				}
+				return MessageFormat.format("货物在<font color =\"red\">[{0}]</font>绑定邮政运单；单号：<font color =\"red\">[{1}]</font>", currentbranchname,emsTrans);
+			}
+			
 		} catch (Exception e) {
 			this.logger.error("", e);
 			return null;

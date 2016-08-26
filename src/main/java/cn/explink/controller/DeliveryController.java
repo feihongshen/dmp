@@ -1120,6 +1120,9 @@ public class DeliveryController {
 					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(scancwb);
 					parameters.put("transcwb", (cwbOrder==null?"":cwbOrder.getTranscwb()));
 					//Added end
+					
+					//Added by leoliao at 2016-08-12 增加从DMP界面进行反馈标识
+					parameters.put("comefrompage", "1");
 
 					if (DeliveryStateEnum.ShangMenJuTui.getValue() == deliverystate) {
 						parameters.put("isjutui", true);

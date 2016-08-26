@@ -92,7 +92,12 @@ function nowprint(){
 						<table width="100%" border="1" cellspacing="0" cellpadding="5" class="table1">
 							<tr>
 								<td colspan="3"><img src="<%=request.getContextPath() %>/images/<%=logo %>" width="131" height="37" style="float:left"/>
-								<div style="float:right; width:200px; line-height:20px">&nbsp;<%=co.getEmaildate().substring(0, 10) %>&nbsp;北京小红帽
+								<div style="float:right; width:200px; line-height:20px">&nbsp;
+								<%if(co.getEmaildate()==null || co.getEmaildate().trim().length()<10 ){ %>
+									北京小红帽
+								<%}else{ %>
+									<%=co.getEmaildate().substring(0, 10) %>&nbsp;北京小红帽
+								<%} %>
 								&nbsp;<%if(branchlist!=null&&branchlist.size()>0)for(Branch b : branchlist){if(co.getDeliverybranchid()==b.getBranchid()){ %><%=b.getBranchname() %><%}} %><br/>邮编：<%=co.getConsigneepostcode() %></div>
 								</td>
 							</tr>
