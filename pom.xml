@@ -732,29 +732,6 @@
         </dependency>
         <!-- JSR 303  Validator end -->
         
-        <!-- zhili01.liang,20160817,引入mybatis=====begin==== -->
-         <dependency>
-		    <groupId>org.mybatis</groupId>
-		    <artifactId>mybatis</artifactId>
-		    <version>3.3.1</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.mybatis</groupId>
-		    <artifactId>mybatis-spring</artifactId>
-		    <version>1.2.0</version>
-		</dependency>
-		<dependency>
-		    <groupId>tk.mybatis</groupId>
-		    <artifactId>mapper</artifactId>
-		    <version>3.3.7</version>
-		</dependency>
-		<dependency>
-		    <groupId>com.github.pagehelper</groupId>
-		    <artifactId>pagehelper</artifactId>
-		    <version>4.1.3</version>
-		</dependency>
-		<!-- zhili01.liang,20160817,引入mybatis=====end==== -->
-		
 		
 	</dependencies>
 	<build>
