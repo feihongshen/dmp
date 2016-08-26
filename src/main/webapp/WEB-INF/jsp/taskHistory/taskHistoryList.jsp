@@ -39,14 +39,14 @@ function getDateStringByTimestamp(timestamp){
 	return newDate.toLocaleDateString();
 }
 
-function downloadHandbook(){
+function viewHandbook(){
 	$.ajax({
 		type: "POST",
-		url:"<%=request.getContextPath()%>/taskShow/getLatestHandbookUrl",
+		url:"<%=request.getContextPath()%>/taskShow/getLatestHandbook",
 		dataType:"json",
 		success : function(data) {
-			if(!!data && !!data.message){
-				var handbookUrl = data.message;
+			if(!!data && !!data.url){
+				var handbookUrl = data.url + "?type=download&name=" + data.name;;
 				window.open(handbookUrl);
 			} else {
 				alert('找不到文件！');
@@ -68,8 +68,8 @@ function downloadHandbook(){
 				</td>
 				<td width="50%" align="right">
 					<img src="<%=request.getContextPath()%>/images/doc.png" alt="" style="height: 20px;" />
-					<a href="javascript:downloadHandbook();">《DMP操作手册》</a>
-					<!-- <input type="button" id="downloadHandbook" onclick="downloadHandbook()"  value="查看" /> -->
+					<a href="javascript:viewHandbook();">DMP操作手册</a>
+					<!-- <input type="button" id="viewHandbook" onclick="viewHandbook()"  value="查看" /> -->
 				</td>
 			</tr>
 		</table>
