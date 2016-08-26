@@ -20,7 +20,7 @@ public enum FlowOrderTypeEnum {
 	
 	//zhili01.liang，修改货物类型需求，
 	/**修改货物类型流程：审核通过，*/
-	XiuGaiHuoWuLeiXingTongGuo(65,"修改货物类型通过"),
+	XiuGaiHuoWuLeiXingTongGuo(67,"修改货物类型通过"),
 	/**修改货物类型流程：审核不通过，*/
 	XiuGaiHuoWuLeiXingBuTongGuo(66,"修改货物类型不通过"),
 	
