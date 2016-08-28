@@ -265,13 +265,31 @@
 		divshow.append("<div style='display:none' id='versionNo'><b>"+data.versionNo+"</b></div>");
 		divshow.append("<br/>");
 		divshow.append("<div>"+data.added+"</div>");
-		divshow.append("<hr>");
+		divshow.append("<div>" + getAttachmentLinkHtml(data) + "</div>");
+		divshow.append("<br>");
+		divshow.append("<hr style='height:5px'>");
 		divshow.append("<div style='float:left'><input id='readBut' type='checkbox'>本人已阅读此版本发布说明</div>");
 		divshow.append("<div style='float:right'><input id='closeBut' onclick='closeDlg()' type='button' class='button' value='关闭'></div>");
 		    
 		
 		$('#readBut').removeAttr('checked');
 		$('#dlg').dialog('open');
+	}
+	
+	function getAttachmentLinkHtml(data) {
+		var attachmentDiv = $('<div></div>');
+		var attachmentModelList = data.attachmentModelList;
+		if(attachmentModelList!=null && (attachmentModelList instanceof Array) && attachmentModelList.length>0) {
+			attachmentDiv.append('<hr>')
+			attachmentDiv.append('<p><label><b>附件：</b></label></p>')
+			for (var i=0; i<attachmentModelList.length; i++){
+				var attachmentModel =  attachmentModelList[i];
+				var name = attachmentModel.name;
+				var url = attachmentModel.url;
+				attachmentDiv.append('<p><a href="' + url + '?type=download&name=' + name + '">' + name + '</a></p>');
+			}
+		}
+		return attachmentDiv.html();
 	}
 	
 	//点击关闭按钮事件
