@@ -108,7 +108,7 @@ public class TaskShowService {
 	public NearestViewRecordRespone getNearestViewRecord() throws Exception {
 		SysVersionService sysVersionService = new SysVersionServiceHelper.SysVersionServiceClient();	
 		try {
-			NearestViewRecordRespone nearestViewRecord = sysVersionService.getNearestViewRecord(SYSTEM_CODE);
+			NearestViewRecordRespone nearestViewRecord = sysVersionService.getNearestViewRecord(SYSTEM_CODE, null);
 			return nearestViewRecord;
 		} catch (Exception e) {
 			logger.info("调用ops服务：获取历史版本说明异常{}",e.getMessage());

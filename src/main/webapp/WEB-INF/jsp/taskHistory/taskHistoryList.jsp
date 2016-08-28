@@ -23,7 +23,7 @@ function createAccordionByRecords(records){
 		var item = records[i];
 		
 		var titleValue = item.versionNo + " " + item.name + " " + getDateStringByTimestamp(item.onlineTime);
-		var contentValue = item.added;
+		var contentValue = item.added + getAttachmentLinkHtml(item);
 		var selectedValue = (i < 3);	//最近3次的内容展开，3次之外的内容折叠
 		$('#recordsDiv').accordion('add', {
 			title: titleValue,
@@ -31,6 +31,22 @@ function createAccordionByRecords(records){
 			selected: selectedValue
 		});
 	}
+}
+
+function getAttachmentLinkHtml(item) {
+	var attachmentDiv = $('<div></div>');
+	var attachmentModelList = item.attachmentModelList;
+	if(attachmentModelList!=null && (attachmentModelList instanceof Array) && attachmentModelList.length>0) {
+		attachmentDiv.append('<hr>')
+		attachmentDiv.append('<p><label><b>附件：</b></label></p>')
+		for (var i=0; i<attachmentModelList.length; i++){
+			var attachmentModel =  attachmentModelList[i];
+			var name = attachmentModel.name;
+			var url = attachmentModel.url;
+			attachmentDiv.append('<p><a href="' + url + '?type=download&name=' + name + '">' + name + '</a></p>');
+		}
+	}
+	return attachmentDiv.html();
 }
 
 function getDateStringByTimestamp(timestamp){
