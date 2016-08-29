@@ -267,7 +267,7 @@
 		divshow.append("<div>"+data.added+"</div>");
 		divshow.append("<div>" + getAttachmentLinkHtml(data) + "</div>");
 		divshow.append("<br>");
-		divshow.append("<hr style='height:5px'>");
+		divshow.append("<hr style='height:3px;border:none;border-top:3px' >");
 		divshow.append("<div style='float:left'><input id='readBut' type='checkbox'>本人已阅读此版本发布说明</div>");
 		divshow.append("<div style='float:right'><input id='closeBut' onclick='closeDlg()' type='button' class='button' value='关闭'></div>");
 		    
@@ -286,7 +286,8 @@
 				var attachmentModel =  attachmentModelList[i];
 				var name = attachmentModel.name;
 				var url = attachmentModel.url;
-				attachmentDiv.append('<p><a href="' + url + '?type=download&name=' + name + '">' + name + '</a></p>');
+				var finalUrl = url + '?type=download&name="' + name + '"';
+				attachmentDiv.append('<p><a href="' + finalUrl + '">' + name + '</a></p>');
 			}
 		}
 		return attachmentDiv.html();
@@ -329,7 +330,7 @@
 			success : function(data) {
 				if(!!data && !!data.message){
 					var noticeContent = data.message;
-					var noticeContentHtml = '<font color="blue">' + noticeContent + '</font>';
+					var noticeContentHtml = '<label>系统公告：<font color="blue">' + noticeContent + '</font></label>';
 					$('#noticeMarquee').html(noticeContentHtml)			
 				}
 			}                 
