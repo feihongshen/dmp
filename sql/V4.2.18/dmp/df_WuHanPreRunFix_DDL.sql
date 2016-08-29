@@ -47,3 +47,6 @@ ALTER TABLE `fn_df_bill_org` ADD COLUMN `confirm_rate_subsidy_sanction` decimal(
 alter table `fn_df_rule_subsidy`
 ADD COLUMN  `start_val` decimal(18,3) NULL COMMENT '妥投率补贴范围起始值',
 ADD COLUMN  `end_val` decimal(18,3) NULL COMMENT '妥投率补贴范围结束值';
+
+ALTER TABLE `fn_df_agreement` 
+ADD COLUMN  `agt_fee_type` TINYINT(1) DEFAULT '0' NULL COMMENT '协议费用类型,0是价格，1是补贴';
