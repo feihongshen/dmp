@@ -43,7 +43,8 @@ function getAttachmentLinkHtml(item) {
 			var attachmentModel =  attachmentModelList[i];
 			var name = attachmentModel.name;
 			var url = attachmentModel.url;
-			attachmentDiv.append('<p><a href="' + url + '?type=download&name=' + name + '">' + name + '</a></p>');
+			var finalUrl = url + '?type=download&name="' + name + '"';
+			attachmentDiv.append('<p><a href="' + finalUrl + '">' + name + '</a></p>');
 		}
 	}
 	return attachmentDiv.html();
@@ -62,7 +63,7 @@ function viewHandbook(){
 		dataType:"json",
 		success : function(data) {
 			if(!!data && !!data.url){
-				var handbookUrl = data.url + "?type=download&name=" + data.name;;
+				var handbookUrl = data.url + '?type=download&name="' + data.name + '"';
 				window.open(handbookUrl);
 			} else {
 				alert('找不到文件！');
