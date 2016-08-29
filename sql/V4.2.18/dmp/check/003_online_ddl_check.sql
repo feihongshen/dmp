@@ -1,1 +1,0 @@
-SELECT '修改订单主表货物类型默认值为普件（express_ops_cwb_detail.cartype）' AS '脚本注释',IF((SELECT COUNT(1) FROM information_schema.COLUMNS WHERE table_schema = SCHEMA() AND table_name = 'express_ops_cwb_detail' AND COLUMN_NAME = 'cartype' and COLUMN_DEFAULT='普件' ) > 0,'success','failed') AS '执行结果'
