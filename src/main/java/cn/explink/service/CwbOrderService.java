@@ -45,8 +45,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
-
 import cn.explink.aspect.OrderFlowOperation;
 import cn.explink.b2c.auto.order.service.AutoUserService;
 import cn.explink.b2c.maisike.branchsyn_json.Stores;
@@ -98,6 +96,7 @@ import cn.explink.dao.OrderBackRukuRecordDao;
 import cn.explink.dao.OrderDeliveryClientDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.OrderFlowLogDAO;
+import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.OrderbackRecordDao;
 import cn.explink.dao.OutWarehouseGroupDAO;
 import cn.explink.dao.PosPayMoneyDAO;
@@ -133,8 +132,6 @@ import cn.explink.domain.ChangeGoodsTypeResult;
 import cn.explink.domain.Common;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbApplyZhongZhuan;
-import cn.explink.domain.CwbDetailView;
-import cn.explink.domain.CwbOrderBranchMatchVo;
 import cn.explink.domain.CwbDiuShi;
 import cn.explink.domain.CwbKuaiDi;
 import cn.explink.domain.CwbOrder;
@@ -156,6 +153,7 @@ import cn.explink.domain.OperationTime;
 import cn.explink.domain.OrderArriveTime;
 import cn.explink.domain.OrderBackCheck;
 import cn.explink.domain.OrderBackRuku;
+import cn.explink.domain.OrderGoods;
 import cn.explink.domain.OrderbackRecord;
 import cn.explink.domain.Reason;
 import cn.explink.domain.Remark;
@@ -231,7 +229,13 @@ import cn.explink.util.JsonUtil;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderService;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderServiceHelper;
+import com.pjbest.deliveryorder.bizservice.PjDoStatusGoodsRequest;
+import com.pjbest.deliveryorder.bizservice.PjDoStatusRequest;
+import com.pjbest.deliveryorder.service.OmOrderTransportModel;
 import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
+import com.vip.osp.core.exception.OspException;
 
 @Service
 @Transactional
@@ -499,6 +503,8 @@ public class CwbOrderService extends BaseOrderService {
 
 	@Autowired
 	OrderPartGoodsReturnService orderPartGoodsReturnService;
+	@Autowired
+	OrderGoodsDAO orderGoodsDAO;
 	
 	private static final String MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.receivegoods.orderFlow";
 	private static final String MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow";
@@ -5845,6 +5851,13 @@ public class CwbOrderService extends BaseOrderService {
 			if (paramTranscwb != null && !paramTranscwb.trim().equals("")) {
 				paramTranscwb = paramTranscwb.trim();
 				String[] transcwbArr = paramTranscwb.split(",");
+				
+				//add by zhouhuan 上门退订单现在只支持一个订单绑定一个快递单号  2016-08-26
+				if(transcwbArr.length>1){
+					logger.info("上门退订单一个订单只能绑定一个快递单号！");
+					throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(),ExceptionCwbErrorTypeEnum.ShangMenTuiYigeDingdanZhinengBangdingYigeKuaididanhao);
+				}
+				
 				List<String> transcwbList = new ArrayList<String>();
 				for (String transcwbTmp : transcwbArr) {
 					if (transcwbTmp.length() > 0) {
@@ -5872,9 +5885,14 @@ public class CwbOrderService extends BaseOrderService {
 																		// split ,
 					}
 					this.transCwbDao.saveTranscwb(cwb, cwb);
-					this.cwbDAO.saveTranscwbByCwb(paramTranscwb, cwb);
+					
+					//edit by zhouhuan 将快递单号保存到tpsTranscwb字段   2016-08-26
+					//this.cwbDAO.saveTranscwbByCwb(paramTranscwb, cwb);
+					this.cwbDAO.saveTranscwbAndTpsTranscwbByCwb(paramTranscwb, cwb);
+					
 					this.cwbDAO.saveBackcarnum(transcwbList.size(), cwb);
 					//this.cwbDAO.saveSendcarnum(transcwbList.size(), cwb);
+					
 				}
 			}else if(paramTranscwb != null && paramTranscwb.trim().equals("")){
 				//当录入或修改快递单号为空时
@@ -6000,6 +6018,40 @@ public class CwbOrderService extends BaseOrderService {
 		String comefrompage = (parameters.get("comefrompage")==null?"0":String.valueOf(parameters.get("comefrompage")));
 		if("1".equals(comefrompage) && co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()){
 			orderPartGoodsReturnService.processOrderGoods(co.getCwb(), podresultid);
+			//add by zhouhuan 反馈绑定的快点单号要先交tps中该运单号是否能够使用，能使用的话要把该运单号的帮订单关系传给tps 2016-08-26
+			PjDeliveryOrderService pjDeliveryOrderS = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient(); 
+			List<PjDoStatusRequest> reqList = new ArrayList();
+			PjDoStatusRequest req = null;
+			if(podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue()){
+				/*1、调用tps运单检测接口
+				2、反馈绑定信息给到tps（tps揽收状态接口）*/
+				try {
+					OmOrderTransportModel transportNoModel = pjDeliveryOrderS.getByTransportNo(transcwb);
+					if(transportNoModel==null){
+						CwbOrderService.logger.error("tps运单号校验不通过，tps已将该运单失效!");
+					}else{
+						req= this.prepareStateRequestObj(co, transcwb, 1, "", freight);
+						reqList.add(req);
+						//(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare)
+						pjDeliveryOrderS.feedbackDoStatus(reqList);
+					}
+				} catch (OspException e) {
+					CwbOrderService.logger.error("反馈为上门退成功时反馈绑定信息给到tps接口异常!", e);
+					//e.printStackTrace();
+				}
+			}else if(podresultid == DeliveryStateEnum.ShangMenJuTui.getValue()){
+				/*1、调用tps反馈揽收失败接口
+				 * 2、清空订单主表中的tpsTranscwb*/
+				req= this.prepareStateRequestObj(co, transcwb, 2, reason.getReasoncontent(), freight);
+				reqList.add(req);
+				//(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare)
+				try {
+					pjDeliveryOrderS.feedbackDoStatus(reqList);
+				} catch (OspException e) {
+					CwbOrderService.logger.error("反馈为上门退拒收时反馈绑定信息给到tps接口异常!", e);
+				}
+			}
+
 		}
 		//Added end
 		
@@ -10563,4 +10615,51 @@ public class CwbOrderService extends BaseOrderService {
 		String sql = "update express_ops_cwb_detail set cartype=? where cwb=? and state=1 ";
 		cwbDAO.updateCwbCartype(cwb, cartype);
 	}
+	
+	//构建调用do服务反馈揽收状态的对象
+	@SuppressWarnings("rawtypes")
+	private PjDoStatusRequest prepareStateRequestObj(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare){
+		User user = this.getSessionUser();
+		PjDoStatusRequest req= new PjDoStatusRequest();
+		List<PjDoStatusGoodsRequest> reqGoods = new ArrayList();
+		String branchCode = this.branchDAO.getBranchByBranchid(user.getBranchid()).getTpsbranchcode();
+		List<OrderGoods> goodsList = orderGoodsDAO.getOrderGoodsList(co.getCwb());
+		req.setCustOrderNo(co.getCwb());
+		req.setDistributer(user.getDeliverManCode());
+		req.setTransportNo(tpsTranscwb);
+		req.setType(1);//tps type 1、揽收
+		req.setStatus(state);
+		req.setOrderType(2);
+		if(state==1){
+			req.setFailReason("");
+		}else{
+			req.setFailReason(failReason);
+		}
+		req.setOperTime(Timestamp.valueOf(DateTimeUtil.getNowTime()));
+		req.setOperName(user.getUsername());
+		req.setOperOrgCode(branchCode);
+		req.setPayment(0);
+		//应收=0，默认为1，应收=实收，默认为1，其他默认为0
+		if(co.getReceivablefee().compareTo(BigDecimal.ZERO)>0){
+			req.setPayStatus(1);
+		}else{
+			req.setPayStatus(0);
+		}
+		req.setCarriage(infactfare.doubleValue());
+
+		//商品明细信息
+		if(goodsList!=null){
+			for(int i=0;i<goodsList.size();i++){
+				PjDoStatusGoodsRequest good = new PjDoStatusGoodsRequest();
+				good.setSn(goodsList.get(i).getGoods_code());
+				good.setFetchNum(Integer.parseInt(goodsList.get(i).getGoods_num()));
+				reqGoods.add(good);
+			}
+		}else{
+			
+		}
+		req.setGoods(reqGoods);
+		return req;
+	}
+
 }
