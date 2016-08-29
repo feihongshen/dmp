@@ -267,7 +267,7 @@
 		divshow.append("<div>"+data.added+"</div>");
 		divshow.append("<div>" + getAttachmentLinkHtml(data) + "</div>");
 		divshow.append("<br>");
-		divshow.append("<hr style='height:3px;border:none;border-top:3px' >");
+		divshow.append("<hr>");
 		divshow.append("<div style='float:left'><input id='readBut' type='checkbox'>本人已阅读此版本发布说明</div>");
 		divshow.append("<div style='float:right'><input id='closeBut' onclick='closeDlg()' type='button' class='button' value='关闭'></div>");
 		    
