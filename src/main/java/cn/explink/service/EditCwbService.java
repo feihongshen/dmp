@@ -1952,6 +1952,7 @@ public class EditCwbService {
 			
 			//如果是快递订单，且快递运费是到付类型的，生成调整记录 added by gordon.zhou 2016/08/23
 			else if(CwbOrderTypeIdEnum.Express.getValue() == order.getCwbordertypeid() && order.getPaymethod() == 2){
+				record.setFreightAmount(order.getTotalfee());
 				record.setModifyFee(order.getTotalfee());
 				record.setAdjustAmount(order.getTotalfee().negate());
 				record.setAdjustType(BillAdjustTypeEnum.ExpressFee.getValue());
