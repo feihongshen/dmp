@@ -659,7 +659,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 		List<Common> commonList = this.commonDAO.getAllCommons();
 		Customer customer = this.customerDAO.getCustomerById(customerId);
 		List<CwbOrderDTO> cwbOrders = new ArrayList<CwbOrderDTO>();
-		List<CwbOrderValidator> vailidators = this.importValidationManager.getExcelImportVailidators(excelColumnSet);// 增加验证发货数量和运单数量 modify by vic.liang@pjbest.com 2016-08-23
+		List<CwbOrderValidator> vailidators = this.importValidationManager.getExcelImportVailidators(excelColumnSet,customer);// 增加验证发货数量和运单数量 modify by vic.liang@pjbest.com 2016-08-23
 		
 		// prepare global values
 		// 订单类型
@@ -685,11 +685,6 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 				for (CwbOrderValidator cwbOrderValidator : vailidators) {
 					cwbOrderValidator.validate(cwbOrder);
 				}
-				//zhili01.liang V4.2.18 货物类型修改：默认为普件=====Begin===
-				if(StringUtils.isEmpty(cwbOrder.getCargotype())){
-					cwbOrder.setCargotype("普件");
-				}
-				//zhili01.liang V4.2.18货物类型修改：默认为普件=====End===
 				cwbOrders.add(cwbOrder);
 				if ((count % 100) == 0) {
 					ExcelExtractor.logger.info("parsed {} orders", count);

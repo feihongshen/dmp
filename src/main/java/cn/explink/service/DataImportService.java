@@ -266,6 +266,37 @@ public class DataImportService {
 		}
 	}
 
+	/**
+	 * 正常导入
+	 *
+	 * @param cwbOrderDTO
+	 * @param customerid
+	 *            供货商
+	 * @param branchid
+	 * @param operatoruserid操作员
+	 */
+	private void insertCwb(final CwbOrderDTO cwbOrderDTO, final long customerid, long warhouseid, User user, EmailDate ed, boolean isReImport) {
+		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(cwbOrderDTO.getCwb());
+		if (cwbOrder == null) {
+			this.cwbOrderService.insertCwbOrder(cwbOrderDTO, customerid, warhouseid, user, ed);
+			return;
+		}
+		
+		// 只有flowordertype 为1才允许再导入 add by jian_xie 2016-08-24
+		if(cwbOrder.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()){
+			throw new RuntimeException("flowordertype不为1不允许导入");
+		}
+		
+		if (cwbOrder.getEmaildateid() > 0) {
+			if (!isReImport) {
+				throw new RuntimeException("重复单号");
+			} else if (ed.getEmaildateid() != cwbOrder.getEmaildateid()) {
+				throw new RuntimeException("重复单号");
+			}
+		}
+		this.cwbOrderService.updateExcelCwb(cwbOrderDTO, customerid, warhouseid, user, ed, isReImport);
+	}
+
 	@Produce(uri = "jms:topic:loseCwb")
 	ProducerTemplate loseCwb;
 

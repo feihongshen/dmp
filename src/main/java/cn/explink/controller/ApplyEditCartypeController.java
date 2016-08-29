@@ -17,25 +17,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.github.pagehelper.PageInfo;
 
 import cn.explink.dao.BranchDAO;
 
 import cn.explink.domain.ApplyEditCartypeResultView;
-
+import cn.explink.domain.ApplyEditCartypeVO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.User;
 import cn.explink.enumutil.ApplyEditCartypeReviewStatusEnum;
 
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 
-import cn.explink.mybatis.domain.ApplyEditCartypeVO;
 import cn.explink.service.ApplyEditCartypeService;
 import cn.explink.service.BranchService;
 
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtilsHandler;
+import cn.explink.util.express.Page;
 
 
 @Controller
@@ -124,7 +123,6 @@ public class ApplyEditCartypeController {
 		}else{
 			branchList = branchDao.getBranchToUser(user.getUserid());
 		}
-		
 		model.addAttribute("isCS", isCS);
 		model.addAttribute("startApplyTime", DateTimeUtil.getDateBefore(30));
 		model.addAttribute("endApplyTime", DateTimeUtil.getNowTime());
@@ -151,7 +149,7 @@ public class ApplyEditCartypeController {
 	 */
 	@RequestMapping("/apiReviewList")
 	@ResponseBody
-	public PageInfo<ApplyEditCartypeVO> apiReviewList(
+	public Page<ApplyEditCartypeVO> apiReviewList(
 		@RequestParam(value = "page", defaultValue = "1", required = false)  int page,
 		@RequestParam(value = "pageSize", defaultValue = "10", required = false)  int pageSize,
 		@RequestParam(value = "cwbs", defaultValue = "", required = false)  String cwbs,	//订单号
@@ -165,7 +163,7 @@ public class ApplyEditCartypeController {
 		//处理输入的订单号，保证只把正确格式的订单号传入查询条件
 		String allCwbs = formatCwbs(cwbs);
 		//获取审核列表
-		PageInfo<ApplyEditCartypeVO> pageInfo = applyEditCartypeService.queryApplyEditCartype(allCwbs, branchid, applyUserid, isReview,
+		Page<ApplyEditCartypeVO> pageInfo = applyEditCartypeService.queryApplyEditCartype(allCwbs, branchid, applyUserid, isReview,
 																					reviewStatus, startApplyTime, endApplyTime, page, pageSize);
 		if(pageInfo!=null){
 			formatApplyList(pageInfo.getList());

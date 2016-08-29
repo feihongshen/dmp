@@ -206,10 +206,11 @@ public class ImportValidationManager {
 	 * @param excelColumnSet
 	 * @return
 	 */
-	public List<CwbOrderValidator> getExcelImportVailidators(ExcelColumnSet excelColumnSet) {
+	public List<CwbOrderValidator> getExcelImportVailidators(ExcelColumnSet excelColumnSet, Customer customer) {
 		List<CwbOrderValidator> list = getVailidators(excelColumnSet);
 		//手工导入增加验证发货数量和运单数量 add by vic.liang@pjbest.com 2016-08-23
 		if (excelColumnSet.getTranscwbindex() != 0 && excelColumnSet.getSendcargonumindex() != 0) {
+			transCwbSendcarNumValidator.setCustomer(customer);
 			list.add(transCwbSendcarNumValidator);
 		}
 		return list;

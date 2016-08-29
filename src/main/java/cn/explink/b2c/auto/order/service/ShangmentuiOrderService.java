@@ -210,15 +210,7 @@ public class ShangmentuiOrderService {
 				this.logger.info("非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
 				throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
 			}*/
-			/******************************edit by 周欢 2016-07-15*********************/
-			//非集单模式：当boxlist不为空时，保存箱号与total_pack一致的订单信息，当boxlist为空时dmp只存第一次下发的订单数据
-			if(boxlist!=null && boxlist.size()!=0 && is_gatherpack==0 && boxlist.size()!=sendcarnum){
-				this.logger.info("非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
-				throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
-			}else if(boxlist==null||boxlist.size()==0 && is_gatherpack==0 && cwbOrderDTO != null){
-				this.logger.info("非集单数据，运单号为空只存第一次下发的订单，该订单数据已存在，订单号为：【"+cwb+"】");
-				throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单号为空只存第一次下发的订单，该订单数据已存在，订单号为：【"+cwb+"】");
-			}
+			
 			//修改
 			if ("090".equalsIgnoreCase(cmd_type)) {
 				if (cwbOrderDTO == null ) {
@@ -257,6 +249,15 @@ public class ShangmentuiOrderService {
 				}
 				return null;
 			}else if ("003".equalsIgnoreCase(cmd_type)) {//新增
+				/******************************edit by 周欢 2016-08-23*********************/
+				//非集单模式：当boxlist不为空时，保存箱号与total_pack一致的订单信息，当boxlist为空时dmp只存第一次下发的订单数据
+				if(boxlist!=null && boxlist.size()!=0 && is_gatherpack==0 && boxlist.size()!=sendcarnum){
+					this.logger.info("非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
+					throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单数量与总箱数不一致，订单号为：【"+cwb+"】");
+				}else if((boxlist==null||boxlist.size()==0) && is_gatherpack==0 && cwbOrderDTO != null){
+					this.logger.info("非集单数据，运单号为空只存第一次下发的订单，该订单数据已存在，订单号为：【"+cwb+"】");
+					throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"非集单数据，运单号为空只存第一次下发的订单，该订单数据已存在，订单号为：【"+cwb+"】");
+				}
 				if (cwbOrderDTONoState != null ) {
 					this.logger.info("订单临时表中已存在该订单信息，无法进行新增操作，订单号为：cwb={}", cwb);
 					throw new CwbException(cwb,FlowOrderTypeEnum.DaoRuShuJu.getValue(),"dmp订单临时表中已存在该订单信息，无法进行新增操作，订单号为：【"+cwb+"】");

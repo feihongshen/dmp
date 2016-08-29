@@ -25,21 +25,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.pjbest.splitting.aspect.DataSource;
+import com.pjbest.splitting.routing.DatabaseType;
+
 import cn.explink.b2c.ems.SendToEMSOrder;
+import cn.explink.core.common.model.json.DataGridReturn;
 import cn.explink.core.utils.PoiExcelUtils;
 import cn.explink.core.utils.PoiExcelUtils.ColDef;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.User;
 import cn.explink.exception.CwbException;
 import cn.explink.service.CwbOrderService;
-
-import com.pjbest.splitting.aspect.DataSource;
-import com.pjbest.splitting.routing.DatabaseType;
+import cn.explink.service.ExplinkUserDetail;
+import cn.explink.util.Tools;
 
 @Controller
 @RequestMapping("/emsSmallPackage")
@@ -49,8 +54,15 @@ public class EmsSmallPackageController {
 	CwbOrderService cwbOrderService;
 	@Autowired
 	EmsSmallPakageService emsSmallPakageService;
+	@Autowired
+	SecurityContextHolderStrategy securityContextHolderStrategy;
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	private User getSessionUser() {
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		return userDetail.getUser();
+	}
 	
 	@RequestMapping("/print")
 	public String print() {
@@ -114,8 +126,9 @@ public class EmsSmallPackageController {
 		emsscancwb = emsscancwb.trim();
 		Map<String,Object> map = new HashMap<String, Object>();
 		try {
-			this.emsSmallPakageService.bingCwb(scancwb, scantranscwb, emsscancwb);
-			map.put("list", this.emsSmallPakageService.getEMSViewListByTransCwb("","","","",""));
+			User user = this.getSessionUser();
+			this.emsSmallPakageService.bingCwb(user, scancwb, scantranscwb, emsscancwb);
+			//map.put("list", this.emsSmallPakageService.getEMSViewListByTransCwb("","","","",""));
 		} catch(DuplicateKeyException e) {
 			logger.error("绑定邮政小包运单号发生异常", e);
 			map.put("result", "{\"result\":\"订单/运单已经绑定邮政运单号！\"}");
@@ -140,15 +153,15 @@ public class EmsSmallPackageController {
 	@RequestMapping("/rebingCwb")
 	@ResponseBody
 	public Map<String,Object> rebingcwb(Model model,
-			@RequestParam(value = "emscwb", required = true, defaultValue="") String emscwb,
-			@RequestParam(value = "emscwbOld", required = true, defaultValue="") String emscwbOld,
+			@RequestParam(value = "transcwb", required = true, defaultValue="") String transcwb,
+			@RequestParam(value = "scanems", required = true, defaultValue="") String scanems,
 			HttpServletRequest request, HttpServletResponse response) {
-		emscwb = emscwb.trim();
-		emscwbOld = emscwbOld.trim();
+		transcwb = transcwb.trim();
+		scanems = scanems.trim();
 		Map<String,Object> map = new HashMap<String, Object>();
 		try {
-			this.emsSmallPakageService.rebingCwb(emscwb, emscwbOld);
-			map.put("list", this.emsSmallPakageService.getEMSViewListByTransCwb("","","","",""));
+			this.emsSmallPakageService.rebingCwb(transcwb, scanems);
+			//map.put("list", this.emsSmallPakageService.getEMSViewListByTransCwb("","","","",""));
 		} catch (CwbException e) {
 			logger.error("绑定邮政小包运单号发生异常", e);
 			map.put("result", "{\"result\":\""+ e.getMessage() +"\"}");
@@ -166,30 +179,23 @@ public class EmsSmallPackageController {
 	
 	
 	@RequestMapping("/queryCwbList")
+	@DataSource(DatabaseType.REPLICA)
 	@ResponseBody
-	public Map<String, Object> querycwbList(Model model,
+	public void querycwbList(Model model,
+			@RequestParam(value = "page", required = false, defaultValue="1") int page,
+			@RequestParam(value = "pageSize", required = false, defaultValue="10") int pageSize,
 			@RequestParam(value = "cwbtype", required = true, defaultValue="") String cwbtype,
 			@RequestParam(value = "querycwb", required = true, defaultValue="") String querycwb,
 			@RequestParam(value = "starttime", required = true, defaultValue="") String starttime,
 			@RequestParam(value = "endtime", required = true, defaultValue="") String endtime,
 			@RequestParam(value = "status", required = true, defaultValue="") String status,
-			HttpServletRequest request, HttpServletResponse response) {
-		Map<String,Object> map = new HashMap<String, Object>();
-		try {
-			map.put("list", this.emsSmallPakageService.getEMSViewListByTransCwb(cwbtype,querycwb,starttime,endtime,status));
-		} catch (CwbException e) {
-			logger.error("查询邮政订单发生异常", e);
-			map.put("result", "{\"result\":\""+ e.getMessage() +"\"}");
-			map.put("list", null);
-			return map;
-		} catch (Exception e) {
-			logger.error("绑定邮政小包运单号发生异常", e);
-			map.put("result", "{\"result\":\"查询邮政订单发生异常\"}");
-			map.put("list", null);
-			return map;
-		}
-		map.put("result", "{\"result\":\"success\"}");
-		return map;
+			HttpServletRequest request, HttpServletResponse response) throws IOException {
+			
+		long startTime = System.currentTimeMillis();
+		DataGridReturn dg = this.emsSmallPakageService.getEMSViewListByTransCwb(page,pageSize,cwbtype,querycwb,starttime,endtime,status);
+		long endTime = System.currentTimeMillis();
+		logger.info("查询邮政订单信息 耗时：" + (endTime-startTime) + "毫秒");
+		Tools.outData2Page(Tools.obj2json(dg), response);
 	}
 	
 	/**
@@ -200,6 +206,7 @@ public class EmsSmallPackageController {
 	 * @return
 	 */
 	@RequestMapping("/export")
+	@DataSource(DatabaseType.REPLICA)
 	@ResponseBody
 	public void export2Excel(
 			@RequestParam(value = "cwbtype", required = true, defaultValue="") String cwbtype,
@@ -210,7 +217,10 @@ public class EmsSmallPackageController {
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		//DataGridReturn dg = this.orderLifeCycleReportService.getOrderLifecycleReportData(customers,queryDate);
+		long startTime = System.currentTimeMillis();
 		List<EmsSmallPackageViewVo> list = this.emsSmallPakageService.getEMSViewListByTransCwb(cwbtype,querycwb,starttime,endtime,status);
+		long endTime = System.currentTimeMillis();
+		logger.info("导出邮政订单信息查询 耗时：" + (endTime-startTime) + "毫秒");
 		// 列定义
 		List<ColDef> colDefs = PoiExcelUtils.getExcelColDefFromRequest(request);
 		Workbook workbook = new HSSFWorkbook();
@@ -226,7 +236,6 @@ public class EmsSmallPackageController {
 		style.setWrapText(true);
 		Sheet sheet = workbook.createSheet("Sheet1");
 		Row row1 = sheet.createRow(0);
-		
 		
 		for (int i = 0; i < colDefs.size(); i++) {
 			ColDef colDef = colDefs.get(i);

@@ -48,6 +48,7 @@
 	    				var dgPageData = $.DgPage.formatDgPageData(data);
 	    				$dg.datagrid("loadData" , dgPageData) ;
 	    				$dg.datagrid("getPager").pagination({
+	    					pageNumber:pageNum,
 	    	    			onSelectPage : function(pageNumber, pageSize) {
 	    	    				$.DgPage.getDataByPage(pageNumber, pageSize);
 	    	    			}
@@ -61,7 +62,7 @@
 	    	//API获取数据后默认的数据处理方式
 	    	formatDgPageData : function (data){
 	    		return {
-	    			total:data.total ,
+	    			total:data.totalCount ,
     	    		rows: data.list
 	    		};
 	    	},

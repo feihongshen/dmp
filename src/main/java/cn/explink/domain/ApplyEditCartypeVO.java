@@ -1,4 +1,4 @@
-package cn.explink.mybatis.domain;
+package cn.explink.domain;
 
 import java.math.BigDecimal;
 
