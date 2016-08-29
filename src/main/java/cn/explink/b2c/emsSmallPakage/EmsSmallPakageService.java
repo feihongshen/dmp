@@ -350,7 +350,9 @@ public class EmsSmallPakageService {
 					ExceptionCwbErrorTypeEnum.BU_SHI_GAI_PEI_SONG_ZHAN_EMS_CWB);
 		}
 		if (cwbOrder.getSendcarnum() > 1) { //一票多件扫描运单号检验
-			if (!StringUtil.isEmpty(cwbOrder.getTranscwb())) {
+			if (!StringUtil.isEmpty(cwbOrder.getTranscwb())  
+					&& customer.getIsypdjusetranscwb() == 1 
+					&& customer.getIsUsetranscwb() == 0) { //一票多件是否扫描运单号
 				boolean isScanTransCwb = false;
 				String[] split = cwbOrder.getTranscwb().split(",");
 				for (String string : split) {
