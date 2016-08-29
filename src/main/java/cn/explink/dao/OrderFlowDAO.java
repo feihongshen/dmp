@@ -581,7 +581,7 @@ public class OrderFlowDAO {
 	@DataSource(DatabaseType.REPLICA)
 	public List<String> getOrderFlowByCredateAndFlowordertype(String begindate, String enddate, long flowordertype, final String[] operationOrderResultTypes, final String[] dispatchbranchids,
 			long nextbranchid, long deliverid) {
-		String sql = "select * from express_ops_order_flow FORCE INDEX(FlowCredateIdx)  where flowordertype=" + flowordertype;
+		String sql = "select * from express_ops_order_flow   where flowordertype=" + flowordertype; //去掉强制索引FORCE INDEX(FlowCredateIdx)，提升性能----刘武强20160826
 		StringBuilder deliverystatesql = new StringBuilder();
 		sql += " and credate >= '" + begindate + "' ";
 		sql += " and credate <= '" + enddate + "' ";
