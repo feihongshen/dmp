@@ -27,10 +27,6 @@ CREATE TABLE  express_ops_applyeditcartype  (
    INDEX applyeditcartype_apply_time_idx (apply_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- 修改订单主表的货物类型字段，默认值改为'普件'
-alter table express_ops_cwb_detail alter column cartype set DEFAULT '普件';
-
 -- 添加新页面菜单
 insert into dmp40_function(ID,functionlevel,functionname,functionorder,functionurl,parentfunctionid)
 values (602566,2,'订/运单货物类型修改',602566,'applyediteditcartype/toapply?',6025);
