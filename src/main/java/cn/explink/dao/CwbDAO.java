@@ -10093,4 +10093,18 @@ public class CwbDAO {
 		String sql = "update express_ops_cwb_detail set cartype=? where cwb=? and state=1 ";
 		this.jdbcTemplate.update(sql, cartype, cwb);
 	}
+	
+	/**
+	 * 获取费用汇总
+	 * @author chunlei05.li
+	 * @date 2016年8月26日 下午1:04:18
+	 * @param cwbList
+	 * @return
+	 */
+	public Map<String, Object> getFeeSum(List<String> cwbList) {
+		String[] cwbs = cwbList.toArray(new String[cwbList.size()]);
+		String cwbStr = StringUtil.toDbInStr(cwbs);
+		String sql = "SELECT SUM(receivablefee) receivablefeeSum, SUM(paybackfee) paybackfeeSum FROM express_ops_cwb_detail WHERE cwb in(" + cwbStr + ")";
+		return this.jdbcTemplate.queryForMap(sql);
+	}
 }

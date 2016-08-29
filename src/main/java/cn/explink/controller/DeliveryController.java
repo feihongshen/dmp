@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -49,6 +50,7 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbSearchDelivery;
+import cn.explink.domain.DeliverPaymentPrintVo;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.GotoClassAuditing;
 import cn.explink.domain.GotoClassOld;
@@ -57,6 +59,7 @@ import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.B2cPushStateEnum;
+import cn.explink.enumutil.DeliveryPaymentPatternEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.DeliveryTongjiEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
@@ -69,6 +72,7 @@ import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.SignTypeEnum;
 import cn.explink.service.AdjustmentRecordService;
 import cn.explink.service.CwbOrderService;
+import cn.explink.service.DeliverService;
 import cn.explink.service.DfFeeService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
@@ -142,6 +146,9 @@ public class DeliveryController {
     DfFeeService dfFeeService;
     @Autowired
     DeliverTakeGoodsMPSReleaseService deliverTakeGoodsMPSReleaseService;
+    
+    @Autowired
+    private DeliverService deliverService;
 
 	private SimpleDateFormat df_d = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -1885,5 +1892,73 @@ public class DeliveryController {
 		} else {
 			return "[]";
 		}
+	}
+	
+	/**
+	 * 交款单打印
+	 * @author chunlei05.li
+	 * @date 2016年8月26日 上午10:46:30
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/paymentListPrint")
+	public String paymentListPrint(Model model) {
+		// 小件员
+		List<User> deliverList = this.userDAO.getUserByRole("2,4", this.getSessionUser().getBranchid());
+		model.addAttribute("deliverList", deliverList);
+		// 支付类型
+		DeliveryPaymentPatternEnum[] payArray = DeliveryPaymentPatternEnum.values();
+		model.addAttribute("payArray", payArray);
+		// 当前时间
+		Date now = new Date();
+		model.addAttribute("now", now);
+		return "delivery/paymentListPrint";
+	}
+	
+	/**
+	 * 查询交款单列表
+	 * @author chunlei05.li
+	 * @date 2016年8月26日 下午4:36:11
+	 * @param deliveryId
+	 * @return
+	 */
+	@RequestMapping("/getPaymentPrintList")
+	@ResponseBody
+	public Map<String, Object> getPaymentPrintList(long deliveryId, String auditingtimeStart, String auditingtimeEnd,
+			int paymentType) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			// 防止某些原因时间为空，导致查全表
+			if (StringUtils.isBlank(auditingtimeStart)) {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+				auditingtimeStart = sdf.format(new Date());
+			}
+			List<DeliverPaymentPrintVo> voList = this.deliverService.getDeliverPaymentPrintVoList(deliveryId, auditingtimeStart, auditingtimeEnd, paymentType);
+			DataGridReturn dg = new DataGridReturn();
+			dg.setRows(voList);
+			dg.setTotal(voList.size());
+			// 合计
+			List<DeliverPaymentPrintVo> footerList = new ArrayList<DeliverPaymentPrintVo>();
+			DeliverPaymentPrintVo footer = new DeliverPaymentPrintVo();
+			footer.setCustomerName("合计");
+			for (DeliverPaymentPrintVo vo : voList) {
+				footer.setOrderCount(footer.getOrderCount() + vo.getOrderCount());
+				footer.setShouldReceivedfee(footer.getShouldReceivedfee().add(vo.getShouldReceivedfee()));
+				footer.setShouldPaybackfee(footer.getShouldPaybackfee().add(vo.getShouldPaybackfee()));
+				footer.setShouldfare(footer.getShouldfare().add(vo.getShouldfare()));
+				footer.setShouldTotal(footer.getShouldTotal().add(vo.getShouldTotal()));
+				footer.setRealTotal(footer.getRealTotal().add(vo.getRealTotal()));
+			}
+			footerList.add(footer);
+			dg.setFooter(footerList);
+			resultMap.put("result", dg);
+			resultMap.put("status", 0);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			logger.error(e.getMessage(), e);
+			resultMap.put("status", 1);
+			resultMap.put("msg", e.getMessage());
+		}
+		return resultMap;
 	}
 }

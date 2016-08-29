@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,9 +28,12 @@ import org.springframework.stereotype.Component;
 import com.pjbest.splitting.aspect.DataSource;
 import com.pjbest.splitting.routing.DatabaseType;
 
+import cn.explink.domain.CwbOrder;
+import cn.explink.domain.DeliveryPayment;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.Smtcount;
 import cn.explink.domain.User;
+import cn.explink.enumutil.DeliveryPaymentPatternEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.util.Page;
@@ -47,49 +51,78 @@ public class DeliveryStateDAO {
 	private final class DeliveryStateRowMapper implements RowMapper<DeliveryState> {
 		@Override
 		public DeliveryState mapRow(ResultSet rs, int rowNum) throws SQLException {
-			DeliveryState deliveryState = new DeliveryState();
-			deliveryState.setId(rs.getLong("id"));
-			deliveryState.setCwb(rs.getString("cwb"));
-			deliveryState.setDeliveryid(rs.getLong("deliveryid"));
-			deliveryState.setReceivedfee(rs.getBigDecimal("receivedfee") == null ? BigDecimal.ZERO : rs.getBigDecimal("receivedfee"));
-			deliveryState.setReturnedfee(rs.getBigDecimal("returnedfee") == null ? BigDecimal.ZERO : rs.getBigDecimal("returnedfee"));
-			deliveryState.setBusinessfee(rs.getBigDecimal("businessfee") == null ? BigDecimal.ZERO : rs.getBigDecimal("businessfee"));
-			deliveryState.setDeliverystate(rs.getLong("deliverystate"));
-			deliveryState.setCash(rs.getBigDecimal("cash") == null ? BigDecimal.ZERO : rs.getBigDecimal("cash"));
-			deliveryState.setPos(rs.getBigDecimal("pos") == null ? BigDecimal.ZERO : rs.getBigDecimal("pos"));
-			deliveryState.setPosremark(StringUtil.nullConvertToEmptyString(rs.getString("posremark")));
-			deliveryState.setMobilepodtime(rs.getTimestamp("mobilepodtime"));
-			deliveryState.setCheckfee(rs.getBigDecimal("checkfee") == null ? BigDecimal.ZERO : rs.getBigDecimal("checkfee"));
-			deliveryState.setCheckremark(StringUtil.nullConvertToEmptyString(rs.getString("checkremark")));
-			deliveryState.setReceivedfeeuser(rs.getLong("receivedfeeuser"));
-			deliveryState.setCreatetime(StringUtil.nullConvertToEmptyString(rs.getString("createtime")));
-			deliveryState.setOtherfee(rs.getBigDecimal("otherfee") == null ? BigDecimal.ZERO : rs.getBigDecimal("otherfee"));
-			deliveryState.setPodremarkid(rs.getObject("podremarkid") == null ? 0L : rs.getLong("podremarkid"));
-			deliveryState.setDeliverstateremark(StringUtil.nullConvertToEmptyString(rs.getString("deliverstateremark")));
-			deliveryState.setIsout(rs.getLong("isout"));
-			deliveryState.setPos_feedback_flag(rs.getLong("pos_feedback_flag"));
-			deliveryState.setUserid(rs.getLong("userid"));
-			deliveryState.setGcaid(rs.getLong("gcaid"));
-			deliveryState.setPayupid(rs.getLong("payupid"));
+			return getDeliverStateRow(rs);
+		}
 
-			deliveryState.setSign_typeid(rs.getInt("sign_typeid"));
-			deliveryState.setSign_man(rs.getString("sign_man"));
-			deliveryState.setSign_time(rs.getString("sign_time"));
-			deliveryState.setDeliverybranchid(rs.getLong("deliverybranchid"));
-			deliveryState.setCustomerid(rs.getLong("customerid"));
-			deliveryState.setIssendcustomer(rs.getLong("issendcustomer"));
-			deliveryState.setIsautolinghuo(rs.getLong("isautolinghuo"));
-			deliveryState.setPushtime(rs.getString("pushtime"));
-			deliveryState.setPushstate(rs.getLong("pushstate"));
-			deliveryState.setPushremarks(rs.getString("pushremarks"));
-			deliveryState.setCwbordertypeid(rs.getInt("cwbordertypeid"));
-			deliveryState.setDeliverytime(rs.getString("deliverytime"));
-			deliveryState.setAuditingtime(rs.getString("auditingtime"));
-			deliveryState.setCodpos(rs.getBigDecimal("codpos") == null ? BigDecimal.ZERO : rs.getBigDecimal("codpos"));
-			deliveryState.setShouldfare(rs.getBigDecimal("shouldfare") == null ? BigDecimal.ZERO : rs.getBigDecimal("shouldfare"));
-			deliveryState.setInfactfare(rs.getBigDecimal("infactfare") == null ? BigDecimal.ZERO : rs.getBigDecimal("infactfare"));
-			deliveryState.setShangmenlanshoutime(rs.getString("shangmenlanshoutime"));
-			return deliveryState;
+	}
+	
+	/**
+	 * 抽象出来，复用
+	 * @author chunlei05.li
+	 * @date 2016年8月26日 下午1:55:59
+	 * @param rs
+	 * @return
+	 * @throws SQLException
+	 */
+	private DeliveryState getDeliverStateRow(ResultSet rs) throws SQLException {
+		DeliveryState deliveryState = new DeliveryState();
+		deliveryState.setId(rs.getLong("id"));
+		deliveryState.setCwb(rs.getString("cwb"));
+		deliveryState.setDeliveryid(rs.getLong("deliveryid"));
+		deliveryState.setReceivedfee(rs.getBigDecimal("receivedfee") == null ? BigDecimal.ZERO : rs.getBigDecimal("receivedfee"));
+		deliveryState.setReturnedfee(rs.getBigDecimal("returnedfee") == null ? BigDecimal.ZERO : rs.getBigDecimal("returnedfee"));
+		deliveryState.setBusinessfee(rs.getBigDecimal("businessfee") == null ? BigDecimal.ZERO : rs.getBigDecimal("businessfee"));
+		deliveryState.setDeliverystate(rs.getLong("deliverystate"));
+		deliveryState.setCash(rs.getBigDecimal("cash") == null ? BigDecimal.ZERO : rs.getBigDecimal("cash"));
+		deliveryState.setPos(rs.getBigDecimal("pos") == null ? BigDecimal.ZERO : rs.getBigDecimal("pos"));
+		deliveryState.setPosremark(StringUtil.nullConvertToEmptyString(rs.getString("posremark")));
+		deliveryState.setMobilepodtime(rs.getTimestamp("mobilepodtime"));
+		deliveryState.setCheckfee(rs.getBigDecimal("checkfee") == null ? BigDecimal.ZERO : rs.getBigDecimal("checkfee"));
+		deliveryState.setCheckremark(StringUtil.nullConvertToEmptyString(rs.getString("checkremark")));
+		deliveryState.setReceivedfeeuser(rs.getLong("receivedfeeuser"));
+		deliveryState.setCreatetime(StringUtil.nullConvertToEmptyString(rs.getString("createtime")));
+		deliveryState.setOtherfee(rs.getBigDecimal("otherfee") == null ? BigDecimal.ZERO : rs.getBigDecimal("otherfee"));
+		deliveryState.setPodremarkid(rs.getObject("podremarkid") == null ? 0L : rs.getLong("podremarkid"));
+		deliveryState.setDeliverstateremark(StringUtil.nullConvertToEmptyString(rs.getString("deliverstateremark")));
+		deliveryState.setIsout(rs.getLong("isout"));
+		deliveryState.setPos_feedback_flag(rs.getLong("pos_feedback_flag"));
+		deliveryState.setUserid(rs.getLong("userid"));
+		deliveryState.setGcaid(rs.getLong("gcaid"));
+		deliveryState.setPayupid(rs.getLong("payupid"));
+
+		deliveryState.setSign_typeid(rs.getInt("sign_typeid"));
+		deliveryState.setSign_man(rs.getString("sign_man"));
+		deliveryState.setSign_time(rs.getString("sign_time"));
+		deliveryState.setDeliverybranchid(rs.getLong("deliverybranchid"));
+		deliveryState.setCustomerid(rs.getLong("customerid"));
+		deliveryState.setIssendcustomer(rs.getLong("issendcustomer"));
+		deliveryState.setIsautolinghuo(rs.getLong("isautolinghuo"));
+		deliveryState.setPushtime(rs.getString("pushtime"));
+		deliveryState.setPushstate(rs.getLong("pushstate"));
+		deliveryState.setPushremarks(rs.getString("pushremarks"));
+		deliveryState.setCwbordertypeid(rs.getInt("cwbordertypeid"));
+		deliveryState.setDeliverytime(rs.getString("deliverytime"));
+		deliveryState.setAuditingtime(rs.getString("auditingtime"));
+		deliveryState.setCodpos(rs.getBigDecimal("codpos") == null ? BigDecimal.ZERO : rs.getBigDecimal("codpos"));
+		deliveryState.setShouldfare(rs.getBigDecimal("shouldfare") == null ? BigDecimal.ZERO : rs.getBigDecimal("shouldfare"));
+		deliveryState.setInfactfare(rs.getBigDecimal("infactfare") == null ? BigDecimal.ZERO : rs.getBigDecimal("infactfare"));
+		deliveryState.setShangmenlanshoutime(rs.getString("shangmenlanshoutime"));
+		return deliveryState;
+	}
+	
+	private final class DeliveryPaymentRowMapper implements RowMapper<DeliveryPayment> {
+		@Override
+		public DeliveryPayment mapRow(ResultSet rs, int rowNum) throws SQLException {
+			DeliveryPayment deliveryPayment = new DeliveryPayment();
+			DeliveryState deliveryState = getDeliverStateRow(rs);
+			deliveryPayment.setDeliveryState(deliveryState);
+			// cwbOrder表
+			CwbOrder cwbOrder = new CwbOrder();
+			cwbOrder.setCwb(deliveryState.getCwb());
+			cwbOrder.setReceivablefee(rs.getBigDecimal("cwbreceivablefee") == null ? BigDecimal.ZERO : rs.getBigDecimal("cwbreceivablefee"));
+			cwbOrder.setPaybackfee(rs.getBigDecimal("cwbpaybackfee") == null ? BigDecimal.ZERO : rs.getBigDecimal("cwbpaybackfee"));
+			deliveryPayment.setCwbOrder(cwbOrder);
+			return deliveryPayment;
 		}
 
 	}
@@ -1773,5 +1806,56 @@ public class DeliveryStateDAO {
 	public List<DeliveryState> getLastDeliveryStateByCwbs(String cwbs) {
 		String sql = "select * from express_ops_delivery_state where  state=1 and cwb in(" + cwbs + ")";
 		return this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
+	}
+	
+	/**
+	 * 查询交款单
+	 * @author chunlei05.li
+	 * @date 2016年8月26日 下午5:22:39
+	 * @param deliveryId
+	 * @param auditingtimeStart
+	 * @param auditingtimeEnd
+	 * @return
+	 */
+	public List<DeliveryPayment> getDeliveryPaymentList(long deliveryId, String auditingtimeStart,
+			String auditingtimeEnd, int paymentType) {
+		StringBuilder sql = new StringBuilder("SELECT ds.*,"
+				+ " cd.receivablefee cwbreceivablefee,"
+				+ " cd.paybackfee cwbpaybackfee"
+				+ " FROM"
+				+ " express_ops_delivery_state ds,"
+				+ " express_ops_cwb_detail cd,"
+				+ " express_ops_goto_class_auditing ca"
+				+ " WHERE ds.gcaid = ca.id"
+				+ " AND ds.cwb = cd.cwb"
+				+ " AND ds.sign_typeid = 1"
+				+ " AND ds.deliveryid = " + deliveryId);
+		
+		//审核时间
+		if (StringUtils.isNotBlank(auditingtimeStart)) {
+			sql.append(" AND ca.auditingtime >= '").append(auditingtimeStart).append("'");
+		}
+		if (StringUtils.isNotBlank(auditingtimeEnd)) {
+			sql.append(" AND ca.auditingtime <= '").append(auditingtimeEnd).append("'");
+		}
+		// 支付方式
+		// 根据产品确认，武汉不存在一个订单只存在一种支付类型的订单
+		// 若存在一个订单存在多种支付类型，则统计表报会有误差
+		if (paymentType == DeliveryPaymentPatternEnum.CASH.getPayno()) {
+			sql.append(" AND ds.cash > 0");
+		} else if (paymentType == DeliveryPaymentPatternEnum.POS.getPayno()) {
+			sql.append(" AND ds.pos > 0");
+		} else if (paymentType == DeliveryPaymentPatternEnum.CHECKFEE.getPayno()) {
+			sql.append(" AND ds.checkfee > 0");
+		} else if (paymentType == DeliveryPaymentPatternEnum.CODPOS.getPayno()) {
+			sql.append(" AND ds.codpos > 0");
+		} else if (paymentType == DeliveryPaymentPatternEnum.OTHERFEE.getPayno()) {
+			sql.append(" AND ds.otherfee > 0");
+		}
+		List<DeliveryPayment> deliveryPaymentList =  this.jdbcTemplate.query(sql.toString(), new DeliveryPaymentRowMapper());
+		if (deliveryPaymentList == null) {
+			deliveryPaymentList = new ArrayList<DeliveryPayment>();
+		}
+		return deliveryPaymentList;
 	}
 }
