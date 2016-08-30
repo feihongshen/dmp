@@ -732,7 +732,7 @@ label.iPhoneCheckLabelOff span {
 	left: -700px;
 	opacity:0;
 	filter:alpha(opacity=0);
-	height: 175px;
+	height: 200px;
 	padding: 90px 0px 20px 0px;
 	border-radius: 15px;
 	-webkit-border-radius: 15px;
@@ -750,9 +750,9 @@ text-align:center;
 /*	background-position:right center; */
 	line-height: 35px;
 	color: #999;
-	/*update-begin--Author:tanghong  Date:20130419 for£º¡¾ÊÇ·ñ¡¿°´Å¥´íÎ»*/
+	/*update-begin--Author:tanghong  Date:20130419 forï¿½ï¿½ï¿½ï¿½ï¿½Ç·ñ¡¿°ï¿½Å¥ï¿½ï¿½Î»*/
 	/* width: 80%;*/
-	/*update-end--Author:tanghong  Date:20130419 for£º¡¾ÊÇ·ñ¡¿°´Å¥´íÎ»*/
+	/*update-end--Author:tanghong  Date:20130419 forï¿½ï¿½ï¿½ï¿½ï¿½Ç·ñ¡¿°ï¿½Å¥ï¿½ï¿½Î»*/
 	margin-bottom: 10px;
 	font-family:"Myriad Pro", Arial, Helvetica, sans-serif;
 }

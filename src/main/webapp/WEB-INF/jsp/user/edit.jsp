@@ -3,12 +3,14 @@
 <%@page import="cn.explink.domain.User,cn.explink.domain.Role,cn.explink.enumutil.UserEmployeestatusEnum,cn.explink.domain.Branch,cn.explink.util.ServiceUtil"%>
 <%@page import="cn.explink.util.ResourceBundleUtil"%>
 <%@page import="cn.explink.domain.PaiFeiRule"%>
+<%@ page import="java.lang.*"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	User u = (User)request.getAttribute("user"); 
 	List<Branch> branchList = (List<Branch>)request.getAttribute("branches") ;
 	List<Role> roleList = (List<Role>)request.getAttribute("roles") ;
 	List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
+	long loginForbiddenPleaseWaitMinutes = Long.valueOf(request.getAttribute("loginForbiddenPleaseWaitMinutes").toString());
 %>
 
 <%
@@ -144,6 +146,14 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 	                 <li><span>保底单量：</span><input type="text"  id="fallbacknum" name="fallbacknum" value="<%=u.getFallbacknum() %>" maxlength="50"/></li>
 	                 <li><span>基础派费：</span><input type="text"  id="basicfee" name="basicfee" value="<%=u.getBasicfee() %>" maxlength="50"/></li>
 	                 <li><span>区域派费：</span><input type="text"  id="areafee" name="areafee" value="<%=u.getAreafee() %>" maxlength="50"/></li>
+	                 <%if(loginForbiddenPleaseWaitMinutes>0){ %>
+			         <li><span>登录次数限制：</span>
+						<label>此用户已被禁止登录，<%=loginForbiddenPleaseWaitMinutes %>分钟后会自动解禁。</label>
+						<input type="button"  value="提前解除登录封禁" id="liftLoginForbiddanceButton" onclick="liftLoginForbiddance('<%=u.getUserid() %>', '<%=request.getContextPath()%>')"/><br/><br/>
+						</span>
+					 </li>
+			         <%} %>
+			         
 	         </ul>
 		</div>
 		<div align="center">
@@ -158,3 +168,5 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 
 </BODY>
 </HTML>
+
+</script>
