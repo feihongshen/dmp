@@ -11,8 +11,16 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.explink.core.utils.StringUtils;
+import cn.explink.dao.express.CityDAO;
+import cn.explink.dao.express.CountyDAO;
+import cn.explink.dao.express.ProvinceDAO;
+import cn.explink.domain.VO.express.AdressVO;
+import cn.explink.util.ResourceBundleUtil;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -99,7 +107,13 @@ public class BranchController {
 	ExportService exportService;
 	@Autowired
 	BranchInfService branchInfService;
-	
+	@Autowired
+    ProvinceDAO provinceDAO;
+    @Autowired
+    CityDAO cityDAO;
+    @Autowired
+    CountyDAO countyDAO;
+
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private User getSessionUser() {
@@ -400,9 +414,43 @@ public class BranchController {
 
 	@RequestMapping("/edit/{id}")
 	public String edit(@PathVariable("id") long branchid, Model model) {
-		model = this.initOrganizationControllData(model); 
-		model.addAttribute("b", this.branchDAO.getBranchById(branchid));
-		return "branch/edit";
+		model = this.initOrganizationControllData(model);
+        Branch selectedBranch = this.branchDAO.getBranchById(branchid);
+        model.addAttribute("b", selectedBranch);
+
+        String branchcity = selectedBranch.getBranchcity();
+        String brancharea = selectedBranch.getBrancharea();
+
+        String provinceCode = ResourceBundleUtil.provinceCode;
+        List<AdressVO> cities = new ArrayList<AdressVO>();
+        if (provinceCode != null) {
+            List<AdressVO> citiesFromDB = cityDAO.getCityOfProvince(provinceCode);
+            if (citiesFromDB != null) {
+                cities = citiesFromDB;
+            }
+        }
+        if (StringUtils.isNotBlank(branchcity)) {
+            for (AdressVO city : cities) {
+                if (StringUtils.equals(city.getName(), branchcity)){
+                    model.addAttribute("selectedCity", city);
+                    if (StringUtils.isNotBlank(brancharea)){
+                        List<AdressVO> counties = countyDAO.getCountyOfCity(city.getId());
+                        model.addAttribute("counties", counties);
+                        if (CollectionUtils.isNotEmpty(counties)){
+                            for (AdressVO county : counties) {
+                                if(StringUtils.equals(county.getName(), brancharea)){
+                                    model.addAttribute("selectedCounty", county);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        return "branch/edit";
 	}
 
 	/**
@@ -421,7 +469,21 @@ public class BranchController {
 		List<Branch> accountbranchList = this.branchDAO.getBanchByBranchidForStock(String.valueOf(BranchEnum.CaiWu.getValue() + "," + BranchEnum.ZhanDian.getValue())); 
 		List<JSONObject> tlBankList = this.bankService.getTlBankList() ;
 		List<JSONObject> cftBankList = this.bankService.getCftBankList() ;
-		
+        //Added by Steve PENG, 增加省份作为下拉菜单。
+        String provinceCode = ResourceBundleUtil.provinceCode;
+        AdressVO province = new AdressVO();
+        List<AdressVO> cities = new ArrayList<AdressVO>();
+        if (provinceCode != null) {
+            AdressVO provinceFromDB = provinceDAO.getProvinceByCode(provinceCode);
+            if (provinceFromDB != null) {
+                province = provinceFromDB;
+            }
+            List<AdressVO> citiesFromDB = cityDAO.getCityOfProvince(provinceCode);
+            if (citiesFromDB != null){
+                cities =  citiesFromDB;
+            }
+        }
+
 //		model.addAttribute("accontareaList", accontareaList);
 		model.addAttribute("PDAmenu", PDAmenu);
 		model.addAttribute("zhongzhuanList", zhongzhuanList);
@@ -434,6 +496,9 @@ public class BranchController {
 		model.addAttribute("accountbranchList", accountbranchList);
 		model.addAttribute("tlBankList", tlBankList);
 		model.addAttribute("cftBankList", cftBankList);
+        //Added by Steve PENG, 增加省份作为下拉菜单。
+		model.addAttribute("province", province);
+		model.addAttribute("cities", cities);
 		return model ;
 	}
 	
@@ -597,4 +662,19 @@ public class BranchController {
 		colDefs.add(new ColDef("message", "原因", 500));
 		return colDefs;
 	}
+
+    @RequestMapping("/queryCounty")
+    @ResponseBody
+    public List<AdressVO> queryCounty (HttpServletRequest request, HttpServletResponse response) throws IOException {
+        List<AdressVO> result = new ArrayList<AdressVO>();
+
+        String cityId = request.getParameter("city");
+        if (NumberUtils.isNumber(cityId)) {
+            Integer cityIdL = Integer.valueOf(cityId);
+            result = countyDAO.getCountyOfCity(cityIdL);
+        }
+
+        return result;
+    }
+
 }
