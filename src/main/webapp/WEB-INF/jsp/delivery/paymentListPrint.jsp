@@ -31,9 +31,13 @@ function createOneFormPage(){
 	LODOP = getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));                      
 	var strBodyStyle = document.getElementById("print_style").outerHTML;
 	LODOP.PRINT_INIT("武汉领货交接单打印");
-	var strBodyHtml = document.getElementById("printTable").outerHTML;
-	strBodyHtml = strBodyHtml.replace("preview_box", "");
-	LODOP.ADD_PRINT_HTM("0mm","0mm","RightMargin:0mm","BottomMargin:0mm", '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">' + strBodyStyle + "<body>" + strBodyHtml + "</body>");
+	var printSize = $("#printSize").val();
+	for (var i = 0; i < printSize;i++) {
+		LODOP.NewPage();
+		var strBodyHtml = document.getElementById("printTable").outerHTML;
+		strBodyHtml = strBodyHtml.replace("preview_box", "");
+		LODOP.ADD_PRINT_HTM("0mm","0mm","RightMargin:0mm","BottomMargin:0mm", '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">' + strBodyStyle + "<body>" + strBodyHtml + "</body>");
+	}
 };
 
 function nowprint(){
@@ -42,6 +46,18 @@ function nowprint(){
 		prn1_print();
 	}
 }
+
+$(function() {
+	$("#printSize").change(function() {
+		var $this = $(this);
+		var printSize = $this.val();
+		if (!(/(^[1-9]\d*$)/.test(printSize))) {
+			alert("请输入正整数！");
+			$this.val("1");
+			return;
+		}
+	});
+});
 </script>
 <style type="text/css" id="print_style">
 	.preview_box {
@@ -91,7 +107,10 @@ function nowprint(){
 </head>
 <body>
 	<a href="javascript:nowprint()">直接打印</a>
-	<a href="javascript:prn1_preview()">预览</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:history.go(-1)">返回</a>
+	<a href="javascript:prn1_preview()">预览</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<a href="javascript:history.go(-1)">返回</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	打印<input id="printSize" type="text" style="width:25px;" value="1">份
+	<br><br>
 	<div id="printTable">
 		<div class="out_box preview_box">
 			<div class="inner_box">
