@@ -133,11 +133,11 @@ function nowprint(){
 				  </tr>
 					<tr>
 					  <td rowspan="4" align="center">客户信息</td>
-					  <td>姓名：<%=co.getConsigneenameOfkf() %></td> <!-- 上门退打印不受用户权限限制全部显示明文 modify by vic.liang@pjbest.com 2016-08-29 -->
+					 					  <td>姓名：<%=co.getConsigneename() %></td>
 					  <td width="50%">退货单号 :<%=co.getCwb() %></td>
 				  </tr>
 					<tr>
-					  <td>电话：<%=co.getConsigneephoneOfkf()%></td> <!-- 上门退打印不受用户权限限制全部显示明文 modify by vic.liang@pjbest.com 2016-08-29 -->
+					  <td>电话：<%=co.getConsigneephone()%></td>
 					  <td rowspan="3" id="printcwb<%=co.getCwb() %>" name="printcwb<%=co.getCwb() %>" ></td>
 				  </tr>
 					<tr>
