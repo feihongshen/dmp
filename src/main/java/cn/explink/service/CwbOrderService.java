@@ -9788,7 +9788,7 @@ public class CwbOrderService extends BaseOrderService {
 		return flag;
 	}
 	public void updatePrinttimeState(CwbOrder smtcd, String printtime) {
-		CwbOrderService.logger.info("上门退订单打印记录cwb={}", smtcd.getCwb());
+		//CwbOrderService.logger.info("上门退订单打印记录cwb={}", smtcd.getCwb()); 单个订单打印修改为集中打印  modify by vic.liang@pjbest.com 2016-08-30
 		this.cwbDAO.saveCwbForPrinttime(smtcd.getCwb(), printtime);
 		this.shangMenTuiCwbDetailDAO.saveShangMenTuiCwbDetailForPrinttime(smtcd.getCwb(), printtime);
 	}

@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import cn.explink.service.DfFeeService;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -109,6 +108,7 @@ import cn.explink.service.AdjustmentRecordService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbRouteService;
 import cn.explink.service.DataStatisticsService;
+import cn.explink.service.DfFeeService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.LogToDayService;
@@ -413,6 +413,13 @@ public class CwbOrderController {
 			}
 
 		}*/
+	    String printCwb = "";
+	    for (String cwb : isprint) {
+	    	printCwb += cwb + ",";
+	    }
+	    String now = DateTimeUtil.getNowTime();
+	    String realname = getSessionUser().getRealname();
+	    logger.info("上门退订单打印，打印人：{},打印时间：{},打印订单号：{}",realname,now,printCwb.substring(0, printCwb.length() - 1));
 		if (modal == 1) {
 			return this.selectforgomeprint(model, isprint);
 		}
@@ -423,22 +430,18 @@ public class CwbOrderController {
 			return this.selectforvip(model, isprint);
 		}
 		String cwbs = "";
-		for (int i = 0; i < isprint.length; i++) {
-			cwbs += "'" + isprint[i] + "',";
-		}
-
+	    for (int i = 0; i < isprint.length; i++) {
+	     	cwbs += "'" + isprint[i] + "',";
+	    }
 		List<ShangMenTuiCwbDetail> smtlist = this.shangMenTuiCwbDetailDAO.getShangMenTuiCwbDetailByCwbs(cwbs.substring(0, cwbs.length() - 1));
 		List<CwbOrder> clist = cwbDao.getCwbByCwbs(cwbs.substring(0, cwbs.length() - 1));
-		
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
 		String printtime = df.format(date);
 		for (CwbOrder smtcd : clist) {
 			cwborderService.updatePrinttimeState(smtcd, printtime);
 		}
-		
 		List<Customer> customerlist = customerDao.getAllCustomers();
-
 		SystemInstall companyName = this.systemInstallDAO.getSystemInstallByName("CompanyName");
 		if (companyName != null) {
 			model.addAttribute("companyName", companyName.getValue());
