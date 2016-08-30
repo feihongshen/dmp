@@ -7683,3 +7683,20 @@ function transcwbswitch(){
 	}
 }
 
+function liftLoginForbiddance(userid, contextPath) {
+	$.ajax({
+		type : "POST",
+		url : contextPath + "/user/liftLoginForbiddance",
+		dataType : "json",
+		data : {
+			userid : userid
+		},
+		success : function(data) {
+			if (data.errorCode == 0) {
+				alert(data.error);
+			} else {
+				alert("解禁失败");
+			}
+		}
+	});
+}
