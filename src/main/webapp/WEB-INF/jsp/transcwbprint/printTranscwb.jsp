@@ -60,9 +60,14 @@ function CreatePrintPage(cwbs) {
 	LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));
 	for(var i=0;i<cwbs.toString().split(",").length;i++){
 		var cwb = cwbs.toString().split(",")[i];
-		LODOP.ADD_PRINT_BARCODE(2,2,"35mm","15mm","128Auto",cwb);
+		
+		var top_first = i*97 + 10;//双联单第一个条码的高度
+		var top_second = i*97 + 56;//双联单第二个条码的高度
+		LODOP.ADD_PRINT_BARCODE(top_first+"mm","16mm","45mm","15mm","128Auto",cwb);
 		LODOP.SET_PRINT_STYLEA(0, "FontSize", 6);
-		LODOP.NewPage(); 
+		LODOP.ADD_PRINT_BARCODE(top_second+"mm","16mm","45mm","15mm","128Auto",cwb);
+		LODOP.SET_PRINT_STYLEA(0, "FontSize", 6);
+		//LODOP.NewPage(); 
 	}
 };	
 function nowprint(){
