@@ -147,7 +147,7 @@ public enum B2cEnum {
 	TPS_Maikaolin(22506, "麦考林-TPS", "maikaolintpsother",0), // 麦考林
 	TPS_Benlaishenghuo(22507, "本来生活-TPS", "bnlaishenghuotpsother",0), // 来生活
 	TPS_Weitepai(22508, "微特派-TPS", "weitepaitpsother",0), // 微特派
-	TPS_Yousu(22509, "优速-TPS", "yousutpsother",0) //优速
+	TPS_Tianlian(22509, "天联-TPS", "tianliantpsother",0) //优速
 	/**********************edit end ********************/
 	;
 

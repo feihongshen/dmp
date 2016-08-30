@@ -11,8 +11,8 @@ import cn.explink.dao.BranchDAO;
 import cn.explink.enumutil.BranchEnum;
 
 @Controller
-@RequestMapping("/tpsYousu")
-public class TpsYousuController {
+@RequestMapping("/tpsTianlian")
+public class TpsTianlianController {
 
 	@Autowired
 	VipShopGetCwbDataService vipshopService;
@@ -24,7 +24,7 @@ public class TpsYousuController {
 		model.addAttribute("vipshopObject", this.vipshopService.getVipShop(key));
 		model.addAttribute("warehouselist", this.branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue()));
 		model.addAttribute("joint_num", key);
-		return "b2cdj/tpsYousu";
+		return "b2cdj/tpsTianlian";
 
 	}
 
