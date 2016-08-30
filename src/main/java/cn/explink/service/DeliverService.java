@@ -2,16 +2,13 @@ package cn.explink.service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
@@ -22,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import cn.explink.b2c.tools.ExptCodeJoint;
 import cn.explink.b2c.tools.ExptCodeJointDAO;
 import cn.explink.b2c.tools.ExptReasonDAO;
@@ -36,6 +32,7 @@ import cn.explink.dao.UserDAO;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliverPaymentPrintVo;
+import cn.explink.domain.DeliverPaymentReportVo;
 import cn.explink.domain.DeliveryPayment;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.User;
@@ -442,23 +439,72 @@ public class DeliverService {
 		}
 		return flag;
 	}
-	
+    
     /**
      * 查询交款单
      * @author chunlei05.li
-     * @author chunlei05.li
-     * @date 2016年8月26日 下午5:22:20
+     * @date 2016年8月29日 下午3:31:47
      * @param deliveryId
      * @param auditingtimeStart
      * @param auditingtimeEnd
+     * @param paymentType
      * @return
      */
-	public List<DeliverPaymentPrintVo> getDeliverPaymentPrintVoList(long deliveryId, String auditingtimeStart,
+    public List<DeliverPaymentReportVo> getDeliverPaymentQueryList(long deliveryId, String auditingtimeStart,
 			String auditingtimeEnd, int paymentType) {
-		// 获取小件员信息
-    	User delivery = userDAO.getAllUserByid(deliveryId);
     	// 查询归班反馈
     	List<DeliveryPayment> deliveryPaymentList = this.deliveryStateDAO.getDeliveryPaymentList(deliveryId, auditingtimeStart, auditingtimeEnd, paymentType);
+    	return this.getDeliverPaymentPrintVoList(deliveryId, deliveryPaymentList);
+    }
+    
+    /**
+     * 查询交款单打印信息
+     * @author chunlei05.li
+     * @date 2016年8月29日 下午3:34:26
+     * @param customerIds
+     * @param cwbOrderTypeIds
+     * @param deliveryPaymentPatternIds
+     * @return
+     */
+	public List<DeliverPaymentPrintVo> getDeliverPaymentPrintMap(long deliveryId, long[] customerIds,
+			int[] cwbOrderTypeIds, int[] deliveryPaymentPatternIds, String auditingtimeStart, String auditingtimeEnd) {
+		// 查询归班反馈
+		List<DeliveryPayment> deliveryPaymentList = this.deliveryStateDAO.getDeliveryPaymentList(deliveryId,
+				customerIds, cwbOrderTypeIds, deliveryPaymentPatternIds, auditingtimeStart, auditingtimeEnd);
+		List<DeliverPaymentReportVo> deliverPaymentPrintVoList = this.getDeliverPaymentPrintVoList(deliveryId, deliveryPaymentList);
+		// 打印Map，保证排序
+		// deliverPaymentPrintVoList已排序
+		Map<Integer, DeliverPaymentPrintVo> printMap = new LinkedHashMap<Integer, DeliverPaymentPrintVo>();
+		for (DeliverPaymentReportVo reportVo : deliverPaymentPrintVoList) {
+			DeliveryPaymentPatternEnum paymentPattern = DeliveryPaymentPatternEnum .getByPayno(reportVo.getDeliveryPaymentPatternId());
+			DeliverPaymentPrintVo printVo = printMap.get(paymentPattern.getPayno());
+			if (printVo == null) {
+				printVo = new DeliverPaymentPrintVo();
+				printVo.setDeliveryPayment(paymentPattern);
+				printVo.setDeliverPaymentReportVoList(new ArrayList<DeliverPaymentReportVo>());
+			}
+			printVo.getDeliverPaymentReportVoList().add(reportVo);
+			printVo.setOrderCount(printVo.getOrderCount() + reportVo.getOrderCount());
+			printVo.setRealTotal(printVo.getRealTotal().add(reportVo.getRealTotal()));
+			printVo.setShouldTotal(printVo.getShouldTotal().add(reportVo.getShouldTotal()));
+			printMap.put(paymentPattern.getPayno(), printVo);
+		}
+		List<DeliverPaymentPrintVo> printVoList = new ArrayList<DeliverPaymentPrintVo>(printMap.values());
+		return printVoList;
+	}
+	
+    /**
+     * 交款单转VO
+     * @author chunlei05.li
+     * @date 2016年8月29日 下午3:31:59
+     * @param deliveryId
+     * @param deliveryPaymentList
+     * @return
+     */
+	public List<DeliverPaymentReportVo> getDeliverPaymentPrintVoList(long deliveryId,
+			List<DeliveryPayment> deliveryPaymentList) {
+		// 获取小件员信息
+    	User delivery = userDAO.getAllUserByid(deliveryId);
 		// 查询供货商，转Map
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		Map<Long, String> customernameMap = new HashMap<Long, String>();
@@ -466,7 +512,7 @@ public class DeliverService {
 			customernameMap.put(customer.getCustomerid(), customer.getCustomername());
 		}
     	// 归类
-		Map<String, DeliverPaymentPrintVo> paymentVoMap = new HashMap<String, DeliverPaymentPrintVo>();
+		Map<String, DeliverPaymentReportVo> paymentVoMap = new HashMap<String, DeliverPaymentReportVo>();
 		for (DeliveryPayment dp : deliveryPaymentList) {
 			DeliveryState ds = dp.getDeliveryState();
 			CwbOrder cwb = dp.getCwbOrder();
@@ -488,9 +534,10 @@ public class DeliverService {
 			}
 			// 组建key，根据支付类型 + 客户 + 订单类型分类
 			String key = paymentPattern.getPayno() + "_" + ds.getCustomerid() + "_" + ds.getCwbordertypeid();
-			DeliverPaymentPrintVo paymentVo = paymentVoMap.get(key);
+			DeliverPaymentReportVo paymentVo = paymentVoMap.get(key);
 			if (paymentVo == null) {
-				paymentVo = new DeliverPaymentPrintVo();
+				paymentVo = new DeliverPaymentReportVo();
+				paymentVo.setDeliveryId(delivery.getUserid());
 				paymentVo.setDeliveryName(delivery.getRealname());
 				paymentVo.setDeliveryPaymentPatternId(paymentPattern.getPayno());
 				paymentVo.setDeliveryPaymentPattern(paymentPattern.getPayname());
@@ -499,6 +546,10 @@ public class DeliverService {
 				CwbOrderTypeIdEnum cwbOrderTypeIdEnum = CwbOrderTypeIdEnum.getByValue(ds.getCwbordertypeid());
 				paymentVo.setCwbOrderTypeId(cwbOrderTypeIdEnum == null ? 0 : cwbOrderTypeIdEnum.getValue());
 				paymentVo.setCwbOrderType(cwbOrderTypeIdEnum == null ? "" : cwbOrderTypeIdEnum.getText());
+			}
+			// 目前系统不支持快递到付，所以不统计快递的应收运费
+			if (ds.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()) {
+				ds.setShouldfare(BigDecimal.ZERO);
 			}
 			// 订单数量
 			paymentVo.setOrderCount(paymentVo.getOrderCount() + 1);
@@ -516,11 +567,11 @@ public class DeliverService {
 			paymentVo.setRealTotal(paymentVo.getRealTotal().add(realTotal));
 			paymentVoMap.put(key, paymentVo);
 		}
-		List<DeliverPaymentPrintVo> voList = new ArrayList<DeliverPaymentPrintVo>(paymentVoMap.values());
+		List<DeliverPaymentReportVo> voList = new ArrayList<DeliverPaymentReportVo>(paymentVoMap.values());
 		// 排序
-		Collections.sort(voList, new Comparator<DeliverPaymentPrintVo>() {
+		Collections.sort(voList, new Comparator<DeliverPaymentReportVo>() {
 			@Override
-			public int compare(DeliverPaymentPrintVo dp1, DeliverPaymentPrintVo dp2) {
+			public int compare(DeliverPaymentReportVo dp1, DeliverPaymentReportVo dp2) {
 				// 先按支付方式排序
 				if (dp1.getDeliveryPaymentPatternId() > dp2.getDeliveryPaymentPatternId()) {
 					return 1;

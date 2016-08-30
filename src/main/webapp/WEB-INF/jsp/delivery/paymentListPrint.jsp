@@ -1,134 +1,164 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%> 
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> 
+<%@page import="cn.explink.enumutil.OutwarehousegroupOperateEnum"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>交款单打印</title>
-	
-    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-1.8.0.min.js"></script>
-	<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
-	
-	<script type="text/javascript" src="<%=request.getContextPath()%>/js/easyui/jquery.easyui.min.js"></script>
-	
-	<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/js/eapTools.js"></script>
-	<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40//plug-in/tools/curdtools.js"></script>
-	<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40//plug-in/tools/easyuiextend.js"></script>
-	
-	<script type="text/javascript" src="<%=request.getContextPath()%>/js/My97DatePicker/WdatePicker.js"></script>
-	<script type="text/javascript" src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js"></script>
-	<script type="text/javascript" src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js"></script>
-	
-	<link type="text/css" href="<%=request.getContextPath()%>/css/2.css" rel="stylesheet"/>
-    <link type="text/css" href="<%=request.getContextPath()%>/css/reset.css" rel="stylesheet"></link>
-	<link type="text/css" href="<%=request.getContextPath()%>/css/index.css" rel="stylesheet"/>
-	<link type="text/css" href="<%=request.getContextPath()%>/js/multiSelcet/multiple-select.css" rel="stylesheet"/>
-    <link type="text/css" href="<%=request.getContextPath()%>/css/easyui/themes/default/easyui.css" rel="stylesheet" media="all"/>
-	<link type="text/css" href="<%=request.getContextPath()%>/dmp40/plug-in/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
-	<link id="skinlayercss" href="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/skin/layer.css" rel="stylesheet" type="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>武汉领货交接单打印</title>
+<object id="LODOP" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0>
+<param name="CompanyName" value="北京易普联科信息技术有限公司" />
+<param name="License" value="653717070728688778794958093190" />
+<embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 companyname="北京易普联科信息技术有限公司" license="653717070728688778794958093190"></embed>
+</object>
+<script src="<%=request.getContextPath()%>/js/LodopFuncs.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+<script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<script type="text/javascript">
+var LODOP; //声明为全局变量 
+function prn1_preview() {	
+	createOneFormPage();           
+	LODOP.PREVIEW();	
+};
+function prn1_print() {		
+	createOneFormPage();
+	LODOP.PRINT();	
+};
+
+function createOneFormPage(){
+	LODOP = getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));                      
+	var strBodyStyle = document.getElementById("print_style").outerHTML;
+	LODOP.PRINT_INIT("武汉领货交接单打印");
+	var strBodyHtml = document.getElementById("printTable").outerHTML;
+	strBodyHtml = strBodyHtml.replace("preview_box", "");
+	LODOP.ADD_PRINT_HTM("0mm","0mm","RightMargin:0mm","BottomMargin:0mm", '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">' + strBodyStyle + "<body>" + strBodyHtml + "</body>");
+};
+
+function nowprint(){
+	var con = confirm("您确认要打印该页吗？");
+	if(con==true){
+		prn1_print();
+	}
+}
+</script>
+<style type="text/css" id="print_style">
+	.preview_box {
+		border: 1px solid #585656;
+	}
+	.out_box {
+		width: 75mm;
+	}
+	.inner_box {
+		left-margin : 3mm;
+		right-margin : 9 mm;
+	}
+	.title {
+		font-size: 14px;
+		width:84%;
+		text-align:center;
+		word-wrap: break-word;
+		word-break: normal;
+	}
+	.content_1 {
+		font-size: 12px;
+	}
+	.dashed {
+		border-top:1px dashed #585656;
+		height: 1px;
+		overflow:hidden;
+		margin-top:1mm;
+		margin-bottom:1mm;
+	}
+	.float_left {
+		float:left;
+	}
+	.float_right {
+		float:right;
+	}
+	.cwb th {
+		font-size: 12px;
+		font-weight: normal;
+		border-bottom:1px dashed #585656;
+	}
+	.cwb td {
+		font-size: 12px;
+		font-weight: normal;
+		word-break:break-all;
+	}
+</style>
 </head>
-<body class="easyui-layout" leftmargin="0" topmargin="0">
-    <div data-options="region:'center'" style="height:100%;overflow-x: auto; overflow-y: auto;">
-		<table id="dg_rsList" class="easyui-datagrid" toolbar="#cwb_toolbar" nowrap="false"  fit="true" showFooter="true" fitColumns="false" rownumbers="true" singleSelect="false" width="100%">
-				<thead>
-					<tr>
-						<th checkbox="true"></th>
-						<th field="customerName" align="center" width="200">客户名称</th>
-						<th field="cwbOrderType" align="center" width="100">订单类型</th>
-						<th field="orderCount" align="right" width="100">订单数量</th>
-						<th field="deliveryPaymentPattern" align="center" width="100">支付方式</th>
-						<th field="shouldReceivedfeeStr" align="right" width="100">应收金额</th>
-						<th field="shouldPaybackfeeStr" align="right" width="100">应退金额</th>
-						<th field="shouldfareStr" align="right" width="100">应收运费</th>
-						<th field="shouldTotalStr" align="right" width="100">应收合计</th>
-						<th field="realTotalStr" align="right" width="100">实收合计</th>
-						<th field="deliveryName" align="center" width="100">小件员</th>
-					</tr>
-				</thead>
-		</table>
-		<div id="cwb_toolbar">
-			<div class="form-inline" style="padding:10px 0 0 10px">
-			    <label style="width:250px;">
-			    	<label style="width:70px;">小件员：</label>
-			    	<select id="deliver" style="width:150px;">
-			    		<option value="">请选择</option>
-			    		<c:forEach var="deliver" items="${deliverList }">
-			    			<option value="${deliver.userid }">${deliver.realname }</option>
-			    		</c:forEach>
-			    	</select>
-			    </label>
-			    <label style="width:500px;">
-			    	<label style="width:100px;">归班审核时间：</label>
-			    	<input type ="text" name ="auditingtimeStart" id="auditingtimeStart"  value="" readonly="readonly" style="background-color:#fff;width:150px;cursor:pointer" class="Wdate" 
-			    		onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'#F{$dp.$DV(\'<fmt:formatDate value="${now }" pattern="yyyy-M-d"/> %H:%m:%s\', {d:-30})}', maxDate:'#F{$dp.$D(\'auditingtimeEnd\')||\'<fmt:formatDate value="${now }" pattern="yyyy-M-d"/> %H:%m:%s}\'}'})"/>
-			    	<label>至</label>
-			    	<input type ="text" name ="auditingtimeEnd" id="auditingtimeEnd"  value=""  readonly="readonly" style="background-color:#fff;width:150px;cursor:pointer" class="Wdate" 
-			    		onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'#F{$dp.$D(\'auditingtimeStart\')||$dp.$DV(\'<fmt:formatDate value="${now }" pattern="yyyy-M-d"/> %H:%m:%s\', {d:-30})}', maxDate:'<fmt:formatDate value="${now }" pattern="yyyy-M-d"/> %H:%m:%s'})"/>
-			    </label>
-			    <label style="width:250px;">
-			    	<label style="width:70px;">支付方式：</label>
-			    	<select id="paymentType" style="width:150px;">
-			    		<option value="0">全部</option>
-			    		<c:forEach var="pay" items="${payArray }">
-			    			<option value="${pay.payno }">${pay.payname }</option>
-			    		</c:forEach>
-			    	</select>
-			    </label>
-			</div>
-			<div class="form-inline" style="padding:10px 0 0 10px">
-			    <label>
-			    	<div class="btn btn-default" style="margin-right:5px;" id= "search"><i class="icon-search"></i>查询</div>
-			    	<div class="btn btn-default" style="margin-right:5px;" id= "print"><i class="icon-print"></i>打印</div>
-			    </label>
+<body>
+	<a href="javascript:nowprint()">直接打印</a>
+	<a href="javascript:prn1_preview()">预览</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:history.go(-1)">返回</a>
+	<div id="printTable">
+		<div class="out_box preview_box">
+			<div class="inner_box">
+				<div class="title">湖北品骏（${branchname }）站交款单</div>
+				<div class="content_1">
+					<span>打印：${printUsername}</span>
+					<span style="word-spacing:1mm;">&nbsp;</span>
+					<span><fmt:formatDate value="${printTime }" pattern="yyyy-MM-dd HH:mm:dd"/></span>
+				</div>
+				<div class="content_1">
+					交款：${auditingtimeStart } - ${auditingtimeEnd }
+				</div>
+				<div class="content_1">
+					${deliveryBranchName }：${deliveryName }
+				</div>
+				<div class="dashed"></div>
+				<c:forEach var="printVo" items="${deliverPaymentPrintVoList }">
+					<div class="content_1">
+						<table class="cwb" width="100%" border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								<th width="30%" align="left">业务	</th>
+								<th width="20%" align="left">订单类型</th>
+								<th width="10%" align="right">数量</th>
+								<th width="20%" align="right">应收合计</th>
+								<th width="20%" align="right">实际合计</th>
+							</tr>
+							<c:forEach var="reportVo" items="${printVo.deliverPaymentReportVoList }">
+								<tr>
+									<td align="left">${reportVo.customerName }</th>
+									<td align="left">${reportVo.cwbOrderType }</th>
+									<td align="right">${reportVo.orderCount }</th>
+									<td align="right">${reportVo.shouldTotal }</th>
+									<td align="right">${reportVo.realTotal }</th>
+								</tr>
+							</c:forEach>
+						</table>				
+					</div>
+					<div class="dashed"></div>
+					<div class="content_1">
+						<span>${printVo.deliveryPayment.payname }</span>
+						<span style="word-spacing:1mm;">&nbsp;</span>
+						<span>共${printVo.orderCount }单</span>
+						<span style="word-spacing:1mm;">&nbsp;</span>
+						<span>应收：${printVo.shouldTotal }</span>
+						<span style="word-spacing:1mm;">&nbsp;</span>
+						<span>实收：${printVo.realTotal }</span>
+					</div>
+					<div class="dashed"></div>
+				</c:forEach>
+				<div class="content_1">
+					投递员：
+				</div>
+				<div class="content_1">
+					<div class="float_right">
+						<div class="float_left">时间：</div>
+						<div class="float_left" style="width:25px;">&nbsp;</div>
+						<div class="float_left">年</div>
+						<div class="float_left" style="width:20px;">&nbsp;</div>
+						<div class="float_left">月</div>
+						<div class="float_left" style="width:20px;">&nbsp;</div>
+						<div class="float_left">日</div>
+						<div style="clear:both;"></div>
+					</div>
+					<div style="clear:both;"></div>
+				</div>
 			</div>
 		</div>
 	</div>
 </body>
-<script type="text/javascript">
-	$("#search").click(function() {
-		var deliveryId = $("#deliver").val();
-		if (deliveryId == null || deliveryId == "") {
-			$.messager.alert("错误", "请选择小件员！", "error");
-			return;
-		}
-		var auditingtimeStart = $("#auditingtimeStart").val();
-		var auditingtimeEnd = $("#auditingtimeEnd").val();
-		if(auditingtimeStart == null || auditingtimeStart == "") {
-			if (auditingtimeEnd != null && auditingtimeEnd != "") {
-				$.messager.alert("错误", "请选择归班审核开始时间！", "error");
-				return;
-			} else {
-				auditingtimeStart = '<fmt:formatDate value="${now }" pattern="yyyy-MM-dd 00:00:00"/>';
-				$("#auditingtimeStart").val(auditingtimeStart);
-			}
-		}
-		//数据加载动画
-		var layEle = layer.load("加载中...", 0);
-		$.ajax({
-			type: "POST",
-			url:"<%=request.getContextPath()%>/delivery/getPaymentPrintList",
-			data:{
-				deliveryId:deliveryId, 
-				auditingtimeStart:auditingtimeStart, 
-				auditingtimeEnd:auditingtimeEnd,
-				paymentType: $("#paymentType").val()
-			},
-			dataType : "json",
-			success : function(data) {
-				layer.close(layEle);
-				if (data.status == 0) {
-					var result = data.result;
-					$('#dg_rsList').datagrid('loadData', result);//加载数据
-				} else {
-					$.messager.alert("错误", data.msg, "error");
-				}
-			},
-			error: function() {
-				layer.close(layEle);
-				$.messager.alert("错误", "加载出现异常！", "error");
-			}
-		});
-	});
-</script>
 </html>

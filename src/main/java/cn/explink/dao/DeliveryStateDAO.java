@@ -1811,10 +1811,11 @@ public class DeliveryStateDAO {
 	/**
 	 * 查询交款单
 	 * @author chunlei05.li
-	 * @date 2016年8月26日 下午5:22:39
+	 * @date 2016年8月29日 下午12:18:20
 	 * @param deliveryId
 	 * @param auditingtimeStart
 	 * @param auditingtimeEnd
+	 * @param paymentType
 	 * @return
 	 */
 	public List<DeliveryPayment> getDeliveryPaymentList(long deliveryId, String auditingtimeStart,
@@ -1851,6 +1852,69 @@ public class DeliveryStateDAO {
 			sql.append(" AND ds.codpos > 0");
 		} else if (paymentType == DeliveryPaymentPatternEnum.OTHERFEE.getPayno()) {
 			sql.append(" AND ds.otherfee > 0");
+		}
+		List<DeliveryPayment> deliveryPaymentList =  this.jdbcTemplate.query(sql.toString(), new DeliveryPaymentRowMapper());
+		if (deliveryPaymentList == null) {
+			deliveryPaymentList = new ArrayList<DeliveryPayment>();
+		}
+		return deliveryPaymentList;
+	}
+	
+	/**
+	 * 根据小件员、客户、订单类型、支付方式查询交款单
+	 * @author chunlei05.li
+	 * @date 2016年8月29日 下午5:07:59
+	 * @param deliveryId
+	 * @param customerIds
+	 * @param cwbOrderTypeIds
+	 * @param deliveryPaymentPatternIds
+	 * @param auditingtimeStart
+	 * @param auditingtimeEnd
+	 * @return
+	 */
+	public List<DeliveryPayment> getDeliveryPaymentList(long deliveryId, long[] customerIds, int[] cwbOrderTypeIds,
+			int[] deliveryPaymentPatternIds, String auditingtimeStart, String auditingtimeEnd) {
+		StringBuilder sql = new StringBuilder("SELECT ds.*,"
+				+ " cd.receivablefee cwbreceivablefee,"
+				+ " cd.paybackfee cwbpaybackfee"
+				+ " FROM"
+				+ " express_ops_delivery_state ds,"
+				+ " express_ops_cwb_detail cd,"
+				+ " express_ops_goto_class_auditing ca"
+				+ " WHERE ds.gcaid = ca.id"
+				+ " AND ds.cwb = cd.cwb"
+				+ " AND ds.sign_typeid = 1"
+				+ " AND ds.deliveryid = " + deliveryId
+				+ " AND ds.customerid IN (" + StringUtil.toDbInStr(customerIds) + ")"
+				+ " AND ds.cwbordertypeid IN (" + StringUtil.toDbInStr(cwbOrderTypeIds) + ")");
+		// 审核时间
+		if (StringUtils.isNotBlank(auditingtimeStart)) {
+			sql.append(" AND ca.auditingtime >= '").append(auditingtimeStart).append("'");
+		}
+		if (StringUtils.isNotBlank(auditingtimeEnd)) {
+			sql.append(" AND ca.auditingtime <= '").append(auditingtimeEnd).append("'");
+		}
+		// 支付方式
+		// 根据产品确认，武汉不存在一个订单只存在一种支付类型的订单
+		// 若存在一个订单存在多种支付类型，则统计表报会有误差
+		StringBuilder paymentTypeSql = new StringBuilder();
+		for (long paymentType : deliveryPaymentPatternIds) {
+			if (paymentType == DeliveryPaymentPatternEnum.CASH.getPayno()) {
+				paymentTypeSql.append(" OR ds.cash > 0");
+			} else if (paymentType == DeliveryPaymentPatternEnum.POS.getPayno()) {
+				paymentTypeSql.append(" OR ds.pos > 0");
+			} else if (paymentType == DeliveryPaymentPatternEnum.CHECKFEE.getPayno()) {
+				paymentTypeSql.append(" OR ds.checkfee > 0");
+			} else if (paymentType == DeliveryPaymentPatternEnum.CODPOS.getPayno()) {
+				paymentTypeSql.append(" OR ds.codpos > 0");
+			} else if (paymentType == DeliveryPaymentPatternEnum.OTHERFEE.getPayno()) {
+				paymentTypeSql.append(" OR ds.otherfee > 0");
+			}
+		}
+		if (paymentTypeSql.length() > 0) {
+			sql.append(" AND (").append(paymentTypeSql.substring(4)).append(")");
+		} else { // 如果匹配不到传入的支付方式，则查询结果为空
+			return new ArrayList<DeliveryPayment>();
 		}
 		List<DeliveryPayment> deliveryPaymentList =  this.jdbcTemplate.query(sql.toString(), new DeliveryPaymentRowMapper());
 		if (deliveryPaymentList == null) {

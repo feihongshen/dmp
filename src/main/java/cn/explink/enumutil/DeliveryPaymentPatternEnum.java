@@ -7,7 +7,7 @@ package cn.explink.enumutil;
  */
 public enum DeliveryPaymentPatternEnum {
 	
-	CASH(1, "现金"), POS(2, "POS机"), CHECKFEE(3, "支票"), CODPOS(4, "支付宝COD扫码支付"), OTHERFEE(5, "其他方式");
+	CASH(1, "现金"), POS(2, "POS机"), CODPOS(3, "支付宝COD扫码"), CHECKFEE(4, "支票"),  OTHERFEE(5, "其他方式");
 	
 	private int payno;
 	
