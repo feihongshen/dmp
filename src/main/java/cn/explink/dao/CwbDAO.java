@@ -404,6 +404,8 @@ public class CwbDAO {
 			cwbOrder.setDeliverypermit(rs.getInt("delivery_permit"));
 			cwbOrder.setTpstranscwb(rs.getString("tpstranscwb"));
 			cwbOrder.setOrderSource(rs.getString("order_source"));
+			//zhili01.liang 20160830 货物尺寸类型修改审核
+			cwbOrder.setGoodsSizeType(rs.getInt("goods_size_type"));
 			return cwbOrder;
 		}
 	}
@@ -10089,8 +10091,8 @@ public class CwbDAO {
 	 * @param cwb
 	 * @param cartype
 	 */
-	public void updateCwbCartype(String cwb, String cartype) {
-		String sql = "update express_ops_cwb_detail set cartype=? where cwb=? and state=1 ";
-		this.jdbcTemplate.update(sql, cartype, cwb);
+	public void updateCwbGoodsSizeType(String cwb, int goodsSizeType) {
+		String sql = "update express_ops_cwb_detail set goods_size_type=? where cwb=? and state=1 ";
+		this.jdbcTemplate.update(sql, goodsSizeType, cwb);
 	}
 }

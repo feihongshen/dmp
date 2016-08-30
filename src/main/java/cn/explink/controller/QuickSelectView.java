@@ -72,6 +72,8 @@ public class QuickSelectView {
 	String consigneenameOfkf;
 	String consigneemobileOfkf;
 	String consigneephoneOfkf;
+	//zhili01.liang 20160830 货物尺寸类型修改审核
+	int goodsSizeType;
 
 	
 
@@ -1047,4 +1049,16 @@ public class QuickSelectView {
 		this.oldconsigneeaddress = oldconsigneeaddress;
 	}
 
+	//zhili01.liang 20160830 货物尺寸类型修改审核====Begin====
+	public int getGoodsSizeType() {
+		return goodsSizeType;
+	}
+
+	public void setGoodsSizeType(int goodsSizeType) {
+		this.goodsSizeType = goodsSizeType;
+	}
+	//zhili01.liang 20160830 货物尺寸类型修改审核====End====
+
+	
+	
 }

@@ -10557,10 +10557,9 @@ public class CwbOrderService extends BaseOrderService {
 	 * @serialData 2016-07-28
 	 * 更新订单货物类型
 	 * @param cwb
-	 * @param cartype
+	 * @param goodsSizeType
 	 */
-	public void updateCwbCartype(String cwb, String cartype) {
-		String sql = "update express_ops_cwb_detail set cartype=? where cwb=? and state=1 ";
-		cwbDAO.updateCwbCartype(cwb, cartype);
+	public void updateCwbGoodsSizeType(String cwb, int goodsSizeType) {
+		cwbDAO.updateCwbGoodsSizeType(cwb, goodsSizeType);
 	}
 }
