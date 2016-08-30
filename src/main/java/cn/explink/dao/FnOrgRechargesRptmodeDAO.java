@@ -15,6 +15,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.FnOrgRecharges;
+import cn.explink.enumutil.OrgPayInTypeEnum;
 import cn.explink.enumutil.OrgRechargeSourceEnum;
 import cn.explink.enumutil.OrgRechargesHandleStatusEnum;
 import cn.explink.util.DateTimeUtil;
@@ -56,7 +57,7 @@ public class FnOrgRechargesRptmodeDAO {
 					ps.setInt(11, vo.getHandleStatus() == null ? OrgRechargesHandleStatusEnum.JustHandled.getValue() : vo.getHandleStatus());
 					ps.setString(12, vo.getPicker() == null ? "" : vo.getPicker());
 					ps.setLong(13, vo.getPickerId() == null ? 0l : vo.getPickerId());
-					ps.setInt(14, vo.getPayinType());
+					ps.setInt(14, vo.getPayinType() == null ? OrgPayInTypeEnum.StationPay.getValue() : vo.getPayinType());
 					ps.setInt(15, vo.getRechargeSource() == null ? 0 : vo.getRechargeSource());
 					ps.setString(16, vo.getCwb() == null ? "" : vo.getCwb());
 					ps.setLong(17, vo.getVpalRecordId() == null ? 0l : vo.getVpalRecordId());
