@@ -233,6 +233,7 @@ import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderService;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderServiceHelper;
 import com.pjbest.deliveryorder.bizservice.PjDoStatusGoodsRequest;
 import com.pjbest.deliveryorder.bizservice.PjDoStatusRequest;
+import com.pjbest.deliveryorder.bizservice.PjDoStatusResponse;
 import com.pjbest.deliveryorder.service.OmOrderTransportModel;
 import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
 import com.vip.osp.core.exception.OspException;
@@ -5669,6 +5670,7 @@ public class CwbOrderService extends BaseOrderService {
 				paybackedfee = co.getPaybackfee();
 			}
 			sign_man = co.getConsigneenameOfkf();
+			 
 			if ((podresultid == DeliveryStateEnum.FenZhanZhiLiu.getValue()) || (podresultid == DeliveryStateEnum.ShangMenJuTui.getValue()) || (podresultid == DeliveryStateEnum.JuShou.getValue()) || (podresultid == DeliveryStateEnum.DaiZhongZhuan
 					.getValue())) {
 				paybackedfee = new BigDecimal("0");
@@ -6018,40 +6020,8 @@ public class CwbOrderService extends BaseOrderService {
 		String comefrompage = (parameters.get("comefrompage")==null?"0":String.valueOf(parameters.get("comefrompage")));
 		if("1".equals(comefrompage) && co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()){
 			orderPartGoodsReturnService.processOrderGoods(co.getCwb(), podresultid);
-			//add by zhouhuan 反馈绑定的快点单号要先交tps中该运单号是否能够使用，能使用的话要把该运单号的帮订单关系传给tps 2016-08-26
-			PjDeliveryOrderService pjDeliveryOrderS = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient(); 
-			List<PjDoStatusRequest> reqList = new ArrayList();
-			PjDoStatusRequest req = null;
-			if(podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue()){
-				/*1、调用tps运单检测接口
-				2、反馈绑定信息给到tps（tps揽收状态接口）*/
-				try {
-					OmOrderTransportModel transportNoModel = pjDeliveryOrderS.getByTransportNo(transcwb);
-					if(transportNoModel==null){
-						CwbOrderService.logger.error("tps运单号校验不通过，tps已将该运单失效!");
-					}else{
-						req= this.prepareStateRequestObj(co, transcwb, 1, "", freight);
-						reqList.add(req);
-						//(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare)
-						pjDeliveryOrderS.feedbackDoStatus(reqList);
-					}
-				} catch (OspException e) {
-					CwbOrderService.logger.error("反馈为上门退成功时反馈绑定信息给到tps接口异常!", e);
-					//e.printStackTrace();
-				}
-			}else if(podresultid == DeliveryStateEnum.ShangMenJuTui.getValue()){
-				/*1、调用tps反馈揽收失败接口
-				 * 2、清空订单主表中的tpsTranscwb*/
-				req= this.prepareStateRequestObj(co, transcwb, 2, reason.getReasoncontent(), freight);
-				reqList.add(req);
-				//(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare)
-				try {
-					pjDeliveryOrderS.feedbackDoStatus(reqList);
-				} catch (OspException e) {
-					CwbOrderService.logger.error("反馈为上门退拒收时反馈绑定信息给到tps接口异常!", e);
-				}
-			}
-
+			//反馈揽收状态/运单对照关系给tps edit by zhouhuan 2016-08-30
+			this.sendTranscwbRelationToTps(co,transcwb,infactfare,podresultid,reason,paybackedfee);
 		}
 		//Added end
 		
@@ -10616,9 +10586,59 @@ public class CwbOrderService extends BaseOrderService {
 		cwbDAO.updateCwbCartype(cwb, cartype);
 	}
 	
+	//add by zhouhuan 反馈绑定的快点单号要先交tps中该运单号是否能够使用，能使用的话要把该运单号的帮订单关系传给tps 2016-08-26
+	/*transcwb：tps运单号，freight：实收运费，podresultid：反馈结果，reason：拒收原因
+	 * paybackedfee:实退金额
+	 */
+	public void sendTranscwbRelationToTps(CwbOrder co,String transcwb,BigDecimal freight,long podresultid,Reason reason, BigDecimal paybackedfee){
+		PjDeliveryOrderService pjDeliveryOrderS = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient(); 
+		List<PjDoStatusRequest> reqList = new ArrayList();
+		PjDoStatusRequest req = null;
+		List<PjDoStatusResponse> pjDoStatusResponse = null;
+		if(podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue()){
+			/*1、调用tps运单检测接口
+			2、反馈绑定信息给到tps（tps揽收状态接口）*/
+			try {
+				OmOrderTransportModel transportNoModel = pjDeliveryOrderS.getByTransportNo(transcwb);
+				if(transportNoModel!=null){
+					CwbOrderService.logger.error("tps运单号校验不通过，tps已将该运单失效!");
+				}else{
+					req= this.prepareStateRequestObj(co, transcwb, 1, "", freight,paybackedfee);
+					reqList.add(req);
+					//(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare)
+					pjDoStatusResponse = pjDeliveryOrderS.feedbackDoStatus(reqList);
+				}
+			} catch (OspException e) {
+				CwbOrderService.logger.error("反馈为上门退成功时反馈绑定信息给到tps接口异常!", e);
+				//e.printStackTrace();
+			}
+		}else if(podresultid == DeliveryStateEnum.ShangMenJuTui.getValue()){
+			/*1、调用tps反馈揽收失败接口
+			 *2、清空订单主表中的tpsTranscwb*/
+			req= this.prepareStateRequestObj(co, transcwb, 2, reason.getReasoncontent(), freight,paybackedfee);
+			reqList.add(req);
+			//(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare)
+			try {
+				pjDoStatusResponse = pjDeliveryOrderS.feedbackDoStatus(reqList);
+			} catch (OspException e) {
+				CwbOrderService.logger.error("反馈为上门退拒收时反馈绑定信息给到tps接口异常!", e);
+			}
+		}
+		if(pjDoStatusResponse!=null){
+			if(pjDoStatusResponse.get(0).getResultCode()==1){
+				CwbOrderService.logger.error("订单{},反馈揽收状态成功",pjDoStatusResponse.get(0).getCustOrderNo());
+			}else{
+				CwbOrderService.logger.error("订单{},反馈揽收状态异常,{}",pjDoStatusResponse.get(0).getCustOrderNo(), pjDoStatusResponse.get(0).getResultMsg());
+			}
+		}
+	}
+	
 	//构建调用do服务反馈揽收状态的对象
 	@SuppressWarnings("rawtypes")
-	private PjDoStatusRequest prepareStateRequestObj(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare){
+	/*tpsTranscwb运单号，freight：实收运费，podresultid：反馈结果，reason：拒收原因
+	 * paybackedfee:实退金额
+	 */
+	private PjDoStatusRequest prepareStateRequestObj(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare,BigDecimal paybackedfee){
 		User user = this.getSessionUser();
 		PjDoStatusRequest req= new PjDoStatusRequest();
 		List<PjDoStatusGoodsRequest> reqGoods = new ArrayList();
@@ -10640,7 +10660,7 @@ public class CwbOrderService extends BaseOrderService {
 		req.setOperOrgCode(branchCode);
 		req.setPayment(0);
 		//应收=0，默认为1，应收=实收，默认为1，其他默认为0
-		if(co.getReceivablefee().compareTo(BigDecimal.ZERO)>0){
+		if(co.getShouldfare().compareTo(BigDecimal.ZERO)>0||co.getShouldfare().compareTo(infactfare)==0){
 			req.setPayStatus(1);
 		}else{
 			req.setPayStatus(0);
@@ -10650,13 +10670,14 @@ public class CwbOrderService extends BaseOrderService {
 		//商品明细信息
 		if(goodsList!=null){
 			for(int i=0;i<goodsList.size();i++){
+				if(goodsList.get(i).getShituicount()<=0||goodsList.get(i).getGoods_code().isEmpty()){
+					continue;
+				}
 				PjDoStatusGoodsRequest good = new PjDoStatusGoodsRequest();
 				good.setSn(goodsList.get(i).getGoods_code());
 				good.setFetchNum(Integer.parseInt(goodsList.get(i).getGoods_num()));
 				reqGoods.add(good);
 			}
-		}else{
-			
 		}
 		req.setGoods(reqGoods);
 		return req;
