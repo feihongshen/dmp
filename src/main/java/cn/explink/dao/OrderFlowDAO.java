@@ -1589,4 +1589,35 @@ public class OrderFlowDAO {
 		
 		return sbSql.toString();
 	}
+	
+	public long getFlowCount(String cwb, int flowordertype, long branchid) {
+		String sql = "select count(1) from express_ops_order_flow where cwb = ? and flowordertype = ? and branchid = ?";
+		return this.jdbcTemplate.queryForLong(sql,cwb,flowordertype,branchid);
+	}
+
+	/**
+	 * @author zhili01.liang on 20160817
+	 * 根据条件查找操作记录
+	 * @param flowordertype 运单类型（必要条件）
+	 * @param cwb 运单号（必要条件）
+	 * @param startDate 创建时间（可选）
+	 * @param begin
+	 * @param interval
+	 * @return
+	 */
+	public List<OrderFlow> getOrderFlowByCerterias(long flowordertype, String cwb,Date startDate, long begin,long interval) {
+		List<Object> param = new ArrayList<Object>();
+		StringBuffer sql = new StringBuffer("select `cwb`,`branchid`,`credate`,`userid`,`flowordertype`,`isnow`,`outwarehouseid`,`comment` from express_ops_order_flow  where flowordertype=? and cwb = ?");
+		param.add(flowordertype);
+		param.add(cwb);
+		if(startDate != null){
+			sql.append(" and credate > ? ");
+			param.add(startDate);
+		}
+		sql.append(" order by  credate desc ");
+		sql.append(" limit ?,? ");
+		param.add(begin);
+		param.add(interval);
+		return this.jdbcTemplate.query(sql.toString(), new OrderFlowRowMapperNotDetail(), param.toArray());
+	}
 }

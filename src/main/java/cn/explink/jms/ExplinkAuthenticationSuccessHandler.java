@@ -56,7 +56,7 @@ public class ExplinkAuthenticationSuccessHandler extends SimpleUrlAuthentication
 		usermap.put("roleid", user.getRoleid());
 		session.setAttribute("usermap", usermap);
 		session.setAttribute("showphoneflag", user.getShowphoneflag());
-
+		session.setAttribute("loginFlag","1");
 		{
 			try {
 				String url = request.getRequestURL().toString();

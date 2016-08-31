@@ -605,6 +605,14 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			cwbOrder.setShouldfare(BigDecimal.ZERO);
 		}
 		
+		/**订单导入模板新增退货地址，及商家退货号 add by chunlei05.li 2016/8/22*/
+		int returnnoindex = excelColumnSet.getReturnnoindex();
+		String returnno = returnnoindex == 0 ? "" : this.getXRowCellData(row, returnnoindex);
+		cwbOrder.setReturnno(returnno);
+		int returnaddressindex = excelColumnSet.getReturnaddressindex();
+		String returnaddress = returnaddressindex == 0 ? "" : this.getXRowCellData(row, returnaddressindex);
+		cwbOrder.setReturnaddress(returnaddress);
+		
 		extendsImportColumn(customer, cwbOrder);
 		
 
@@ -651,8 +659,8 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 		List<Common> commonList = this.commonDAO.getAllCommons();
 		Customer customer = this.customerDAO.getCustomerById(customerId);
 		List<CwbOrderDTO> cwbOrders = new ArrayList<CwbOrderDTO>();
-		List<CwbOrderValidator> vailidators = this.importValidationManager.getVailidators(excelColumnSet);
-
+		List<CwbOrderValidator> vailidators = this.importValidationManager.getExcelImportVailidators(excelColumnSet,customer);// 增加验证发货数量和运单数量 modify by vic.liang@pjbest.com 2016-08-23
+		
 		// prepare global values
 		// 订单类型
 		Map<String, Long> orderTypeIdMap = this.cwbOrderTypeDAO.getOrderTypeMappings();

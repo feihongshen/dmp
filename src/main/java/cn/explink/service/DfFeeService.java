@@ -239,25 +239,28 @@ public class DfFeeService {
             } else {
 //                senderAddr = order.getSenderaddress();
                 //如果不是OXO/OXOJIT 的单省市区就会去取值。
-                province = order.getSenderprovince();
+//                province = order.getSenderprovince();
                 city = order.getSendercity();
                 county = order.getSendercounty();
             }
 
-            if(StringUtils.isBlank(province)){
-                //根据站点到TPS查找相应省份你的信息。
-                SbOrgModel orgModelFromTPS = findOrgByCarrierAndSiteCode(branchId);
-                if (orgModelFromTPS != null) {
-                    if (StringUtils.isNotBlank(orgModelFromTPS.getProvinceName())) {
-                        province = orgModelFromTPS.getProvinceName();
-                    }
+//            if(StringUtils.isBlank(province)){
+            //根据站点到TPS查找相应省份你的信息。
+            SbOrgModel orgModelFromTPS = findOrgByCarrierAndSiteCode(branchId);
+            if (orgModelFromTPS != null) {
+                if (StringUtils.isNotBlank(orgModelFromTPS.getProvinceName())) {
+                    province = orgModelFromTPS.getProvinceName();
+                }
 //                if (StringUtils.isNotBlank(orgModelFromTPS.getCityName())) {
 //                    city = orgModelFromTPS.getCityName();
 //                }
 //                if (StringUtils.isNotBlank(orgModelFromTPS.getRegionName())) {
 //                    county = orgModelFromTPS.getRegionName();
 //                }
-                }
+            }
+//            }
+            if (StringUtils.isBlank(province)) {
+                province = order.getSenderprovince();
             }
 
             if (StringUtils.isBlank(province)) {
@@ -328,25 +331,26 @@ public class DfFeeService {
                 }
 
 //                String address = order.getConsigneeaddress();
-                String province = order.getCwbprovince();
+                String province = "";
+//                        = order.getCwbprovince();
                 String city = order.getCwbcity();
                 String county = order.getCwbcounty();
 
-                if (StringUtils.isBlank(province)) {
-                    //根据站点到TPS查找相应省份你的信息。
-                    SbOrgModel orgModelFromTPS = findOrgByCarrierAndSiteCode(branchId);
-                    if (orgModelFromTPS != null) {
-                        if (StringUtils.isNotBlank(orgModelFromTPS.getProvinceName())) {
-                            province = orgModelFromTPS.getProvinceName();
-                        }
+//                if (StringUtils.isBlank(province)) {
+                //根据站点到TPS查找相应省份你的信息。
+                SbOrgModel orgModelFromTPS = findOrgByCarrierAndSiteCode(branchId);
+                if (orgModelFromTPS != null) {
+                    if (StringUtils.isNotBlank(orgModelFromTPS.getProvinceName())) {
+                        province = orgModelFromTPS.getProvinceName();
+                    }
 //                    if (StringUtils.isNotBlank(orgModelFromTPS.getCityName())) {
 //                        city = orgModelFromTPS.getCityName();
 //                    }
 //                    if (StringUtils.isNotBlank(orgModelFromTPS.getRegionName())) {
 //                        county = orgModelFromTPS.getRegionName();
 //                    }
-                    }
                 }
+//                }
 
                 //如果没有匹配到省份，派件就拿本省的province code。
                 if (StringUtils.isBlank(province)) {
@@ -356,6 +360,11 @@ public class DfFeeService {
                         province = currentProvince.getName();
                     }
                 }
+
+                if (StringUtils.isBlank(province)) {
+                    province = order.getCwbprovince();
+                }
+
                 if (StringUtils.isNotBlank(province) && StringUtils.isBlank(city)) {
                     String parentCode = getAddressCode(province, allProvince);
                     city = getEffectiveAddressId(receiverAddr, allCity, parentCode);
@@ -664,6 +673,18 @@ public class DfFeeService {
         }
 
         return adjustmentRecord;
+    }
+    
+    /**
+     * @author zhili01.liang on 20160816
+     * 根据条件获取计费记录
+     * @param cwb 订单号
+     * @param isCalculted 是否已计费，0未，1已计费
+     * @param chargerType  DeliveryFeeChargerType。ORG/DeliveryFeeChargerType.STAFF
+     * @return
+     */
+    public List<DfBillFee> findByCwbAndCalculted(String cwb,int isCalculted,int chargerType,int begin, int interval){
+    	return dfFeeDAO.findByCwbAndCalculted(cwb, isCalculted, chargerType, begin, interval);
     }
 
 }

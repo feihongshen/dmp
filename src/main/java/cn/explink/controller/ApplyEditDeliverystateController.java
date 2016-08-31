@@ -778,6 +778,9 @@ public class ApplyEditDeliverystateController {
 		BigDecimal otherfee = fwtr.getOtherfee();
 		BigDecimal shouldfare = fwtr.getShouldfare();
 		long requestUser = fwtr.getRequestUser();
+		
+		//对快递运费金额更改需要生成 调整记录（余额报表） added by gordon.zhou 2016/8/22
+		this.editCwbService.createFnOrgOrderAdjustRecordForModifyExpressFreight(cwb, shouldfare);
 
 		EdtiCwb_DeliveryStateDetail ec_dsd = this.editCwbService.analysisAndSaveByKuaiDiYunFei(cwb, isDeliveryState, shouldfare, cash, pos, checkfee, otherfee, requestUser, this.getSessionUser()
 				.getUserid());

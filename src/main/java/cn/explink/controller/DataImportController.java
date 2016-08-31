@@ -1156,7 +1156,7 @@ public class DataImportController {
 		}
 		List<User> courierList;
 		if (branch != null) {
-			courierList = this.userService.getUserByRoleAndBranchid(2, branch.getBranchid());
+			courierList = this.userService.getDeliverList(branch.getBranchid());
 		} else {
 			courierList = new ArrayList<User>();
 		}

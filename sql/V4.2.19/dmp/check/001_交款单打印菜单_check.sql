@@ -1,0 +1,1 @@
+SELECT '交款单打印菜单' AS '脚本注释', IF((SELECT COUNT(1) FROM dmp40_function WHERE functionname='交款单打印')=1, 'success', 'failed') AS '执行结果';

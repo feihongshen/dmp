@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1877,9 +1878,11 @@ public class EditCwbService {
 		CwbOrder order = this.cwbDao.getCwbByCwb(cwb);
 		if (order != null) {
 					
-			int currentSettleMode = SettlementModeEnum.BillMode.getValue();
+			int currentSettleMode = this.getCurrentSettleModeFromSysConfig();// modified by gordon.zhou 2016/08/22
 			List<FnOrgRecharges> fnOrgRechargesList = new ArrayList<FnOrgRecharges>();
-			List<FnCwbState> fnCwbStateList = new ArrayList<FnCwbState>();
+			List<FnCwbState> receivablefeeStateList = new ArrayList<FnCwbState>();
+			List<FnCwbState> smtFreightStateList = new ArrayList<FnCwbState>();
+			List<FnCwbState> expressFreightStateList = new ArrayList<FnCwbState>();
 			
 			// 根据不同的订单类型
 			record.setOrderNo(order.getCwb());
@@ -1935,15 +1938,36 @@ public class EditCwbService {
 								
 				this.fnOrgOrderAdjustRecordDAO.creOrderAdjustmentRecord(record);
 				
-				//如果再签收余额结算模式下，需把运费的调整金额的决定值 作为预付款 写入到缴款记录中 added by gordon.zhou 2016/8/9
+				//如果再签收余额结算模式下，需把运费的调整金额的决对值 作为预付款 写入到缴款记录中 added by gordon.zhou 2016/8/9
 				if(currentSettleMode == SettlementModeEnum.SignRptMode.getValue()){
 					FnCwbState fnCwbState = new FnCwbState();
 					fnCwbState.setCwb(order.getCwb());
 					fnCwbState.setSmtfreightflag(FnCwbStatusEnum.Unreceive.getIndex());
 					fnCwbState.setSmtfreightTime(null);
-					fnCwbStateList.add(fnCwbState); //更新上门退运费收款状态 added by gordon.zhou 2016/8/9
+					smtFreightStateList.add(fnCwbState); //更新上门退运费收款状态 added by gordon.zhou 2016/8/9
 					
 					fnOrgRechargesList.add(this.buildFnOrgRecharges(order, OrgRechargeSourceEnum.FreightAdjust, ec_dsd.getOriInfactfare(), ec_dsd.getOriInfactfare()));
+				}
+			}
+			
+			//如果是快递订单，且快递运费是到付类型的，生成调整记录 added by gordon.zhou 2016/08/23
+			else if(CwbOrderTypeIdEnum.Express.getValue() == order.getCwbordertypeid() && order.getPaymethod() == 2){
+				record.setModifyFee(order.getTotalfee());
+				record.setAdjustAmount(order.getTotalfee().negate());
+				record.setAdjustType(BillAdjustTypeEnum.ExpressFee.getValue());
+				record.setStatus(FnCwbStatusEnum.Received.getIndex());
+				this.fnOrgOrderAdjustRecordDAO.creOrderAdjustmentRecord(record);
+				
+				
+				//如果再签收余额结算模式下，需把运费的调整金额的决对值 作为预付款 写入到缴款记录中 added by gordon.zhou 2016/8/9
+				if(currentSettleMode == SettlementModeEnum.SignRptMode.getValue()){
+					FnCwbState fnCwbState = new FnCwbState();
+					fnCwbState.setCwb(order.getCwb());
+					fnCwbState.setExpressfreightflag(FnCwbStatusEnum.Unreceive.getIndex());
+					fnCwbState.setExpressfreightTime(null);
+					expressFreightStateList.add(fnCwbState); //更新快递运费收款状态 
+					
+					fnOrgRechargesList.add(this.buildFnOrgRecharges(order, OrgRechargeSourceEnum.FreightAdjust, order.getTotalfee(), order.getTotalfee()));
 				}
 			}
 			
@@ -1956,19 +1980,220 @@ public class EditCwbService {
 				fnCwbState.setReceivablefeeflag(FnCwbStatusEnum.Unreceive.getIndex());
 				fnCwbState.setReceivablefeeTime(null);
 				
-				fnCwbStateList.add(fnCwbState);
+				receivablefeeStateList.add(fnCwbState);
 			}
 			
 			if(!fnOrgRechargesList.isEmpty()){
 				fnOrgRechargesRptmodeDAO.batchInsertOrgRecharges(fnOrgRechargesList);
 			}
 			
-			if(!fnCwbStateList.isEmpty()){
-				fnCwbStateDao.batchUpdateReceivablefeeflag(fnCwbStateList);
+			if(!receivablefeeStateList.isEmpty()){
+				fnCwbStateDao.batchUpdateReceivablefeeflag(receivablefeeStateList);
+			}
+			
+			if(!smtFreightStateList.isEmpty()){
+				fnCwbStateDao.batchUpdateSmtfreightflag(smtFreightStateList);
+			}
+			
+			if(!expressFreightStateList.isEmpty()){
+				fnCwbStateDao.batchUpdateExpressfreightflag(expressFreightStateList);
 			}
 		}
 	}
 	
+	
+	/**
+	 * 修改快递单运费 生成订单调整记录（余额报表）
+	 * @param cwb
+	 * @param newShouldfare
+	 * @author gordon.zhou 2016/08/22
+	 * 
+	 */
+	public void createFnOrgOrderAdjustRecordForModifyExpressFreight(String cwb, BigDecimal newShouldfare) {
+		OrgOrderAdjustmentRecord record = new OrgOrderAdjustmentRecord();
+		// 查询出对应订单号的账单详细信息
+		CwbOrder order = this.cwbDao.getCwbByCwb(cwb);
+		if (order != null && CwbOrderTypeIdEnum.Express.getValue() == order.getCwbordertypeid() && order.getPaymethod() == 1) {
+			if(order.getShouldfare() != null && order.getShouldfare().compareTo(newShouldfare) == 0){
+				//如果快递运费修改之前 和修改 之后没有变化，不需要生成调整记录
+				return;
+			}
+			int isadditionflag = order.getIsadditionflag(); //是否补录完成
+			String completedatetime = order.getCompletedatetime(); //补录完成时间
+			if(StringUtils.isBlank(completedatetime)){
+				//补录完成时间为空 不生成调整记录
+				return;
+			}
+			String todayStr = DateTimeUtil.formatDate(new Date(), DateTimeUtil.DEF_DATE_FORMAT);
+			String completedatetimeStr = DateTimeUtil.translateFormatDate(completedatetime, DateTimeUtil.DEF_DATETIME_FORMAT, DateTimeUtil.DEF_DATE_FORMAT);
+			if (isadditionflag == 1 && !todayStr.equals(completedatetimeStr)) {//已补录完成 且 补录完成时间与快递运费修改时间不在同一天生成订单调整记录
+				
+				List<FnOrgRecharges> fnOrgRechargesList = new ArrayList<FnOrgRecharges>();
+				
+				int currentSettleMode = this.getCurrentSettleModeFromSysConfig();
+				
+				// 根据不同的订单类型
+				record.setOrderNo(order.getCwb());
+				record.setBillNo("");
+				record.setBillId(0L);
+				record.setAdjustBillNo("");
+				record.setCustomerId(order.getCustomerid());
+				record.setReceiveFee(order.getReceivablefee());
+				record.setRefundFee(order.getPaybackfee());
+				// 是否修改过支付方式的标识PayMethodSwitchEnum.No.getValue()
+				record.setPayWayChangeFlag(PayMethodSwitchEnum.No.getValue());
+				record.setDeliverId(Long.valueOf(order.getCollectorid()));
+				record.setCreator(this.getSessionUser().getUsername());
+				record.setCreateTime(new Date());
+				record.setOrderType(order.getCwbordertypeid());
+				// 订单的支付方式可能是新的支付方式
+				Long oldPayWay = Long.valueOf(order.getPaywayid()) == null ? 1L : Long.valueOf(order.getPaywayid());
+				Long newPayWay = order.getNewpaywayid() == null ? 0L : Long.valueOf(order.getNewpaywayid());
+				if (oldPayWay.intValue() == newPayWay.intValue()) {
+					record.setPayMethod(oldPayWay.intValue());
+				} else {
+					record.setPayMethod(newPayWay.intValue());
+				}
+				record.setDeliverybranchid(order.getInstationid());
+			
+				record.setPayWayChangeFlag(0);
+				// 调整金额为货款调整
+				record.setAdjustType(BillAdjustTypeEnum.ExpressFee.getValue());
+				// 记录运费
+				record.setFreightAmount(order.getShouldfare() == null ? BigDecimal.ZERO : order.getShouldfare());			
+				// 修改前的运费
+				record.setModifyFee(order.getShouldfare() == null ? BigDecimal.ZERO : order.getShouldfare());
+				//修改金额
+				record.setAdjustAmount(newShouldfare.subtract(order.getShouldfare() == null ? BigDecimal.ZERO : order.getShouldfare()));
+				//设置收款状态
+				record.setStatus(record.getAdjustAmount().compareTo(BigDecimal.ZERO) < 0 ? FnCwbStatusEnum.Received.getIndex() : FnCwbStatusEnum.Unreceive.getIndex());
+				
+				this.fnOrgOrderAdjustRecordDAO.creOrderAdjustmentRecord(record);
+
+				
+				if(currentSettleMode == SettlementModeEnum.SignRptMode.getValue()){
+					// 如果当前结算模式是签收余额结算模式，且修改之后的金额比修改之前的金额小，需要把差额作为预付款 写入站点缴款记录表
+					if(record.getAdjustAmount().compareTo(BigDecimal.ZERO) < 0){
+						
+						BigDecimal rechargeAmount =  record.getAdjustAmount().abs();
+						fnOrgRechargesList.add(this.buildFnOrgRecharges(order, OrgRechargeSourceEnum.FreightAdjust, rechargeAmount, rechargeAmount));
+					
+					}
+					//修改之后的金额比修改前的金额大，需要更新订单快递运费收款状态 为未收款
+					else {
+						FnCwbState fnCwbState = new FnCwbState();
+						fnCwbState.setCwb(order.getCwb());
+						fnCwbState.setExpressfreightflag(FnCwbStatusEnum.Unreceive.getIndex());
+						fnCwbState.setExpressfreightTime(null);
+						
+						List<FnCwbState> expressFreightStateList = new ArrayList<FnCwbState>();
+						expressFreightStateList.add(fnCwbState); //更新快递运费收款状态 
+						
+						fnCwbStateDao.batchUpdateExpressfreightflag(expressFreightStateList);
+					}
+						
+				}
+				
+				if(!fnOrgRechargesList.isEmpty()){
+					fnOrgRechargesRptmodeDAO.batchInsertOrgRecharges(fnOrgRechargesList);
+				}
+			}
+			
+		
+			
+		}
+	}
+	
+	
+	/**
+	 * 当快递订单被失效时，若余额报表存在快递运费的记录，则需生成该订单的快递运费调整记录，调整金额=-应收运费（到付/现付）
+	 * @param cwb
+	 */
+	public void createFnOrgOrderAdjustRecordForDisabledOrder(CwbOrder order) {
+		
+		//只有现付的快递订单才 生成调整记录
+		if (order != null && CwbOrderTypeIdEnum.Express.getValue() == order.getCwbordertypeid() && order.getPaymethod() == 1) {
+			
+			int isadditionflag = order.getIsadditionflag(); //是否补录完成
+			String completedatetime = order.getCompletedatetime(); //补录完成时间
+			if(StringUtils.isBlank(completedatetime)){
+				//补录完成时间为空 不生成调整记录
+				return;
+			}
+			String todayStr = DateTimeUtil.formatDate(new Date(), DateTimeUtil.DEF_DATE_FORMAT);
+			String completedatetimeStr = DateTimeUtil.translateFormatDate(completedatetime, DateTimeUtil.DEF_DATETIME_FORMAT, DateTimeUtil.DEF_DATE_FORMAT);
+			if (isadditionflag == 1 && !todayStr.equals(completedatetimeStr)) {//已补录完成 且 补录完成时间与快递运费修改时间不在同一天生成订单调整记录
+				
+				List<FnOrgRecharges> fnOrgRechargesList = new ArrayList<FnOrgRecharges>();
+				
+				int currentSettleMode = this.getCurrentSettleModeFromSysConfig();
+				
+				OrgOrderAdjustmentRecord record = new OrgOrderAdjustmentRecord();
+				// 根据不同的订单类型
+				record.setOrderNo(order.getCwb());
+				record.setBillNo("");
+				record.setBillId(0L);
+				record.setAdjustBillNo("");
+				record.setCustomerId(order.getCustomerid());
+				record.setReceiveFee(order.getReceivablefee());
+				record.setRefundFee(order.getPaybackfee());
+				// 是否修改过支付方式的标识PayMethodSwitchEnum.No.getValue()
+				record.setPayWayChangeFlag(PayMethodSwitchEnum.No.getValue());
+				record.setDeliverId(Long.valueOf(order.getCollectorid()));
+				record.setCreator(this.getSessionUser().getUsername());
+				record.setCreateTime(new Date());
+				record.setOrderType(order.getCwbordertypeid());
+				// 订单的支付方式可能是新的支付方式
+				Long oldPayWay = Long.valueOf(order.getPaywayid()) == null ? 1L : Long.valueOf(order.getPaywayid());
+				Long newPayWay = order.getNewpaywayid() == null ? 0L : Long.valueOf(order.getNewpaywayid());
+				if (oldPayWay.intValue() == newPayWay.intValue()) {
+					record.setPayMethod(oldPayWay.intValue());
+				} else {
+					record.setPayMethod(newPayWay.intValue());
+				}
+				record.setDeliverybranchid(order.getInstationid());
+			
+				record.setPayWayChangeFlag(0);
+				// 调整金额为货款调整
+				record.setAdjustType(BillAdjustTypeEnum.ExpressFee.getValue());
+				// 记录运费
+				record.setFreightAmount(order.getShouldfare() == null ? BigDecimal.ZERO : order.getShouldfare());			
+				// 修改前的运费
+				record.setModifyFee(order.getShouldfare() == null ? BigDecimal.ZERO : order.getShouldfare());
+				//修改金额
+				record.setAdjustAmount(order.getShouldfare().negate());
+				//设置收款状态
+				record.setStatus(FnCwbStatusEnum.Received.getIndex());
+				
+				this.fnOrgOrderAdjustRecordDAO.creOrderAdjustmentRecord(record);
+
+				
+				if(currentSettleMode == SettlementModeEnum.SignRptMode.getValue()){
+											
+						BigDecimal rechargeAmount =  record.getAdjustAmount().abs();
+						fnOrgRechargesList.add(this.buildFnOrgRecharges(order, OrgRechargeSourceEnum.FreightAdjust, rechargeAmount, rechargeAmount));
+					
+						//更新快递运费收款状态为未收款
+						FnCwbState fnCwbState = new FnCwbState();
+						fnCwbState.setCwb(order.getCwb());
+						fnCwbState.setExpressfreightflag(FnCwbStatusEnum.Unreceive.getIndex());
+						fnCwbState.setExpressfreightTime(null);
+						
+						List<FnCwbState> expressFreightStateList = new ArrayList<FnCwbState>();
+						expressFreightStateList.add(fnCwbState); //更新快递运费收款状态 
+						
+						fnCwbStateDao.batchUpdateExpressfreightflag(expressFreightStateList);
+					
+						
+				}
+				
+				if(!fnOrgRechargesList.isEmpty()){
+					fnOrgRechargesRptmodeDAO.batchInsertOrgRecharges(fnOrgRechargesList);
+				}
+			}
+		}
+	}
+
 	
 	/**
 	 * POS、COD支付方式订单重置反馈后新增 回款 调整记录 

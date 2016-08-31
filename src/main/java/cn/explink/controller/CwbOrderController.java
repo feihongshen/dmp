@@ -1,6 +1,7 @@
 package cn.explink.controller;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -18,6 +19,7 @@ import cn.explink.service.DfFeeService;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -81,6 +83,7 @@ import cn.explink.domain.CustomWareHouse;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
+import cn.explink.domain.KfSmtPrintVo;
 import cn.explink.domain.OrderBackRuku;
 import cn.explink.domain.OrderGoods;
 import cn.explink.domain.OrderbackRecord;
@@ -89,6 +92,7 @@ import cn.explink.domain.Remark;
 import cn.explink.domain.SetExportField;
 import cn.explink.domain.ShangMenTuiCwbDetail;
 import cn.explink.domain.ShiXiao;
+import cn.explink.domain.SmtCwb;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.TuihuoRecord;
@@ -109,14 +113,17 @@ import cn.explink.service.AdjustmentRecordService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbRouteService;
 import cn.explink.service.DataStatisticsService;
+import cn.explink.service.EditCwbService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.LogToDayService;
+import cn.explink.service.SmtCwbService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.support.transcwb.TranscwbView;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.ExcelUtilsHandler;
+import cn.explink.util.NumberToCN;
 import cn.explink.util.Page;
 import cn.explink.util.StreamingStatementCreator;
 import cn.explink.util.TuiGongHuoShangPage;
@@ -220,6 +227,12 @@ public class CwbOrderController {
 	TransCwbDetailDAO transCwbDetailDAO;
 	@Autowired
 	TranscwbOrderFlowDAO transcwbOrderFlowDAO;
+	
+	@Autowired
+	private SmtCwbService smtCwbService;
+	
+	@Autowired
+	EditCwbService editCwbService;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
@@ -422,6 +435,9 @@ public class CwbOrderController {
 		if (modal == 3) {
 			return this.selectforvip(model, isprint);
 		}
+		if (modal == 4) {
+			return this.selectforkfsmtprint(model, isprint);
+		}
 		String cwbs = "";
 		for (int i = 0; i < isprint.length; i++) {
 			cwbs += "'" + isprint[i] + "',";
@@ -573,6 +589,75 @@ public class CwbOrderController {
 
 		return "cwborder/selectforvipprint";
 
+	}
+	
+	/**
+	 * 库房上门退打印模板
+	 * @author chunlei05.li
+	 * @date 2016年8月17日 下午3:21:18
+	 * @param model
+	 * @param isprint
+	 * @return
+	 */
+	@RequestMapping("/selectforkfsmtprint")
+	public String selectforkfsmtprint(Model model, @RequestParam(value = "isprint", defaultValue = "", required = true) String[] isprint) {
+		String cwbs = "";
+		for (int i = 0; i < isprint.length; i++) {
+			cwbs += "'" + isprint[i] + "',";
+		}
+		// 查询订单主表
+		List<CwbOrder> cwbOrderList = this.cwbDao.getCwbByCwbs(cwbs.substring(0, cwbs.length() - 1));
+
+		// 查询供货商，转Map
+		List<Customer> customerList = this.customerDao.getAllCustomers();
+		Map<Long, Customer> customernameMap = new HashMap<Long, Customer>();
+		for (Customer customer : customerList) {
+			customernameMap.put(customer.getCustomerid(), customer);
+		}
+		// 转VO
+		List<KfSmtPrintVo> printVoList = new ArrayList<KfSmtPrintVo>(cwbOrderList.size());
+		for (CwbOrder cwbOrder : cwbOrderList) {
+			KfSmtPrintVo printVo = new KfSmtPrintVo();
+			printVo.setCwbOrder(cwbOrder);
+			// 供货商
+			Customer customer = customernameMap.get(cwbOrder.getCustomerid());
+			printVo.setCustomer(customer);
+			// 联系电话
+			String consigneemobile = null;
+			if (StringUtils.isNotBlank(cwbOrder.getConsigneephone()) && StringUtils.isNotBlank(cwbOrder.getConsigneemobile())) {
+				consigneemobile = cwbOrder.getConsigneephone() + "/" + cwbOrder.getConsigneemobile();
+			} else if (StringUtils.isNotBlank(cwbOrder.getConsigneephone())) {
+				consigneemobile = cwbOrder.getConsigneephone();
+			} else if (StringUtils.isNotBlank(cwbOrder.getConsigneemobile())) {
+				consigneemobile = cwbOrder.getConsigneemobile();
+			}
+			printVo.setConsigneemobile(consigneemobile);
+			// 合计费用-大写
+			// 费用合计 = 运费 + 应收 - 应付
+			BigDecimal totalfee = BigDecimal.ZERO;
+			if (cwbOrder.getShouldfare() != null) {
+				totalfee = totalfee.add(cwbOrder.getShouldfare());
+			}
+			if (cwbOrder.getReceivablefee() != null) {
+				totalfee = totalfee.add(cwbOrder.getReceivablefee());
+			}
+			if (cwbOrder.getPaybackfee() != null) {
+				totalfee = totalfee.subtract(cwbOrder.getPaybackfee());
+			}
+			printVo.setTotalfee(totalfee);
+			// 截取2位
+			totalfee = totalfee.setScale(2, RoundingMode.DOWN);
+			// 转大写中文
+			String cnTotalfee = NumberToCN.number2CNMontrayUnit(totalfee);
+			printVo.setCnTotalfee(cnTotalfee);
+			// 上门退信息
+			SmtCwb smtCwb = this.smtCwbService.getSmtCwbByCwb(cwbOrder.getCwb());
+			printVo.setSmtCwb(smtCwb);
+			printVoList.add(printVo);
+		}
+		model.addAttribute("printVoList", printVoList);
+		model.addAttribute("printTime", new Date());
+		return "cwborder/selectforkfsmtprint";
 	}
 
 	@RequestMapping("/geteditBranch")
@@ -1769,19 +1854,35 @@ public class CwbOrderController {
 								throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiDiYiCiRuKuBuNengShiXiao);
 							}
 						}
-						if ((co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) && (co.getFlowordertype() != FlowOrderTypeEnum.RuKu.getValue())) {
-							throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiDaorushujuandrukunotallowshixiao);
+						if(co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()){//如果是快递单，那么可以失效的环节有：运单录入、揽件入站（可能有入库，不过快递单没有导入数据状态）--刘武强20160822
+							if ((co.getFlowordertype() != FlowOrderTypeEnum.RuKu.getValue()) && co.getFlowordertype() != FlowOrderTypeEnum.LanJianRuZhan.getValue() && co.getFlowordertype() != FlowOrderTypeEnum.YunDanLuRu.getValue()) {
+								throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiYundanluruAndLanjianruzhanAndRukuNotallowshixiao);
+							}
+						}else{
+							if ((co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) && (co.getFlowordertype() != FlowOrderTypeEnum.RuKu.getValue())) {
+								throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiDaorushujuandrukunotallowshixiao);
+							}
 						}
 					} else {
-						if (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) {
-							throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiDaorushujunotallowshixiao);
-
+						if(co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()){//如果是快递单，那么可以失效的环节有：运单录入、揽件入站（可能有入库，不过快递单没有导入数据状态）--刘武强20160822
+							if (co.getFlowordertype() != FlowOrderTypeEnum.LanJianRuZhan.getValue() && co.getFlowordertype() != FlowOrderTypeEnum.YunDanLuRu.getValue()) {
+								throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiYundanluruAndLanjianruzhanNotallowshixiao);
+							}
+						}else{
+							if (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) {
+								throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiDaorushujunotallowshixiao);
+							}
 						}
 					}
 				} else {
-					if (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) {
-						throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiDaorushujunotallowshixiao);
-
+					if(co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()){//如果是快递单，那么可以失效的环节有：运单录入、揽件入站（可能有入库，不过快递单没有导入数据状态）--刘武强20160822
+						if (co.getFlowordertype() != FlowOrderTypeEnum.LanJianRuZhan.getValue() && co.getFlowordertype() != FlowOrderTypeEnum.YunDanLuRu.getValue()) {
+							throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiYundanluruAndLanjianruzhanNotallowshixiao);
+						}
+					}else{
+						if (co.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()) {
+							throw new CwbException(cwb, ExceptionCwbErrorTypeEnum.FeiDaorushujunotallowshixiao);
+						}
 					}
 				}
 				/*	if (orderFlowDAO.getOrderFlowByCwbAndFlowordertype(FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue(), cwb).size() > 0) {
@@ -1817,6 +1918,9 @@ public class CwbOrderController {
 
 				//买单结算的客户订单失效需要判断是否已经生成客户账单，如果生成了客户账单，要生成客户调整账单
 				this.adjustmentRecordService.createAdjustmentForLosecwbBatch(co);
+				
+				//生成订单调整记录（余额报表） added by gordon.zhou 2016/08/24
+				this.editCwbService.createFnOrgOrderAdjustRecordForDisabledOrder(co);
 
                 //added by Steve PENG. 失效订单需要进行派费相关操作。 start
                 //注释掉因为手动失效订单不需要执行相关的派费的操作。所有失效操作只在接口完成。

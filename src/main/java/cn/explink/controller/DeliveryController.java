@@ -6,13 +6,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -49,6 +52,8 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.CwbSearchDelivery;
+import cn.explink.domain.DeliverPaymentPrintVo;
+import cn.explink.domain.DeliverPaymentReportVo;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.GotoClassAuditing;
 import cn.explink.domain.GotoClassOld;
@@ -57,6 +62,7 @@ import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.B2cPushStateEnum;
+import cn.explink.enumutil.DeliveryPaymentPatternEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.DeliveryTongjiEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
@@ -68,11 +74,14 @@ import cn.explink.exception.ExplinkException;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.SignTypeEnum;
 import cn.explink.service.AdjustmentRecordService;
+import cn.explink.service.BranchService;
 import cn.explink.service.CwbOrderService;
+import cn.explink.service.DeliverService;
 import cn.explink.service.DfFeeService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.OrgBillAdjustmentRecordService;
+import cn.explink.service.UserService;
 import cn.explink.service.mps.release.DeliverTakeGoodsMPSReleaseService;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
@@ -142,6 +151,15 @@ public class DeliveryController {
     DfFeeService dfFeeService;
     @Autowired
     DeliverTakeGoodsMPSReleaseService deliverTakeGoodsMPSReleaseService;
+    
+    @Autowired
+    private DeliverService deliverService;
+    
+    @Autowired
+    private BranchService branchService;
+    
+    @Autowired
+	private UserService userService;
 
 	private SimpleDateFormat df_d = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -1120,6 +1138,9 @@ public class DeliveryController {
 					CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(scancwb);
 					parameters.put("transcwb", (cwbOrder==null?"":cwbOrder.getTranscwb()));
 					//Added end
+					
+					//Added by leoliao at 2016-08-12 增加从DMP界面进行反馈标识
+					parameters.put("comefrompage", "1");
 
 					if (DeliveryStateEnum.ShangMenJuTui.getValue() == deliverystate) {
 						parameters.put("isjutui", true);
@@ -1885,5 +1906,170 @@ public class DeliveryController {
 		} else {
 			return "[]";
 		}
+	}
+	
+	/**
+	 * 交款单打印查询页面
+	 * @author chunlei05.li
+	 * @date 2016年8月26日 上午10:46:30
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/paymentListQuery")
+	public String paymentListQuery(Model model) {
+		// 小件员
+		List<User> deliverList = this.userDAO.getUserByRole("2,4", this.getSessionUser().getBranchid());
+		model.addAttribute("deliverList", deliverList);
+		// 支付类型
+		DeliveryPaymentPatternEnum[] payArray = DeliveryPaymentPatternEnum.values();
+		model.addAttribute("payArray", payArray);
+		// 当前时间
+		Date now = new Date();
+		model.addAttribute("now", now);
+		return "delivery/paymentListQuery";
+	}
+	
+	/**
+	 * 查询交款单列表
+	 * @author chunlei05.li
+	 * @date 2016年8月26日 下午4:36:11
+	 * @param deliveryId
+	 * @return
+	 */
+	@RequestMapping("/getPaymentPrintList")
+	@ResponseBody
+	public Map<String, Object> getPaymentPrintList(long deliveryId, String auditingtimeStart, String auditingtimeEnd,
+			int paymentType) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			// 防止某些原因时间为空，导致查全表
+			if (StringUtils.isBlank(auditingtimeStart)) {
+				// 获取当日凌晨的开始时间字符串
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+				auditingtimeStart = sdf.format(new Date());
+			} 
+			// 防止某些原因时间为空，导致查全表
+			if (StringUtils.isBlank(auditingtimeEnd)) {
+				// 获取当日凌晨的开始时间字符串
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				auditingtimeEnd = sdf.format(new Date());
+			}
+			List<DeliverPaymentReportVo> voList = this.deliverService.getDeliverPaymentQueryList(deliveryId, auditingtimeStart, auditingtimeEnd, paymentType);
+			DataGridReturn dg = new DataGridReturn();
+			dg.setRows(voList);
+			dg.setTotal(voList.size());
+			if (paymentType != 0) {
+				// 合计
+				List<DeliverPaymentReportVo> footerList = new ArrayList<DeliverPaymentReportVo>(1);
+				DeliverPaymentReportVo footer = new DeliverPaymentReportVo();
+				footer.setCustomerName("合计");
+				for (DeliverPaymentReportVo vo : voList) {
+					footer.setOrderCount(footer.getOrderCount() + vo.getOrderCount());
+					footer.setShouldReceivedfee(footer.getShouldReceivedfee().add(vo.getShouldReceivedfee()));
+					footer.setShouldPaybackfee(footer.getShouldPaybackfee().add(vo.getShouldPaybackfee()));
+					footer.setShouldfare(footer.getShouldfare().add(vo.getShouldfare()));
+					footer.setShouldTotal(footer.getShouldTotal().add(vo.getShouldTotal()));
+					footer.setRealTotal(footer.getRealTotal().add(vo.getRealTotal()));
+				}
+				footerList.add(footer);
+				dg.setFooter(footerList);
+			}
+			resultMap.put("result", dg);
+			resultMap.put("deliveryId", deliveryId);
+			resultMap.put("auditingtimeStart", auditingtimeStart);
+			resultMap.put("auditingtimeEnd", auditingtimeEnd);
+			resultMap.put("status", 0);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			logger.error(e.getMessage(), e);
+			resultMap.put("status", 1);
+			resultMap.put("msg", e.getMessage());
+		}
+		return resultMap;
+	}
+	
+	/**
+	 * 交款单打印
+	 * @author chunlei05.li
+	 * @date 2016年8月29日 下午2:14:50
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/paymentListPrint")
+	public String paymentListPrint(Model model, @RequestParam(defaultValue = "0") long deliveryId,
+			@RequestParam(defaultValue = "") String customerIds,
+			@RequestParam(defaultValue = "") String cwbOrderTypeIds,
+			@RequestParam(defaultValue = "") String deliveryPaymentPatternIds, String auditingtimeStart,
+			String auditingtimeEnd) {
+		long[] customerIdArray = this.stringToLongArray(customerIds);
+		int[] cwbOrderTypeIdArray = this.stringToIntArray(cwbOrderTypeIds);
+		int[] deliveryPaymentPatternIdArray = this.stringToIntArray(deliveryPaymentPatternIds);
+		List<DeliverPaymentPrintVo> deliverPaymentPrintVoList = this.deliverService.getDeliverPaymentPrintMap(
+				deliveryId, customerIdArray, cwbOrderTypeIdArray, deliveryPaymentPatternIdArray, auditingtimeStart,
+				auditingtimeEnd);
+		model.addAttribute("deliverPaymentPrintVoList", deliverPaymentPrintVoList);
+		// 当前时间
+		Date now = new Date();
+		model.addAttribute("printTime", now);
+		// 当前用户
+		User user = this.getSessionUser();
+		model.addAttribute("printUsername", user.getRealname());
+		// 站点
+		Branch branch = this.branchService.getBranchByBranchid(user.getBranchid());
+		model.addAttribute("branchname", branch.getBranchname());
+		// 交款时间
+		model.addAttribute("auditingtimeStart", auditingtimeStart);
+		model.addAttribute("auditingtimeEnd", auditingtimeEnd);
+		// 小件员
+		User delivery = this.userService.getUserByUserid(deliveryId);
+		model.addAttribute("deliveryName", delivery.getRealname());
+		// 小件员站点
+		Branch deliveryBranch = this.branchService.getBranchByBranchid(delivery.getBranchid());
+		model.addAttribute("deliveryBranchName", deliveryBranch.getBranchname());
+		return "delivery/paymentListPrint";
+	}
+	
+	/**
+	 * 字符转长整型, 逗号隔开
+	 * @author chunlei05.li
+	 * @date 2016年8月29日 下午4:26:42
+	 * @return
+	 */
+	private long[] stringToLongArray(String numListStr) {
+		String[] strs = numListStr.split(",");
+		Set<String> strSet = new HashSet<String>();
+		for (String str : strs) {
+			if (StringUtils.isNotBlank(str) && strSet.contains(str) == false) {
+				strSet.add(str);
+			}
+		}
+		long[] numArray = new long[strSet.size()];
+		int i = 0;
+		for (String str : strSet) {
+			numArray[i++] = Long.parseLong(str);
+		}
+		return numArray;
+	}
+	
+	/**
+	 * 字符转整型, 逗号隔开
+	 * @author chunlei05.li
+	 * @date 2016年8月29日 下午4:26:42
+	 * @return
+	 */
+	private int[] stringToIntArray(String numListStr) {
+		String[] strs = numListStr.split(",");
+		Set<String> strSet = new HashSet<String>();
+		for (String str : strs) {
+			if (StringUtils.isNotBlank(str) && strSet.contains(str) == false) {
+				strSet.add(str);
+			}
+		}
+		int[] numArray = new int[strSet.size()];
+		int i = 0;
+		for (String str : strSet) {
+			numArray[i++] = Integer.parseInt(str);
+		}
+		return numArray;
 	}
 }

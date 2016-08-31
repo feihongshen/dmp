@@ -1,6 +1,6 @@
 <%@ taglib prefix="t" uri="/easyui-tags"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page language="java" import="java.util.List,java.util.ArrayList,java.util.Map"%>
+<%@ page language="java" import="java.util.*"%>
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
 	Map usermap = (Map) session.getAttribute("usermap");
@@ -51,6 +51,7 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/express/stationOperation.js"></script>
 <script src="<%=request.getContextPath()%>/js/datePlugin/My97DatePicker/WdatePicker.js"
 	type="text/javascript"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
 
 <style type="text/css">
 .navbar {
@@ -110,6 +111,19 @@
 						<div style="float: right; margin-top: 10px;">
 							<table>
 								<tr>
+									<td colspan="3">
+										<div style="float:right">
+											<img src="<%=request.getContextPath()%>/images/horn.png" alt="" />
+										</div>
+										<div style="float:right">
+											<marquee id="noticeMarquee" direction="left" behavior="scroll" scrollamount="3" onmouseover="this.stop();" onmouseout="this.start();" style="width:850px">
+											</marquee>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td style="width:300">
+									</td>
 									<td><div>
 											<strong>用户：<%=usermap.get("realname")%>&nbsp;&nbsp;部门：<%=usermap.get("branchname") == null ? "-" : usermap
 					.get("branchname")%>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -138,6 +152,10 @@
 							<div onclick="addTab('修改密码','passwordupdate?&clickFunctionId=10001','folder')">
 								<i class="icon-lock" style="position: relative; left: -25px;"></i>修改密码
 							</div>
+							<div class="menu-sep"></div>
+							<div onclick="addTab('历史版本','taskShow/historyList/1?&clickFunctionId=10001','folder')">
+								<i class="icon-lock" style="position: relative; left: -25px;"></i>历史版本
+							</div>
 						</div>
 						<div id="layout_north_zxMenu" style="width: 100px; display: none;">
 							<div
@@ -145,6 +163,10 @@
 								<i class="icon-off" style="position: relative; left: -25px;"></i>退出系统
 							</div>
 						</div>
+						<div id="dlg" class="easyui-dialog" title="新增版本发布说明" style="width:700px;height:550px;padding:10px" data-options="closed:true";>
+					   		<div id="showDetail" style="width:600px;height:400px;resizable:true;padding:10px">
+					   		</div>
+					    </div>
 					</div>
 				</div>
 			</div>
@@ -174,5 +196,145 @@
 					$("#playSearch").val('');
 					}
 			});
+	
+	$(document).ready(function() {
+		if(isLoginFlag()) {
+			//点击对话框字段关闭按钮事件
+			$('#dlg').dialog({
+				onBeforeClose:function(){
+					if($('#readBut').attr('checked')!='checked'){
+						alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
+						return false;
+					}
+					if(!window.confirm("确认新版本发布功能学习完毕，需关闭当前窗口？")){
+						return false;
+					}
+			    },
+			    onClose:function(){
+			    	sendReadRecord();
+			    }
+			});
+			
+			//获取最新版本说明
+			$.ajax({
+				async : false,
+				cache : false,
+				type : 'POST',
+				url : "<%=request.getContextPath()%>/taskShow/getLatestVersion",
+				success : function(result) {
+					if(result.latestVersion.isSuccess==false){
+						return;
+					}else if(result.latestVersion.data!=null&&result.latestVersion.data.versionNo!=""){
+						openWindow(result.latestVersion.data);
+					}
+					
+				}
+			});
+			
+			resetLoginFlag();
+		}
+	});
+	
+	function isLoginFlag() {
+		if(<%=("1".equals(session.getAttribute("loginFlag")))%>) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	function resetLoginFlag() {
+		<%session.setAttribute("loginFlag", "0");%>
+	}
+	
+	//根据返回内容新建对话框
+	function openWindow(data){
+		var date = new Date(data.onlineTime);
+		var updateTime = "";
+		if(data.onlineTime!=null&&data.onlineTime!=undefined){
+			Y = date.getFullYear() + '/';
+			M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '/';
+			D = date.getDate() + ' ';
+			updateTime=Y+M+D;
+		}
+		var showTime = new Date().getTime();
+		var divshow = $("#showDetail");
+		divshow.append("<div><b>上线时间："+updateTime+"</b></div>");
+		divshow.append("<div style='display:none' id='showTime'><b>"+showTime+"</b></div>");
+		divshow.append("<div><b>版本名称："+data.name+"</b></div>");
+		divshow.append("<div style='display:none' id='versionNo'><b>"+data.versionNo+"</b></div>");
+		divshow.append("<br/>");
+		divshow.append("<div>"+data.added+"</div>");
+		divshow.append("<div>" + getAttachmentLinkHtml(data) + "</div>");
+		divshow.append("<br>");
+		divshow.append("<hr style='height:5px'>");
+		divshow.append("<div style='float:left'><input id='readBut' type='checkbox'>本人已阅读此版本发布说明</div>");
+		divshow.append("<div style='float:right'><input id='closeBut' onclick='closeDlg()' type='button' class='button' value='关闭'></div>");
+		    
+		
+		$('#readBut').removeAttr('checked');
+		$('#dlg').dialog('open');
+	}
+	
+	function getAttachmentLinkHtml(data) {
+		var attachmentDiv = $('<div></div>');
+		var attachmentModelList = data.attachmentModelList;
+		if(attachmentModelList!=null && (attachmentModelList instanceof Array) && attachmentModelList.length>0) {
+			attachmentDiv.append('<hr>')
+			attachmentDiv.append('<p><label><b>附件：</b></label></p>')
+			for (var i=0; i<attachmentModelList.length; i++){
+				var attachmentModel =  attachmentModelList[i];
+				var name = attachmentModel.name;
+				var url = attachmentModel.url;
+				attachmentDiv.append('<p><a href="' + url + '?type=download&name=' + name + '">' + name + '</a></p>');
+			}
+		}
+		return attachmentDiv.html();
+	}
+	
+	//点击关闭按钮事件
+	function closeDlg() {
+		$('#dlg').dialog('close');
+	}
+	
+	function sendReadRecord(){
+		var versionNo = $("#versionNo").text();
+		var showTime = $("#showTime").text();
+		$.ajax({
+			async : false,
+			cache : false,
+			type : 'POST',
+			data : {
+				versionNo:versionNo,
+				showTime:showTime
+			},
+			url : "<%=request.getContextPath()%>/taskShow/sendReadRecord",
+			success : function(result) {
+			}
+		});
+	}
+	
+	// added by wangwei, 20160823, 页面滚动公告栏, start
+	$(function() {
+		showNotice();
+		var tenMinutes = 1000 * 60 * 10;		//每10分钟刷新一次
+		setInterval("showNotice()", tenMinutes);
+	}); 
+	
+	function showNotice(){
+		$.ajax({
+			type: "POST",
+			url:"<%=request.getContextPath()%>/taskShow/getLatestNoticeContent",
+			dataType:"json",
+			success : function(data) {
+				if(!!data && !!data.message){
+					var noticeContent = data.message;
+					var noticeContentHtml = '<font color="blue">' + noticeContent + '</font>';
+					$('#noticeMarquee').html(noticeContentHtml)			
+				}
+			}                 
+		});	
+	}
+	// added by wangwei, 20160823, 页面滚动公告栏, end
 </script>
 </html>

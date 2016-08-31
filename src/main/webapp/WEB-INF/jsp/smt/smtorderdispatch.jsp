@@ -7,10 +7,7 @@
 <%@page import="cn.explink.domain.SmtOrderContainer"%>
 <%@page import="cn.explink.domain.SmtOrder"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<%
-	//小件员.
-List<User> deliverList = (List<User>)request.getAttribute("deliverList");
-%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -43,10 +40,10 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 		return ;
 	}else if(scancwb.length>0){
 		var allnum = 0;
-		
+		var isChaoqu = $("#isChaoqu").is(":checked");
 		$.ajax({
 			type: "POST",
-			url:pname+"/PDA/cwbbranchdeliver/"+scancwb+"?deliverid="+deliverid+"&requestbatchno="+requestbatchno,
+			url:pname+"/PDA/cwbbranchdeliver/"+scancwb+"?deliverid="+deliverid+"&requestbatchno="+requestbatchno + "&isChaoqu=" + isChaoqu,
 			dataType:"json",
 			success : function(data) {
 				$("#scancwb").val("");
@@ -58,6 +55,18 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					$("#scansuccesscwb").val(scancwb);
 					$("#showcwb").html("订 单 号："+scancwb);
 					$("#consigneeaddress").html("地 址："+data.body.cwbOrder.consigneeaddress);
+					// 增加超区领货显示结果 add by chunlei05.li 2016/8/16
+					if(data.body.isChaoqu == true) {
+						if(data.body.matchDeliver == "") {
+							$("#matchDeliver").html("尚未匹配小件员");
+						} else {
+							$("#matchDeliver").html("订单匹配小件员：" + data.body.matchDeliver);
+						}
+						$("#receiveDeliver").html("领货小件员：" + data.body.receiveDeliver);
+					} else {
+						$("#matchDeliver").html("");
+						$("#receiveDeliver").html("");
+					}
 					if(data.body.cwbOrder.customercommand.indexOf('预约')>=0&&data.yuyuedaService=='yes')
 					{	
 						$("#customercommand").html("预约派送");
@@ -76,13 +85,19 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					if(data.body.showRemark!=null){
 					$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
 					}
-					$("#exceldeliverid").html(data.body.cwbdelivername);
+					if(data.body.isChaoqu != true) {
+						$("#exceldeliverid").html(data.body.cwbdelivername);
+					} else {
+						$("#exceldeliverid").html("");
+					}
 					$("#deliver").html("已领货（"+data.body.cwbdelivername+"）");
 					afterDispatch(data);
 				}else{
 					$("#exceldeliverid").html("");
 					$("#showcwb").html("");
 					$("#consigneeaddress").html("");
+					$("#matchDeliver").html("");
+					$("#receiveDeliver").html("");
 					$("#cwbordertype").html("");
 					$("#cwbDetailshow").html("");
 					$("#deliver").html("已领货");
@@ -131,7 +146,9 @@ function loadSmtOrder(dataType , timeType , dispatched , page , tableId , tabInd
 				dataType:dataType,
 				timeType:timeType,
 				dispatched:dispatched,
-				page:page
+				tableId:tableId,
+				page:page,
+				deliverid:"${deliverid}"
 			},
 			success : function(data) {
 				var dataList = data.smtOrderList;
@@ -400,7 +417,7 @@ function loadTodayOutAreaOrder(){
 			type : "post",
 			dataType : "json",
 			url : '<%=request.getContextPath() + "/smt/querysmthistoryordercount"%>'+ "?timestamp=" + new Date().getTime(),
-					data : {},
+					data : {deliverid: "${deliverid}"},
 					async : true,
 					success : function(data) {
 						$("#history_normal_not_dispatched").empty();
@@ -422,7 +439,7 @@ function loadTodayOutAreaOrder(){
 			type : "post",
 			dataType : "json",
 			url : '<%=request.getContextPath() + "/smt/querysmttodaynotdisordercount"%>'+ "?timestamp=" + new Date().getTime(),
-					data : {},
+					data : {deliverid: "${deliverid}"},
 					async : true,
 					success : function(data) {
 						$("#today_normal_not_dispatched").empty();
@@ -443,7 +460,7 @@ function loadTodayOutAreaOrder(){
 			type : "post",
 			dataType : "json",
 			url : '<%=request.getContextPath() + "/smt/querysmttodaydisordercount"%>'+ "?timestamp=" + new Date().getTime(),
-					data : {},
+					data : {deliverid: "${deliverid}"},
 					async : true,
 					success : function(data) {
 						$("#today_normal_dispatched").empty();
@@ -473,6 +490,17 @@ function loadTodayOutAreaOrder(){
 
 				});
 	});
+	
+	// 页面刷新 add by chunlei05.li 2016/8/16
+	function refresh() {
+		var deliverid = $("#deliverid").val();
+		if (deliverid == -1) {
+			location.href="<%=request.getContextPath()%>/smt/smtorderdispatch";
+		} else {
+			console.log("<%=request.getContextPath()%>/smt/smtorderdispatch?deliverid=" + deliverid);
+			location.href="<%=request.getContextPath()%>/smt/smtorderdispatch?deliverid=" + deliverid;
+		}
+	}
 </script>
 <style>
 dl dt span {
@@ -559,14 +587,14 @@ dl dd span {
 
 
 			<dl class="red">
-				<dt>今日超区</dt>
+				<dt>今日站点超区</dt>
 				<dd style="cursor: pointer">
 					<span onclick="loadTodayOutAreaOrder()"><a id="t_out_area" href="#"><img
 							src="<%=request.getContextPath()%>/images/loading_small.gif" /></a></span>
 				</dd>
 			</dl>
 			<input type="button" id="refresh" value="刷新"
-				onclick="location.href='<%=request.getContextPath()%>/smt/smtorderdispatch'"
+				onclick="refresh()"
 				style="float: left; width: 100px; height: 65px; cursor: pointer; border: none; background: url(../images/buttonbgimg1.gif) no-repeat; font-size: 18px; font-family: '微软雅黑', '黑体'" />
 			<br clear="all" />
 		</div>
@@ -581,19 +609,16 @@ dl dd span {
 					</ul>
 				</div>
 				<div class="saomiao_selet2">
-					小件员：<select id="deliverid" name="deliverid" class="select1">
-						<option value="-1" selected>请选择</option>
-						<%
-							for (User c : deliverList) {
-						%>
-						<option value="<%=c.getUserid()%>"><%=c.getRealname()%></option>
-						<%
-							}
-						%>
+					小件员：<select id="deliverid" name="deliverid" class="select1" onchange="refresh()">
+						<option value="-1">请选择</option>
+						<c:forEach var="deliver" items="${deliverList }">
+							<option value="${deliver.userid }" <c:if test="${deliver.userid eq deliverid }">selected</c:if>>${deliver.realname }</option>
+						</c:forEach>
 					</select>
-					快捷超区：<input type="text" class="input_text1" id="today_table_quick" name="today_table_quick" value=""
+					快捷站点超区：<input type="text" class="input_text1" id="today_table_quick" name="today_table_quick" value=""
 						onKeyDown="if(event.keyCode==13&&$(this).val().length>0){outArea('today_table');}" /> <label
 						id="today_table_msg" style="color: red"></label>
+					超区领货：<input type="checkbox" id="isChaoqu" name="isChaoqu"/>
 				</div>
 				<div class="saomiao_inwrith2">
 					<div class="saomiao_left2">
@@ -608,6 +633,8 @@ dl dd span {
 						<p id="showcwb" name="showcwb"></p>
 						<p id="cwbgaojia" name="cwbgaojia" style="display: none">高价</p>
 						<p id="consigneeaddress" name="consigneeaddress"></p>
+						<p id="matchDeliver" name="matchDeliver"></p>
+						<p id="receiveDeliver" name="receiveDeliver"></p>
 						<p id="fee" name="fee"></p>
 						<p id="exceldeliverid" name="exceldeliverid"></p>
 						<p id="cwbDetailshow" name="cwbDetailshow"></p>
@@ -627,12 +654,12 @@ dl dd span {
 					<li><a href="#" onclick="loadSmtOrder('all','history',false,1,'history_table',1)">历史待分派</a></li>
 					<li><a href="#" onclick="loadSmtOrder('all','today',true,1,'today_dispatch_table',2)">今日已分派</a></li>
 					<li><a href="#" onclick="showTab(3)">异常单明细</a></li>
-					<li><a href="#" onclick="loadTodayOutAreaOrder()">今日超区</a></li>
+					<li><a href="#" onclick="loadTodayOutAreaOrder()">今日站点超区</a></li>
 				</ul>
 			</div>
 			<div id="ViewList" class="tabbox">
 				<li><input type="button" id="btnval0" value="导出Excel" class="input_button1"
-					onclick='exportData()' /> <input type="button" id="btnval0" value="超区" class="input_button1"
+					onclick='exportData()' /> <input type="button" id="btnval0" value="站点超区" class="input_button1"
 					onclick="outArea('today_table')" />
 					<table width="100%" border="0" cellspacing="10" cellpadding="0">
 						<tbody>
@@ -660,8 +687,8 @@ dl dd span {
 						</tbody>
 					</table></li>
 				<li style="display: none"><input type="button" id="btnval0" value="导出Excel"
-					class="input_button1" onclick='exportData()' /> <input type="button" id="btnval0" value="超区"
-					class="input_button1" onclick="outArea('history_table')" /> <label style="margin-left: 20px">快捷超区：</label>
+					class="input_button1" onclick='exportData()' /> <input type="button" id="btnval0" value="站点超区"
+					class="input_button1" onclick="outArea('history_table')" /> <label style="margin-left: 20px">快捷站点超区：</label>
 					<input type="text" class="input_text1" id="history_table_quick" name="history_table_quick" value=""
 					onKeyDown="if(event.keyCode==13&&$(this).val().length>0){outArea('history_table');}" /> <label
 					id="history_table_msg" style="color: red"></label>
@@ -784,7 +811,7 @@ dl dd span {
 				<form>
 					<div id="box_form" style="font-size: 13px">
 						<ul>
-							<li>请确认是否将选中数据处理为超区.</li>
+							<li>请确认是否将选中数据处理为站点超区.</li>
 						</ul>
 					</div>
 					<div align="center" style="margin-left: 4px">

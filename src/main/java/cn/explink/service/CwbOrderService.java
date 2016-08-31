@@ -45,6 +45,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
+
 import cn.explink.aspect.OrderFlowOperation;
 import cn.explink.b2c.auto.order.service.AutoUserService;
 import cn.explink.b2c.maisike.branchsyn_json.Stores;
@@ -131,6 +133,8 @@ import cn.explink.domain.ChangeGoodsTypeResult;
 import cn.explink.domain.Common;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbApplyZhongZhuan;
+import cn.explink.domain.CwbDetailView;
+import cn.explink.domain.CwbOrderBranchMatchVo;
 import cn.explink.domain.CwbDiuShi;
 import cn.explink.domain.CwbKuaiDi;
 import cn.explink.domain.CwbOrder;
@@ -490,6 +494,9 @@ public class CwbOrderService extends BaseOrderService {
 	@Autowired
 	private TpsCwbFlowService tpsCwbFlowService;
 	
+	@Autowired
+	private UserService userService;
+
 	@Autowired
 	OrderPartGoodsReturnService orderPartGoodsReturnService;
 	
@@ -3801,10 +3808,46 @@ public class CwbOrderService extends BaseOrderService {
 					
 					/* ***************modify begin*********************/
 					//modify by neo01.huang,2016-8-15，这里只拦截领货、退供货商出库
+					//modify by neo01.huang,2016-8-19，有一件已经领货了，其他件做了其他操作，然后再回到这个站，继续做领货时，此时的sendcarnum与scannum会不相等的
 					logger.info("一票多件校验->cwb:{}, sendcarnum:{}, scannum:{}, 当前flowordertype:{}", 
 							co.getCwb(), co.getSendcarnum(), co.getScannum(), flowOrderTypeEnum.getValue());
-					if (flowOrderTypeEnum.getValue() == FlowOrderTypeEnum.FenZhanLingHuo.getValue() || 
-							flowOrderTypeEnum.getValue() == FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()) {
+					if (flowOrderTypeEnum.getValue() == FlowOrderTypeEnum.FenZhanLingHuo.getValue()) { //领货情况
+						
+						//add by neo01.huang，2016-8-19，加入判断第一件已经领货，其他件做了其他操作的场景
+						//获取运单领货的轨迹
+						Map<String, Object> firstReceiveGoodsParamMap = new HashMap<String, Object>();
+						firstReceiveGoodsParamMap.put("flowordertype", FlowOrderTypeEnum.FenZhanLingHuo.getValue());
+						firstReceiveGoodsParamMap.put("isnow", 1);
+						firstReceiveGoodsParamMap.put("cwb", co.getCwb());
+						
+						ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+						User currentUser = userDetail.getUser();
+						logger.info("一票多件校验->{},currentUser.getBranchid:{}", co.getCwb(), currentUser.getBranchid());
+						firstReceiveGoodsParamMap.put("branchid", currentUser.getBranchid());
+						/*
+						 * SELECT * FROM express_ops_transcwb_orderflow t  WHERE t.flowordertype=9 AND t.isnow=1  AND t.cwb=?  AND t.branchid=?
+						 */
+						//运单领货的轨迹
+						List<TranscwbOrderFlow> firstReceiveGoodsFlowList = transcwborderFlowDAO.queryTranscwbOrderFlow(firstReceiveGoodsParamMap, null);
+						//运单已领货的轨迹数量
+						int firstReceiveGoodsFlowListSize = 0;
+						if (firstReceiveGoodsFlowList != null) {
+							firstReceiveGoodsFlowListSize = firstReceiveGoodsFlowList.size();
+				 		}
+						logger.info("一票多件校验->{},firstReceiveGoodsFlowListSize:{}", co.getCwb(), firstReceiveGoodsFlowListSize);
+						
+						//说明一件货都没领，需要拦截住做校验
+						if (firstReceiveGoodsFlowListSize == 0) { 
+							boolean allarrive = this.automateCheck(co, flowOrderTypeEnum);
+							if (!allarrive) {
+								throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR, FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(), flowOrderTypeEnum
+										.getText());
+							}
+						}
+						
+						
+					} else if (flowOrderTypeEnum.getValue() == FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue()) { //退供货商出库
+						
 						boolean allarrive = this.automateCheck(co, flowOrderTypeEnum);
 						if (!allarrive) {
 							throw new CwbException(co.getCwb(), flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.YPDJSTATE_CONTROL_ERROR, FlowOrderTypeEnum.getText(co.getFlowordertype()).getText(), flowOrderTypeEnum
@@ -10447,7 +10490,7 @@ public class CwbOrderService extends BaseOrderService {
 		CwbOrderTypeIdEnum cwbOrderType = CwbOrderTypeIdEnum.getByValue(cwbOrder.getCwbordertypeid());
 		vo.setOrderTypeVal(cwbOrderType == null ? null : cwbOrderType.getText());
 		if(cwbOrder.getDeliverybranchid() != 0) {
-			List<User> courierList = this.userDao.getUserByRoleAndBranchid(2, cwbOrder.getDeliverybranchid());
+			List<User> courierList = this.userService.getDeliverList(cwbOrder.getDeliverybranchid());
 			vo.setCourierList(courierList);
 		}
 		return vo;
@@ -10507,5 +10550,17 @@ public class CwbOrderService extends BaseOrderService {
 							ExceptionCwbErrorTypeEnum.Ling_huo_EXPRESS_LIMIT);
 				}
 		} 
+	}
+	
+	/**
+	 * @author zhili01.liang 
+	 * @serialData 2016-07-28
+	 * 更新订单货物类型
+	 * @param cwb
+	 * @param cartype
+	 */
+	public void updateCwbCartype(String cwb, String cartype) {
+		String sql = "update express_ops_cwb_detail set cartype=? where cwb=? and state=1 ";
+		cwbDAO.updateCwbCartype(cwb, cartype);
 	}
 }

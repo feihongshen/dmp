@@ -17,12 +17,22 @@ public enum FlowOrderTypeEnum {
 	GongYingShangJuShouTuiHuo(62, "退供应商拒收退货"),
 	UpdatePickBranch(63,"更新提货站"),
 	ChongZhiFanKui(64,"重置反馈"),
+	
+	//zhili01.liang，修改货物类型需求，
+	/**修改货物类型流程：审核通过，*/
+	XiuGaiHuoWuLeiXingTongGuo(67,"修改货物类型通过"),
+	/**修改货物类型流程：审核不通过，*/
+	XiuGaiHuoWuLeiXingBuTongGuo(66,"修改货物类型不通过"),
+	
 	/**
 	 * 快递的三个状态
 	 */
 	YunDanLuRu(1000,"运单录入"),
 	LanJianRuZhan(1001,"揽件入站"),
-	LanJianChuZhan(1002,"揽件出站");
+	LanJianChuZhan(1002,"揽件出站"),
+	
+	//add by vic.liang@pjbest.com 2016-08-20
+	BingEmsTrans(65,"绑定邮政运单");
 	
 	private int value;
 	private String text;

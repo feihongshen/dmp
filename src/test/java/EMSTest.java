@@ -21,6 +21,7 @@ import cn.explink.b2c.ems.SendToEMSOrder;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.CwbOrderService;
+import cn.explink.util.DateTimeUtil;
 import daoTest.BaseTest;
 
 public class EMSTest extends BaseTest{
@@ -65,8 +66,9 @@ public class EMSTest extends BaseTest{
 			transcwb = transcwb.trim();
 	    	String cwb = cwbOrderService.translateCwb(transcwb);
 	    	
+	    	String bingTime = DateTimeUtil.getNowTime();
 	    	//解析并将获取的运单号信息存储到dmp与ems运单对照关系表
-			eMSDAO.saveEMSEmailnoAndDMPTranscwb(cwb,transcwb,emsAndDmpTranscwb.getBillno());
+			eMSDAO.saveEMSEmailnoAndDMPTranscwb(cwb,transcwb,emsAndDmpTranscwb.getBillno(),bingTime);
 			
 			//更新订单临时表"获取运单状态字段"值
 			List<SendToEMSOrder> orderList = eMSDAO.getSendOrderByTranscwb(transcwb);

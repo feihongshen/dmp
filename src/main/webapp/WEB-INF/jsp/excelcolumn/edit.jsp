@@ -50,6 +50,8 @@ initEditArray[39]=("<%=columnList.getBackcargonameindex() %>,backcargonameindex"
 initEditArray[40]=("<%=columnList.getModelnameindex() %>,modelnameindex");
 initEditArray[41]=("<%=columnList.getEmaildateindex() %>,emaildateindex");
 initEditArray[42]=("<%=columnList.getShouldfareindex() %>,shouldfareindex");
+initEditArray[43]=("<%=columnList.getReturnnoindex() %>,returnnoindex");
+initEditArray[44]=("<%=columnList.getReturnaddressindex() %>,returnaddressindex");
 </script>
 <div id="box_bg"></div>
 <div id="box_contant">
@@ -120,6 +122,15 @@ initEditArray[42]=("<%=columnList.getShouldfareindex() %>,shouldfareindex");
 			        </select></p>
 			         <p><span>支付方式：</span> 
 					<select id="paywayindex" name="paywayindex">
+						<option value="0" selected>未设置</option>
+			        </select></p>
+			        <%--订单导入模板新增退货地址，及商家退货号 add by chunlei05.li 2016/8/22 --%>
+			        <p><span>退货号：</span> 
+					<select id="returnnoindex" name="returnnoindex">
+						<option value="0" selected>未设置</option>
+			        </select></p>
+			        <p><span>退货地址：</span> 
+					<select id="returnaddressindex" name="returnaddressindex">
 						<option value="0" selected>未设置</option>
 			        </select></p>
 			        <div style="height: 60px;"></div>

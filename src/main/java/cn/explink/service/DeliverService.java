@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
@@ -18,14 +19,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import cn.explink.b2c.tools.ExptCodeJoint;
 import cn.explink.b2c.tools.ExptCodeJointDAO;
 import cn.explink.b2c.tools.ExptReasonDAO;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.b2c.tools.RestHttpServiceHanlder;
+import cn.explink.dao.CustomerDAO;
+import cn.explink.dao.CwbDAO;
+import cn.explink.dao.DeliveryStateDAO;
+import cn.explink.dao.UserDAO;
+import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
+import cn.explink.domain.DeliverPaymentPrintVo;
+import cn.explink.domain.DeliverPaymentReportVo;
+import cn.explink.domain.DeliveryPayment;
+import cn.explink.domain.DeliveryState;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.DeliverServerParamVO;
 import cn.explink.domain.VO.DeliverServerPullVO;
@@ -33,6 +42,7 @@ import cn.explink.domain.VO.DeliveryPosNotifyVO;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliverServerPayEnum;
 import cn.explink.enumutil.DeliverServerResultEnum;
+import cn.explink.enumutil.DeliveryPaymentPatternEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.pos.tools.PosEnum;
 import cn.explink.pos.tools.SignTypeEnum;
@@ -50,7 +60,18 @@ public class DeliverService {
 	@Autowired
 	ExptCodeJointDAO exptcodeJointDAO;
 	
-
+	@Autowired
+	private DeliveryStateDAO deliveryStateDAO;
+	
+	@Autowired
+	private UserDAO userDAO;
+	
+	@Autowired
+	private CustomerDAO customerDAO;
+	
+	@Autowired
+	private CwbDAO cwbDAO;
+	
 	/**
 	 * 构建派件服务参数VO
 	 * @param key
@@ -418,5 +439,160 @@ public class DeliverService {
 		}
 		return flag;
 	}
+    
+    /**
+     * 查询交款单
+     * @author chunlei05.li
+     * @date 2016年8月29日 下午3:31:47
+     * @param deliveryId
+     * @param auditingtimeStart
+     * @param auditingtimeEnd
+     * @param paymentType
+     * @return
+     */
+    public List<DeliverPaymentReportVo> getDeliverPaymentQueryList(long deliveryId, String auditingtimeStart,
+			String auditingtimeEnd, int paymentType) {
+    	// 查询归班反馈
+    	List<DeliveryPayment> deliveryPaymentList = this.deliveryStateDAO.getDeliveryPaymentList(deliveryId, auditingtimeStart, auditingtimeEnd, paymentType);
+    	return this.getDeliverPaymentPrintVoList(deliveryId, deliveryPaymentList);
+    }
+    
+    /**
+     * 查询交款单打印信息
+     * @author chunlei05.li
+     * @date 2016年8月29日 下午3:34:26
+     * @param customerIds
+     * @param cwbOrderTypeIds
+     * @param deliveryPaymentPatternIds
+     * @return
+     */
+	public List<DeliverPaymentPrintVo> getDeliverPaymentPrintMap(long deliveryId, long[] customerIds,
+			int[] cwbOrderTypeIds, int[] deliveryPaymentPatternIds, String auditingtimeStart, String auditingtimeEnd) {
+		// 查询归班反馈
+		List<DeliveryPayment> deliveryPaymentList = this.deliveryStateDAO.getDeliveryPaymentList(deliveryId,
+				customerIds, cwbOrderTypeIds, deliveryPaymentPatternIds, auditingtimeStart, auditingtimeEnd);
+		List<DeliverPaymentReportVo> deliverPaymentPrintVoList = this.getDeliverPaymentPrintVoList(deliveryId, deliveryPaymentList);
+		// 打印Map，保证排序
+		// deliverPaymentPrintVoList已排序
+		Map<Integer, DeliverPaymentPrintVo> printMap = new LinkedHashMap<Integer, DeliverPaymentPrintVo>();
+		for (DeliverPaymentReportVo reportVo : deliverPaymentPrintVoList) {
+			DeliveryPaymentPatternEnum paymentPattern = DeliveryPaymentPatternEnum .getByPayno(reportVo.getDeliveryPaymentPatternId());
+			DeliverPaymentPrintVo printVo = printMap.get(paymentPattern.getPayno());
+			if (printVo == null) {
+				printVo = new DeliverPaymentPrintVo();
+				printVo.setDeliveryPayment(paymentPattern);
+				printVo.setDeliverPaymentReportVoList(new ArrayList<DeliverPaymentReportVo>());
+			}
+			printVo.getDeliverPaymentReportVoList().add(reportVo);
+			printVo.setOrderCount(printVo.getOrderCount() + reportVo.getOrderCount());
+			printVo.setRealTotal(printVo.getRealTotal().add(reportVo.getRealTotal()));
+			printVo.setShouldTotal(printVo.getShouldTotal().add(reportVo.getShouldTotal()));
+			printMap.put(paymentPattern.getPayno(), printVo);
+		}
+		List<DeliverPaymentPrintVo> printVoList = new ArrayList<DeliverPaymentPrintVo>(printMap.values());
+		return printVoList;
+	}
 	
+    /**
+     * 交款单转VO
+     * @author chunlei05.li
+     * @date 2016年8月29日 下午3:31:59
+     * @param deliveryId
+     * @param deliveryPaymentList
+     * @return
+     */
+	public List<DeliverPaymentReportVo> getDeliverPaymentPrintVoList(long deliveryId,
+			List<DeliveryPayment> deliveryPaymentList) {
+		// 获取小件员信息
+    	User delivery = userDAO.getAllUserByid(deliveryId);
+		// 查询供货商，转Map
+		List<Customer> customerList = this.customerDAO.getAllCustomers();
+		Map<Long, String> customernameMap = new HashMap<Long, String>();
+		for (Customer customer : customerList) {
+			customernameMap.put(customer.getCustomerid(), customer.getCustomername());
+		}
+    	// 归类
+		Map<String, DeliverPaymentReportVo> paymentVoMap = new HashMap<String, DeliverPaymentReportVo>();
+		for (DeliveryPayment dp : deliveryPaymentList) {
+			DeliveryState ds = dp.getDeliveryState();
+			CwbOrder cwb = dp.getCwbOrder();
+			// 归类支付类型，根据产品确认，武汉不存在一个订单只存在一种支付类型的订单
+			// 若存在一个订单存在多种支付类型，则统计表报会有误差
+			DeliveryPaymentPatternEnum paymentPattern;
+			if (ds.getCash().compareTo(BigDecimal.ZERO) > 0) {
+				paymentPattern = DeliveryPaymentPatternEnum.CASH;
+			} else if (ds.getPos().compareTo(BigDecimal.ZERO) > 0) {
+				paymentPattern = DeliveryPaymentPatternEnum.POS;
+			} else if (ds.getCheckfee().compareTo(BigDecimal.ZERO) > 0) {
+				paymentPattern = DeliveryPaymentPatternEnum.CHECKFEE;
+			} else if (ds.getCodpos().compareTo(BigDecimal.ZERO) > 0) {
+				paymentPattern = DeliveryPaymentPatternEnum.CODPOS;
+			} else if (ds.getOtherfee().compareTo(BigDecimal.ZERO) > 0) {
+				paymentPattern = DeliveryPaymentPatternEnum.OTHERFEE;
+			} else {
+				paymentPattern = DeliveryPaymentPatternEnum.CASH;
+			}
+			// 组建key，根据支付类型 + 客户 + 订单类型分类
+			String key = paymentPattern.getPayno() + "_" + ds.getCustomerid() + "_" + ds.getCwbordertypeid();
+			DeliverPaymentReportVo paymentVo = paymentVoMap.get(key);
+			if (paymentVo == null) {
+				paymentVo = new DeliverPaymentReportVo();
+				paymentVo.setDeliveryId(delivery.getUserid());
+				paymentVo.setDeliveryName(delivery.getRealname());
+				paymentVo.setDeliveryPaymentPatternId(paymentPattern.getPayno());
+				paymentVo.setDeliveryPaymentPattern(paymentPattern.getPayname());
+				paymentVo.setCustomerId(ds.getCustomerid());
+				paymentVo.setCustomerName(customernameMap.get(ds.getCustomerid()));
+				CwbOrderTypeIdEnum cwbOrderTypeIdEnum = CwbOrderTypeIdEnum.getByValue(ds.getCwbordertypeid());
+				paymentVo.setCwbOrderTypeId(cwbOrderTypeIdEnum == null ? 0 : cwbOrderTypeIdEnum.getValue());
+				paymentVo.setCwbOrderType(cwbOrderTypeIdEnum == null ? "" : cwbOrderTypeIdEnum.getText());
+			}
+			// 目前系统不支持快递到付，所以不统计快递的应收运费
+			if (ds.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue()) {
+				ds.setShouldfare(BigDecimal.ZERO);
+			}
+			// 订单数量
+			paymentVo.setOrderCount(paymentVo.getOrderCount() + 1);
+			// 应收金额
+			paymentVo.setShouldReceivedfee(paymentVo.getShouldReceivedfee().add(cwb.getReceivablefee()));
+			// 应退金额
+			paymentVo.setShouldPaybackfee(paymentVo.getShouldPaybackfee().add(cwb.getPaybackfee()));
+			// 应收运费
+			paymentVo.setShouldfare(paymentVo.getShouldfare().add(ds.getShouldfare()));
+			// 应收合计 = 应收金额 - 应退金额 + 应收运费
+			BigDecimal shouldTotal = paymentVo.getShouldReceivedfee().subtract(paymentVo.getShouldPaybackfee()).add(paymentVo.getShouldfare());
+			paymentVo.setShouldTotal(shouldTotal);
+			// 实收合计 = 实收金额 - 实退金额 + 实收运费
+			BigDecimal realTotal = ds.getReceivedfee().subtract(ds.getReturnedfee()).add(ds.getInfactfare());
+			paymentVo.setRealTotal(paymentVo.getRealTotal().add(realTotal));
+			paymentVoMap.put(key, paymentVo);
+		}
+		List<DeliverPaymentReportVo> voList = new ArrayList<DeliverPaymentReportVo>(paymentVoMap.values());
+		// 排序
+		Collections.sort(voList, new Comparator<DeliverPaymentReportVo>() {
+			@Override
+			public int compare(DeliverPaymentReportVo dp1, DeliverPaymentReportVo dp2) {
+				// 先按支付方式排序
+				if (dp1.getDeliveryPaymentPatternId() > dp2.getDeliveryPaymentPatternId()) {
+					return 1;
+				} else if (dp1.getDeliveryPaymentPatternId() < dp2.getDeliveryPaymentPatternId()) {
+					return -1;
+				}
+				// 按订单类型排序
+				if (dp1.getCwbOrderTypeId() > dp2.getCwbOrderTypeId()) {
+					return 1;
+				} else if (dp1.getCwbOrderTypeId() < dp2.getCwbOrderTypeId()) {
+					return -1;
+				}
+				// 按客户排序
+				if (dp1.getCustomerId() > dp2.getCustomerId()) {
+					return 1;
+				} else if (dp1.getCustomerId() < dp2.getCustomerId()) {
+					return -1;
+				}
+				return 0;
+			}
+		});
+		return voList;
+    }
 }
