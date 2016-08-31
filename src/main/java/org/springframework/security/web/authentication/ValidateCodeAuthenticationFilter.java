@@ -25,6 +25,7 @@ import cn.explink.dao.UserDAO;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.util.DateTimeUtil;
+import cn.explink.util.StringUtil;
 
 public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -243,6 +244,12 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 	}
 	
 	private long getDateDiffInMinutes(String dateStr1, String dateStr2) {
+		if (StringUtil.isEmpty(dateStr1)) {
+			dateStr1 = "0000-00-00 00:00:00";
+		}
+		if (StringUtil.isEmpty(dateStr2)) {
+			dateStr2 = "0000-00-00 00:00:00";
+		}
 		return Math.abs(DateTimeUtil.dateDiff("minute", dateStr1, dateStr2));
 	}
 }

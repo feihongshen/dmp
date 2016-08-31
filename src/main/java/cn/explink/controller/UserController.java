@@ -797,6 +797,12 @@ public class UserController {
 	}
 	
 	private long getDateDiffInMinutes(String dateStr1, String dateStr2) {
+		if (StringUtil.isEmpty(dateStr1)) {
+			dateStr1 = "0000-00-00 00:00:00";
+		}
+		if (StringUtil.isEmpty(dateStr2)) {
+			dateStr2 = "0000-00-00 00:00:00";
+		}
 		return Math.abs(DateTimeUtil.dateDiff("minute", dateStr1, dateStr2));
 	}
 	
