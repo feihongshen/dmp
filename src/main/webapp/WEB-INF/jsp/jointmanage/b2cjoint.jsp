@@ -571,8 +571,8 @@ function delSuccess(data){
             $("#edit").val('<%=request.getContextPath()%>/tpsWeitepai/show/');
             $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
         }
-		else if(obj=='22509'){//优速-TPS
-            $("#edit").val('<%=request.getContextPath()%>/tpsYousu/show/');
+		else if(obj=='22509'){//天联-TPS
+            $("#edit").val('<%=request.getContextPath()%>/tpsTianlian/show/');
             $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
         }
 		else{

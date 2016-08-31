@@ -110,6 +110,21 @@ public class DateTimeUtil {
 		return date1.getTime() - date2.getTime();
 	}
 	
+
+	/**
+	 * 按指定日期单位计算两个日期间的间隔
+	 * 
+	 * @param timeInterval
+	 * @param dateStr1
+	 * @param dateStr2
+	 * @return
+	 */
+	public static long dateDiff(String timeInterval, String dateStr1, String dateStr2) {
+		java.sql.Date date1 = StringToDate(dateStr1, DateTimeUtil.DEF_DATETIME_FORMAT);
+		java.sql.Date date2 = StringToDate(dateStr2, DateTimeUtil.DEF_DATETIME_FORMAT);
+		return dateDiff(timeInterval, date1, date2);
+	}	
+	
 	/**
 	 * 由java.util.Date到java.sql.Date的类型转换
 	 * 
@@ -440,10 +455,14 @@ public class DateTimeUtil {
 	 * @return Date
 	 */
 	public static java.sql.Date StringToDate(String param) {
+		return StringToDate(param, "yyyy-MM-dd");
+	}
+	
+	public static java.sql.Date StringToDate(String param, String dateFormat) {
 
 		java.util.Date date = null;
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 			date = sdf.parse(param);
 			return new Date(date.getTime());
 		} catch (ParseException ex) {

@@ -85,6 +85,9 @@ public class UserDAO {
 			user.setBasicfee(rs.getBigDecimal("basicfee"));// 基本派费
 			user.setAreafee(rs.getBigDecimal("areafee"));// 区域派费
 			user.setWebPassword(rs.getString("webPassword"));//网页登录密码
+			user.setLastLoginState(rs.getInt("lastLoginState"));// 上次登录状态（1-成功，0-失败）
+			user.setLoginFailCount(rs.getInt("loginFailCount"));// 累计连续登录错误次数
+			user.setLastLoginTryTime(rs.getString("lastLoginTryTime"));// 上次尝试登录时间
 			return user;
 		}
 
@@ -274,7 +277,7 @@ public class UserDAO {
 	public void creUser(final User user) {		
 		KeyHolder key = new GeneratedKeyHolder();
 		jdbcTemplate.update(new PreparedStatementCreator() {
-			String sql = "insert into express_set_user (username,password,realname,idcardno,employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary,usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid,sex,startworkdate,jobnum,jiesuanstate,maxcutpayment,fixedadvance,basicadvance,fallbacknum,lateradvance,basicfee,areafee,webPassword)  values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			String sql = "insert into express_set_user (username,password,realname,idcardno,employeestatus,branchid,userphone,usermobile,useraddress,userremark,usersalary,usercustomerid,showphoneflag,useremail,userwavfile,roleid,isImposedOutWarehouse,shownameflag,showmobileflag,pfruleid,sex,startworkdate,jobnum,jiesuanstate,maxcutpayment,fixedadvance,basicadvance,fallbacknum,lateradvance,basicfee,areafee,webPassword,lastLoginState,loginFailCount,lastLoginTryTime)  values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = null;
@@ -311,6 +314,9 @@ public class UserDAO {
 				ps.setBigDecimal(30, user.getBasicfee());// 基本派费
 				ps.setBigDecimal(31, user.getAreafee());// 区域派费
 				ps.setString(32, user.getWebPassword());//网页登录密码
+				ps.setInt(33, user.getLastLoginState());// 上次登录状态（1-成功，0-失败）
+				ps.setInt(34, user.getLoginFailCount());// 累计连续登录错误次数
+				ps.setString(35, user.getLastLoginTryTime());// 上次尝试登录时间
 				return ps;
 			}
 		}, key);		
@@ -361,7 +367,7 @@ public class UserDAO {
 	@CacheEvict(value = "userCache", key = "#user.userid")
 	public void saveUser(final User user) {
 		this.jdbcTemplate
-				.update("update express_set_user set username=?,password=?,realname=?,idcardno=?," + "employeestatus=?,branchid=?,userphone=?,usermobile=?,useraddress=?,userremark=?,usersalary=?," + "usercustomerid=?,showphoneflag=?,useremail=?,userwavfile=?,roleid=?,isImposedOutWarehouse=?,shownameflag=?," + "showmobileflag=?,pfruleid=?,sex=?,startworkdate=?,jobnum=?,jiesuanstate=?,maxcutpayment=?,fixedadvance=?," + "basicadvance=?,fallbacknum=?,lateradvance=?,basicfee=?,areafee=?,webPassword=?" + " where userid=? and userDeleteFlag=1 ", new PreparedStatementSetter() {
+				.update("update express_set_user set username=?,password=?,realname=?,idcardno=?," + "employeestatus=?,branchid=?,userphone=?,usermobile=?,useraddress=?,userremark=?,usersalary=?," + "usercustomerid=?,showphoneflag=?,useremail=?,userwavfile=?,roleid=?,isImposedOutWarehouse=?,shownameflag=?," + "showmobileflag=?,pfruleid=?,sex=?,startworkdate=?,jobnum=?,jiesuanstate=?,maxcutpayment=?,fixedadvance=?," + "basicadvance=?,fallbacknum=?,lateradvance=?,basicfee=?,areafee=?,webPassword=?,lastLoginState=?,loginFailCount=?,lastLoginTryTime=?" + " where userid=? and userDeleteFlag=1 ", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 						ps.setString(1, user.getUsername());
@@ -396,7 +402,10 @@ public class UserDAO {
 						ps.setBigDecimal(30, user.getBasicfee());// 基本派费
 						ps.setBigDecimal(31, user.getAreafee());// 区域派费
 						ps.setString(32, user.getWebPassword());//网页登录密码
-						ps.setLong(33, user.getUserid());
+						ps.setInt(33, user.getLastLoginState());// 上次登录状态（1-成功，0-失败）
+						ps.setInt(34, user.getLoginFailCount());// 累计连续登录错误次数
+						ps.setString(35, user.getLastLoginTryTime());// 上次尝试登录时间
+						ps.setLong(36, user.getUserid());
 					}
 
 				});
