@@ -84,13 +84,6 @@ public class UserService {
 		} else if (request.getParameter("wavh") != null) {
 			user.setUserwavfile(request.getParameter("wavh"));
 		}
-		
-		User olduser = this.userDAO.getUserByUserid(userid);
-		if (olduser != null) {
-			user.setLastLoginState(olduser.getLastLoginState());
-			user.setLoginFailCount(olduser.getLoginFailCount());
-			user.setLastLoginTryTime(olduser.getLastLoginTryTime());
-		}
 		return user;
 	}
 
@@ -134,11 +127,6 @@ public class UserService {
 		if ((request.getParameter("isImposedOutWarehouse") != null) && (request.getParameter("isImposedOutWarehouse").length() > 0)) {
 			user.setIsImposedOutWarehouse(Integer.parseInt(StringUtil.nullConvertToEmptyString(request.getParameter("isImposedOutWarehouse"))));
 		}
-		
-		user.setLastLoginState(Integer.parseInt(((request.getParameter("lastLoginState")==null)||("".equals(request.getParameter("lastLoginState"))))?"0":request.getParameter("lastLoginState")));
-		user.setLoginFailCount(Integer.parseInt(((request.getParameter("loginFailCount")==null)||("".equals(request.getParameter("loginFailCount"))))?"0":request.getParameter("loginFailCount")));
-		user.setLastLoginTryTime(((request.getParameter("lastLoginTryTime")==null)||("".equals(request.getParameter("lastLoginTryTime"))))?"0000-00=00 00:00:00":request.getParameter("lastLoginTryTime"));
-		
 		return user;
 	}
 
