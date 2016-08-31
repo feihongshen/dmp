@@ -6,27 +6,16 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>交款单打印</title>
-	
-    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-1.8.0.min.js"></script>
 	<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
-	
-	<script type="text/javascript" src="<%=request.getContextPath()%>/js/easyui/jquery.easyui.min.js"></script>
-	
-	<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/js/eapTools.js"></script>
-	<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40//plug-in/tools/curdtools.js"></script>
-	<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40//plug-in/tools/easyuiextend.js"></script>
-	
-	<script type="text/javascript" src="<%=request.getContextPath()%>/js/My97DatePicker/WdatePicker.js"></script>
-	<script type="text/javascript" src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js"></script>
-	<script type="text/javascript" src="<%=request.getContextPath()%>/js/multiSelcet/jquery.bgiframe.min.js"></script>
-	
-	<link type="text/css" href="<%=request.getContextPath()%>/css/2.css" rel="stylesheet"/>
-    <link type="text/css" href="<%=request.getContextPath()%>/css/reset.css" rel="stylesheet"></link>
-	<link type="text/css" href="<%=request.getContextPath()%>/css/index.css" rel="stylesheet"/>
-	<link type="text/css" href="<%=request.getContextPath()%>/js/multiSelcet/multiple-select.css" rel="stylesheet"/>
-    <link type="text/css" href="<%=request.getContextPath()%>/css/easyui/themes/default/easyui.css" rel="stylesheet" media="all"/>
-	<link type="text/css" href="<%=request.getContextPath()%>/dmp40/plug-in/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+	<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/plug-in/easyui/jquery.easyui.min.1.3.2.js"></script>
+	<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/plug-in/easyui/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="<%=request.getContextPath()%>/js/My97DatePicker4.8/WdatePicker.js"></script>
+	<script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/plug-in/bootstrap/js/bootstrap.min.js"></script>
 	<link id="skinlayercss" href="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/skin/layer.css" rel="stylesheet" type="text/css">
+	<link id="easyuiTheme" rel="stylesheet" href="<%=request.getContextPath()%>/dmp40/plug-in/easyui/themes/default/easyui.css" type="text/css">
+	<link rel="stylesheet" href="<%=request.getContextPath()%>/dmp40/plug-in/easyui/themes/icon.css" type="text/css">
+	<link href="<%=request.getContextPath()%>/dmp40/plug-in/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 </head>
 <body class="easyui-layout" leftmargin="0" topmargin="0">
     <div data-options="region:'center'" style="height:100%;overflow-x: auto; overflow-y: auto;">
