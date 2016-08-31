@@ -766,7 +766,8 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 		String cwbs = StringUtils.join(flowArray, "','");
 		cwbs = "'" + cwbs + "'";
 		List<CwbOrder> orders = this.cwbDAO.getcwborderList(cwbs);
-
+		//快递单导入，如果补录完成，则跟新补录完成时间completedatetime---刘武强20160831
+		this.expressOrderDao.updateEmbracedDataCompleteTime(EmbracedOrdersTps);
 		for (EmbracedOrderVO embracedOrderVO : EmbracedOrdersTps) {
 			this.embracedOrderInputService.tpsSender(embracedOrderVO, "inbrace");
 		}
