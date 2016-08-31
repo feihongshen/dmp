@@ -59,11 +59,6 @@ public class User implements Serializable {
 	private BigDecimal lateradvance;//后期预付款
 	private BigDecimal basicfee;//基本派费
 	private BigDecimal areafee;//区域派费
-	
-	//登录尝试次数限制
-	private int lastLoginState;	// 上次登录状态（1-成功，0-失败）
-	private int loginFailCount;	// 累计连续登录错误次数
-	private String lastLoginTryTime;	// 上次尝试登录时间
 
 	public BigDecimal getBasicfee() {
 		return basicfee;
@@ -425,30 +420,6 @@ public class User implements Serializable {
 
 	public void setShowmobileflag(long showmobileflag) {
 		this.showmobileflag = showmobileflag;
-	}
-	
-	public int getLastLoginState() {
-		return lastLoginState;
-	}
-
-	public void setLastLoginState(int lastLoginState) {
-		this.lastLoginState = lastLoginState;
-	}
-
-	public int getLoginFailCount() {
-		return loginFailCount;
-	}
-
-	public void setLoginFailCount(int loginFailCount) {
-		this.loginFailCount = loginFailCount;
-	}
-
-	public String getLastLoginTryTime() {
-		return this.lastLoginTryTime;
-	}
-
-	public void setLastLoginTryTime(String lastLoginTryTime) {
-		this.lastLoginTryTime = lastLoginTryTime;
 	}
 
 	@Override

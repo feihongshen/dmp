@@ -22,8 +22,10 @@ import org.springframework.security.web.util.TextEscapeUtils;
 
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.dao.UserLoginLogDAO;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
+import cn.explink.domain.UserLoginLog;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.StringUtil;
 
@@ -47,6 +49,9 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 	
 	@Autowired
 	private SystemInstallDAO systemInstallDAO;
+	
+	@Autowired
+	UserLoginLogDAO userLoginLogDAO;
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -66,20 +71,20 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 		// 验证用户账号与密码是否对应
 		username = username.trim();
 
-		List<User> users = userDAO.getUsersByUsername(username);
-		
 		// modified by wangwei, 20150830, 登录次数限制， start
-		/*if (users.size() == 0 || users.size() > 1 || !users.get(0).getWebPassword().equals(password)) {
+		/*
+		List<User> users = userDAO.getUsersByUsername(username);
+		if (users.size() == 0 || users.size() > 1 || !users.get(0).getWebPassword().equals(password)) {
 			//add by huangzh 2016-8-3  添加登录失败日志
 			this.logger.error("用户名:"+username+",登录IP："+getIpAddr(request)+",登录时间："+DateTimeUtil.getNowTime()+"，登录标识:登录失败，用户名或者密码错误");
 			throw new AuthenticationServiceException("用户名或者密码错误");
-		}*/
-		
-		if (users.size() == 1 && users.get(0) != null) {
-			User user = users.get(0);
-			int lastLoginState = user.getLastLoginState();	// 上次登录状态（1-成功，0-失败）
-			int loginFailCount = user.getLoginFailCount();	// 累计连续登录错误次数
-			String lastLoginTryTime = user.getLastLoginTryTime();	// 上次尝试登录时间
+		}
+		*/
+		UserLoginLog userLoginLog = getUserLoginLogByUsername(username); 
+		if (userLoginLog != null) {
+			int lastLoginState = userLoginLog.getLastLoginState();	// 上次登录状态（1-成功，0-失败）
+			int loginFailCount = userLoginLog.getLoginFailCount();	// 累计连续登录错误次数
+			String lastLoginTryTime = userLoginLog.getLastLoginTryTime();	// 上次尝试登录时间
 			
 			int loginFailMaxTryTimeLimit = getLoginFailMaxTryTimeLimit();	// 登录失败尝试最大次数
 			int loginForbiddenIntervalInMinutes = getLoginForbiddenIntervalInMinutes();	// 登录失败禁止时间长度（分钟）
@@ -96,15 +101,19 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 						throw new AuthenticationServiceException(message);
 					} else {
 						// 封禁时间到，解除禁止，重置loginFailCount为0
-						user.setLoginFailCount(0);
-						userDAO.saveUser(user);
-						users = userDAO.getUsersByUsername(username);
+						userLoginLog.setLoginFailCount(0);
+						userLoginLogDAO.saveUserLoginLog(userLoginLog);
 					}
 				}
 			}
 		}
 		
+		List<User> users = userDAO.getUsersByUsername(username);
+		
 		if (users.size() == 0 || users.size() > 1 || users.get(0) == null) {
+			// 登录失败
+			handleFailUserLoginLog(username);
+			
 			//add by huangzh 2016-8-3  添加登录失败日志
 			this.logger.error("用户名:"+username+",登录IP："+getIpAddr(request)+",登录时间："+DateTimeUtil.getNowTime()+"，登录标识:登录失败，用户名或者密码错误");
 			throw new AuthenticationServiceException("用户名或者密码错误");
@@ -112,19 +121,13 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 			User user = users.get(0);
 			if (!user.getWebPassword().equals(password)) {
 				// 登录失败
-				user.setLastLoginState(LAST_LOGIN_STATE_FAIL);
-				user.setLoginFailCount(user.getLoginFailCount() + 1);
-				user.setLastLoginTryTime(DateTimeUtil.getNowTime());
-				userDAO.saveUser(user);
+				handleFailUserLoginLog(username);
 				
 				this.logger.error("用户名:"+username+",登录IP："+getIpAddr(request)+",登录时间："+DateTimeUtil.getNowTime()+"，登录标识:登录失败，用户名或者密码错误");
 				throw new AuthenticationServiceException("用户名或者密码错误");
 			} else {
 				// 登录成功
-				user.setLastLoginState(LAST_LOGIN_STATE_SUCCESS);
-				user.setLoginFailCount(0);
-				user.setLastLoginTryTime(DateTimeUtil.getNowTime());
-				userDAO.saveUser(user);
+				handleSuccessUserLoginLog(username);
 			 }
 		}
 		// modified by wangwei, 20150830, 登录次数限制， end
@@ -151,7 +154,42 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 
 		return this.getAuthenticationManager().authenticate(authRequest);
 	}
-
+	
+	private UserLoginLog getUserLoginLogByUsername(String username) {
+		UserLoginLog userLoginLog = userLoginLogDAO.getUserLoginLogByUsername(username);
+		if(userLoginLog == null) {
+			userLoginLog = new UserLoginLog();
+			userLoginLog.setUsername(username);
+			userLoginLog.setLastLoginState(0);
+			userLoginLog.setLoginFailCount(0);
+			userLoginLog.setLastLoginTryTime("0000-00-00 00:00:00");
+			userLoginLogDAO.creUserLoginLog(userLoginLog);
+			userLoginLog = userLoginLogDAO.getUserLoginLogByUsername(username);
+		}
+		return userLoginLog;
+	}
+	
+	private void handleFailUserLoginLog(String username) {
+		UserLoginLog userLoginLog = getUserLoginLogByUsername(username);
+		if(userLoginLog!=null) {
+			userLoginLog.setLastLoginState(LAST_LOGIN_STATE_FAIL);
+			userLoginLog.setLoginFailCount(userLoginLog.getLoginFailCount() + 1);
+			userLoginLog.setLastLoginTryTime(DateTimeUtil.getNowTime());
+			userLoginLogDAO.saveUserLoginLog(userLoginLog);
+		}
+	}
+	
+	private void handleSuccessUserLoginLog(String username) {
+		UserLoginLog userLoginLog = getUserLoginLogByUsername(username);
+		if(userLoginLog!=null) {
+			userLoginLog.setLastLoginState(LAST_LOGIN_STATE_SUCCESS);
+			userLoginLog.setLoginFailCount(0);
+			userLoginLog.setLastLoginTryTime(DateTimeUtil.getNowTime());
+			userLoginLogDAO.saveUserLoginLog(userLoginLog);
+		}
+		
+	}
+	
 	public String getIpAddr(HttpServletRequest request) {
 		String ip = request.getHeader("x-forwarded-for");
 		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
