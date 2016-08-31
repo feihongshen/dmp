@@ -90,6 +90,13 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 			         <div id="pdaPwdDiv" style="display:none">
 					 <li><span>POS登录密码：</span><input type="password" id="password" name="password" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
 			         <li><span>确认POS登录密码：</span><input type="password" id="password1" name="password1" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
+			         <%if(loginForbiddenPleaseWaitMinutes>0){ %>
+			         <li><span>此用户禁止登录：</span>
+						<label><%=loginForbiddenPleaseWaitMinutes %>分钟后自动解禁。</label>
+						<input type="button"  value="提前解禁" id="liftLoginForbiddanceButton" onclick="liftLoginForbiddance('<%=u.getUserid() %>', '<%=request.getContextPath()%>')"/><br/><br/>
+						</span>
+					 </li>
+			         <%} %>
 			         </div>
 	           		<li><span>上传声音文件：</span><iframe id="update" name="update" src="user/update?fromAction=user_save_Form&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" ></iframe>
 			         <%if(u.getUserwavfile()!=null&&u.getUserwavfile().length()>4){ %>
@@ -146,13 +153,6 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 	                 <li><span>保底单量：</span><input type="text"  id="fallbacknum" name="fallbacknum" value="<%=u.getFallbacknum() %>" maxlength="50"/></li>
 	                 <li><span>基础派费：</span><input type="text"  id="basicfee" name="basicfee" value="<%=u.getBasicfee() %>" maxlength="50"/></li>
 	                 <li><span>区域派费：</span><input type="text"  id="areafee" name="areafee" value="<%=u.getAreafee() %>" maxlength="50"/></li>
-	                 <%if(loginForbiddenPleaseWaitMinutes>0){ %>
-			         <li><span>登录次数限制：</span>
-						<label>此用户已被禁止登录，<%=loginForbiddenPleaseWaitMinutes %>分钟后会自动解禁。</label>
-						<input type="button"  value="提前解除登录封禁" id="liftLoginForbiddanceButton" onclick="liftLoginForbiddance('<%=u.getUserid() %>', '<%=request.getContextPath()%>')"/><br/><br/>
-						</span>
-					 </li>
-			         <%} %>
 			         
 	         </ul>
 		</div>
