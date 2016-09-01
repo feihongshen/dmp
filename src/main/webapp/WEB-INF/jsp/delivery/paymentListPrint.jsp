@@ -35,7 +35,7 @@ function createOneFormPage(){
 	for (var i = 0; i < printSize;i++) {
 		LODOP.NewPage();
 		var strBodyHtml = document.getElementById("printTable").outerHTML;
-		strBodyHtml = strBodyHtml.replace("preview_box", "");
+		//strBodyHtml = strBodyHtml.replace("preview_box", "");
 		LODOP.ADD_PRINT_HTM("0mm","0mm","RightMargin:0mm","BottomMargin:0mm", '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">' + strBodyStyle + "<body>" + strBodyHtml + "</body>");
 	}
 };
@@ -67,12 +67,12 @@ $(function() {
 		width: 75mm;
 	}
 	.inner_box {
-		left-margin : 3mm;
-		right-margin : 9 mm;
+		margin-left: 3mm;
+		margin-right: 9mm;
 	}
 	.title {
 		font-size: 14px;
-		width:84%;
+		width:63mm;
 		text-align:center;
 		word-wrap: break-word;
 		word-break: normal;
@@ -112,7 +112,7 @@ $(function() {
 	打印<input id="printSize" type="text" style="width:25px;" value="1">份
 	<br><br>
 	<div id="printTable">
-		<div class="out_box preview_box">
+		<div class="out_box">
 			<div class="inner_box">
 				<div class="title">湖北品骏（${branchname }）站交款单</div>
 				<div class="content_1">
@@ -131,11 +131,11 @@ $(function() {
 					<div class="content_1">
 						<table class="cwb" width="100%" border="0" cellspacing="0" cellpadding="0">
 							<tr>
-								<th width="30%" align="left">业务	</th>
-								<th width="20%" align="left">订单类型</th>
-								<th width="10%" align="right">数量</th>
-								<th width="20%" align="right">应收合计</th>
-								<th width="20%" align="right">实际合计</th>
+								<th width="22%" align="left">业务</th>
+								<th width="22%" align="left">订单类型</th>
+								<th width="12%" align="right">数量</th>
+								<th width="22%" align="right">应收合计</th>
+								<th width="22%" align="right">实际合计</th>
 							</tr>
 							<c:forEach var="reportVo" items="${printVo.deliverPaymentReportVoList }">
 								<tr>
@@ -150,13 +150,7 @@ $(function() {
 					</div>
 					<div class="dashed"></div>
 					<div class="content_1">
-						<span>${printVo.deliveryPayment.payname }</span>
-						<span style="word-spacing:1mm;">&nbsp;</span>
-						<span>共${printVo.orderCount }单</span>
-						<span style="word-spacing:1mm;">&nbsp;</span>
-						<span>应收：${printVo.shouldTotal }</span>
-						<span style="word-spacing:1mm;">&nbsp;</span>
-						<span>实收：${printVo.realTotal }</span>
+						${printVo.deliveryPayment.payname }&nbsp;&nbsp;共${printVo.orderCount }单&nbsp;&nbsp;应收:${printVo.shouldTotal }&nbsp;&nbsp;实收:${printVo.realTotal }
 					</div>
 					<div class="dashed"></div>
 				</c:forEach>
