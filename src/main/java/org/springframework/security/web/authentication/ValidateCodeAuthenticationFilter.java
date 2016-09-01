@@ -95,7 +95,7 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 				if(loginFailCount >= loginFailMaxTryTimeLimit){
 					long loginForbiddenPleaseWaitMinutes = loginForbiddenIntervalInMinutes - getDateDiffInMinutes(nowTimeInString, lastLoginTryTime); 
 					if (loginForbiddenPleaseWaitMinutes > 0){
-						String message = "连续输入密码错误达到" + loginFailMaxTryTimeLimit + "次，禁止登录。\n"
+						String message = "连续登录失败超过" + loginFailMaxTryTimeLimit + "次，\n"
 								+ "请 " + loginForbiddenPleaseWaitMinutes + "分钟后再试，或联系管理员解禁。";
 						this.logger.error(message);
 						throw new AuthenticationServiceException(message);
