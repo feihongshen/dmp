@@ -128,6 +128,7 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.SystemInstallService;
 import cn.explink.support.transcwb.TransCwbDao;
+import cn.explink.util.B2cUtil;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
@@ -207,7 +208,9 @@ public class CwbOrderPDAController {
 	ComplaintDAO complaintDAO;
 	@Autowired
 	RemarkDAO remarkDAO;
-
+	@Autowired
+	B2cUtil bcUtil;
+	
 	PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("${", "}");
 
 	@Autowired
@@ -1355,7 +1358,7 @@ public class CwbOrderPDAController {
 		// allParm=cwborderService.deliverpodStatistics(deliverid).split(",");
 		DeliveryStateDTO dsDTO = new DeliveryStateDTO();
 		List<DeliveryState> dlist = this.deliveryStateDAO.getDeliveryStateByDeliver(deliverid);
-		dsDTO.analysisDeliveryStateList(this.getDeliveryStateView(dlist));
+		dsDTO.analysisDeliveryStateList(this.getDeliveryStateView(dlist), bcUtil, customerDAO);
 
 		PDAXMLBody pxb = new PDAXMLBody();
 		pxb.setDelivercwbnum(dsDTO.getNowNumber());// 当日领货票数

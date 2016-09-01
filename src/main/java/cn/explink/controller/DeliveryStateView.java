@@ -35,6 +35,7 @@ public class DeliveryStateView {
 	private String leavedreason;// 滞留原因
 	private String changereason; //中转原因
 	private String sign_man_phone;
+	private boolean editFlag;//是否允许修改反馈-- 刘武强20160831
 
 	public String getSign_man_phone() {
 		return sign_man_phone;
@@ -482,4 +483,13 @@ public class DeliveryStateView {
 		this.infactfare = infactfare;
 	}
 
+	public boolean getEditFlag() {
+		return editFlag;
+	}
+
+	public void setEditFlag(boolean editFlag) {
+		this.editFlag = editFlag;
+	}
+	
+	
 }
