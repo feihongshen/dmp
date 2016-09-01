@@ -1,0 +1,1 @@
+select '001屏蔽用户查询收件人电话权限_check' as '执行脚本', case when count(1) = 0 then 'success' else 'failure' end '执行结果' from express_set_user where showmobileflag = 1
