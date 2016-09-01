@@ -7,7 +7,7 @@ public enum DeliveryStateEnum {
 	PeiSongChengGong(1, "配送成功"), 
 	ShangMenTuiChengGong(2, "上门退成功"), 
 	ShangMenHuanChengGong(3, "上门换成功"), 
-	JuShou(4, "拒收"), 
+	JuShou(4, "投递失败"), // 拒收修改为投递失败 modify by vic.liang@pjbest.com 2016-08-31
 	BuFenTuiHuo(5, "部分拒收"), 
 	FenZhanZhiLiu(6, "分站滞留"), 
 	ShangMenJuTui(7, "上门拒退"), 

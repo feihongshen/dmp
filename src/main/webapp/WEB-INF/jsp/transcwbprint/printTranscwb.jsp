@@ -60,9 +60,14 @@ function CreatePrintPage(cwbs) {
 	LODOP=getLodop("<%=request.getContextPath()%>",document.getElementById('LODOP'),document.getElementById('LODOP_EM'));
 	for(var i=0;i<cwbs.toString().split(",").length;i++){
 		var cwb = cwbs.toString().split(",")[i];
-		LODOP.ADD_PRINT_BARCODE(2,2,"35mm","15mm","128Auto",cwb);
+		// 条码打印修改为双联 modify by vic.liang@pjbest.com 2016-08-31
+		var top_first = i*80 + 8;//双联单第一个条码的高度
+		var top_second = i*80 + 48;//双联单第二个条码的高度
+		LODOP.ADD_PRINT_BARCODE(top_first+"mm","16mm","45mm","12mm","128Auto",cwb);
 		LODOP.SET_PRINT_STYLEA(0, "FontSize", 6);
-		LODOP.NewPage(); 
+		LODOP.ADD_PRINT_BARCODE(top_second+"mm","16mm","45mm","12mm","128Auto",cwb);
+		LODOP.SET_PRINT_STYLEA(0, "FontSize", 6);
+		//LODOP.NewPage(); 
 	}
 };	
 function nowprint(){

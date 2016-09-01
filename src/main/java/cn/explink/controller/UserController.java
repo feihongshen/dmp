@@ -43,11 +43,13 @@ import cn.explink.dao.PaiFeiRuleDAO;
 import cn.explink.dao.RoleDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.dao.UserLoginLogDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Menu;
 import cn.explink.domain.Role;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
+import cn.explink.domain.UserLoginLog;
 import cn.explink.domain.addressvo.AddressSyncServiceResult;
 import cn.explink.domain.addressvo.ApplicationVo;
 import cn.explink.domain.addressvo.BatchSyncAdressResultVo;
@@ -106,6 +108,8 @@ public class UserController {
 	UserInfService userInfService;
 	@Autowired
 	private SystemInstallDAO systemInstallDAO;
+	@Autowired
+	private UserLoginLogDAO userLoginLogDAO;
 	
 	@Autowired
 	private AddressSyncService addressService;
@@ -493,6 +497,7 @@ public class UserController {
 		model.addAttribute("branch", this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()));
 		model.addAttribute("user", this.userDAO.getUserByUserid(userid));
 		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Derlivery.getValue()));
+		model.addAttribute("loginForbiddenPleaseWaitMinutes", this.getLoginForbiddenPleaseWaitMinutes(userid));
 		return "user/editbranch";
 	}
 
@@ -756,19 +761,22 @@ public class UserController {
 	private long getLoginForbiddenPleaseWaitMinutes(long userid){
 		long loginForbiddenPleaseWaitMinutes = 0;
 		User user = userDAO.getUserByUserid(userid);
-		if (user != null){
-			int lastLoginState = user.getLastLoginState();	// 上次登录状态（1-成功，0-失败）
-			int loginFailCount = user.getLoginFailCount();	// 累计连续登录错误次数
-			String lastLoginTryTime = user.getLastLoginTryTime();	// 上次尝试登录时间
-			
-			int loginFailMaxTryTimeLimit = getLoginFailMaxTryTimeLimit();	// 登录失败尝试最大次数
-			int loginForbiddenIntervalInMinutes = getLoginForbiddenIntervalInMinutes();	// 登录失败禁止时间长度（分钟）
-			
-			String nowTimeInString = DateTimeUtil.getNowTime();
-			
-			if(lastLoginState != 1){
-				if(loginFailCount >= loginFailMaxTryTimeLimit){
-					loginForbiddenPleaseWaitMinutes = loginForbiddenIntervalInMinutes - getDateDiffInMinutes(nowTimeInString, lastLoginTryTime);
+		if (user != null) {
+			UserLoginLog userLoginLog = userLoginLogDAO.getUserLoginLogByUsername(user.getUsername());
+			if (userLoginLog != null){
+				int lastLoginState = userLoginLog.getLastLoginState();	// 上次登录状态（1-成功，0-失败）
+				int loginFailCount = userLoginLog.getLoginFailCount();	// 累计连续登录错误次数
+				String lastLoginTryTime = userLoginLog.getLastLoginTryTime();	// 上次尝试登录时间
+				
+				int loginFailMaxTryTimeLimit = getLoginFailMaxTryTimeLimit();	// 登录失败尝试最大次数
+				int loginForbiddenIntervalInMinutes = getLoginForbiddenIntervalInMinutes();	// 登录失败禁止时间长度（分钟）
+				
+				String nowTimeInString = DateTimeUtil.getNowTime();
+				
+				if(lastLoginState != 1){
+					if(loginFailCount >= loginFailMaxTryTimeLimit){
+						loginForbiddenPleaseWaitMinutes = loginForbiddenIntervalInMinutes - getDateDiffInMinutes(nowTimeInString, lastLoginTryTime);
+					}
 				}
 			}
 		}
@@ -797,6 +805,12 @@ public class UserController {
 	}
 	
 	private long getDateDiffInMinutes(String dateStr1, String dateStr2) {
+		if (StringUtil.isEmpty(dateStr1)) {
+			dateStr1 = "0000-00-00 00:00:00";
+		}
+		if (StringUtil.isEmpty(dateStr2)) {
+			dateStr2 = "0000-00-00 00:00:00";
+		}
 		return Math.abs(DateTimeUtil.dateDiff("minute", dateStr1, dateStr2));
 	}
 	
@@ -809,8 +823,14 @@ public class UserController {
 	@ResponseBody
 	public String liftLoginForbiddance(@RequestParam(value = "userid", required = false, defaultValue = "0") Long userid) {
 		User user = this.userDAO.getUserByUserid(userid);
-		user.setLoginFailCount(0);
-		userDAO.saveUser(user);
+		if (user != null) {
+			UserLoginLog userLoginLog = userLoginLogDAO.getUserLoginLogByUsername(user.getUsername());
+			if (userLoginLog != null){
+				userLoginLog.setLoginFailCount(0);
+				userLoginLogDAO.saveUserLoginLog(userLoginLog);
+				return "{\"errorCode\":0,\"error\":\"解禁成功\"}";
+			}
+		}
 		return "{\"errorCode\":0,\"error\":\"解禁成功\"}";
 	}
 }

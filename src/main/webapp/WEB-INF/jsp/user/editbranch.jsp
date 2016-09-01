@@ -8,6 +8,7 @@
 	User u = (User)request.getAttribute("user"); 
 	Branch branch = (Branch)request.getAttribute("branch") ;
 	List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
+	long loginForbiddenPleaseWaitMinutes = Long.valueOf(request.getAttribute("loginForbiddenPleaseWaitMinutes").toString());
 %>
 <%if(request.getAttribute("user")!=null){%>
 <script type="text/javascript">
@@ -56,6 +57,13 @@ initUser[1]="<%=u.getEmployeestatus() %>,employeestatus";
 			         <li><span>确认网页登录密码：</span><input type="password" id="webPassword1" name="webPassword1" value="<%=u.getWebPassword() %>" maxlength="50"/>*</li>
 					 <li><span>POS登录密码：</span><input type="password" id="password" name="password" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
 			         <li><span>确认POS登录密码：</span><input type="password" id="password1" name="password1" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
+			         <%if(loginForbiddenPleaseWaitMinutes>0){ %>
+			        <li><span>此用户禁止登录：</span>
+						<label><%=loginForbiddenPleaseWaitMinutes %>分钟后自动解禁。</label>
+						<input type="button"  value="提前解禁" id="liftLoginForbiddanceButton" onclick="liftLoginForbiddance('<%=u.getUserid() %>', '<%=request.getContextPath()%>')"/><br/><br/>
+						</span>
+					 </li>
+			         <%} %>
 			        <li><span>工作状态：</span>
 						<select id="employeestatus" name="employeestatus" onchange="changeJSstate('<%=request.getContextPath()%>/user/getjiesuanstate');">
 							<option value="<%=UserEmployeestatusEnum.GongZuo.getValue() %>" ><%=UserEmployeestatusEnum.GongZuo.getText() %></option>
