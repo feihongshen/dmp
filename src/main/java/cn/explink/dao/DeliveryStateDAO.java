@@ -1843,7 +1843,8 @@ public class DeliveryStateDAO {
 		// 根据产品确认，武汉不存在一个订单只存在一种支付类型的订单
 		// 若存在一个订单存在多种支付类型，则统计表报会有误差
 		if (paymentType == DeliveryPaymentPatternEnum.CASH.getPayno()) {
-			sql.append(" AND ds.cash > 0");
+			// 默认支付方式为现金
+			sql.append(" AND ds.pos = 0 AND ds.checkfee = 0 AND ds.codpos = 0 AND ds.otherfee = 0");
 		} else if (paymentType == DeliveryPaymentPatternEnum.POS.getPayno()) {
 			sql.append(" AND ds.pos > 0");
 		} else if (paymentType == DeliveryPaymentPatternEnum.CHECKFEE.getPayno()) {
@@ -1900,7 +1901,8 @@ public class DeliveryStateDAO {
 		StringBuilder paymentTypeSql = new StringBuilder();
 		for (long paymentType : deliveryPaymentPatternIds) {
 			if (paymentType == DeliveryPaymentPatternEnum.CASH.getPayno()) {
-				paymentTypeSql.append(" OR ds.cash > 0");
+				// 默认支付方式为现金
+				paymentTypeSql.append(" OR (ds.pos = 0 AND ds.checkfee = 0 AND ds.codpos = 0 AND ds.otherfee = 0)");
 			} else if (paymentType == DeliveryPaymentPatternEnum.POS.getPayno()) {
 				paymentTypeSql.append(" OR ds.pos > 0");
 			} else if (paymentType == DeliveryPaymentPatternEnum.CHECKFEE.getPayno()) {

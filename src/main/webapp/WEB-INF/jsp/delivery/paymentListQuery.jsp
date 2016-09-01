@@ -151,7 +151,6 @@
 			$.each(selectedRow, function() {
 				customerIds.push(this.customerId);
 				cwbOrderTypeIds.push(this.cwbOrderTypeId);
-				cwbOrderTypeIds.push(this.cwbOrderTypeId);
 				deliveryPaymentPatternIds.push(this.deliveryPaymentPatternId);
 			});
 			$("#print_customerId").val(customerIds);
