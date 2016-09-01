@@ -60,7 +60,8 @@ for (int y=1 ; y<27 ;y++){
 						<p><span><font <%=columnKeyAndValue[columnList.getCargoamountindex()].equals("未设置")?"":"color = 'red'" %>>货物金额：</font></span><font <%=columnKeyAndValue[columnList.getCargoamountindex()].equals("未设置")?"":"color = 'red'" %>><%=columnKeyAndValue[columnList.getCargoamountindex()] %></font></p>
 						<p><span><font <%=columnKeyAndValue[columnList.getReceivablefeeindex()].equals("未设置")?"":"color = 'red'" %>>应收金额：</font></span><font <%=columnKeyAndValue[columnList.getReceivablefeeindex()].equals("未设置")?"":"color = 'red'" %>><%=columnKeyAndValue[columnList.getReceivablefeeindex()] %></font></p>
 						<p><span><font <%=columnKeyAndValue[columnList.getPaybackfeeindex()].equals("未设置")?"":"color = 'red'" %>>应退金额：</font></span><font <%=columnKeyAndValue[columnList.getPaybackfeeindex()].equals("未设置")?"":"color = 'red'" %>><%=columnKeyAndValue[columnList.getPaybackfeeindex()] %></font></p>
-						<p><span><font <%=columnKeyAndValue[columnList.getPaywayindex()].equals("未设置")?"":"color = 'red'" %>>支付方式：</font></span><font <%=columnKeyAndValue[columnList.getPaywayindex()].equals("未设置")?"":"color = 'red'" %>><%=columnKeyAndValue[columnList.getPaywayindex()] %></font></p>
+						<p><span><font <%=columnKeyAndValue[columnList.getReturnnoindex()].equals("未设置")?"":"color = 'red'" %>>退货号：</font></span><font <%=columnKeyAndValue[columnList.getReturnnoindex()].equals("未设置")?"":"color = 'red'" %>><%=columnKeyAndValue[columnList.getReturnnoindex()] %></font></p>
+						<p><span><font <%=columnKeyAndValue[columnList.getReturnaddressindex()].equals("未设置")?"":"color = 'red'" %>>退货地址：</font></span><font <%=columnKeyAndValue[columnList.getReturnaddressindex()].equals("未设置")?"":"color = 'red'" %>><%=columnKeyAndValue[columnList.getReturnaddressindex()] %></font></p>
 						<div style="height: 60px;"></div>
 					
 					</td>

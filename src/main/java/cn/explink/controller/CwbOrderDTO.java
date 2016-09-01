@@ -91,6 +91,11 @@ public class CwbOrderDTO {
 	int orderSource;//订单类型：是否外单
 	BigDecimal announcedvalue;//保存申明
 	
+	/**订单导入模板新增退货地址，及商家退货号 add by chunlei05.li 2016/8/22*/
+	private String returnno; // 退货单
+	
+	private String returnaddress; // 退货地址
+	
 	public int getIsmpsflag() {
 		return ismpsflag;
 	}
@@ -901,5 +906,21 @@ public class CwbOrderDTO {
 
 	public void setExceldeliverid(long exceldeliverid) {
 		this.exceldeliverid = exceldeliverid;
+	}
+
+	public String getReturnno() {
+		return returnno;
+	}
+
+	public void setReturnno(String returnno) {
+		this.returnno = returnno;
+	}
+
+	public String getReturnaddress() {
+		return returnaddress;
+	}
+
+	public void setReturnaddress(String returnaddress) {
+		this.returnaddress = returnaddress;
 	}
 }

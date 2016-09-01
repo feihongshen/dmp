@@ -300,6 +300,10 @@ function actionType(src)
 <%-- 		        	<option value="<%=FlowOrderTypeEnum.BeiZhu.getValue()%>" <% if(flowOrderTypeEnumid==FlowOrderTypeEnum.BeiZhu.getValue()){ %>selected="selected" <% }%>><%=FlowOrderTypeEnum.BeiZhu.getText()%></option>
  --%>		        	<option value="<%=FlowOrderTypeEnum.GaiDan.getValue()%>" <% if(flowOrderTypeEnumid==FlowOrderTypeEnum.GaiDan.getValue()){ %>selected="selected" <% }%>><%=FlowOrderTypeEnum.GaiDan.getText()%></option>
 		        	
+		        <!-- zhili01.liang  货物类型修改需求，添加操作类型过滤条件， =====START==== -->
+		        	<option value="<%=FlowOrderTypeEnum.XiuGaiHuoWuLeiXingTongGuo.getValue()%>" <% if(flowOrderTypeEnumid==FlowOrderTypeEnum.XiuGaiHuoWuLeiXingTongGuo.getValue()){ %>selected="selected" <% }%>><%=FlowOrderTypeEnum.XiuGaiHuoWuLeiXingTongGuo.getText()%></option>
+		        	<option value="<%=FlowOrderTypeEnum.XiuGaiHuoWuLeiXingBuTongGuo.getValue()%>" <% if(flowOrderTypeEnumid==FlowOrderTypeEnum.XiuGaiHuoWuLeiXingBuTongGuo.getValue()){ %>selected="selected" <% }%>><%=FlowOrderTypeEnum.XiuGaiHuoWuLeiXingBuTongGuo.getText()%></option>
+		        <!-- zhili01.liang  货物类型修改需求，添加操作类型过滤条件， =====END====== -->
 		        </select>
 
     </td>

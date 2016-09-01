@@ -10082,4 +10082,16 @@ public class CwbDAO {
 		String sql = "select count(1) from express_ops_cwb_detail where state = 1 and cwb = ? ";
 		return this.jdbcTemplate.queryForInt(sql,cwb);
 	}
+	
+	/**
+	 * @author zhili01.liang 
+	 * @serialData 2016-07-28
+	 * 更新订单货物类型
+	 * @param cwb
+	 * @param cartype
+	 */
+	public void updateCwbCartype(String cwb, String cartype) {
+		String sql = "update express_ops_cwb_detail set cartype=? where cwb=? and state=1 ";
+		this.jdbcTemplate.update(sql, cartype, cwb);
+	}
 }

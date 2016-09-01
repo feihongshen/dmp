@@ -549,6 +549,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			}
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("cwb", embracedOrderVO.getOrderNo());
+			map.put("state", 1);
 			flag = this.generalDAO.update(params, "express_ops_cwb_detail", map) == false ? "false" : "true";
 			System.out.println("补录：update方法，补录标志位："+ embracedOrderVO.getOrderNo() +"   " + embracedOrderVO.getIsadditionflag());
 			if (flowflag) { // 如果状态转变为揽件入站，那么就保存

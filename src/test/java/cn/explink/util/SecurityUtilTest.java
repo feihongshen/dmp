@@ -40,7 +40,7 @@ public class SecurityUtilTest {
 	}	
 	@Test
 	public void testDecrypt3() {
-		String cipherText = "07$9KzilwcH/4mBvCgAKprb9Q";
+		String cipherText = "01$2Qy+PndY/dCnGLNbdKzqPA==";
 		String actual = SecurityUtil.getInstance().decrypt(cipherText);
 		String expected = "******";
 		Assert.assertEquals(expected, actual);

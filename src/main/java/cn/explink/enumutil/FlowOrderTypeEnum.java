@@ -17,6 +17,13 @@ public enum FlowOrderTypeEnum {
 	GongYingShangJuShouTuiHuo(62, "退供应商拒收退货"),
 	UpdatePickBranch(63,"更新提货站"),
 	ChongZhiFanKui(64,"重置反馈"),
+	
+	//zhili01.liang，修改货物类型需求，
+	/**修改货物类型流程：审核通过，*/
+	XiuGaiHuoWuLeiXingTongGuo(67,"修改货物类型通过"),
+	/**修改货物类型流程：审核不通过，*/
+	XiuGaiHuoWuLeiXingBuTongGuo(66,"修改货物类型不通过"),
+	
 	/**
 	 * 快递的三个状态
 	 */

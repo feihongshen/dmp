@@ -79,8 +79,15 @@ List<Customer> customerList = (List<Customer>)request.getAttribute("customers");
 						<select id="paywayindex" name="paywayindex">
 							<option value="0" selected>未设置</option>
 				        </select></p>
-				        
-			        
+				        <%--订单导入模板新增退货地址，及商家退货号 add by chunlei05.li 2016/8/22 --%>
+				        <p><span>退货号：</span> 
+						<select id="returnnoindex" name="returnnoindex">
+							<option value="0" selected>未设置</option>
+				        </select></p>
+				        <p><span>退货地址：</span> 
+						<select id="returnaddressindex" name="returnaddressindex">
+							<option value="0" selected>未设置</option>
+				        </select></p>
 			        </td>
 			        <td>
 			        	<p><span>实际重量kg：</span> 

@@ -25,6 +25,7 @@ import cn.explink.service.validator.ReceivableFeeValidator;
 import cn.explink.service.validator.Remark1_5Validator;
 import cn.explink.service.validator.SendCargoNumShouldAboveZero;
 import cn.explink.service.validator.ShipCwbValidator;
+import cn.explink.service.validator.TransCwbSendcarNumValidator;
 import cn.explink.service.validator.TransCwbValidator;
 
 @Component
@@ -80,6 +81,9 @@ public class ImportValidationManager {
 
 	@Autowired
 	private ModelNameValidator modelNameValidator;
+	
+	@Autowired
+	private TransCwbSendcarNumValidator transCwbSendcarNumValidator; //发货数量和运单数量验证
 
 	/*
 	 * @Autowired private ConsigneemobileValidator consigneemobileValidator;
@@ -195,5 +199,20 @@ public class ImportValidationManager {
 		}
 
 		return arrayList;
+	}
+	
+	/**
+	 * 手工导入订单验证方法 add by vic.liang@pjbest.com 2016-08-23
+	 * @param excelColumnSet
+	 * @return
+	 */
+	public List<CwbOrderValidator> getExcelImportVailidators(ExcelColumnSet excelColumnSet, Customer customer) {
+		List<CwbOrderValidator> list = getVailidators(excelColumnSet);
+		//手工导入增加验证发货数量和运单数量 add by vic.liang@pjbest.com 2016-08-23
+		if (excelColumnSet.getTranscwbindex() != 0 && excelColumnSet.getSendcargonumindex() != 0) {
+			transCwbSendcarNumValidator.setCustomer(customer);
+			list.add(transCwbSendcarNumValidator);
+		}
+		return list;
 	}
 }

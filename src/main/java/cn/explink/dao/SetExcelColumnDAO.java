@@ -69,6 +69,8 @@ public class SetExcelColumnDAO {
 			excelColumnSet.setRemark5index(rs.getInt("remark5index"));
 			excelColumnSet.setPaywayindex(rs.getInt("paywayindex"));
 			excelColumnSet.setShouldfareindex(rs.getInt("shouldfareindex"));
+			excelColumnSet.setReturnnoindex(rs.getInt("returnnoindex"));
+			excelColumnSet.setReturnaddressindex(rs.getInt("returnaddressindex"));
 			try {
 				excelColumnSet.setUpdateusername(rs.getString("realname"));
 			} catch (Exception e) {
@@ -103,8 +105,8 @@ public class SetExcelColumnDAO {
 				+ "cargoamountindex,customercommandindex,getmobileflag,cargotypeindex,cargowarehouseindex,"
 				+ "cargosizeindex,backcargoamountindex,destinationindex,transwayindex,commonnumberindex,sendcargonumindex,backcargonumindex,cwbprovinceindex,cwbcityindex,cwbcountyindex,"
 				+ "warehousenameindex,cwbordertypeindex,cwbdelivertypeindex,transcwbindex,emaildateindex,updatetime,updateuserid,accountareaindex,modelnameindex,"
-				+ "remark1index,remark2index,remark3index,remark4index,remark5index,paywayindex,shouldfareindex) "
-				+ "values(?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
+				+ "remark1index,remark2index,remark3index,remark4index,remark5index,paywayindex,shouldfareindex,returnnoindex,returnaddressindex) "
+				+ "values(?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?)", new PreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps) throws SQLException {
 				ps.setLong(1, excelcolumnset.getCustomerid());
@@ -155,7 +157,8 @@ public class SetExcelColumnDAO {
 				ps.setInt(46, excelcolumnset.getRemark5index());
 				ps.setInt(47, excelcolumnset.getPaywayindex());
 				ps.setInt(48, excelcolumnset.getShouldfareindex());
-
+				ps.setInt(49, excelcolumnset.getReturnnoindex());
+				ps.setInt(50, excelcolumnset.getReturnaddressindex());
 			}
 
 		});
@@ -169,7 +172,7 @@ public class SetExcelColumnDAO {
 						+ "cargoamountindex=?,customercommandindex=?,getmobileflag=?,cargotypeindex=?,cargowarehouseindex=?,"
 						+ "cargosizeindex=?,backcargoamountindex=?,destinationindex=?,transwayindex=?,commonnumberindex=?,sendcargonumindex=?,backcargonumindex=?,cwbprovinceindex=?,cwbcityindex=?,cwbcountyindex=?,"
 						+ "warehousenameindex=?,cwbordertypeindex=?,cwbdelivertypeindex=?,transcwbindex=?,emaildateindex=?,updatetime=?,updateuserid=?,accountareaindex=?,modelnameindex=?, "
-						+ "remark1index=?,remark2index=?,remark3index=?,remark4index=?,remark5index=?,paywayindex=?,shouldfareindex=? where columnid=?", new PreparedStatementSetter() {
+						+ "remark1index=?,remark2index=?,remark3index=?,remark4index=?,remark5index=?,paywayindex=?,shouldfareindex=?,returnnoindex=?,returnaddressindex=? where columnid=?", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 						ps.setInt(1, excelColumnSer.getCwbindex());
@@ -219,7 +222,9 @@ public class SetExcelColumnDAO {
 						ps.setInt(45, excelColumnSer.getRemark5index());
 						ps.setInt(46, excelColumnSer.getPaywayindex());
 						ps.setLong(47, excelColumnSer.getShouldfareindex());
-						ps.setLong(48, excelColumnSer.getColumnid());
+						ps.setInt(48, excelColumnSer.getReturnnoindex());
+						ps.setInt(49, excelColumnSer.getReturnaddressindex());
+						ps.setLong(50, excelColumnSer.getColumnid());
 
 					}
 

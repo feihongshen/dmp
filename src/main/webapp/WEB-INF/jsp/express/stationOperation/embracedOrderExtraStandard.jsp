@@ -2472,8 +2472,10 @@
 		        "payMethod":payMethod 
 			},
 			success : function(data) {
-				$("#freight_id").val(data.price);
-				$("#charge_weight_id").val(data.calWeight);
+				if(data!=null){
+					$("#freight_id").val(data.price);
+					$("#charge_weight_id").val(data.calWeight);
+				}
 				 getFreightToal();
 			}
 		});

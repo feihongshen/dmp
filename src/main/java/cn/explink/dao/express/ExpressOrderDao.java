@@ -735,7 +735,7 @@ public class ExpressOrderDao {
 	 */
 	public void updateImportEmbracedData(List<EmbracedOrderVO> list, User userparam, Branch branch) {
 		final User user = userparam;
-		final String sqlUpdate = "update  express_ops_cwb_detail set cwb=?,flowordertype=?,cwbstate=?,collectorid=?,collectorname=?,inputdatetime=?,cwbordertypeid=?,paymethod=?,customerid=?,transcwb=?,isadditionflag=?,senderprovinceid=?,senderprovince=?,sendercityid=?,sendercity=?,sendercellphone=?,sendertelephone=?,recprovinceid=?,cwbprovince=?,reccityid=?,cwbcity=?,consigneemobile=?,consigneephone=?,sendcarnum=?,inputhandlerid=?,inputhandlername=?,sendername=?,sendercountyid=?,sendercounty=?,senderstreetid=?,senderstreet=?,consigneename=?,reccountyid=?,cwbcounty=?,entrustname=?,sendnum=?,carrealweight=?,hascod=?,receivablefee=?,hasinsurance=?,insuredfee=?,realweight=?,monthsettleno=?,senderaddress=?,consigneeaddress=?,length=?,width=?,height=?,other=?,recstreetid=?,recstreet=?,announcedvalue=?,shouldfare=?,totalfee=?,packagefee=?,chargeweight=?,recareacode=?,sendareacode=?,kgs=?,instationhandlerid=?,instationhandlername=?,instationdatetime=?,instationid=?,instationname=?,carsize=? where cwb =?";
+		final String sqlUpdate = "update  express_ops_cwb_detail set cwb=?,flowordertype=?,cwbstate=?,collectorid=?,collectorname=?,inputdatetime=?,cwbordertypeid=?,paymethod=?,customerid=?,transcwb=?,isadditionflag=?,senderprovinceid=?,senderprovince=?,sendercityid=?,sendercity=?,sendercellphone=?,sendertelephone=?,recprovinceid=?,cwbprovince=?,reccityid=?,cwbcity=?,consigneemobile=?,consigneephone=?,sendcarnum=?,inputhandlerid=?,inputhandlername=?,sendername=?,sendercountyid=?,sendercounty=?,senderstreetid=?,senderstreet=?,consigneename=?,reccountyid=?,cwbcounty=?,entrustname=?,sendnum=?,carrealweight=?,hascod=?,receivablefee=?,hasinsurance=?,insuredfee=?,realweight=?,monthsettleno=?,senderaddress=?,consigneeaddress=?,length=?,width=?,height=?,other=?,recstreetid=?,recstreet=?,announcedvalue=?,shouldfare=?,totalfee=?,packagefee=?,chargeweight=?,recareacode=?,sendareacode=?,kgs=?,instationhandlerid=?,instationhandlername=?,instationdatetime=?,instationid=?,instationname=?,carsize=? where cwb =? and state=1";
 		int circleTimes = (list.size() / Tools.DB_OPERATION_MAX) + 1;
 		final String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 		for (int i = 0; i < circleTimes; i++) {
@@ -906,7 +906,7 @@ public class ExpressOrderDao {
 	public List<EmbracedOrderVO> getOrderBycwbs(String cwbs) {
 		StringBuffer sql = new StringBuffer();
 		List<EmbracedOrderVO> list = new ArrayList<EmbracedOrderVO>();
-		sql.append("select * from express_ops_cwb_detail where cwb in " + cwbs);
+		sql.append("select * from express_ops_cwb_detail where cwb in " + cwbs + " and state=1 ");
 		list = this.jdbcTemplate.query(sql.toString(), new EmbrancedOrderInputRowMapper());
 		return list;
 	}

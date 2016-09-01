@@ -162,6 +162,9 @@ public class DataImportService {
 	@Autowired
 	private MqExceptionDAO mqExceptionDAO;
 	
+	@Autowired
+	private DataImportSingleService dataImportSingleService;
+	
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	protected static ObjectMapper jacksonmapper = JacksonMapper.getInstance();
 
@@ -212,10 +215,12 @@ public class DataImportService {
 
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public void importSingleData(User user, EmailDate ed, boolean isReImport, CwbOrderDTO cwbOrderDTO) {
-		for (CwbOrderValidator cwbOrderValidator : this.importValidationManager.getCommonValidators()) {
-			cwbOrderValidator.validate(cwbOrderDTO);
-		}
-		this.insertCwb(cwbOrderDTO, ed.getCustomerid(), ed.getBranchid(), user, ed, isReImport);
+		/**
+		 * 本方法存在内部调用，而方法内部调用无法产生新的事务，抽象出来，使数据库操作部分支持事务
+		 * add by chunlei05.li 2016/8/23
+		 */
+		this.dataImportSingleService.importSingleData(user, ed, isReImport, cwbOrderDTO);
+		
 		// 如果手动分配了地址，就不会自动调用地址库
 		if ((cwbOrderDTO.getExcelbranch() == null) || (cwbOrderDTO.getExcelbranch().length() == 0) || (cwbOrderDTO.getDeliverybranchid() == 0)) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
