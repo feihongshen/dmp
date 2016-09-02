@@ -441,7 +441,8 @@ public class StringUtil {
 	
 	/**
 	 * 数组转换层数据库in字段
-	 * @date 2016年8月11日 下午3:45:48
+	 * @author chunlei05.li
+	 * @date 2016年9月2日 上午10:32:43
 	 * @param objs
 	 * @return
 	 */
@@ -461,7 +462,8 @@ public class StringUtil {
 	
 	/**
 	 * 数组转换层数据库in字段
-	 * @date 2016年8月11日 下午3:45:48
+	 * @author chunlei05.li
+	 * @date 2016年9月2日 上午10:32:49
 	 * @param objs
 	 * @return
 	 */
@@ -479,7 +481,8 @@ public class StringUtil {
 	
 	/**
 	 * 数组转换层数据库in字段
-	 * @date 2016年8月11日 下午3:45:48
+	 * @author chunlei05.li
+	 * @date 2016年9月2日 上午10:32:57
 	 * @param objs
 	 * @return
 	 */

@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -386,6 +388,30 @@ public class UserService {
 	}
 	
 	/**
+	 * 获取小件员角色
+	 * @author chunlei05.li
+	 * @date 2016年9月2日 上午10:21:12
+	 * @return
+	 */
+	public long[] getDeliverRoleIds() {
+		Set<Long> roleidSet = new HashSet<Long>();
+		roleidSet.add(2l); // 小件员
+		roleidSet.add(4l); // 站长
+		List<Role> roles = this.roleDAO.getRolesByIsdelivery();
+		if ((roles != null) && (roles.size() > 0)) {
+			for (Role r : roles) {
+				roleidSet.add(r.getRoleid());
+			}
+		}
+		long[] roleids = new long[roleidSet.size()];
+		int i = 0;
+		for (Long roleid : roleidSet) {
+			roleids[i++] = roleid;
+		}
+		return roleids;
+	}
+	
+	/**
 	 * 获取小件员列表
 	 * @author chunlei05.li
 	 * @date 2016年8月18日 下午5:06:51
@@ -393,14 +419,22 @@ public class UserService {
 	 * @return
 	 */
 	public List<User> getDeliverList(long branchid) {
-		String roleids = "2,4";
-		List<Role> roles = this.roleDAO.getRolesByIsdelivery();
-		if ((roles != null) && (roles.size() > 0)) {
-			for (Role r : roles) {
-				roleids += "," + r.getRoleid();
-			}
-		}
-		List<User> courierList = this.userDAO.getUserByRolesAndBranchid(roleids, branchid);
+		long[] roleids = this.getDeliverRoleIds();
+		String roleidsStr = StringUtil.toDbInStr(roleids);
+		List<User> courierList = this.userDAO.getUserByRolesAndBranchid(roleidsStr, branchid);
 		return courierList;
+	}
+	
+	/**
+	 * 获取在职的小件员
+	 * @author chunlei05.li
+	 * @date 2016年9月2日 上午10:30:02
+	 * @param branchid
+	 * @return
+	 */
+	public List<User> getOnJobUserByRole(long branchid) {
+		long[] roleids = this.getDeliverRoleIds();
+		List<User> userList = this.userDAO.getOnJobUserByRole(roleids, branchid);
+		return userList;
 	}
 }
