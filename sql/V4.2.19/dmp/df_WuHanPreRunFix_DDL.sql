@@ -16,7 +16,11 @@ CREATE TABLE `fn_df_confirm_rate_subsidy` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_rate_subsidy_month` (`month`),
+  KEY `idx_rate_subsidy_org_id` (`org_id`),
+  KEY `idx_rate_subsidy_deliver_id` (`deliver_id`),
+  KEY `idx_rate_subsidy_rule_id` (`rule_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='妥投率补贴报表';
 
 CREATE TABLE `fn_df_confirm_rate_subsidy_detail` (
@@ -37,7 +41,8 @@ CREATE TABLE `fn_df_confirm_rate_subsidy_detail` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_user` varchar(50) DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_subsidy_detail_subsidy_id` (`confirm_rate_subsidy_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='妥投率补贴明细';
 
 
