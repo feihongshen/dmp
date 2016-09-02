@@ -351,6 +351,9 @@ public class BranchService {
 	public void delBranchAndSyncOsp(long branchid) throws Exception{
     	this.branchDao.delBranch(branchid, CurrentUserHelper.getInstance().getUserName());
     	Branch branch = this.branchDao.getBranchByBranchid(branchid);
+    	if(branch.getTpsbranchcode()==null||branch.getTpsbranchcode().trim().length()<1){
+    		throw new Exception("机构编码不能为空");
+    	}
     	try {
     		//dmp只是将机构的字段标记为停用，不是真正删除
     		branchSyncToOspHelper.saveBranchSyncToOsp(branch);

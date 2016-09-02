@@ -228,7 +228,7 @@ public class ApplyEditDeliverystateDAO {
 	}
 	
 	//根据条件查询获取信息-分页
-	public List<ApplyEditDeliverystate> getAppliedEditDeliverystateByOthers(long page,String cwbs,int cwbordertypeid,long cwbresult,long shenhestate,long cwbstate,long feedbackbranch) {
+	public List<ApplyEditDeliverystate> getAppliedEditDeliverystateByOthers(long page,String cwbs,int cwbordertypeid,long cwbresult,long shenhestate,long cwbstate,long feedbackbranch,String feedbackStartDate,String feedbackEndDate) {
 		String sql = "select * from express_ops_applyeditdeliverystate where state=1";
 		
 			StringBuffer sb = new StringBuffer();
@@ -250,13 +250,19 @@ public class ApplyEditDeliverystateDAO {
 			if(feedbackbranch>0){
 				sb.append(" and applybranchid="+feedbackbranch);
 			}
+			if(feedbackStartDate!=null&&feedbackStartDate.length()>0){
+				sb.append(" and deliverpodtime>='"+feedbackStartDate+"'");
+			}
+			if(feedbackEndDate!=null&&feedbackEndDate.length()>0){
+				sb.append(" and deliverpodtime<='"+feedbackEndDate+"'");
+			}
 			sql += sb;
 		
 		sql += " limit " +(page-1) * Page.ONE_PAGE_NUMBER + ","+Page.ONE_PAGE_NUMBER ;
 		return jdbcTemplate.query(sql, new ApplyEditDeliverystateRowMapper());
 	}
 	//根据条件查询获取信息-分页
-	public long getAppliedEditDeliverystateCount(String cwbs,int cwbordertypeid,long cwbresult,long shenhestate,long cwbstate,long feedbackbranch) {
+	public long getAppliedEditDeliverystateCount(String cwbs,int cwbordertypeid,long cwbresult,long shenhestate,long cwbstate,long feedbackbranch,String feedbackStartDate,String feedbackEndDate) {
 		String sql = "select count(1) from express_ops_applyeditdeliverystate where state=1";
 	
 			StringBuffer sb = new StringBuffer();
@@ -277,6 +283,12 @@ public class ApplyEditDeliverystateDAO {
 			}
 			if(feedbackbranch>0){
 				sb.append(" and applybranchid="+feedbackbranch);
+			}
+			if(feedbackStartDate!=null&&feedbackStartDate.length()>0){
+				sb.append(" and deliverpodtime>='"+feedbackStartDate+"'");
+			}
+			if(feedbackEndDate!=null&&feedbackEndDate.length()>0){
+				sb.append(" and deliverpodtime<='"+feedbackEndDate+"'");
 			}
 			sql += sb;
 		return jdbcTemplate.queryForLong(sql);
