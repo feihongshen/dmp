@@ -1918,7 +1918,7 @@ public class DeliveryController {
 	@RequestMapping("/paymentListQuery")
 	public String paymentListQuery(Model model) {
 		// 小件员
-		List<User> deliverList = this.userDAO.getUserByRole("2,4", this.getSessionUser().getBranchid());
+		List<User> deliverList = this.userService.getOnJobUserByRole(this.getSessionUser().getBranchid());
 		model.addAttribute("deliverList", deliverList);
 		// 支付类型
 		DeliveryPaymentPatternEnum[] payArray = DeliveryPaymentPatternEnum.values();
@@ -2004,7 +2004,7 @@ public class DeliveryController {
 		long[] customerIdArray = this.stringToLongArray(customerIds);
 		int[] cwbOrderTypeIdArray = this.stringToIntArray(cwbOrderTypeIds);
 		int[] deliveryPaymentPatternIdArray = this.stringToIntArray(deliveryPaymentPatternIds);
-		List<DeliverPaymentPrintVo> deliverPaymentPrintVoList = this.deliverService.getDeliverPaymentPrintMap(
+		List<DeliverPaymentPrintVo> deliverPaymentPrintVoList = this.deliverService.getDeliverPaymentPrintList(
 				deliveryId, customerIdArray, cwbOrderTypeIdArray, deliveryPaymentPatternIdArray, auditingtimeStart,
 				auditingtimeEnd);
 		model.addAttribute("deliverPaymentPrintVoList", deliverPaymentPrintVoList);

@@ -466,7 +466,7 @@ public class DeliverService {
      * @param deliveryPaymentPatternIds
      * @return
      */
-	public List<DeliverPaymentPrintVo> getDeliverPaymentPrintMap(long deliveryId, long[] customerIds,
+	public List<DeliverPaymentPrintVo> getDeliverPaymentPrintList(long deliveryId, long[] customerIds,
 			int[] cwbOrderTypeIds, int[] deliveryPaymentPatternIds, String auditingtimeStart, String auditingtimeEnd) {
 		// 查询归班反馈
 		List<DeliveryPayment> deliveryPaymentList = this.deliveryStateDAO.getDeliveryPaymentList(deliveryId,
@@ -504,7 +504,7 @@ public class DeliverService {
 	public List<DeliverPaymentReportVo> getDeliverPaymentPrintVoList(long deliveryId,
 			List<DeliveryPayment> deliveryPaymentList) {
 		// 获取小件员信息
-    	User delivery = userDAO.getAllUserByid(deliveryId);
+    	User delivery = this.userDAO.getUserByUserid(deliveryId);
 		// 查询供货商，转Map
 		List<Customer> customerList = this.customerDAO.getAllCustomers();
 		Map<Long, String> customernameMap = new HashMap<Long, String>();
