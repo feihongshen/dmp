@@ -455,6 +455,9 @@ function del(key) {
 			if (data.errorCode == 0) {
 				delSuccess(data);
 			}
+			if (data.errorCode == 1) {
+				alert(data.error);
+			}
 		}
 	});
 }
