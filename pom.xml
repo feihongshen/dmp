@@ -68,7 +68,7 @@
 		<dependency>
 		     <groupId>com.pjbest</groupId> 
 			 <artifactId>pjdeliveryorder-service-api</artifactId> 
-			 <version>1.18.0_02</version>
+			 <version>1.24.1_03</version>
 			 <exclusions>
   				<exclusion>
   					<groupId>org.springframework</groupId>
@@ -712,7 +712,7 @@
 		     <artifactId>psp-express-service-api</artifactId>
 		     <version>1.5.2-SNAPSHOT</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 		     <groupId>com.pjbest</groupId> 
 			 <artifactId>pjdeliveryorder-service-api</artifactId> 
 			 <version>1.20.0_07</version>
@@ -722,7 +722,7 @@
       				<artifactId>spring-context-support</artifactId>
   				</exclusion>
   			</exclusions> 
-		</dependency>
+		</dependency> -->
 		
 		<!-- JSR 303  Validator begin -->
 		<dependency>

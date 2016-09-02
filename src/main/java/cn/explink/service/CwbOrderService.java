@@ -229,6 +229,7 @@ import cn.explink.util.JsonUtil;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
+import com.alibaba.fastjson.JSON;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderService;
 import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderServiceHelper;
 import com.pjbest.deliveryorder.bizservice.PjDoStatusGoodsRequest;
@@ -10602,14 +10603,18 @@ public class CwbOrderService extends BaseOrderService {
 				OmOrderTransportModel transportNoModel = pjDeliveryOrderS.getByTransportNo(transcwb);
 				if(transportNoModel!=null){
 					CwbOrderService.logger.error("tps运单号校验不通过，tps已将该运单失效!");
+					throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), "tps运单号校验不通过，tps已将该运单失效!");
 				}else{
 					req= this.prepareStateRequestObj(co, transcwb, 1, "", freight,paybackedfee);
 					reqList.add(req);
 					//(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare)
+					logger.info("反馈为上门退成功，推送绑定关系接口请求参数："+JSON.toJSONString(reqList));
 					pjDoStatusResponse = pjDeliveryOrderS.feedbackDoStatus(reqList);
+					CwbOrderService.logger.info("反馈为上门退成功，推送绑定关系接口返回参数："+JSON.toJSONString(pjDoStatusResponse));
 				}
 			} catch (OspException e) {
 				CwbOrderService.logger.error("反馈为上门退成功时反馈绑定信息给到tps接口异常!", e);
+				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), e.getMessage());
 				//e.printStackTrace();
 			}
 		}else if(podresultid == DeliveryStateEnum.ShangMenJuTui.getValue()){
@@ -10619,9 +10624,12 @@ public class CwbOrderService extends BaseOrderService {
 			reqList.add(req);
 			//(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare)
 			try {
+				logger.info("反馈为上门退拒退，反馈揽收状态接口请求参数："+JSON.toJSONString(reqList));
 				pjDoStatusResponse = pjDeliveryOrderS.feedbackDoStatus(reqList);
+				CwbOrderService.logger.info("反馈为上门退拒退，反馈揽收状态接口返回参数："+JSON.toJSONString(pjDoStatusResponse));
 			} catch (OspException e) {
 				CwbOrderService.logger.error("反馈为上门退拒收时反馈绑定信息给到tps接口异常!", e);
+				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), e.getMessage());
 			}
 		}
 		if(pjDoStatusResponse!=null){
@@ -10629,6 +10637,7 @@ public class CwbOrderService extends BaseOrderService {
 				CwbOrderService.logger.error("订单{},反馈揽收状态成功",pjDoStatusResponse.get(0).getCustOrderNo());
 			}else{
 				CwbOrderService.logger.error("订单{},反馈揽收状态异常,{}",pjDoStatusResponse.get(0).getCustOrderNo(), pjDoStatusResponse.get(0).getResultMsg());
+				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), "反馈揽收状态异常,"+pjDoStatusResponse.get(0).getResultMsg());
 			}
 		}
 	}
@@ -10650,6 +10659,7 @@ public class CwbOrderService extends BaseOrderService {
 		req.setType(1);//tps type 1、揽收
 		req.setStatus(state);
 		req.setOrderType(2);
+		req.setReturnAmount(paybackedfee.doubleValue());
 		if(state==1){
 			req.setFailReason("");
 		}else{
