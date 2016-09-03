@@ -301,7 +301,7 @@ public class CwbOrder {
 	 */
 	private String recareacode;
 	/**
-	 * 付款方式（1：现付，2：到付，0：月结）
+	 * 付款方式（1：现付，2：到付，0：月结） //3：第三方支付
 	 */
 	private int paymethod;
 	/**
