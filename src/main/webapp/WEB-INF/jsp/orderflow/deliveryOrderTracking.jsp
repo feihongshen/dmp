@@ -10,6 +10,8 @@
 <%@page import="cn.explink.domain.orderflow.*"%>
 <%@page import="cn.explink.domain.*"%>
 <%@page import="cn.explink.enumutil.CwbOrderTypeIdEnum"%>
+<%@page import="cn.explink.enumutil.express.ExpressPaymethodEnum"%>
+
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
@@ -94,9 +96,9 @@ Customer consineerBranch = (Customer)request.getAttribute("consineerCustomer");
 									</tr>
 									<tr>
 										<td bgcolor="#EBFFD7"><b>付款方式：</b>
-										<%if("0".equals(embracedOrderVO.getPayment_method())) {%>月结<%}else if("1".equals(embracedOrderVO.getPayment_method())){ %>现付<%}else if("2".equals(embracedOrderVO.getPayment_method())){ %>到付<%}%>
-										
-										
+										<%for(ExpressPaymethodEnum paymethod : ExpressPaymethodEnum.values()){ %>
+											<%if((paymethod.getValue()+"").equals(embracedOrderVO.getPayment_method())) {%><%=paymethod.getText()%><%}
+										}%>
 										</td>
 										<td bgcolor="#EBFFD7"><b></b></td>
 									</tr>
