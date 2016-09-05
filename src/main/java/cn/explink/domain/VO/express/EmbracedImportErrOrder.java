@@ -1,6 +1,8 @@
 package cn.explink.domain.VO.express;
 
-public class EmbracedImportErrOrder {
+import java.io.Serializable;
+
+public class EmbracedImportErrOrder implements Serializable {
 	private String orderNo;
 	private String errMsg;
 

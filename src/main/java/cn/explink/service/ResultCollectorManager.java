@@ -7,11 +7,18 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import cn.explink.domain.VO.express.EmbracedImportResult;
+import cn.explink.util.RedisMap;
+import cn.explink.util.impl.RedisMapCommonImpl;
 
 @Service
 public class ResultCollectorManager {
 	private Map<String, ResultCollector> map = new HashMap<String, ResultCollector>();
-	private Map<String, EmbracedImportResult> EmbracedImportmap = new HashMap<String, EmbracedImportResult>();
+
+	// modified by wangwei, bug#2338, use redis instead of local cache, start 
+//	private Map<String, EmbracedImportResult> EmbracedImportmap = new HashMap<String, EmbracedImportResult>();
+	private static final String EMBRACED_IMPORT_RESULT = "EmbracedImportResult";
+	private RedisMap<String, EmbracedImportResult> EmbracedImportmap = new RedisMapCommonImpl<String, EmbracedImportResult>(EMBRACED_IMPORT_RESULT);
+	// modified by wangwei, bug#2338, use redis instead of local cache, end
 
 	public ResultCollector createNewResultCollector() {
 		ResultCollector resultCollector = new ResultCollector();
@@ -19,7 +26,7 @@ public class ResultCollectorManager {
 		this.map.put(resultCollector.getId(), resultCollector);
 		return resultCollector;
 	}
-
+	
 	/**
 	 *
 	 * @Title: createNewEmbracedImportResultCollector
@@ -59,4 +66,13 @@ public class ResultCollectorManager {
 	public ResultCollector getResultCollectorByEmaildateid(long emaildateid) {
 		return this.map.get(emaildateid);
 	}
+	
+	// added by wangwei, bug#2338, use redis instead of local cache, start 
+	public EmbracedImportResult updateEmbracedImportResultCollector(EmbracedImportResult resultCollector) {
+		if (resultCollector != null && resultCollector.getId() != null) {
+			this.EmbracedImportmap.put(resultCollector.getId(), resultCollector);
+		}
+		return resultCollector;
+	}
+	// added by wangwei, bug#2338, use redis instead of local cache, end
 }
