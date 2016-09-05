@@ -1589,4 +1589,13 @@ public class OrderFlowDAO {
 		
 		return sbSql.toString();
 	}
+	
+	public long getContOrderFlowByCwb(String cwb) {
+		try {
+			String sql = "select count(*) from express_ops_order_flow where cwb='" + cwb + "' and flowordertype not in(1,37)";
+			return this.jdbcTemplate.queryForLong(sql);
+		} catch (Exception e) {
+			return 0l;
+		}
+	}
 }

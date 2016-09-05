@@ -492,6 +492,8 @@ public class CwbOrderService extends BaseOrderService {
 	
 	@Autowired
 	OrderPartGoodsReturnService orderPartGoodsReturnService;
+	@Autowired
+	TranscwbOrderFlowDAO transcwbOrderFlowDAO;
 	
 	private static final String MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.receivegoods.orderFlow";
 	private static final String MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow";
@@ -8908,6 +8910,12 @@ public class CwbOrderService extends BaseOrderService {
 			this.exportwarhousesummaryDAO.dataLoseByCwb(cwb);
 			this.exportwarhousesummaryDAO.LoseintowarhouseByCwb(cwb);
 			this.transCwbDao.deleteTranscwb(cwb);
+			
+			//Added by leoliao at 2016-07-21 订单失效时删除运单明细和运单轨迹
+			this.transCwbDetailDAO.deleteByCwb(cwb);
+			this.transcwbOrderFlowDAO.deleteByCwb(cwb);
+			//Added end
+			
 			// 失效订单删除
 			this.deletecwb(cwb);
 			// 删除倒车时间表的订单
