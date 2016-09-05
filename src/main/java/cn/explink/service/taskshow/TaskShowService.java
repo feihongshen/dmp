@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 import cn.explink.controller.TaskShowController;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.dao.express.ProvinceDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.User;
+import cn.explink.domain.VO.express.AdressVO;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.ResourceBundleUtil;
 
@@ -42,6 +44,8 @@ public class TaskShowService {
 	UserDAO userDAO;
 	@Autowired
 	BranchDAO branchDAO;
+	@Autowired
+	ProvinceDAO provinceDAO;
 
 	public VersionInfoRespone getLatestVersion() throws Exception {
 		VersionInfoRequest versionInfo = new VersionInfoRequest();
@@ -79,7 +83,7 @@ public class TaskShowService {
 		viewRecordRequest.setVersionNo(versionNo);
 		viewRecordRequest.setUserName(this.getSessionUser().getUsername());//登陆名
 		viewRecordRequest.setRealName(this.getSessionUser().getRealname());
-		viewRecordRequest.setOrgInfo(branch.getBranchcode());
+		viewRecordRequest.setOrgInfo(getOrgInfoByBranch(ResourceBundleUtil.provinceCode, branch.getBranchname()));
 		viewRecordRequest.setProvinceCode(ResourceBundleUtil.provinceCode);
 		viewRecordRequest.setShowTime(showTime);
 		viewRecordRequest.setCloseTime(System.currentTimeMillis());
@@ -93,10 +97,18 @@ public class TaskShowService {
 		}
 	}
 	
+	private String getOrgInfoByBranch(String provinceCode, String branchname) {
+		AdressVO province = provinceDAO
+				.getProvinceByCode(provinceCode);
+		String provinceName = (province == null ? "" : province.getName());
+		String result = provinceName + "-" + branchname;
+		return result;
+	}
+	
 	public NearestViewRecordRespone getNearestViewRecord() throws Exception {
 		SysVersionService sysVersionService = new SysVersionServiceHelper.SysVersionServiceClient();	
 		try {
-			NearestViewRecordRespone nearestViewRecord = sysVersionService.getNearestViewRecord(SYSTEM_CODE);
+			NearestViewRecordRespone nearestViewRecord = sysVersionService.getNearestViewRecord(SYSTEM_CODE, null);
 			return nearestViewRecord;
 		} catch (Exception e) {
 			logger.info("调用ops服务：获取历史版本说明异常{}",e.getMessage());

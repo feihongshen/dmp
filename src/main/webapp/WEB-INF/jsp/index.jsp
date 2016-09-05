@@ -1,6 +1,6 @@
 <%@ taglib prefix="t" uri="/easyui-tags"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page language="java" import="java.util.List,java.util.ArrayList,java.util.Map"%>
+<%@ page language="java" import="java.util.*"%>
 <%@ include file="/WEB-INF/jsp/commonLib/easyui.jsp"%>
 <%
 	Map usermap = (Map) session.getAttribute("usermap");
@@ -164,13 +164,8 @@
 							</div>
 						</div>
 						<div id="dlg" class="easyui-dialog" title="新增版本发布说明" style="width:700px;height:550px;padding:10px" data-options="closed:true";>
-					   		<div id="showDetail" style="width:600px;height:400px;padding:10px">
+					   		<div id="showDetail" style="width:600px;height:400px;resizable:true;padding:10px">
 					   		</div>
-					   		<!-- <div style="margin-bottom:10px;height:50px;float:bottom;" >
-					   			<hr>
-					   		    <div style="float:left"><input id="readBut" onclick="" type="checkbox">本人已阅读此版本发布说明</div>
-					   		    <div style="float:right"><input id="closeBut" onclick="closeDlg()" type="button" value="关闭"></div>
-					   		</div> -->
 					    </div>
 					</div>
 				</div>
@@ -203,36 +198,54 @@
 			});
 	
 	$(document).ready(function() {
-		//点击对话框字段关闭按钮事件
-		$('#dlg').dialog({
-			onBeforeClose:function(){
-				if($('#readBut').attr('checked')!='checked'){
-					alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
-					return false;
+		if(isLoginFlag()) {
+			//点击对话框字段关闭按钮事件
+			$('#dlg').dialog({
+				onBeforeClose:function(){
+					if($('#readBut').attr('checked')!='checked'){
+						alert("必须勾选\"本人已阅读此版本的发布说明\",才能关闭！")
+						return false;
+					}
+					if(!window.confirm("确认新版本发布功能学习完毕，需关闭当前窗口？")){
+						return false;
+					}
+			    },
+			    onClose:function(){
+			    	sendReadRecord();
+			    }
+			});
+			
+			//获取最新版本说明
+			$.ajax({
+				async : false,
+				cache : false,
+				type : 'POST',
+				url : "<%=request.getContextPath()%>/taskShow/getLatestVersion",
+				success : function(result) {
+					if(result.latestVersion.isSuccess==false){
+						return;
+					}else if(result.latestVersion.data!=null&&result.latestVersion.data.versionNo!=""){
+						openWindow(result.latestVersion.data);
+					}
+					
 				}
-		    },
-		    onClose:function(){
-		    	sendReadRecord();
-		    }
-		});
-		
-		//获取最新版本说明
-		$.ajax({
-			async : false,
-			cache : false,
-			type : 'POST',
-			url : "<%=request.getContextPath()%>/taskShow/getLatestVersion",
-			success : function(result) {
-				if(result.latestVersion.isSuccess==false){
-					return;
-					//alert("从tps获取当前版本发布说明异常！")
-				}else if(result.latestVersion.data!=null&&result.latestVersion.data.versionNo!=""){
-					openWindow(result.latestVersion.data);
-				}
-				
-			}
-		});
+			});
+			
+			resetLoginFlag();
+		}
 	});
+	
+	function isLoginFlag() {
+		if(<%=("1".equals(session.getAttribute("loginFlag")))%>) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	function resetLoginFlag() {
+		<%session.setAttribute("loginFlag", "0");%>
+	}
 	
 	//根据返回内容新建对话框
 	function openWindow(data){
@@ -252,13 +265,32 @@
 		divshow.append("<div style='display:none' id='versionNo'><b>"+data.versionNo+"</b></div>");
 		divshow.append("<br/>");
 		divshow.append("<div>"+data.added+"</div>");
+		divshow.append("<div>" + getAttachmentLinkHtml(data) + "</div>");
+		divshow.append("<br>");
 		divshow.append("<hr>");
-		divshow.append("<div style=\"float:left\"><input id=\"readBut\" type=\"checkbox\">本人已阅读此版本发布说明</div>");
-		divshow.append("<div style=\"float:right\"><input id=\"closeBut\" onclick=\"closeDlg()\" type=\"button\" value=\"关闭\"></div>");
+		divshow.append("<div style='float:left'><input id='readBut' type='checkbox'>本人已阅读此版本发布说明</div>");
+		divshow.append("<div style='float:right'><input id='closeBut' onclick='closeDlg()' type='button' class='button' value='关闭'></div>");
 		    
 		
 		$('#readBut').removeAttr('checked');
 		$('#dlg').dialog('open');
+	}
+	
+	function getAttachmentLinkHtml(data) {
+		var attachmentDiv = $('<div></div>');
+		var attachmentModelList = data.attachmentModelList;
+		if(attachmentModelList!=null && (attachmentModelList instanceof Array) && attachmentModelList.length>0) {
+			attachmentDiv.append('<hr>')
+			attachmentDiv.append('<p><label><b>附件：</b></label></p>')
+			for (var i=0; i<attachmentModelList.length; i++){
+				var attachmentModel =  attachmentModelList[i];
+				var name = attachmentModel.name;
+				var url = attachmentModel.url;
+				var finalUrl = url + '?type=download&name="' + name + '"';
+				attachmentDiv.append('<p><a href="' + finalUrl + '">' + name + '</a></p>');
+			}
+		}
+		return attachmentDiv.html();
 	}
 	
 	//点击关闭按钮事件
@@ -298,7 +330,7 @@
 			success : function(data) {
 				if(!!data && !!data.message){
 					var noticeContent = data.message;
-					var noticeContentHtml = '<font color="blue">' + noticeContent + '</font>';
+					var noticeContentHtml = '<label>系统公告：<font color="blue">' + noticeContent + '</font></label>';
 					$('#noticeMarquee').html(noticeContentHtml)			
 				}
 			}                 
