@@ -81,7 +81,9 @@ public enum ExceptionCwbErrorTypeEnum {
 			PLEASE_RECEIVE_GOODS_FIRST(227, "请先做{0}"),
 			Ling_huo_EXPRESS_LIMIT(228,"非本站揽收/配送的快递单不能领货！"),
 			FeiYundanluruAndLanjianruzhanAndRukuNotallowshixiao(229, "非运单录入或揽件入站或入库订单不允许失效"),
-			FeiYundanluruAndLanjianruzhanNotallowshixiao(230, "非运单录入或揽件入站订单不允许失效");
+			FeiYundanluruAndLanjianruzhanNotallowshixiao(230, "非运单录入或揽件入站订单不允许失效"),
+	
+	        ShangMenTuiYigeDingdanZhinengBangdingYigeKuaididanhao(231, "上门退订单一个订单只能绑定一个快递单号！");
 
 	private int value;
 	private String text;
