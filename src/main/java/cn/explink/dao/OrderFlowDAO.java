@@ -1620,4 +1620,13 @@ public class OrderFlowDAO {
 		param.add(interval);
 		return this.jdbcTemplate.query(sql.toString(), new OrderFlowRowMapperNotDetail(), param.toArray());
 	}
+
+	public long getContOrderFlowByCwb(String cwb) {
+		try {
+			String sql = "select count(*) from express_ops_order_flow where cwb='" + cwb + "' and flowordertype not in(1,37)";
+			return this.jdbcTemplate.queryForLong(sql);
+		} catch (Exception e) {
+			return 0l;
+		}
+	}
 }
