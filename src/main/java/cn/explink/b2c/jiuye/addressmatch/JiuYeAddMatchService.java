@@ -142,6 +142,13 @@ public class JiuYeAddMatchService {
 				return "{\"RequestName\": \"RequestOrdersStation\",\"Partner\": \"\",\"Success\": true,\"IsArrive\": false,\"SiteNum\":\"\",\"SiteName\": \"\",\"Msg\": \"找不到关联站点\"}"; 
 			}
 			
+			/**mod by yurong.liang 2016-08-31**/
+			if(branch.getBranchname()!=null&&"EMS".equals(branch.getBranchname().trim())){//九曳方要求匹配站点名称是EMS的直接返回"不在派送区域内"
+				logger.info("九曳订单地址库匹配为EMS站点,按九曳方要求返回【不在派送区域内】,订单详细地址为："+totalAddress);
+				return "{\"RequestName\": \"RequestOrdersStation\",\"Partner\": \"\",\"Success\": true,\"IsArrive\": false,\"SiteNum\":\"\",\"SiteName\": \"\",\"Msg\": \"不在派送区域内\"}";
+			}
+			/***************mod end*****************/
+			
 			return getJiuYeResponse(true,true,"成功",branch); //构建每个订单号的返回结果
 			
 		} catch (Exception e) {
