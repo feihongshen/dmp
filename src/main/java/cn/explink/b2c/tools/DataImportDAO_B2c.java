@@ -918,4 +918,9 @@ public class DataImportDAO_B2c {
 			this.logger.error("[update_CwbDetailTempByCwb(long getDataFlag, long opscwbid, String remark1)]修改临时表数据 getDataFlag失败！opscwbid=" + opscwbid, e);
 		}
 	}
+	
+	// 根据订单号删除临时表中对应的订单信息
+	public void deleteB2ctempByCwb(String cwb) {
+		this.jdbcTemplate.update("delete from express_ops_cwb_detail_b2ctemp where state =1 and cwb=? ", cwb);
+	}
 }
