@@ -8,6 +8,7 @@
 <%@page import="cn.explink.domain.orderflow.*"%>
 <%@page import="cn.explink.domain.*"%>
 <%@page import="cn.explink.enumutil.CwbOrderTypeIdEnum"%>
+<%@page import="cn.explink.enumutil.GoodsSizeTypeEnum"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -202,6 +203,10 @@ function goForm(cwb){
 									<tr>
 										<td bgcolor="#EBFFD7"><b>小件员领货时间：</b><%=orderFlowLingHuo.getCredate()==null?"":orderFlowLingHuo.getCredate() %></td>
 										<td bgcolor="#EBFFD7"><b>货物类型：</b><%=view.getCartype()%></td>
+									</tr>
+									<tr>
+										<td bgcolor="#EBFFD7">&nbsp;</td>
+										<td bgcolor="#EBFFD7"><b>货物尺寸类型：</b><%=GoodsSizeTypeEnum.getTextByValue(view.getGoodsSizeType()) %></td>
 									</tr>
 									<tr>
 										<td bgcolor="#EBFFD7"><b>签收时间：</b><input name="flagtime" type="text" id="flagtime" value="<%=rejectiontime.getCreatetime().length()>0 && deliveryChengGong.getCreatetime().length()==0?"":view.getSign_time()%>" /></td>
