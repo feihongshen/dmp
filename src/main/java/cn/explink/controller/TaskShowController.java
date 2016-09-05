@@ -110,18 +110,21 @@ public class TaskShowController {
 	
 	@RequestMapping("/getLatestNoticeContent")
 	@ResponseBody
-	public AjaxResult getLatestNoticeContent(Model model, HttpServletRequest req)throws Exception{
+	public AjaxResult getLatestNoticeContent(Model model, HttpServletRequest req) {
 		String noticeContent = "";
-		NoticeRespone notice = this.taskShowService.getLatestNotice();
+		NoticeRespone notice = null;
+		try {
+			notice = this.taskShowService.getLatestNotice();
+		} catch (Exception e) {
+			logger.info("获取系统公告调用osp服务失败，失败原因：{}",e.getMessage());
+			return new AjaxResult(false, "");
+		}
 		if(notice != null) {
-			if(notice != null) {
-				if (notice.getIsSuccess() == false) {
-					logger.error(notice.getErrorMsg());
-					//return new AjaxResult(false, notice.getErrorMsg());
-				} else {
-					if(notice.getData() != null && notice.getData().getContent() != null) {
-						noticeContent = notice.getData().getContent();
-					}
+			if (notice.getIsSuccess() == false) {
+				logger.error(notice.getErrorMsg());
+			} else {
+				if(notice.getData() != null && notice.getData().getContent() != null) {
+					noticeContent = notice.getData().getContent();
 				}
 			}
 		}
