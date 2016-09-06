@@ -648,6 +648,7 @@ public class VipShopGetCwbDataService {
 				// 因为取消跟修改会去重，所以当包括新增的时候，不需要处理取消。
 				if(!lantuiNeWSet.contains(order_sn) && !isExist && ("cancel".equalsIgnoreCase(cmd_type) || "edit".equalsIgnoreCase(cmd_type)) && !"".equals(seq)){
 					resultMap.put(seq, false);
+					logger.info("对应订单不存在,不处理取消,此处理有可能造在堵塞,cwb{}", order_sn);// add by jian_xie 2016_09_05
 				} else {	
 					seq_arrs = interceptShangmentui(vipshop, paraList, seq_arrs,order_sn, dataOrderMap, seq, cmd_type);
 				}
