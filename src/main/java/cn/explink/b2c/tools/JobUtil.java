@@ -1342,31 +1342,34 @@ public class JobUtil {
 
 	/**
 	 * 定时抓取 快递运单数据
+	 * 不使用快递一期的定时器
+	 * delete by jian_xie 2016-09-05
 	 */
+	@Deprecated
 	public void getPjwlExpressTransNoTask() {
-		System.out.println("-----getPjwlExpressTransNoTask启动执行");
-
-		if (JobUtil.threadMap.get("express_transNo") == 1) {
-			this.logger.warn("本地定时器没有执行完毕，跳出循环express_transNo");
-			return;
-		}
-		JobUtil.threadMap.put("express_transNo", 1);
-
-		long starttime = 0;
-		long endtime = 0;
-		try {
-			starttime = System.currentTimeMillis();
-
-			this.pjwlExpressService.excutePjwlExpressTransNoSinfferTask();
-
-			endtime = System.currentTimeMillis();
-		} catch (Exception e) {
-			this.logger.error("执行express_transNo定时器异常", e);
-		} finally {
-			JobUtil.threadMap.put("express_transNo", 0);
-		}
-
-		this.logger.info("执行了获取express_transNo订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+//		System.out.println("-----getPjwlExpressTransNoTask启动执行");
+//
+//		if (JobUtil.threadMap.get("express_transNo") == 1) {
+//			this.logger.warn("本地定时器没有执行完毕，跳出循环express_transNo");
+//			return;
+//		}
+//		JobUtil.threadMap.put("express_transNo", 1);
+//
+//		long starttime = 0;
+//		long endtime = 0;
+//		try {
+//			starttime = System.currentTimeMillis();
+//
+//			this.pjwlExpressService.excutePjwlExpressTransNoSinfferTask();
+//
+//			endtime = System.currentTimeMillis();
+//		} catch (Exception e) {
+//			this.logger.error("执行express_transNo定时器异常", e);
+//		} finally {
+//			JobUtil.threadMap.put("express_transNo", 0);
+//		}
+//
+//		this.logger.info("执行了获取express_transNo订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 
 	public void sendVipShopOXOJITFeedbackTask() {

@@ -1450,7 +1450,7 @@ public class OrderSelectController {
 							emsTrans += "," + ems.getEmail_num();
 					}
 				}
-				return MessageFormat.format("货物在<font color =\"red\">[{0}]</font>绑定邮政运单；单号：<font color =\"red\">[{1}]</font>", currentbranchname,emsTrans);
+				return MessageFormat.format("货物在<font color =\"red\">[{0}]</font>转运邮政，单号：<font color =\"red\">[{1}]</font>", currentbranchname,emsTrans);
 			}
 			
 		} catch (Exception e) {
