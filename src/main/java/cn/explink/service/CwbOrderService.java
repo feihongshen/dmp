@@ -5538,6 +5538,8 @@ public class CwbOrderService extends BaseOrderService {
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
+		String oldTpstranscwb=co.getTpstranscwb();
+		int oldDeliveryState=co.getDeliverystate();
 		if (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Express.getValue()) {
 			this.validatorVipshopSMT(cwb, co);// 验证唯品会揽退单如果上一个状态未完成，则抛异常
 		}
@@ -5914,6 +5916,16 @@ public class CwbOrderService extends BaseOrderService {
 			}
 			//Modified end
 		}
+		
+		//上门退不成功时解绑tps运单号
+		if ((co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) && (podresultid != DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
+			if(oldDeliveryState==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){
+				//解绑tps运单号
+				this.transCwbDao.deleteTranscwb(cwb);
+				this.transCwbDao.saveTranscwb(cwb, cwb);
+				this.cwbDAO.saveTranscwbAndTpsTranscwbByCwb("", cwb);
+			}
+		}
 
 		// 更新反馈时间
 		this.deliveryStateDAO.updateDeliverytime(cwb, deliverytime);
@@ -6029,7 +6041,8 @@ public class CwbOrderService extends BaseOrderService {
 		if("1".equals(comefrompage) && co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()){
 			orderPartGoodsReturnService.processOrderGoods(co.getCwb(), podresultid);
 			//反馈揽收状态/运单对照关系给tps edit by zhouhuan 2016-08-30
-			this.sendTranscwbRelationToTps(co,transcwb,infactfare,podresultid,reason,paybackedfee);
+			String paramTranscwb = (String) parameters.get("transcwb");
+			this.sendTranscwbRelationToTps(co,oldTpstranscwb,paramTranscwb,infactfare,podresultid,reason,paybackedfee);
 		}
 		//Added end
 		
@@ -10603,28 +10616,30 @@ public class CwbOrderService extends BaseOrderService {
 	/*transcwb：tps运单号，freight：实收运费，podresultid：反馈结果，reason：拒收原因
 	 * paybackedfee:实退金额
 	 */
-	public void sendTranscwbRelationToTps(CwbOrder co,String transcwb,BigDecimal freight,long podresultid,Reason reason, BigDecimal paybackedfee){
+	public void sendTranscwbRelationToTps(CwbOrder co,String oldTpstranscwb,String transcwb,BigDecimal freight,long podresultid,Reason reason, BigDecimal paybackedfee){
 		PjDeliveryOrderService pjDeliveryOrderS = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient(); 
-		List<PjDoStatusRequest> reqList = new ArrayList();
+		List<PjDoStatusRequest> reqList = new ArrayList<PjDoStatusRequest>();
 		PjDoStatusRequest req = null;
 		List<PjDoStatusResponse> pjDoStatusResponse = null;
 		if(podresultid == DeliveryStateEnum.ShangMenTuiChengGong.getValue()){
 			/*1、调用tps运单检测接口
 			2、反馈绑定信息给到tps（tps揽收状态接口）*/
 			try {
-				OmOrderTransportModel transportNoModel = pjDeliveryOrderS.getByTransportNo(transcwb);
-				if(transportNoModel!=null){
-					CwbOrderService.logger.error("tps运单号校验不通过，tps已将该运单失效!");
-					throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), "tps运单号校验不通过，tps已将该运单失效!");
-				}else{
-					req= this.prepareStateRequestObj(co, transcwb, 1, "", freight,paybackedfee);
-					reqList.add(req);
-					//(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare)
-					logger.info("反馈为上门退成功，推送绑定关系接口请求参数："+JSON.toJSONString(reqList));
-					pjDoStatusResponse = pjDeliveryOrderS.feedbackDoStatus(reqList);
-					CwbOrderService.logger.info("反馈为上门退成功，推送绑定关系接口返回参数："+JSON.toJSONString(pjDoStatusResponse));
+				if(transcwb!=null&&transcwb.length()>0&&(oldTpstranscwb==null||!oldTpstranscwb.equals(transcwb))){
+					OmOrderTransportModel transportNoModel = pjDeliveryOrderS.getByTransportNo(transcwb);
+					if(transportNoModel!=null){
+						CwbOrderService.logger.error("tps运单号校验不通过，tps已将该运单失效!");
+						throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), "tps运单号校验不通过，tps已将该运单失效!");
+					}
 				}
-			} catch (OspException e) {
+				
+				req= this.prepareStateRequestObj(co, transcwb, 1, "", freight,paybackedfee);
+				reqList.add(req);
+				//(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare)
+				logger.info("反馈为上门退成功，推送绑定关系接口请求参数："+JSON.toJSONString(reqList));
+				pjDoStatusResponse = pjDeliveryOrderS.feedbackDoStatus(reqList);
+				CwbOrderService.logger.info("反馈为上门退成功，推送绑定关系接口返回参数："+JSON.toJSONString(pjDoStatusResponse));
+			} catch (Exception e) {
 				CwbOrderService.logger.error("反馈为上门退成功时反馈绑定信息给到tps接口异常!", e);
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), e.getMessage());
 				//e.printStackTrace();
@@ -10639,7 +10654,7 @@ public class CwbOrderService extends BaseOrderService {
 				logger.info("反馈为上门退拒退，反馈揽收状态接口请求参数："+JSON.toJSONString(reqList));
 				pjDoStatusResponse = pjDeliveryOrderS.feedbackDoStatus(reqList);
 				CwbOrderService.logger.info("反馈为上门退拒退，反馈揽收状态接口返回参数："+JSON.toJSONString(pjDoStatusResponse));
-			} catch (OspException e) {
+			} catch (Exception e) {
 				CwbOrderService.logger.error("反馈为上门退拒收时反馈绑定信息给到tps接口异常!", e);
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), e.getMessage());
 			}
@@ -10667,7 +10682,7 @@ public class CwbOrderService extends BaseOrderService {
 		List<OrderGoods> goodsList = orderGoodsDAO.getOrderGoodsList(co.getCwb());
 		req.setCustOrderNo(co.getCwb());
 		req.setDistributer(user.getDeliverManCode());
-		req.setTransportNo(tpsTranscwb);
+		req.setTransportNo(tpsTranscwb==null?"":tpsTranscwb);
 		req.setType(1);//tps type 1、揽收
 		req.setStatus(state);
 		req.setOrderType(2);
