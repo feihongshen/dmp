@@ -2,6 +2,7 @@
 <%@page import="cn.explink.b2c.tools.power.*"%>
 <%@page import="cn.explink.b2c.tools.*"%>
 <%@page import="java.util.List"%>
+<%@page import="cn.explink.b2c.tools.B2cEnum"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
 
 
@@ -27,6 +28,19 @@
 <%
 	List<JointEntity> b2cList = (List<JointEntity>)request.getAttribute("b2cList");
 List<JointPower> powerlist = (List<JointPower>)request.getAttribute("b2cenumlist");
+
+	//zhili01.liang on 20160902==添加新的EDI处理接口==Begin===
+	StringBuffer ediSysIds = new StringBuffer();
+	B2cEnum[] ediEnums = B2cEnum.TYPES_ALL_EDI;
+	if(ediEnums!=null){
+		for(int i=0;i<ediEnums.length;i++){
+			ediSysIds.append(ediEnums[i].getKey());
+			if(i<ediEnums.length-1){
+				ediSysIds.append(",");
+			}
+		}
+	}
+	//zhili01.liang on 20160902==添加新的EDI处理接口==End===
 %>
 
 <script type="text/javascript">
@@ -575,11 +589,31 @@ function delSuccess(data){
             $("#edit").val('<%=request.getContextPath()%>/tpsTianlian/show/');
             $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
         }
+		//zhili01.liang on 20160902==添加新的EDI处理接口==Begin===
+		else if(isNewEDIId(obj)){
+            $("#edit").val('<%=request.getContextPath()%>/tpsMQOrderSetting/show/');
+            $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
+        }
+		//zhili01.liang on 20160902==添加新的EDI处理接口==End===
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');
 		}
 	}
+	
+
+	//zhili01.liang on 20160902==添加新的EDI处理接口==Begin===
+	function isNewEDIId(id){
+		var ids = '<%= ediSysIds.toString() %>'
+		var idsArray = ids.split(",");
+		for(var i=0;i<idsArray.length;i++){
+			if(id==idsArray[i]){
+				return true;
+			}
+		}
+		return false;
+	}
+	//zhili01.liang on 20160902==添加新的EDI处理接口==End===
 
 	</script>
 </body>

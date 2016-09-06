@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.b2c.ems.EMSDAO;
+import cn.explink.b2c.ems.SendToEMSOrder;
 import cn.explink.b2c.explink.core_down.EpaiApiDAO;
 import cn.explink.b2c.explink.core_up.CommenSendData;
 import cn.explink.b2c.explink.core_up.CommonCoreService;
@@ -144,6 +146,8 @@ public class OMSInterfaceController {
 	PoscodeMappDAO poscodeMappDAO;
 	@Autowired
 	ApplyEditDeliverystateDAO applyEditDeliverystateDAO;
+	@Autowired
+	EMSDAO eMSDAO;
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -1007,5 +1011,22 @@ public class OMSInterfaceController {
 	@RequestMapping("/getApplyEditDeliverystate/{cwb}")
 	public @ResponseBody String getBranchById(@PathVariable("cwb") String cwb) {
 		return JSONObject.fromObject(applyEditDeliverystateDAO.getApplyEditDeliverystateWithPass(cwb)).toString();//todo
+	}
+	
+	/**
+	 * 获取绑定邮政运单号 add by vic.liang@pjbest.com 2016-09-05
+	 * @param cwb
+	 * @return
+	 */
+	@RequestMapping("/getEmsTransByCwb/{cwb}")
+	public @ResponseBody String getEmsTransByCwb(@PathVariable("cwb") String cwb) {
+		StringBuilder emsTrans = new StringBuilder();
+		List<SendToEMSOrder> list = this.eMSDAO.getTransListByCwb(cwb);
+		if (list != null && !list.isEmpty()) {
+			for (SendToEMSOrder order : list) {
+				emsTrans.append(order.getEmail_num()+",");
+			}
+		}
+		return emsTrans.indexOf(",") > -1 ? emsTrans.substring(0, emsTrans.length() -1) : emsTrans.toString();
 	}
 }
