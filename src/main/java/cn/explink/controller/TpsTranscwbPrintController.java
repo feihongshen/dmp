@@ -47,7 +47,7 @@ public class TpsTranscwbPrintController {
 			@PathVariable("page") int page,
 			@RequestParam(value = "tpstranscwb", required = false, defaultValue = "") String tpstranscwb,
 			@RequestParam(value = "printStatus", required = false,defaultValue = "") Integer printStatus,
-			@RequestParam(value = "rows", required = false, defaultValue = "10") int rows
+			@RequestParam(value = "rows", required = false, defaultValue = "50") int rows
 			) throws IOException{
 		
 		List<TPStranscwb> transcwbList = this.transcwbPrintService.getList(printStatus,tpstranscwb,page,rows);
@@ -55,8 +55,9 @@ public class TpsTranscwbPrintController {
 		model.addAttribute("transcwbList", transcwbList);
 		model.addAttribute("printStatus", printStatus);
 		model.addAttribute("tpstranscwb", tpstranscwb);
-		model.addAttribute("page_obj", new Page(total, page, Page.ONE_PAGE_NUMBER));
+		model.addAttribute("page_obj", new Page(total, page, rows));
 		model.addAttribute("page", page);
+		model.addAttribute("rows", rows);
 		return "transcwbprint/transcwbPrintList";
 	} 
 

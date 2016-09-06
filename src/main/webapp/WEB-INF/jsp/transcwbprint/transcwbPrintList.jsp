@@ -121,6 +121,7 @@ function printOneTranscwb(transcwb){
 			  <br/>
 		      <input type="button" id="searchId" value="查询" class="input_button2" onclick="search();"/>
 		      <input type="button" id="printbatchTranscwbId" value="批量打印" class="input_button2" onclick="printbatchTranscwb();"/>
+		 	  <input type="hidden" name="rows" id="rows" value="50"/>
 		 </form>
 	</div>
 	<div class="right_title">
@@ -165,6 +166,11 @@ function printOneTranscwb(transcwb){
 					<option value="<%=i %>"><%=i %></option>
 					<% } %>
 				</select>页
+			&nbsp;&nbsp;&nbsp;每页<select id="selectRows"  onchange="$('#searchForm').attr('action','1');$('#rows').val($(this).val());$('#searchForm').submit()">
+				<option>20</option>
+				<option>50</option>
+				<option>100</option>
+			   </select>条记录
 		</td>
 	</tr>
 	</table>
@@ -179,6 +185,8 @@ function printOneTranscwb(transcwb){
 
 <script type="text/javascript">
 $("#selectPg").val(<%=request.getAttribute("page") %>);
+$("#selectRows").val(<%=request.getAttribute("rows") %>);
+$("#rows").val(<%=request.getAttribute("rows") %>);
 </script>
 </body>
 </html>
