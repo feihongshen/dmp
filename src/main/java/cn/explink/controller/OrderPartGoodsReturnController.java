@@ -213,7 +213,7 @@ public class OrderPartGoodsReturnController {
 				//add start 反馈揽收状态/运单对照关系给tps add by zhouhuan 2016-08-30
 				CwbOrder co = this.cwbDAO.getCwbByCwbLock(ort.getCwb());
 				DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(ort.getCwb());
-				cwbOrderService.sendTranscwbRelationToTps(co,null,co.getTpstranscwb(),deliveryState.getShouldfare(),2,null,co.getPaybackfee(),false);
+				cwbOrderService.sendTranscwbRelationToTps(co,null,co.getTranscwb(),deliveryState.getShouldfare(),2,null,co.getPaybackfee(),false);
 			}
 		} catch (Exception e) {
 			return "{\"errorCode\":1,\"error\":\"订单部分退失败\"}";
