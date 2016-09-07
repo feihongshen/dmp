@@ -6043,10 +6043,11 @@ public class CwbOrderService extends BaseOrderService {
 			//反馈揽收状态/运单对照关系给tps edit by zhouhuan 2016-08-30
 			String paramTranscwb = (String) parameters.get("transcwb");
 			String isBatchSMT = (String) parameters.get("isBatchSMT");
-			if(isBatchSMT!=null&&isBatchSMT.trim().equals("1")){
-				paramTranscwb=null;//1表示批量反馈，上门退批量反馈时没运单号，所以不同步到tps
+			boolean isThrow=true;
+			if(isBatchSMT!=null&&isBatchSMT.trim().equals("1")){//1表示来自批量反馈页面
+				isThrow=false;
 			}
-			this.sendTranscwbRelationToTps(co,oldTpstranscwb,paramTranscwb,infactfare,podresultid,reason,paybackedfee);
+			this.sendTranscwbRelationToTps(co,oldTpstranscwb,paramTranscwb,infactfare,podresultid,reason,paybackedfee,isThrow);
 		}
 		//Added end
 		
@@ -10618,9 +10619,9 @@ public class CwbOrderService extends BaseOrderService {
 	
 	//add by zhouhuan 反馈绑定的快点单号要先交tps中该运单号是否能够使用，能使用的话要把该运单号的帮订单关系传给tps 2016-08-26
 	/*transcwb：tps运单号，freight：实收运费，podresultid：反馈结果，reason：拒收原因
-	 * paybackedfee:实退金额
+	 * paybackedfee:实退金额 ,isThrow 运单号在tps验证不可用时是否抛异常
 	 */
-	public void sendTranscwbRelationToTps(CwbOrder co,String oldTpstranscwb,String transcwb,BigDecimal freight,long podresultid,Reason reason, BigDecimal paybackedfee){
+	public void sendTranscwbRelationToTps(CwbOrder co,String oldTpstranscwb,String transcwb,BigDecimal freight,long podresultid,Reason reason, BigDecimal paybackedfee,boolean isThrow){
 		PjDeliveryOrderService pjDeliveryOrderS = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient(); 
 		List<PjDoStatusRequest> reqList = new ArrayList<PjDoStatusRequest>();
 		PjDoStatusRequest req = null;
@@ -10630,7 +10631,10 @@ public class CwbOrderService extends BaseOrderService {
 			2、反馈绑定信息给到tps（tps揽收状态接口）*/
 			try {
 				//上门退成功或部分退时，没运单号就不同步关系给tps
-				if(transcwb==null||transcwb.trim().length()<1){
+				if(transcwb!=null){
+					transcwb=transcwb.trim();
+				}
+				if(transcwb==null||transcwb.length()<1){
 					logger.info("运单号为空时不同步运单号绑定关系给tps,订单号:"+co.getCwb());
 					return;
 				}
@@ -10639,8 +10643,13 @@ public class CwbOrderService extends BaseOrderService {
 				if(transcwb!=null&&transcwb.length()>0&&(oldTpstranscwb==null||!oldTpstranscwb.equals(transcwb))){
 					OmOrderTransportModel transportNoModel = pjDeliveryOrderS.getByTransportNo(transcwb);
 					if(transportNoModel!=null){
-						CwbOrderService.logger.error("tps运单号校验不通过，tps已将该运单失效!");
-						throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), "tps运单号校验不通过，tps已将该运单失效!");
+						CwbOrderService.logger.error("tps运单号校验不通过，tps已将该运单{}失效!",transcwb);
+						if(isThrow){
+							throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), "此运单号"+transcwb+"在tps校验不通过，请修改或清除运单号!");
+						}else{
+							logger.info("运单号没效时不推tps,订单号:"+co.getCwb()+",运单号:"+transcwb);
+							return;//运单号没效时不推tps
+						}
 					}
 				}
 				
@@ -10693,7 +10702,7 @@ public class CwbOrderService extends BaseOrderService {
 		List<OrderGoods> goodsList = orderGoodsDAO.getOrderGoodsList(co.getCwb());
 		req.setCustOrderNo(co.getCwb());
 		req.setDistributer(user.getDeliverManCode());
-		req.setTransportNo(tpsTranscwb==null?"":tpsTranscwb);
+		req.setTransportNo(tpsTranscwb==null?"":tpsTranscwb.trim());
 		req.setType(1);//tps type 1、揽收
 		req.setStatus(state);
 		req.setOrderType(2);
