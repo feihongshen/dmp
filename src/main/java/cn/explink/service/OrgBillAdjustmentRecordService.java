@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Service;
 
+import cn.explink.core.utils.StringUtils;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.FnCustomerBillDetailDAO;
@@ -27,8 +28,10 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.AdjustWayEnum;
 import cn.explink.enumutil.BillAdjustTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.PayMethodSwitchEnum;
 import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.util.DateTimeUtil;
 
 /**
  * 站点站内调整单
@@ -489,6 +492,82 @@ public class OrgBillAdjustmentRecordService {
 		} catch (ParseException e) {
 			logger.error("", e);
 		}
+		this.orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
+	}
+	
+	/**
+	 * add by bruce shangguan 20160831
+	 * 处理上门退订单取消后，添加相应的账单调整记录
+	 * @param cwb
+	 */
+	public void handleAdjustRecordForShangMenTuiSuccess(CwbOrder cwbOrder , DeliveryState deliverState){
+		long orgFreightBillId = cwbOrder.getFnorgfreightbillid() ;
+		long orgBillId = cwbOrder.getFnorgbillid() ;
+		String signTime = deliverState.getSign_time() ;
+		if(orgFreightBillId > 0){
+			OrgBillAdjustmentRecord record = new OrgBillAdjustmentRecord();
+			// 调整金额为运费调整
+			record.setAdjustType(BillAdjustTypeEnum.ExpressFee.getValue());
+		    // 记录运费
+			record.setModifyFee(cwbOrder.getInfactfare());
+			record.setAdjustAmount(BigDecimal.ZERO.subtract(cwbOrder.getInfactfare()));
+			this.createAdjustRecordForCancelShangMenTuiSuccess(record, cwbOrder,signTime);
+		}
+		if(orgBillId > 0){
+			OrgBillAdjustmentRecord record = new OrgBillAdjustmentRecord();
+			// 调整金额为货款调整
+			record.setAdjustType(BillAdjustTypeEnum.OrderFee.getValue());
+		    // 记录货款金额
+			if ((cwbOrder.getPaybackfee() != null) && (cwbOrder.getPaybackfee().compareTo(BigDecimal.ZERO) > 0)) {
+				record.setModifyFee(BigDecimal.ZERO);
+				record.setAdjustAmount(cwbOrder.getPaybackfee());
+			} else {
+				record.setModifyFee(cwbOrder.getReceivablefee());
+				record.setAdjustAmount(BigDecimal.ZERO.subtract(cwbOrder.getReceivablefee()));
+			}
+			record.setGoodsAmount(cwbOrder.getReceivablefee());
+			this.createAdjustRecordForCancelShangMenTuiSuccess(record, cwbOrder,signTime);
+		}
+	}
+	
+	
+	/**
+	 *add by bruce shangguan 20160831
+	 * 处理上门退订单取消后，添加相应的账单调整记录
+	 * @param record
+	 * @param cwbOrder
+	 * @param signTime
+	 */
+	public void createAdjustRecordForCancelShangMenTuiSuccess(OrgBillAdjustmentRecord record , CwbOrder cwbOrder , String signTime){
+		record.setOrderNo(cwbOrder.getCwb());
+		record.setOrderType(cwbOrder.getCwbordertypeid());
+		record.setBillNo("");
+		record.setBillId(0L);
+		record.setAdjustBillNo("");
+		record.setPayWayChangeFlag(0);
+		record.setReceiveFee(cwbOrder.getReceivablefee());
+		record.setRefundFee(cwbOrder.getPaybackfee());
+		BigDecimal infactFare = cwbOrder.getInfactfare();
+		BigDecimal shouldFare = cwbOrder.getShouldfare() ;
+		if(infactFare != null && infactFare.compareTo(BigDecimal.ZERO) != 0){
+			record.setFreightAmount(infactFare);
+		}else{
+			record.setFreightAmount(shouldFare);
+		}
+		// 订单的支付方式可能是新的支付方式
+		Long oldPayWay = Long.valueOf(cwbOrder.getPaywayid()) == null ? 1L : Long.valueOf(cwbOrder.getPaywayid());
+		Long newPayWay = cwbOrder.getNewpaywayid() == null ? 0L : Long.valueOf(cwbOrder.getNewpaywayid());
+		if (oldPayWay.intValue() == newPayWay.intValue()) {
+			record.setPayMethod(oldPayWay.intValue());
+		} else {
+			record.setPayMethod(newPayWay.intValue());
+		}
+		record.setCustomerId(cwbOrder.getCustomerid());
+		record.setCreator("接口对接取消");
+		record.setDeliverId(cwbOrder.getDeliverid());
+		record.setCreateTime(DateTimeUtil.nowDate());
+		record.setDeliverybranchid(cwbOrder.getDeliverybranchid());
+		record.setSignTime(!StringUtils.isEmpty(signTime)?DateTimeUtil.parseStringToDate(signTime):null);
 		this.orgBillAdjustmentRecordDao.creAdjustmentRecord(record);
 	}
 
