@@ -390,13 +390,14 @@ public class VipShopGetCwbDataService {
 	}
 	
 	public boolean isFeedbackOrderResult(){
-		SystemInstall systemInstall = systemInstallDAO.getSystemInstall("feedbackOrderResult");
-		// 是否开启反馈订单结果接口
-		boolean feedbackOrderResult = false;
-		if(systemInstall != null && "1".equals(systemInstall.getValue())){
-			feedbackOrderResult = true;
-		}
-		return feedbackOrderResult;
+//		SystemInstall systemInstall = systemInstallDAO.getSystemInstall("feedbackOrderResult");
+//		// 是否开启反馈订单结果接口
+//		boolean feedbackOrderResult = false;
+//		if(systemInstall != null && "1".equals(systemInstall.getValue())){
+//			feedbackOrderResult = true;
+//		}
+		// modify by jian_xie 已经不使用旧接口取单，为了避免不小心修改参数使用了旧接口因此写死，2016-09-07
+		return true;
 	}
 	
 	public void extractedDataImportByEmaildate(int vipshop_key,
