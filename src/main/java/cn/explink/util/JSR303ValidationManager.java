@@ -3,7 +3,6 @@ package cn.explink.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.validation.Configuration;
@@ -13,9 +12,8 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.spi.ValidationProvider;
 
-import org.apache.log4j.Logger;
-
-import cn.explink.util.AjaxResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JSR303验证工具类
@@ -34,7 +32,7 @@ public class JSR303ValidationManager {
 
 	protected Class<? extends ValidationProvider> providerClass;
 
-	private final Logger log = Logger.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private JSR303ValidationManager() {
 
