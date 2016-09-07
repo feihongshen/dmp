@@ -6042,6 +6042,10 @@ public class CwbOrderService extends BaseOrderService {
 			orderPartGoodsReturnService.processOrderGoods(co.getCwb(), podresultid);
 			//反馈揽收状态/运单对照关系给tps edit by zhouhuan 2016-08-30
 			String paramTranscwb = (String) parameters.get("transcwb");
+			String isBatchSMT = (String) parameters.get("isBatchSMT");
+			if(isBatchSMT!=null&&isBatchSMT.trim().equals("1")){
+				paramTranscwb=null;//1表示批量反馈，上门退批量反馈时没运单号，所以不同步到tps
+			}
 			this.sendTranscwbRelationToTps(co,oldTpstranscwb,paramTranscwb,infactfare,podresultid,reason,paybackedfee);
 		}
 		//Added end
