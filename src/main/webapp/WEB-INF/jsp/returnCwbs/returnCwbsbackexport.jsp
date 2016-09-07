@@ -131,7 +131,7 @@ function cwbreturnCwbsbackexport(scancwb,branchid){
 }
 
 $(function(){
-	getReturnCwbsbackexportSum($("#customerandid").val(),$("#timetypewei").val(),$("#starttimewei").val(),$("#endtimewei").val());
+	//getReturnCwbsbackexportSum($("#customerandid").val(),$("#timetypewei").val(),$("#starttimewei").val(),$("#endtimewei").val());
 	
 	 $("#scancwb").focus();
 });
