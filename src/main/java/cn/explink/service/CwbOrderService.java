@@ -10622,7 +10622,6 @@ public class CwbOrderService extends BaseOrderService {
 	 * paybackedfee:实退金额 ,isThrow 运单号在tps验证不可用时是否抛异常
 	 */
 	public void sendTranscwbRelationToTps(CwbOrder co,String oldTpstranscwb,String transcwb,BigDecimal freight,long podresultid,Reason reason, BigDecimal paybackedfee,boolean isThrow){
-		PjDeliveryOrderService pjDeliveryOrderS = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient(); 
 		List<PjDoStatusRequest> reqList = new ArrayList<PjDoStatusRequest>();
 		PjDoStatusRequest req = null;
 		List<PjDoStatusResponse> pjDoStatusResponse = null;
@@ -10639,6 +10638,7 @@ public class CwbOrderService extends BaseOrderService {
 					return;
 				}
 				
+				PjDeliveryOrderService pjDeliveryOrderS = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient(); 
 				//运单号没推过才推，因为tps运单号只能用一次
 				if(transcwb!=null&&transcwb.length()>0&&(oldTpstranscwb==null||!oldTpstranscwb.equals(transcwb))){
 					OmOrderTransportModel transportNoModel = pjDeliveryOrderS.getByTransportNo(transcwb);
@@ -10667,10 +10667,11 @@ public class CwbOrderService extends BaseOrderService {
 		}else if(podresultid == DeliveryStateEnum.ShangMenJuTui.getValue()){
 			/*1、调用tps反馈揽收失败接口
 			 *2、清空订单主表中的tpsTranscwb*/
-			req= this.prepareStateRequestObj(co, transcwb, 2, reason.getReasoncontent(), freight,paybackedfee);
-			reqList.add(req);
-			//(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare)
 			try {
+				req= this.prepareStateRequestObj(co, transcwb, 2, reason.getReasoncontent(), freight,paybackedfee);
+				reqList.add(req);
+				//(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare)
+				PjDeliveryOrderService pjDeliveryOrderS = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient(); 
 				logger.info("开始反馈为上门退拒退,订单号:"+co.getCwb()+",反馈揽收状态接口请求参数："+JSON.toJSONString(reqList));
 				pjDoStatusResponse = pjDeliveryOrderS.feedbackDoStatus(reqList);
 				CwbOrderService.logger.info("结束反馈为上门退拒退,订单号:"+co.getCwb()+",反馈揽收状态接口返回参数："+JSON.toJSONString(pjDoStatusResponse));
