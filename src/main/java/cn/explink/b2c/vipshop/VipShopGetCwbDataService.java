@@ -505,7 +505,7 @@ public class VipShopGetCwbDataService {
 		sub.append("<head>");
 		sub.append("<version>" + VipShopConfig.version + "</version>");
 		sub.append("<request_time>" + request_time + "</request_time>");
-		sub.append("<cust_code>" + vipshop.getShipper_no() + "</cust_code>");
+		sub.append("<cust_code>" + vipshop.getShipper_no().trim() + "</cust_code>");
 		if(!feedbackOrderResult){
 			sub.append("<seq>" + vipshop.getVipshop_seq() + "</seq>");
 		}
@@ -1228,7 +1228,7 @@ public class VipShopGetCwbDataService {
 		sub.append("<head>");
 		sub.append("<version>" + VipShopConfig.version + "</version>");
 		sub.append("<request_time>" + request_time + "</request_time>");
-		sub.append("<cust_code>" + vipshop.getShipper_no() + "</cust_code>");
+		sub.append("<cust_code>" + vipshop.getShipper_no().trim() + "</cust_code>");
 		sub.append("</head>");
 		sub.append("<orders>");
 		Set<Entry<String, Boolean>> set = result.entrySet();
