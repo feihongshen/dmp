@@ -10656,12 +10656,12 @@ public class CwbOrderService extends BaseOrderService {
 				req= this.prepareStateRequestObj(co, transcwb, 1, "", freight,paybackedfee);
 				reqList.add(req);
 				//(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare)
-				logger.info("开始反馈为上门退成功，推送绑定关系接口请求参数："+JSON.toJSONString(reqList));
+				logger.info("开始反馈为上门退成功,订单号:"+co.getCwb()+",推送绑定关系接口请求参数："+JSON.toJSONString(reqList));
 				pjDoStatusResponse = pjDeliveryOrderS.feedbackDoStatus(reqList);
-				CwbOrderService.logger.info("结束反馈为上门退成功，推送绑定关系接口返回参数："+JSON.toJSONString(pjDoStatusResponse));
+				CwbOrderService.logger.info("结束反馈为上门退成功,订单号:"+co.getCwb()+",推送绑定关系接口返回参数："+JSON.toJSONString(pjDoStatusResponse));
 			} catch (Exception e) {
-				CwbOrderService.logger.error("反馈为上门退成功时反馈绑定信息给到tps接口异常!", e);
-				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), "同步上门退拒收到tps时异常:"+e.getMessage());
+				CwbOrderService.logger.error("反馈为上门退成功时反馈绑定信息给到tps接口异常,订单号:"+co.getCwb(), e);
+				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), cutErrInfo("同步上门退成功状态到tps时异常,"+e.getMessage()));
 				//e.printStackTrace();
 			}
 		}else if(podresultid == DeliveryStateEnum.ShangMenJuTui.getValue()){
@@ -10671,21 +10671,38 @@ public class CwbOrderService extends BaseOrderService {
 			reqList.add(req);
 			//(CwbOrder co,String tpsTranscwb,int state,String failReason,BigDecimal infactfare)
 			try {
-				logger.info("开始反馈为上门退拒退，反馈揽收状态接口请求参数："+JSON.toJSONString(reqList));
+				logger.info("开始反馈为上门退拒退,订单号:"+co.getCwb()+",反馈揽收状态接口请求参数："+JSON.toJSONString(reqList));
 				pjDoStatusResponse = pjDeliveryOrderS.feedbackDoStatus(reqList);
-				CwbOrderService.logger.info("结束反馈为上门退拒退，反馈揽收状态接口返回参数："+JSON.toJSONString(pjDoStatusResponse));
+				CwbOrderService.logger.info("结束反馈为上门退拒退,订单号:"+co.getCwb()+",反馈揽收状态接口返回参数："+JSON.toJSONString(pjDoStatusResponse));
 			} catch (Exception e) {
-				CwbOrderService.logger.error("反馈为上门退拒收时反馈绑定信息给到tps接口异常!", e);
-				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), "同步上门退拒收到tps时异常:"+e.getMessage());
+				CwbOrderService.logger.error("反馈为上门退拒收时反馈绑定信息给到tps接口异常,订单号:"+co.getCwb()+"", e);
+				
+				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), cutErrInfo("同步上门退拒收状态到tps时异常,"+e.getMessage()));
 			}
 		}
 		if(pjDoStatusResponse!=null){
-			if(pjDoStatusResponse.get(0).getResultCode()==1){
-				CwbOrderService.logger.error("订单{},同步揽收状态到tps成功",pjDoStatusResponse.get(0).getCustOrderNo());
-			}else{
-				CwbOrderService.logger.error("订单{},同步揽收状态到tps异常,{}",pjDoStatusResponse.get(0).getCustOrderNo(), pjDoStatusResponse.get(0).getResultMsg());
-				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), "同步揽收状态到tps时异常,"+pjDoStatusResponse.get(0).getResultMsg());
+			if(pjDoStatusResponse.size()<1){
+				CwbOrderService.logger.error("同步上门退揽收状态到tps时没收到响应,订单号:"+co.getCwb());
+				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), "同步上门退揽收状态到tps时没收到响应,订单号:"+co.getCwb());
 			}
+			if(pjDoStatusResponse.get(0).getResultCode()==1){
+				CwbOrderService.logger.info("订单{},同步揽收状态到tps成功,订单号:"+co.getCwb(),pjDoStatusResponse.get(0).getCustOrderNo());
+			}else{
+				CwbOrderService.logger.error("订单{},同步揽收状态到tps异常,原因:{},订单号:"+co.getCwb(),pjDoStatusResponse.get(0).getCustOrderNo(), pjDoStatusResponse.get(0).getResultMsg());
+				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), cutErrInfo("同步揽收状态到tps时发生业务异常,"+pjDoStatusResponse.get(0).getResultMsg()));
+			}
+		}
+	}
+	
+	private String cutErrInfo(String errInfo){
+		if(errInfo==null){
+			return errInfo;
+		}
+		int len=100;
+		if(errInfo.length()>len){
+			return errInfo.substring(0,len);
+		}else{
+			return errInfo;
 		}
 	}
 	

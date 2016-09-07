@@ -361,9 +361,10 @@ function submitSaveFormAndCloseBox4Shangmentui(form) {
 		data : $(form).serialize(),
 		dataType : "json",
 		success : function(data) {
-			$(".tishi_box").html(data.error);
-			$(".tishi_box").show();
-			setTimeout("$(\".tishi_box\").hide(1000)", 2000);
+			alert(data.error);
+			//$(".tishi_box").html(data.error);
+			//$(".tishi_box").show();
+			//setTimeout("$(\".tishi_box\").hide(1000)", 2000);
 			console.info(data.errorCode);
 			if (data.errorCode == 0) {
 				$('.tabs-panels > .panel:visible > .panel-body > iframe').get(0).contentDocument.location.reload(true);
