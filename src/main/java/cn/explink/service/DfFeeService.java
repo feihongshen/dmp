@@ -223,16 +223,20 @@ public class DfFeeService {
                 city = order.getSendercity();
                 county = order.getSendercounty();
             }
+
+            String provinceCode = "";
+            String cityCode = "";
+
             if (StringUtils.isBlank(province)) {
                 province = getEffectiveAddressId(senderAddr, allProvince, null);
             }
             if (StringUtils.isNotBlank(province) && StringUtils.isBlank(city)) {
-                String parentCode = getAddressCode(province, allProvince);
-                city = getEffectiveAddressId(senderAddr, allCity, parentCode);
+                provinceCode = getAddressCode(province, allProvince, null);
+                city = getEffectiveAddressId(senderAddr, allCity, provinceCode);
             }
             if (StringUtils.isNotBlank(city) && StringUtils.isBlank(county)) {
-                String parentCode = getAddressCode(city, allCity);
-                county = getEffectiveAddressId(senderAddr, allCounty, parentCode);
+                cityCode = getAddressCode(city, allCity, provinceCode);
+                county = getEffectiveAddressId(senderAddr, allCounty, cityCode);
             }
 
             //如果有揽件员才生成基础数据。
@@ -291,16 +295,19 @@ public class DfFeeService {
                 String city = order.getCwbcity();
                 String county = order.getCwbcounty();
 
+                String provinceCode = "";
+                String cityCode = "";
+
                 if (StringUtils.isBlank(province)) {
                     province = getEffectiveAddressId(receiverAddr, allProvince, null);
                 }
                 if (StringUtils.isNotBlank(province) && StringUtils.isBlank(city)) {
-                    String parentCode = getAddressCode(province, allProvince);
-                    city = getEffectiveAddressId(receiverAddr, allCity, parentCode);
+                    provinceCode = getAddressCode(province, allProvince, null);
+                    city = getEffectiveAddressId(receiverAddr, allCity, provinceCode);
                 }
                 if (StringUtils.isNotBlank(city) && StringUtils.isBlank(county)) {
-                    String parentCode = getAddressCode(city, allCity);
-                    county = getEffectiveAddressId(receiverAddr, allCounty, parentCode);
+                    cityCode = getAddressCode(city, allCity, provinceCode);
+                    county = getEffectiveAddressId(receiverAddr, allCounty, cityCode);
                 }
 
                 if (order.getDeliverid() > 0) {
@@ -338,12 +345,18 @@ public class DfFeeService {
         }
     }
 
-    private String getAddressCode(String addressName, List<AdressVO> addresses) {
+    private String getAddressCode(String addressName, List<AdressVO> addresses, String parentCode) {
         if (StringUtils.isNotBlank(addressName)) {
             if (CollectionUtils.isNotEmpty(addresses)) {
                 for (AdressVO adressVO : addresses) {
                     if (addressName.equals(adressVO.getName())) {
-                        return adressVO.getCode();
+                        if (StringUtils.isNotBlank(parentCode)){
+                            if (parentCode.equals(adressVO.getParentCode())){
+                                return adressVO.getCode();
+                            }
+                        }else {
+                            return adressVO.getCode();
+                        }
                     }
                 }
             }
