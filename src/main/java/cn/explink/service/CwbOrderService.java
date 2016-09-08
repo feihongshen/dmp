@@ -10754,7 +10754,7 @@ public class CwbOrderService extends BaseOrderService {
 				}
 				PjDoStatusGoodsRequest good = new PjDoStatusGoodsRequest();
 				good.setSn(goodsList.get(i).getGoods_code());
-				good.setFetchNum(Integer.parseInt(goodsList.get(i).getGoods_num()));
+				good.setFetchNum(goodsList.get(i).getShituicount());
 				reqGoods.add(good);
 			}
 		}
