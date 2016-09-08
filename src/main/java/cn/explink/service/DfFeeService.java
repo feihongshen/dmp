@@ -263,13 +263,14 @@ public class DfFeeService {
             if (StringUtils.isBlank(province)) {
                 province = order.getSenderprovince();
             }
-		
-			String provinceCode = getAddressCode(province, allProvince, null);;
-            String cityCode = "";
 
             if (StringUtils.isBlank(province)) {
                 province = getEffectiveAddressId(senderAddr, allProvince, null);
             }
+
+            String provinceCode = getAddressCode(province, allProvince, null);;
+            String cityCode = "";
+
             if (StringUtils.isNotBlank(province) && StringUtils.isBlank(city)) {
                 city = getEffectiveAddressId(senderAddr, allCity, provinceCode);
             }
@@ -359,12 +360,9 @@ public class DfFeeService {
 //                    }
                 }
 //                }
-			
-                String provinceCode = getAddressCode(province, allProvince, null);
-                String cityCode = "";
 
-                //如果没有匹配到省份，派件就拿本省的province code。
                 if (StringUtils.isBlank(province)) {
+                //如果没有匹配到省份，派件就拿本省的province code。
 //                    province = getEffectiveAddressId(receiverAddr, allProvince, null);
                     AdressVO currentProvince = provinceDAO.getProvinceByCode(ResourceBundleUtil.provinceCode);
                     if(currentProvince != null){
@@ -375,6 +373,13 @@ public class DfFeeService {
                 if (StringUtils.isBlank(province)) {
                     province = order.getCwbprovince();
                 }
+
+                if (StringUtils.isBlank(province)) {
+                    province = getEffectiveAddressId(receiverAddr, allProvince, null);
+                }
+
+                String provinceCode = getAddressCode(province, allProvince, null);
+                String cityCode = "";
 
                 if (StringUtils.isNotBlank(province) && StringUtils.isBlank(city)) {
                     city = getEffectiveAddressId(receiverAddr, allCity, provinceCode);
@@ -710,7 +715,7 @@ public class DfFeeService {
 
         return adjustmentRecord;
     }
-    
+
     /**
      * @author zhili01.liang on 20160816
      * 根据条件获取计费记录
