@@ -13,6 +13,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import cn.explink.service.DfFeeService;
+import cn.explink.service.OrgBillAdjustmentRecordService;
+import cn.explink.service.OrgOrderAdjustRecordService;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang3.StringUtils;
@@ -43,9 +45,12 @@ import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Customer;
+import cn.explink.domain.CwbOrder;
+import cn.explink.domain.DeliveryState;
 import cn.explink.domain.OrderGoods;
 import cn.explink.domain.SystemInstall;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.enumutil.MPSAllArrivedFlagEnum;
 import cn.explink.enumutil.MpsTypeEnum;
@@ -104,6 +109,10 @@ public class VipShopGetCwbDataService {
 	DeliveryStateDAO deliveryStateDAO;
     @Autowired
     DfFeeService dfFeeService;
+    @Autowired
+    OrgBillAdjustmentRecordService orgBillAdjReService ;
+    @Autowired
+    OrgOrderAdjustRecordService orgOrderAdjustRecordService;
 
 	private static Logger logger = LoggerFactory.getLogger(VipShopGetCwbDataService.class);
 
@@ -381,13 +390,14 @@ public class VipShopGetCwbDataService {
 	}
 	
 	public boolean isFeedbackOrderResult(){
-		SystemInstall systemInstall = systemInstallDAO.getSystemInstall("feedbackOrderResult");
-		// 是否开启反馈订单结果接口
-		boolean feedbackOrderResult = false;
-		if(systemInstall != null && "1".equals(systemInstall.getValue())){
-			feedbackOrderResult = true;
-		}
-		return feedbackOrderResult;
+//		SystemInstall systemInstall = systemInstallDAO.getSystemInstall("feedbackOrderResult");
+//		// 是否开启反馈订单结果接口
+//		boolean feedbackOrderResult = false;
+//		if(systemInstall != null && "1".equals(systemInstall.getValue())){
+//			feedbackOrderResult = true;
+//		}
+		// modify by jian_xie 已经不使用旧接口取单，为了避免不小心修改参数使用了旧接口因此写死，2016-09-07
+		return true;
 	}
 	
 	public void extractedDataImportByEmaildate(int vipshop_key,
@@ -505,7 +515,7 @@ public class VipShopGetCwbDataService {
 		sub.append("<head>");
 		sub.append("<version>" + VipShopConfig.version + "</version>");
 		sub.append("<request_time>" + request_time + "</request_time>");
-		sub.append("<cust_code>" + vipshop.getShipper_no() + "</cust_code>");
+		sub.append("<cust_code>" + vipshop.getShipper_no().trim() + "</cust_code>");
 		if(!feedbackOrderResult){
 			sub.append("<seq>" + vipshop.getVipshop_seq() + "</seq>");
 		}
@@ -1067,6 +1077,9 @@ public class VipShopGetCwbDataService {
 		// 订单取消
 		if ("cancel".equalsIgnoreCase(cmd_type)) {			
 			if(vipshop.getCancelOrIntercept()==0){ //取消
+				// add by bruce shangguan 20160831 start
+                this.handleAdjustRecordForShangMenTuiSuccess(order_sn) ;
+                // add by bruce shangguan 20160831 end
 				this.dataImportDAO_B2c.dataLoseB2ctempByCwb(order_sn);
 				this.cwbDAO.dataLoseByCwb(order_sn);
 				orderGoodsDAO.loseOrderGoods(order_sn);
@@ -1091,6 +1104,24 @@ public class VipShopGetCwbDataService {
 		}
 		
 		return seq_arrs;
+	}
+	
+	/**
+	 * add by bruce shangguan 20160905
+	 * 取消上门退，生成相应的站点签收调整记录
+	 * @param orderNumber
+	 */
+	public void handleAdjustRecordForShangMenTuiSuccess(String orderNumber){
+		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(orderNumber) ;
+		if(cwbOrder == null){
+			return ;
+		}
+		DeliveryState deliverState = this.deliveryStateDAO.findDeliveryStateLastAuditingTime(orderNumber,DeliveryStateEnum.ShangMenTuiChengGong.getValue()) ;
+		if(deliverState == null){
+			return ;
+		}
+		this.orgBillAdjReService.handleAdjustRecordForShangMenTuiSuccess(cwbOrder, deliverState) ;
+		this.orgOrderAdjustRecordService.handleAdjustRecordForShangMenTuiSuccess(cwbOrder, deliverState);
 	}
 
 	private String getSeq(String seq_arrs, String seq) {
@@ -1228,7 +1259,7 @@ public class VipShopGetCwbDataService {
 		sub.append("<head>");
 		sub.append("<version>" + VipShopConfig.version + "</version>");
 		sub.append("<request_time>" + request_time + "</request_time>");
-		sub.append("<cust_code>" + vipshop.getShipper_no() + "</cust_code>");
+		sub.append("<cust_code>" + vipshop.getShipper_no().trim() + "</cust_code>");
 		sub.append("</head>");
 		sub.append("<orders>");
 		Set<Entry<String, Boolean>> set = result.entrySet();

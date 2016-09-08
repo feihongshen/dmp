@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -102,10 +103,11 @@ public class FnCustomerBillDetailDAO{
 	 * @return
 	 */
 	public FnCustomerBill getFnCustomerBillById(Long billId){
-		String sql = " SELECT * FROM fn_customer_bill where id = ?";	
-		return jdbcTemplate.queryForObject(sql, new FnCustomerBillRowMapper(), billId);
+		String sql = " SELECT * FROM fn_customer_bill where id = ?";
+		try{
+			return jdbcTemplate.queryForObject(sql, new FnCustomerBillRowMapper(), billId);
+		}catch(EmptyResultDataAccessException e){
+			return null ;
+		}	
 	}
-	
-	
-	
 }
