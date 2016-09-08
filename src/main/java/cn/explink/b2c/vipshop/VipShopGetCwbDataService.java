@@ -381,13 +381,14 @@ public class VipShopGetCwbDataService {
 	}
 	
 	public boolean isFeedbackOrderResult(){
-		SystemInstall systemInstall = systemInstallDAO.getSystemInstall("feedbackOrderResult");
-		// 是否开启反馈订单结果接口
-		boolean feedbackOrderResult = false;
-		if(systemInstall != null && "1".equals(systemInstall.getValue())){
-			feedbackOrderResult = true;
-		}
-		return feedbackOrderResult;
+//		SystemInstall systemInstall = systemInstallDAO.getSystemInstall("feedbackOrderResult");
+//		// 是否开启反馈订单结果接口
+//		boolean feedbackOrderResult = false;
+//		if(systemInstall != null && "1".equals(systemInstall.getValue())){
+//			feedbackOrderResult = true;
+//		}
+		// modify by jian_xie 已经不使用旧接口取单，为了避免不小心修改参数使用了旧接口因此写死，2016-09-07
+		return true;
 	}
 	
 	public void extractedDataImportByEmaildate(int vipshop_key,
@@ -505,7 +506,7 @@ public class VipShopGetCwbDataService {
 		sub.append("<head>");
 		sub.append("<version>" + VipShopConfig.version + "</version>");
 		sub.append("<request_time>" + request_time + "</request_time>");
-		sub.append("<cust_code>" + vipshop.getShipper_no() + "</cust_code>");
+		sub.append("<cust_code>" + vipshop.getShipper_no().trim() + "</cust_code>");
 		if(!feedbackOrderResult){
 			sub.append("<seq>" + vipshop.getVipshop_seq() + "</seq>");
 		}
@@ -1228,7 +1229,7 @@ public class VipShopGetCwbDataService {
 		sub.append("<head>");
 		sub.append("<version>" + VipShopConfig.version + "</version>");
 		sub.append("<request_time>" + request_time + "</request_time>");
-		sub.append("<cust_code>" + vipshop.getShipper_no() + "</cust_code>");
+		sub.append("<cust_code>" + vipshop.getShipper_no().trim() + "</cust_code>");
 		sub.append("</head>");
 		sub.append("<orders>");
 		Set<Entry<String, Boolean>> set = result.entrySet();
