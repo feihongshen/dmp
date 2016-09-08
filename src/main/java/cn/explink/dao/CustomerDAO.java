@@ -5,10 +5,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +27,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import cn.explink.aspect.SystemInstallOperation;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JiontDAO;
+import cn.explink.b2c.tools.JointEntity;
 import cn.explink.domain.Customer;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
@@ -374,7 +380,13 @@ public class CustomerDAO {
 			if(oldCustList != null){
 				for(Customer cust : oldCustList){
 					if(cust.getB2cEnum().equals(joint_num + "")){
-						this.jdbcTemplate.update("update express_set_customer_info set b2cEnum=0 where customerid =?", cust.getCustomerid());
+						// 兼容旧数据，此customer是否还存在其它开启的,不等于joint_num对接配置中，如果存在多条，默认取第一条
+						int otherJointNum = getOtherJointNum(cust.getCustomerid(), joint_num);
+						if(otherJointNum == 0){
+							this.jdbcTemplate.update("update express_set_customer_info set b2cEnum=0 where customerid =?", cust.getCustomerid());
+						} else {
+							this.jdbcTemplate.update("update express_set_customer_info set b2cEnum=? where customerid =?", otherJointNum, cust.getCustomerid());
+						}
 					}
 					
 				}
@@ -502,5 +514,54 @@ public class CustomerDAO {
 		} catch (DataAccessException e) {
 			return null;
 		}
+	}
+	
+	/**
+	 * 返回其它的配置joint_num
+	 * @author jian.xie
+	 * @date 20160907
+	 * @param customerid
+	 * @param joint_num
+	 * @return 
+	 */
+	private int getOtherJointNum(long customerid, int joint_num) {
+		List<JointEntity> jointList = jiontDAO.getJointEntity(customerid, joint_num);
+		if(CollectionUtils.isEmpty(jointList)){
+			return 0;
+		}
+		String idStr = null;
+		String[] id = null;
+		Set<String> idSet = null;
+		for(JointEntity entity : jointList){
+			idStr = getCustomerStr(entity.getJoint_property());
+			if(idStr.length() == 0){
+				continue;
+			}
+			id = idStr.split(",");
+			idSet = new HashSet<String>(Arrays.asList(id));
+			if(idSet.contains(String.valueOf(customerid))){
+				return entity.getJoint_num();
+			}
+		}			
+		return 0;
+	}
+	
+	/**
+	 * 提取customerid和乐锋id
+	 */
+	private String getCustomerStr(String jointProperty){
+		String pattern = "(?<=\"(customerids|lefengCustomerid)\":\")(\\d+[,，0-9]*)";
+		// 创建 Pattern 对象
+	    Pattern r = Pattern.compile(pattern);
+	    String result = "";
+	    // 现在创建 matcher 对象
+	    Matcher m = r.matcher(jointProperty);
+	    while(m.find()){
+	    	if(result.length() > 0){
+	    		result += ",";
+	    	}
+	    	result += m.group();
+	    }		
+		return result;
 	}
 }
