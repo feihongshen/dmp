@@ -631,14 +631,14 @@ public class StationOperationController extends ExpressCommonController {
 	@RequestMapping("/weighByScale")
 	public String weighByScale(Model model) {
 		//*************add*****************
-		// add by bruce shangguan 20160712 获取电子秤称重时长
+		// add by bruce shangguan 20160908 获取电子秤称重时长
 		SystemInstall systemInstall = this.systemInstallDAO.getSystemInstall("weightTime") ;
-		String weightTime = "10" ; // 电子秤称重时长默认为10秒
-		if(systemInstall != null && !StringUtils.isEmpty(systemInstall.getValue()) && systemInstall.getValue().trim().matches("^[1-9][0-9]*$")){
+		String weightTime = "0" ; // 电子秤称重时长默认为10秒
+		if(systemInstall != null && !StringUtils.isEmpty(systemInstall.getValue()) && systemInstall.getValue().trim().matches("^0|([1-9][0-9]*)$")){
 			weightTime = systemInstall.getValue() ;
 		}
 		model.addAttribute("weightTime", weightTime);
-		// end 20160712
+		// end 20160908
 		//************end******************
 		return "express/stationOperation/weighByScale";
 	}
