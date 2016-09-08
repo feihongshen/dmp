@@ -5919,12 +5919,10 @@ public class CwbOrderService extends BaseOrderService {
 		
 		//上门退不成功时解绑tps运单号
 		if ((co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) && (podresultid != DeliveryStateEnum.ShangMenTuiChengGong.getValue())) {
-			if(oldDeliveryState==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){
 				//解绑tps运单号
 				this.transCwbDao.deleteTranscwb(cwb);
 				this.transCwbDao.saveTranscwb(cwb, cwb);
 				this.cwbDAO.saveTranscwbAndTpsTranscwbByCwb("", cwb);
-			}
 		}
 
 		// 更新反馈时间
