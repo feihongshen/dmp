@@ -224,12 +224,14 @@ public class DfFeeService {
                 county = order.getSendercounty();
             }
 
-            String provinceCode = getAddressCode(province, allProvince, null);
-            String cityCode = "";
 
             if (StringUtils.isBlank(province)) {
                 province = getEffectiveAddressId(senderAddr, allProvince, null);
             }
+
+            String provinceCode = getAddressCode(province, allProvince, null);;
+            String cityCode = "";
+
             if (StringUtils.isNotBlank(province) && StringUtils.isBlank(city)) {
                 city = getEffectiveAddressId(senderAddr, allCity, provinceCode);
             }
@@ -299,12 +301,15 @@ public class DfFeeService {
                 String city = order.getCwbcity();
                 String county = order.getCwbcounty();
 
-                String provinceCode = getAddressCode(province, allProvince, null);
-                String cityCode = "";
+
 
                 if (StringUtils.isBlank(province)) {
                     province = getEffectiveAddressId(receiverAddr, allProvince, null);
                 }
+
+                String provinceCode = getAddressCode(province, allProvince, null);
+                String cityCode = "";
+
                 if (StringUtils.isNotBlank(province) && StringUtils.isBlank(city)) {
                     city = getEffectiveAddressId(receiverAddr, allCity, provinceCode);
                 }
