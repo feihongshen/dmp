@@ -10661,10 +10661,11 @@ public class CwbOrderService extends BaseOrderService {
 				pjDoStatusResponse = pjDeliveryOrderS.feedbackDoStatus(reqList);
 				CwbOrderService.logger.info("结束反馈为上门退成功,订单号:"+co.getCwb()+",推送绑定关系接口返回参数："+JSON.toJSONString(pjDoStatusResponse));
 			} catch (Exception e) {
-				CwbOrderService.logger.error("反馈为上门退成功时反馈绑定信息给到tps接口异常,订单号:"+co.getCwb(), e);
 				//只有运单无效异常才抛，其它异常都不抛，以免影响反馈流程
 				if(invalidTpstranscwbException){
 					throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), cutErrInfo("同步上门退成功状态到tps时异常,"+e.getMessage()));
+				}else{
+					CwbOrderService.logger.error("反馈为上门退成功时反馈绑定信息给到tps接口异常,订单号:"+co.getCwb(), e);
 				}
 			}
 		}else if(podresultid == DeliveryStateEnum.ShangMenJuTui.getValue()){
