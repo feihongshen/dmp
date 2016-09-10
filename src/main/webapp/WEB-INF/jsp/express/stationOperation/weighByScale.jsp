@@ -96,7 +96,7 @@ var weightIntervalId = null ;
 				return;
 			}
 			saveOrUpdateWeight(waybillNo,weight) ;
-		} , (weightTime + 3) * 1000) ;
+		} , (weightTime + 0.1) * 1000) ;
 	};
 
 	function saveOrUpdateWeight(waybillNo,weight){

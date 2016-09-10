@@ -71,6 +71,7 @@ import cn.explink.service.CustomerService;
 import cn.explink.service.CwbAutoHandleService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.OrderBackCheckService;
+import cn.explink.util.B2cUtil;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.StringUtil;
 import cn.explink.util.Tools;
@@ -117,7 +118,9 @@ public class EMSService {
 	OrderBackCheckDAO orderBackCheckDAO;
 	@Autowired
 	TransCwbDetailDAO transCwbDetailDAO;
-	
+	@Autowired
+	B2cUtil bcUtil;
+	 
 	@Transactional
 	public void edit(HttpServletRequest request, int joint_num) {
 		EMS ems = new EMS();
@@ -292,7 +295,7 @@ public class EMSService {
 		List<DeliveryState> deliveryStateList = this.deliveryStateDAO.getDeliveryStateByDeliver(ems.getEmsDiliveryid());
 		List<DeliveryStateView> cwbOrderWithDeliveryState = this.getDeliveryStateViews(deliveryStateList, null);
 		DeliveryStateDTO dsDTO = new DeliveryStateDTO();
-		dsDTO.analysisDeliveryStateList(cwbOrderWithDeliveryState);
+		dsDTO.analysisDeliveryStateList(cwbOrderWithDeliveryState, bcUtil, customerDAO);
 		
 		Integer sign_typeid = 0;
 		if(action.equals("10")&&!StringUtil.isEmpty(properdelivery)){

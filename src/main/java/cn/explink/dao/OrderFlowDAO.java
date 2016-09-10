@@ -581,7 +581,7 @@ public class OrderFlowDAO {
 	@DataSource(DatabaseType.REPLICA)
 	public List<String> getOrderFlowByCredateAndFlowordertype(String begindate, String enddate, long flowordertype, final String[] operationOrderResultTypes, final String[] dispatchbranchids,
 			long nextbranchid, long deliverid) {
-		String sql = "select * from express_ops_order_flow FORCE INDEX(FlowCredateIdx)  where flowordertype=" + flowordertype;
+		String sql = "select * from express_ops_order_flow FORCE INDEX(FlowCredateIdx)  where flowordertype=" + flowordertype; 
 		StringBuilder deliverystatesql = new StringBuilder();
 		sql += " and credate >= '" + begindate + "' ";
 		sql += " and credate <= '" + enddate + "' ";
@@ -1619,5 +1619,14 @@ public class OrderFlowDAO {
 		param.add(begin);
 		param.add(interval);
 		return this.jdbcTemplate.query(sql.toString(), new OrderFlowRowMapperNotDetail(), param.toArray());
+	}
+
+	public long getContOrderFlowByCwb(String cwb) {
+		try {
+			String sql = "select count(*) from express_ops_order_flow where cwb='" + cwb + "' and flowordertype not in(1,37)";
+			return this.jdbcTemplate.queryForLong(sql);
+		} catch (Exception e) {
+			return 0l;
+		}
 	}
 }

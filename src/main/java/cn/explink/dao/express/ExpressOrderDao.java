@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -613,7 +614,7 @@ public class ExpressOrderDao {
 		final User user = userparam;
 		final String sql = "insert into express_ops_cwb_detail (" + "cwb," + "flowordertype," + "cwbstate," + "collectorid," + "collectorname," + "currentbranchid," + "inputdatetime," + "cwbordertypeid," + "paymethod," + "customerid," + "transcwb," + "isadditionflag," + "senderprovinceid," + "senderprovince," + "sendercityid," + "sendercity," + "sendercellphone," + "sendertelephone," + "recprovinceid," + "cwbprovince," + "reccityid," + "cwbcity," + "consigneemobile," + "consigneephone," + "sendcarnum," + "inputhandlerid," + "inputhandlername," + "sendername," + "sendercountyid," + "sendercounty," + "senderstreetid," + "senderstreet," + "consigneename," + "reccountyid," + "cwbcounty," + "entrustname," + "sendnum," + "carrealweight," + "hascod," + "receivablefee," + "hasinsurance," + "insuredfee," + "realweight," + "monthsettleno," + "senderaddress," + "consigneeaddress," + "length," + "width," + "height," + "other," + "recstreetid," + "recstreet," + "announcedvalue," + "shouldfare," + "totalfee," + "packagefee," + "chargeweight," + "recareacode," + "sendareacode," + "kgs," + "emaildateid," + "instationhandlerid," + "instationhandlername," + "instationdatetime," + "instationid," + "instationname," + "carsize," + "credate)" + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		int circleTimes = (list.size() / Tools.DB_OPERATION_MAX) + 1;
-
+		final String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 		for (int i = 0; i < circleTimes; i++) {
 			int startIndex = Tools.DB_OPERATION_MAX * i;
 			int endIndex = Tools.DB_OPERATION_MAX * (i + 1);
@@ -640,7 +641,7 @@ public class ExpressOrderDao {
 						ps.setInt(j++, Integer.parseInt(embracedOrder.getDelivermanId()));
 						ps.setString(j++, embracedOrder.getDelivermanName());
 						ps.setLong(j++, user.getBranchid());
-						ps.setDate(j++, new java.sql.Date((System.currentTimeMillis())));
+						ps.setString(j++, date); //new java.sql.Date((System.currentTimeMillis()))只有年月日，但是时间不能只为年月日，要精确到时分秒 ---刘武强20160831
 						ps.setLong(j++, CwbOrderTypeIdEnum.Express.getValue());
 						ps.setString(j++, embracedOrder.getPayment_method());
 						ps.setLong(j++, embracedOrder.getSender_customerid() == null ? 1000 : embracedOrder.getSender_customerid());// 如果客户id为空，这默认为1000
@@ -736,7 +737,7 @@ public class ExpressOrderDao {
 		final User user = userparam;
 		final String sqlUpdate = "update  express_ops_cwb_detail set cwb=?,flowordertype=?,cwbstate=?,collectorid=?,collectorname=?,inputdatetime=?,cwbordertypeid=?,paymethod=?,customerid=?,transcwb=?,isadditionflag=?,senderprovinceid=?,senderprovince=?,sendercityid=?,sendercity=?,sendercellphone=?,sendertelephone=?,recprovinceid=?,cwbprovince=?,reccityid=?,cwbcity=?,consigneemobile=?,consigneephone=?,sendcarnum=?,inputhandlerid=?,inputhandlername=?,sendername=?,sendercountyid=?,sendercounty=?,senderstreetid=?,senderstreet=?,consigneename=?,reccountyid=?,cwbcounty=?,entrustname=?,sendnum=?,carrealweight=?,hascod=?,receivablefee=?,hasinsurance=?,insuredfee=?,realweight=?,monthsettleno=?,senderaddress=?,consigneeaddress=?,length=?,width=?,height=?,other=?,recstreetid=?,recstreet=?,announcedvalue=?,shouldfare=?,totalfee=?,packagefee=?,chargeweight=?,recareacode=?,sendareacode=?,kgs=?,instationhandlerid=?,instationhandlername=?,instationdatetime=?,instationid=?,instationname=?,carsize=? where cwb =? and state=1";
 		int circleTimes = (list.size() / Tools.DB_OPERATION_MAX) + 1;
-
+		final String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 		for (int i = 0; i < circleTimes; i++) {
 			int startIndex = Tools.DB_OPERATION_MAX * i;
 			int endIndex = Tools.DB_OPERATION_MAX * (i + 1);
@@ -764,7 +765,8 @@ public class ExpressOrderDao {
 						ps.setString(j++, embracedOrder.getDelivermanName());
 						//如果是更新，那么当前站点不需要更新---刘武强20160616
 						// ps.setLong(j++, user.getBranchid());
-						ps.setDate(j++, new java.sql.Date((System.currentTimeMillis())));
+						//ps.setDate(j++, new java.sql.Date((System.currentTimeMillis())));
+						ps.setString(j++, date); //new java.sql.Date((System.currentTimeMillis()))只有年月日，但是时间不能只为年月日，要精确到时分秒
 						ps.setLong(j++, CwbOrderTypeIdEnum.Express.getValue());
 						ps.setString(j++, embracedOrder.getPayment_method());
 						ps.setLong(j++, embracedOrder.getSender_customerid() == null ? 1000 : embracedOrder.getSender_customerid());// 如果客户id为空，这默认为1000
@@ -829,6 +831,52 @@ public class ExpressOrderDao {
 						ps.setString(j++, embracedOrder.getInstationname());
 						ps.setString(j++, StringUtil.nullConvertToEmptyString(embracedOrder.getGoods_longth()) + "CM *" + StringUtil.nullConvertToEmptyString(embracedOrder.getGoods_width()) + "CM *" + StringUtil
 								.nullConvertToEmptyString(embracedOrder.getGoods_height()) + "CM");
+						ps.setString(j++, embracedOrder.getOrderNo());
+					}
+
+					@Override
+					public int getBatchSize() {
+
+						return tempList.size();
+					}
+				});
+			}
+
+		}
+
+	}
+	
+	/**
+	 * 快递单导入数据已经补录完成，则更新补录完成时间
+	 * 刘武强
+	 * 20160831
+	 * @param list
+	 */
+	public void updateEmbracedDataCompleteTime(List<EmbracedOrderVO> list) {
+		final String sqlUpdate = "update  express_ops_cwb_detail set completedatetime=? where cwb =?";
+		int circleTimes = (list.size() / Tools.DB_OPERATION_MAX) + 1;
+		final String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+		for (int i = 0; i < circleTimes; i++) {
+			int startIndex = Tools.DB_OPERATION_MAX * i;
+			int endIndex = Tools.DB_OPERATION_MAX * (i + 1);
+			if (endIndex > list.size()) {
+				endIndex = list.size();
+			}
+			if (endIndex <= 0) {
+				break;
+			}
+			final List<EmbracedOrderVO> tempList = list.subList(startIndex, endIndex);
+			if ((null != tempList) && !tempList.isEmpty()) {
+				this.jdbcTemplate.batchUpdate(sqlUpdate, new BatchPreparedStatementSetter() {
+					@Override
+					public void setValues(PreparedStatement ps, int i) throws SQLException {
+						int j = 1;
+						EmbracedOrderVO embracedOrder = tempList.get(i);
+						
+						//Added by liuwuqiang at 2016-08-31 输出日志
+						logger.info("ExpressOrderDao.updateImportEmbracedDataCompleteTime={}", embracedOrder.getOrderNo());
+												
+						ps.setString(j++, date); //new java.sql.Date((System.currentTimeMillis()))只有年月日，但是时间不能只为年月日，要精确到时分秒
 						ps.setString(j++, embracedOrder.getOrderNo());
 					}
 

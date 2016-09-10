@@ -145,6 +145,8 @@ public class CwbOrder {
 	
 	private int deliverypermit;//上门退订单是否可领货 0可领 1不可领
 	private int vipclub;// 业务类型
+	//zhili01.liang 20160830 货物尺寸类型修改审核
+	private int goodsSizeType;//货物尺寸类型 
 
 	// 以下是快递业务新增字段
 
@@ -301,7 +303,7 @@ public class CwbOrder {
 	 */
 	private String recareacode;
 	/**
-	 * 付款方式（1：现付，2：到付，0：月结）
+	 * 付款方式（1：现付，2：到付，0：月结） //3：第三方支付
 	 */
 	private int paymethod;
 	/**
@@ -2116,4 +2118,16 @@ public class CwbOrder {
 	public void setOrderSource(String orderSource) {
 		this.orderSource = orderSource;
 	}
+
+	//zhili01.liang 20160830 货物尺寸类型修改审核=====Begin=====
+	public int getGoodsSizeType() {
+		return goodsSizeType;
+	}
+
+	public void setGoodsSizeType(int goodsSizeType) {
+		this.goodsSizeType = goodsSizeType;
+	}
+	//zhili01.liang 20160830 货物尺寸类型修改审核=====Begin=====
+	
+	
 }

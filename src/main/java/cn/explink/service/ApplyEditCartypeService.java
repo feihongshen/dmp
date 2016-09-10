@@ -29,6 +29,7 @@ import cn.explink.enumutil.CarTypeEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.GoodsSizeTypeEnum;
 import cn.explink.service.DfFeeService.DeliveryFeeChargerType;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.express.Page;
@@ -123,7 +124,7 @@ public class ApplyEditCartypeService {
 		vo.setApplyUserid(applyUser.getUserid());
 		vo.setCustomerid(cwbOrder.getCustomerid());
 		vo.setApplyUsername(applyUser.getRealname());
-		vo.setOriginalCartype(cwbOrder.getCartype());
+		vo.setOriginalCartype(GoodsSizeTypeEnum.getTextByValue(cwbOrder.getGoodsSizeType()));
 		vo.setApplyCartype(applyCartype);
 		vo.setApplyTime(DateTimeUtil.getNowTime());
 		vo.setCarsize(cwbOrder.getCarsize());
@@ -164,8 +165,8 @@ public class ApplyEditCartypeService {
 			opsResult.setRemark(ApplyEditCartypeResultView.REMARK_CWB_REPEAT);
 			return opsResult;
 		}
-		//订单的货物类型不为普件处理逻辑
-		if(cwbOrder.getCartype().equals(CarTypeEnum.big.getValue())){
+		//订单的货物类型为大件处理逻辑
+		if(cwbOrder.getGoodsSizeType() == GoodsSizeTypeEnum.big.getValue()){
 			opsResult.setRemark(ApplyEditCartypeResultView.REMARK_CAR_TYPE_BIG);
 			return opsResult;
 		}
@@ -309,7 +310,7 @@ public class ApplyEditCartypeService {
 			return opsResult;
 		}
 		//订单的货物类型为大件处理逻辑
-		if(cwbOrder.getCartype().equals(CarTypeEnum.big.getValue())){
+		if(cwbOrder.getGoodsSizeType() == GoodsSizeTypeEnum.big.getValue()){
 			opsResult.setRemark(ApplyEditCartypeResultView.REMARK_CAR_TYPE_BIG);
 			return opsResult;
 		}
@@ -338,7 +339,7 @@ public class ApplyEditCartypeService {
 		//更新申请记录，标记为审核不通过
 		updateReviewStatus(applyEditCartype,reviewUser,ApplyEditCartypeReviewStatusEnum.pass.getValue());
 		//更新订单的货物类型
-		cwbOrderService.updateCwbCartype(cwbOrder.getCwb(),applyEditCartype.getApplyCartype());
+		cwbOrderService.updateCwbGoodsSizeType(cwbOrder.getCwb(),GoodsSizeTypeEnum.big.getValue());
 		//添加订单操作记录
 		String comment = String.format("类型从%s改为%s", applyEditCartype.getOriginalCartype(),applyEditCartype.getApplyCartype());
 		cwbOrderService.createFloworder(reviewUser, reviewUser.getBranchid(), cwbOrder, 

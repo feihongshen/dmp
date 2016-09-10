@@ -265,8 +265,8 @@ public class ApplyEditDeliverystateController {
 		List<CwbOrderView> covList = new ArrayList<CwbOrderView>();
 		List<ApplyEditDeliverystate> applyeditlist = new ArrayList<ApplyEditDeliverystate>();
 		if (!(cwbs.equals("") && begindate.equals(""))) {
-			applyeditlist = this.applyEditDeliverystateDAO.getAppliedEditDeliverystateByOthers(page, cwbss, cwbtypeid, cwbresultid, isdo, cwbstate, feedbackbranchid);
-			long count = this.applyEditDeliverystateDAO.getAppliedEditDeliverystateCount(cwbss, cwbtypeid, cwbresultid, isdo, cwbstate, feedbackbranchid);
+			applyeditlist = this.applyEditDeliverystateDAO.getAppliedEditDeliverystateByOthers(page, cwbss, cwbtypeid, cwbresultid, isdo, cwbstate, feedbackbranchid,begindate,enddate);
+			long count = this.applyEditDeliverystateDAO.getAppliedEditDeliverystateCount(cwbss, cwbtypeid, cwbresultid, isdo, cwbstate, feedbackbranchid,begindate,enddate);
 			pag = new Page(count, page, Page.ONE_PAGE_NUMBER);
 			covList = this.cwborderService.getResetCwbOrderView(applyeditlist, uslist, branchViewList, reasonMap);
 		}

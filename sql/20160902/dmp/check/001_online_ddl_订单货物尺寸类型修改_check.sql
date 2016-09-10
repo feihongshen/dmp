@@ -1,0 +1,2 @@
+-- 添加货物尺寸类型字段
+SELECT '添加货物尺寸类型字段' AS '脚本注释',IF((SELECT COUNT(1) FROM information_schema.COLUMNS WHERE table_schema = SCHEMA() AND TABLE_NAME='express_ops_cwb_detail' AND COLUMN_NAME='goods_size_type') > 0,'success','failed') AS '执行结果' ;

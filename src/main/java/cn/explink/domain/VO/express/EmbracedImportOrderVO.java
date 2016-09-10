@@ -1,5 +1,7 @@
 package cn.explink.domain.VO.express;
 
+import java.io.Serializable;
+
 import cn.explink.util.poi.excel.annotation.Excel;
 
 /**
@@ -7,7 +9,7 @@ import cn.explink.util.poi.excel.annotation.Excel;
  * @author  刘武强
  * @data   2015年10月10日
  */
-public class EmbracedImportOrderVO {
+public class EmbracedImportOrderVO implements Serializable {
 	@Excel(exportName = "运单号", exportFieldWidth = 20)
 	private String orderNo;
 	@Excel(exportName = "寄件人", exportFieldWidth = 20)

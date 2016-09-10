@@ -276,21 +276,32 @@ public class PunishInsideService {
 			penalizeInsideView.setShensudate(penalizeInside.getShensudate());
 			penalizeInsideView.setLastqitapunishprice(String.valueOf(penalizeInside.getLastqitapunishprice()));
 			penalizeInsideView.setLastgoodpunishprice(String.valueOf(penalizeInside.getLastgoodpunishprice()));
-			if(!"".equals(penalizeInside.getGoodpriceremark())||("".equals(penalizeInside.getGoodpriceremark())&&"0.00".equals(String.valueOf(penalizeInside.getCreategoodpunishprice())))){
-				penalizeInsideView.setCreategoodpunishprice(penalizeInside.getGoodpriceremark());
-			}else{
-				penalizeInsideView.setCreategoodpunishprice(String.valueOf(penalizeInside.getCreategoodpunishprice()));
-			}
-			if(!"".equals(penalizeInside.getQitapriceremark())||("".equals(penalizeInside.getQitapriceremark())&&"0.00".equals(String.valueOf(penalizeInside.getCreateqitapunishprice())))){
-				penalizeInsideView.setCreateqitapunishprice(penalizeInside.getQitapriceremark());
-			}else{
-				penalizeInsideView.setCreateqitapunishprice(String.valueOf(penalizeInside.getCreateqitapunishprice()));
-			}
-			if((!"".equals(penalizeInside.getGoodpriceremark())&&!"".equals(penalizeInside.getQitapriceremark()))||(("".equals(penalizeInside.getGoodpriceremark())&&"0.00".equals(String.valueOf(penalizeInside.getCreategoodpunishprice())))&&("".equals(penalizeInside.getQitapriceremark())&&"0.00".equals(String.valueOf(penalizeInside.getCreateqitapunishprice()))))){
-				penalizeInsideView.setPunishInsideprice("");
-			}else{
-				penalizeInsideView.setPunishInsideprice(String.valueOf(penalizeInside.getPunishInsideprice()));
-			}
+			// modify by bruce shangguan 20160903  当罚款金额不为0时，就显示相应的罚款金额，否则如果相应的罚款金额说明不为空，才显示该罚款说明
+						BigDecimal createGoodPunishPrice = penalizeInside.getCreategoodpunishprice() ;
+						BigDecimal createOtherPrice =  penalizeInside.getCreateqitapunishprice() ;
+						BigDecimal punishInsidePrice = penalizeInside.getPunishInsideprice() ;
+						String goodPriceRemark =  penalizeInside.getGoodpriceremark() ;
+						String otherPriceRemark =  penalizeInside.getQitapriceremark() ;
+						if(createGoodPunishPrice != null){
+							penalizeInsideView.setCreategoodpunishprice(String.valueOf(createGoodPunishPrice));
+						}else if(!StringUtils.isEmpty(goodPriceRemark) && !goodPriceRemark.trim().equalsIgnoreCase("null") ){
+							penalizeInsideView.setCreategoodpunishprice(goodPriceRemark);
+						}else{
+							penalizeInsideView.setCreategoodpunishprice("");
+						}
+						if(createOtherPrice != null){
+							penalizeInsideView.setCreateqitapunishprice(String.valueOf(createOtherPrice));
+						}else if(!StringUtils.isEmpty(otherPriceRemark) && otherPriceRemark.trim().equalsIgnoreCase("null")){
+							penalizeInsideView.setCreateqitapunishprice(otherPriceRemark);
+						}else{
+							penalizeInsideView.setCreateqitapunishprice("");
+						}
+						if(punishInsidePrice != null){
+							penalizeInsideView.setPunishInsideprice(String.valueOf(punishInsidePrice));
+						}else{
+							penalizeInsideView.setPunishInsideprice("");
+						}
+						// end by bruce shangguan 20160903
 			penalizeInsideView.setDutybrachid(penalizeInside.getDutybranchid());
 			penalizeInsideView.setDutypersonid(penalizeInside.getDutypersonid());
 			return penalizeInsideView;

@@ -236,17 +236,19 @@ h1, h2, h3, h4, h5, h6 {
 									<form name="formLogin" id="formLogin"
 										action="<%=request.getContextPath()%>/resources/j_spring_security_check"
 										method="post">
-										<div style="padding-left: 30px;" class="tip">
-											<input class="userName" name="j_username" type="text"
-												id="userName" title="用户名" iscookie="true" nullmsg="请输入用户名!"
-												style="width: 200px; height: 25px" />												
-											<label id="userName-error" class="error" for="userName" 
-												style="color: red; font-size: 12px; text-decoration: none; display: inline-block; width: 90px; height: 25px">
+										<div style="padding-left: 30px;" class="text">
+											<label id="userName-error" class="error" 
+												style="color: red; font-size: 12px; text-decoration: none; display: inline-block; width: 300px; height: 25px">
 												<%if (request.getParameter("login_error") != null
 														&& request.getParameter("login_error").toString().equals("t")){
 													%>${SPRING_SECURITY_LAST_EXCEPTION.message}<%
 												}%>
 											</label>
+										</div>
+										<div style="padding-left: 30px;" class="tip">
+											<input class="userName" name="j_username" type="text"
+												id="userName" title="用户名" iscookie="true" nullmsg="请输入用户名!"
+												style="width: 200px; height: 25px" />												
 										</div>
 										<div style="padding-left: 30px;" class="tip">
 											<input class="password" name="j_password" type="password"
@@ -321,7 +323,6 @@ h1, h2, h3, h4, h5, h6 {
 		}
 		return false;
 	}
-	
   </script>
 </body>
 </html>

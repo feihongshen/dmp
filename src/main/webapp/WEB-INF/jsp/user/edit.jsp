@@ -3,12 +3,14 @@
 <%@page import="cn.explink.domain.User,cn.explink.domain.Role,cn.explink.enumutil.UserEmployeestatusEnum,cn.explink.domain.Branch,cn.explink.util.ServiceUtil"%>
 <%@page import="cn.explink.util.ResourceBundleUtil"%>
 <%@page import="cn.explink.domain.PaiFeiRule"%>
+<%@ page import="java.lang.*"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 	User u = (User)request.getAttribute("user"); 
 	List<Branch> branchList = (List<Branch>)request.getAttribute("branches") ;
 	List<Role> roleList = (List<Role>)request.getAttribute("roles") ;
 	List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
+	long loginForbiddenPleaseWaitMinutes = Long.valueOf(request.getAttribute("loginForbiddenPleaseWaitMinutes").toString());
 %>
 
 <%
@@ -89,6 +91,13 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 					 <li><span>POS登录密码：</span><input type="password" id="password" name="password" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
 			         <li><span>确认POS登录密码：</span><input type="password" id="password1" name="password1" value="<%=u.getPassword() %>" maxlength="50"/>*</li>
 			         </div>
+			         <%if(loginForbiddenPleaseWaitMinutes>0){ %>
+			         <li><span>此用户禁止登录：</span>
+						<label><%=loginForbiddenPleaseWaitMinutes %>分钟后自动解禁。</label>
+						<input type="button"  value="提前解禁" id="liftLoginForbiddanceButton" onclick="liftLoginForbiddance('<%=u.getUserid() %>', '<%=request.getContextPath()%>')"/><br/><br/>
+						</span>
+					 </li>
+			         <%} %>
 	           		<li><span>上传声音文件：</span><iframe id="update" name="update" src="user/update?fromAction=user_save_Form&a=<%=Math.random() %>" width="240px" height="25px"   frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" allowtransparency="yes" ></iframe>
 			         <%if(u.getUserwavfile()!=null&&u.getUserwavfile().length()>4){ %>
 		         	<a href="#" onclick="	
@@ -144,6 +153,7 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 	                 <li><span>保底单量：</span><input type="text"  id="fallbacknum" name="fallbacknum" value="<%=u.getFallbacknum() %>" maxlength="50"/></li>
 	                 <li><span>基础派费：</span><input type="text"  id="basicfee" name="basicfee" value="<%=u.getBasicfee() %>" maxlength="50"/></li>
 	                 <li><span>区域派费：</span><input type="text"  id="areafee" name="areafee" value="<%=u.getAreafee() %>" maxlength="50"/></li>
+			         
 	         </ul>
 		</div>
 		<div align="center">
@@ -158,3 +168,5 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 
 </BODY>
 </HTML>
+
+</script>
