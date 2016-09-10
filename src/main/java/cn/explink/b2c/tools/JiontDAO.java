@@ -252,4 +252,20 @@ public class JiontDAO {
 				+ "and joint_property like '%\"isTpsSendFlag\":1,%' and joint_property like '%"+customerids+"%' and state=1 limit 0,1";
 		return this.jdbcTemplate.queryForObject(sql,new PosMapper());
 	}
+	
+	/**
+	 * 有效的，包含customerid，不是当前joint_num的所有记录
+	 * @author jian.xie
+	 * @return
+	 */
+	public List<JointEntity> getJointEntity(long customerid, int joint_num) {
+		try {
+			String sql = "select * from express_set_joint where state=1 and joint_num != " + joint_num
+					+ " and joint_property like '%" + customerid + "%'";
+			return jdbcTemplate.query(sql, new PosMapper());
+		} catch (Exception e) {
+			return null;
+		}
+
+	}
 }

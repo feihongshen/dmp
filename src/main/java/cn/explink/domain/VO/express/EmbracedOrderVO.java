@@ -1,7 +1,9 @@
 package cn.explink.domain.VO.express;
 
+import java.io.Serializable;
+
 import cn.explink.util.SecurityUtil;
-public class EmbracedOrderVO {
+public class EmbracedOrderVO implements Serializable {
 	/*
 	 * 运单号
 	 */

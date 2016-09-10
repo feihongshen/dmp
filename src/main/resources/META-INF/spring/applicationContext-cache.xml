@@ -75,6 +75,9 @@
 				<bean class="java.lang.String">
 					<constructor-arg type="java.lang.String" value="YonghuiController" />
 				</bean>
+				<bean class="java.lang.String">
+					<constructor-arg type="java.lang.String" value="EmbracedImportResult" />
+				</bean>
 			</set>
 		</constructor-arg>
 		<property name="usePrefix" value="true" />
@@ -88,6 +91,7 @@
 				<entry key="JobUtilController" value="7200" />
 				<entry key="YihaodianController" value="7200" />
 				<entry key="YonghuiController" value="7200" />
+				<entry key="EmbracedImportResult" value="1800" />
 			</map>
 		</property>
 	</bean>

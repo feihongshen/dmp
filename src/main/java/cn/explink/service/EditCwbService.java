@@ -1917,7 +1917,7 @@ public class EditCwbService {
 				
 				//如果再签收余额结算模式下，需把代收货款的调整金额的决定值 作为预付款 写入到缴款记录中 added by gordon.zhou 2016/8/9
 				if(currentSettleMode == SettlementModeEnum.SignRptMode.getValue()){
-					fnOrgRechargesList.add(this.buildFnOrgRecharges(order, OrgRechargeSourceEnum.ReceiveFeeAdjust, order.getReceivablefee(), order.getReceivablefee()));
+					fnOrgRechargesList.add(this.buildFnOrgRecharges(order, order.getDeliverybranchid(), order.getDeliverid(), OrgRechargeSourceEnum.ReceiveFeeAdjust, order.getReceivablefee(), order.getReceivablefee()));
 				}
 			}
 			record.setSignTime(DateTimeUtil.parseDate(deliveryState.getSign_time(), DateTimeUtil.DEF_DATETIME_FORMAT));
@@ -1946,12 +1946,13 @@ public class EditCwbService {
 					fnCwbState.setSmtfreightTime(null);
 					smtFreightStateList.add(fnCwbState); //更新上门退运费收款状态 added by gordon.zhou 2016/8/9
 					
-					fnOrgRechargesList.add(this.buildFnOrgRecharges(order, OrgRechargeSourceEnum.FreightAdjust, ec_dsd.getOriInfactfare(), ec_dsd.getOriInfactfare()));
+					fnOrgRechargesList.add(this.buildFnOrgRecharges(order, order.getDeliverybranchid(), order.getDeliverid(), OrgRechargeSourceEnum.FreightAdjust, ec_dsd.getOriInfactfare(), ec_dsd.getOriInfactfare()));
 				}
 			}
 			
 			//如果是快递订单，且快递运费是到付类型的，生成调整记录 added by gordon.zhou 2016/08/23
 			else if(CwbOrderTypeIdEnum.Express.getValue() == order.getCwbordertypeid() && order.getPaymethod() == 2){
+				record.setFreightAmount(order.getTotalfee());
 				record.setModifyFee(order.getTotalfee());
 				record.setAdjustAmount(order.getTotalfee().negate());
 				record.setAdjustType(BillAdjustTypeEnum.ExpressFee.getValue());
@@ -1967,7 +1968,7 @@ public class EditCwbService {
 					fnCwbState.setExpressfreightTime(null);
 					expressFreightStateList.add(fnCwbState); //更新快递运费收款状态 
 					
-					fnOrgRechargesList.add(this.buildFnOrgRecharges(order, OrgRechargeSourceEnum.FreightAdjust, order.getTotalfee(), order.getTotalfee()));
+					fnOrgRechargesList.add(this.buildFnOrgRecharges(order, order.getInstationid(), order.getCollectorid(), OrgRechargeSourceEnum.FreightAdjust, order.getTotalfee(), order.getTotalfee()));
 				}
 			}
 			
@@ -2076,7 +2077,7 @@ public class EditCwbService {
 					if(record.getAdjustAmount().compareTo(BigDecimal.ZERO) < 0){
 						
 						BigDecimal rechargeAmount =  record.getAdjustAmount().abs();
-						fnOrgRechargesList.add(this.buildFnOrgRecharges(order, OrgRechargeSourceEnum.FreightAdjust, rechargeAmount, rechargeAmount));
+						fnOrgRechargesList.add(this.buildFnOrgRecharges(order, order.getInstationid(), order.getCollectorid(), OrgRechargeSourceEnum.FreightAdjust, rechargeAmount, rechargeAmount));
 					
 					}
 					//修改之后的金额比修改前的金额大，需要更新订单快递运费收款状态 为未收款
@@ -2171,7 +2172,7 @@ public class EditCwbService {
 				if(currentSettleMode == SettlementModeEnum.SignRptMode.getValue()){
 											
 						BigDecimal rechargeAmount =  record.getAdjustAmount().abs();
-						fnOrgRechargesList.add(this.buildFnOrgRecharges(order, OrgRechargeSourceEnum.FreightAdjust, rechargeAmount, rechargeAmount));
+						fnOrgRechargesList.add(this.buildFnOrgRecharges(order, order.getInstationid(), order.getCollectorid(), OrgRechargeSourceEnum.FreightAdjust, rechargeAmount, rechargeAmount));
 					
 						//更新快递运费收款状态为未收款
 						FnCwbState fnCwbState = new FnCwbState();
@@ -2225,7 +2226,7 @@ public class EditCwbService {
 	}
 	
 	
-	private FnOrgRecharges buildFnOrgRecharges(CwbOrder order, OrgRechargeSourceEnum resource,
+	private FnOrgRecharges buildFnOrgRecharges(CwbOrder order, long orgId, long pickerId, OrgRechargeSourceEnum resource,
 			BigDecimal rechargeAmount, BigDecimal surplus){
 		FnOrgRecharges orgRecharges = new FnOrgRecharges();
 		Date date = new Date();
@@ -2235,12 +2236,12 @@ public class EditCwbService {
 		orgRecharges.setCwb(order.getCwb());
 		orgRecharges.setHandleStatus(rechargeAmount.compareTo(surplus) == 0 ? OrgRechargesHandleStatusEnum.Imported.getValue() : OrgRechargesHandleStatusEnum.ChargeAgainsted.getValue());
 		orgRecharges.setImportTime(date);
-		orgRecharges.setOrgId(order.getDeliverybranchid());
-		orgRecharges.setPayinType(this.branchDAO.getPayinTypeByBranchid(order.getDeliverybranchid()));
+		orgRecharges.setOrgId(orgId);
+		orgRecharges.setPayinType(this.branchDAO.getPayinTypeByBranchid(orgId));
 		orgRecharges.setPaymethod(Integer.valueOf(order.getNewpaywayid()));
-		User picker = this.userDAO.getUserByUserid(order.getDeliverid());
-		orgRecharges.setPicker(picker== null ? "" : picker.getUsername());
-		orgRecharges.setPickerId(order.getDeliverid());
+		User picker = this.userDAO.getUserByUserid(pickerId);
+		orgRecharges.setPicker(picker == null || picker.getUsername() == null ? "" : picker.getUsername());
+		orgRecharges.setPickerId(pickerId);
 		orgRecharges.setRechargeNo((Tools.getRandomSeq("P", 1)).get(0));
 		orgRecharges.setRechargeSource(resource.getValue());
 		orgRecharges.setRemark(resource.getText());

@@ -83,6 +83,7 @@ import cn.explink.service.ExportService;
 import cn.explink.service.OrgBillAdjustmentRecordService;
 import cn.explink.service.UserService;
 import cn.explink.service.mps.release.DeliverTakeGoodsMPSReleaseService;
+import cn.explink.util.B2cUtil;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
@@ -161,6 +162,9 @@ public class DeliveryController {
     @Autowired
 	private UserService userService;
 
+	@Autowired
+    B2cUtil bcUtil;
+
 	private SimpleDateFormat df_d = new SimpleDateFormat("yyyy-MM-dd");
 
 	private User getSessionUser() {
@@ -199,7 +203,7 @@ public class DeliveryController {
 			List<DeliveryState> deliveryStateList = this.deliveryStateDAO.getDeliveryStateByDeliver(deliveryId);
 			List<DeliveryStateView> cwbOrderWithDeliveryState = this.getDeliveryStateViews(deliveryStateList, null);
 			DeliveryStateDTO deliveryStateDTO = new DeliveryStateDTO();
-			deliveryStateDTO.analysisDeliveryStateList(cwbOrderWithDeliveryState);
+			deliveryStateDTO.analysisDeliveryStateList(cwbOrderWithDeliveryState, bcUtil, customerDAO);
 			model.addAttribute("deliveryStateDTO", deliveryStateDTO);
 		} else {// 没有选小件员的情况下 显示所有小件员当天的对应数据数据的
 			List<Customer> customerList = this.customerDAO.getAllCustomers();
@@ -368,7 +372,7 @@ public class DeliveryController {
 
 		if (dlist != null) {
 			List<DeliveryStateView> deliveryStateViews = this.getDeliveryStateViews(dlist, cwbs);
-			dsDTO.analysisDeliveryStateList(deliveryStateViews);
+			dsDTO.analysisDeliveryStateList(deliveryStateViews, bcUtil, customerDAO);
 		}
 
 		model.addAttribute("deliveryStateDTO", dsDTO);
@@ -1141,6 +1145,7 @@ public class DeliveryController {
 					
 					//Added by leoliao at 2016-08-12 增加从DMP界面进行反馈标识
 					parameters.put("comefrompage", "1");
+					parameters.put("isBatchSMT", "1");//上门退批量反馈标志
 
 					if (DeliveryStateEnum.ShangMenJuTui.getValue() == deliverystate) {
 						parameters.put("isjutui", true);
@@ -1761,7 +1766,7 @@ public class DeliveryController {
 			List<DeliveryState> deliveryStateList = this.deliveryStateDAO.getDeliveryStateByDeliver(deliveryId);
 			List<DeliveryStateView> cwbOrderWithDeliveryState = this.getDeliveryStateViews(deliveryStateList, null);
 			DeliveryStateDTO deliveryStateDTO = new DeliveryStateDTO();
-			deliveryStateDTO.analysisDeliveryStateList(cwbOrderWithDeliveryState);
+			deliveryStateDTO.analysisDeliveryStateList(cwbOrderWithDeliveryState, bcUtil, customerDAO);
 			final List<DeliveryStateView> views = deliveryStateDTO.getWeifankuiList();
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法
 				@Override
@@ -1803,7 +1808,7 @@ public class DeliveryController {
 			List<DeliveryState> deliveryStateList = this.deliveryStateDAO.getDeliveryStateByDeliver(deliveryId);
 			List<DeliveryStateView> cwbOrderWithDeliveryState = this.getDeliveryStateViews(deliveryStateList, null);
 			DeliveryStateDTO deliveryStateDTO = new DeliveryStateDTO();
-			deliveryStateDTO.analysisDeliveryStateList(cwbOrderWithDeliveryState);
+			deliveryStateDTO.analysisDeliveryStateList(cwbOrderWithDeliveryState, bcUtil, customerDAO);
 			cwbOrderWithDeliveryState.removeAll(deliveryStateDTO.getWeifankuiList());
 			final List<DeliveryStateView> views = cwbOrderWithDeliveryState;
 			ExcelUtils excelUtil = new ExcelUtils() { // 生成工具类实例，并实现填充数据的抽象方法

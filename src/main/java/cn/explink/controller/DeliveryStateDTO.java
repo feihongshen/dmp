@@ -8,8 +8,18 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import cn.explink.dao.CustomerDAO;
+import cn.explink.domain.Customer;
+import cn.explink.domain.CwbOrder;
+import cn.explink.domain.DeliveryState;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
+import cn.explink.pos.tonglianpos.delivery.DeliveryService;
+import cn.explink.service.mps.release.DeliverTakeGoodsMPSReleaseService;
+import cn.explink.util.B2cUtil;
 
 public class DeliveryStateDTO {
 	private Logger logger = LoggerFactory.getLogger(DeliveryStateDTO.class);
@@ -45,7 +55,6 @@ public class DeliveryStateDTO {
 	private long fankui_diushi = 0;// 丢失
 	private long fankui_diushi_zanbuchuli = 0;// 丢失 暂不处理
 	private List<DeliveryStateView> fankui_diushiList = new ArrayList<DeliveryStateView>();
-	
 	
 	private long fankui_zhongzhuan = 0;// 待中转
 	private long fankui_zhongzhuan_zanbuchuli = 0;// 待中转暂不处理
@@ -259,7 +268,7 @@ public class DeliveryStateDTO {
 	 * @param dsList
 	 *            小件员的非已审核订单列表
 	 */
-	public void analysisDeliveryStateList(List<DeliveryStateView> dsList) {
+	public void analysisDeliveryStateList(List<DeliveryStateView> dsList, B2cUtil bcUtil, CustomerDAO customerDAO ) {
 
 		for (DeliveryStateView ds : dsList) {
 			DeliveryStateView DeliveryStateView = new DeliveryStateView();
@@ -293,6 +302,7 @@ public class DeliveryStateDTO {
 				}
 
 			} else if (ds.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue()) {
+				ds.setEditFlag(!this.jugeVIPShangmentuiChenggongOrdere(ds, bcUtil, customerDAO));
 				fankui_shangmentui_chenggong++;
 				fankui_shangmentui_chenggongList.add(ds);
 				if (ds.getGcaid() == -1) {
@@ -713,4 +723,26 @@ public class DeliveryStateDTO {
 			List<DeliveryStateView> fankui_zhongzhuanList) {
 		this.fankui_zhongzhuanList = fankui_zhongzhuanList;
 	}
+	/**
+	 * 判断订单是否是唯品会的上门退订单，并且反馈结果为上门退成功
+	 * 刘武强
+	 * 20160831
+	 * @param cwbOrder
+	 * @return
+	 */
+	public boolean jugeVIPShangmentuiChenggongOrdere( DeliveryStateView ds, B2cUtil bcUtil, CustomerDAO customerDAO){
+		//判断是否是唯品会订单
+		Customer customer = customerDAO.getCustomerById(ds.getCustomerid());
+		if ((customer.getB2cEnum() != null) && !customer.getB2cEnum().equals(bcUtil.getB2cEnumKeys(customer, "vipshop"))) {
+			return false;
+		}
+		//判断是否为上门退订单并且反馈为上门退成功
+		if(ds.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue() && ds.getDeliverystate() == DeliveryStateEnum.ShangMenTuiChengGong.getValue()){
+			return true;
+		}
+		return false;
+	}
+	
+
+	
 }

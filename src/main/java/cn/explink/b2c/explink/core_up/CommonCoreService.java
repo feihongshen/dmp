@@ -49,6 +49,7 @@ import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.CwbOrderService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.support.transcwb.TranscwbView;
+import cn.explink.util.B2cUtil;
 import cn.explink.util.DateTimeUtil;
 
 /**
@@ -90,7 +91,8 @@ public class CommonCoreService {
 	BranchRouteDAO branchRouteDAO;
 	@Autowired
 	OrderFlowDAO orderFlowDAO;
-
+	@Autowired
+	B2cUtil bcUtil;
 	/**
 	 * dmp 处理接收订单状态回传
 	 * 
@@ -363,7 +365,7 @@ public class CommonCoreService {
 
 		if (dlist != null) {
 			List<DeliveryStateView> deliveryStateViews = getDeliveryStateViews(dlist, "'" + cwb + "'");
-			dsDTO.analysisDeliveryStateList(deliveryStateViews);
+			dsDTO.analysisDeliveryStateList(deliveryStateViews, bcUtil, customerDAO);
 		}
 
 		GotoClassOld gco = new GotoClassOld();

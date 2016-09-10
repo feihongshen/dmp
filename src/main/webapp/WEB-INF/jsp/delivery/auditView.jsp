@@ -780,10 +780,9 @@ function exportYifankui(){
 								<td width="10%" align="right"><%=ds.getBusinessfee() %>元</td>
 								<td width="15%" align="right"><%=ds.getReturnedfee() %>元</td>
 								<%if(!"no".equals(request.getAttribute("useAudit"))){ %>
-								<td width="10%" align="center">
-								
-									<a href="javascript:if(<%=ds.getUserid() %>==0||<%=ds.getUserid() %>==<%=usermap.get("userid") %>){edit_button('<%=ds.getCwb()%>');}else{alert('不是同一个操作人！');}">[修改]</a> 
-								　<!-- <a href="javascript:edit_button('<%=ds.getCwb()%>');">[修改]</a>-->
+								<td width="10%" align="center">			
+									<a href="javascript:if(!<%=ds.getEditFlag() %>){alert('唯品会上门退成功的订单不允许进行反馈修改')}else if(<%=ds.getUserid() %>==0||<%=ds.getUserid() %>==<%=usermap.get("userid") %>){edit_button('<%=ds.getCwb()%>');}else{alert('不是同一个操作人！');}">[修改]</a> 
+								　<!-- <a href="javascript:edit_button('<%=ds.getCwb()%>');">[修改]</a>-->								
 								<%if(isGuiBanUseZanBuChuLi.equals("yes")){ %>
 								<%if(ds.getGcaid()==-1){ %>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:reSub('<%=ds.getCwb() %>',-<%=ds.getReturnedfee() %>,-<%=ds.getReturnedfee() %>,0,0,1);">恢复</a>]

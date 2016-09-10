@@ -426,6 +426,13 @@ public class CwbOrderController {
 			}
 
 		}*/
+	    String printCwb = "";
+	    for (String cwb : isprint) {
+	    	printCwb += cwb + ",";
+	    }
+	    String now = DateTimeUtil.getNowTime();
+	    String realname = getSessionUser().getRealname();
+	    logger.info("上门退订单打印，打印人：{},打印时间：{},打印订单号：{}",realname,now,printCwb.substring(0, printCwb.length() - 1));
 		if (modal == 1) {
 			return this.selectforgomeprint(model, isprint);
 		}

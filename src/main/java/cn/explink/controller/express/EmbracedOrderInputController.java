@@ -497,11 +497,13 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 						e.printStackTrace();
 					} finally {
 						resultCollector.setFinished(true);
+						resultCollectorManager.updateEmbracedImportResultCollector(resultCollector);
 					}
 				}
 			});
 		} else {
 			resultCollector.setResultErrMsg("不可识别的文件");
+			resultCollectorManager.updateEmbracedImportResultCollector(resultCollector);
 		}
 
 		return null;

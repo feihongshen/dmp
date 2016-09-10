@@ -25,14 +25,19 @@ import cn.explink.b2c.vipshop.VipShop;
 import cn.explink.b2c.vipshop.VipShopGetCwbDataService;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.dao.CwbDAO;
+import cn.explink.dao.DeliveryStateDAO;
 import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Customer;
+import cn.explink.domain.CwbOrder;
+import cn.explink.domain.DeliveryState;
 import cn.explink.domain.OrderGoods;
 import cn.explink.domain.OrderPartGoodsRt;
 import cn.explink.domain.User;
 import cn.explink.enumutil.ReasonTypeEnum;
+import cn.explink.service.CwbOrderService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.OrderPartGoodsReturnService;
 import cn.explink.service.SystemInstallService;
@@ -62,6 +67,12 @@ public class OrderPartGoodsReturnController {
 	JointService jointService;
 	@Autowired
 	VipShopGetCwbDataService vipShopGetCwbDataService;
+	@Autowired
+	CwbOrderService cwbOrderService;
+	@Autowired
+	CwbDAO cwbDAO;
+	@Autowired
+	DeliveryStateDAO deliveryStateDAO;
 
 	private Logger logger = LoggerFactory.getLogger(OrderPartGoodsReturnController.class);
 
@@ -199,6 +210,10 @@ public class OrderPartGoodsReturnController {
 				}
 				this.orderPartGoodsReturnService.partgoodsreturn(ort.getCwb(), ort.getCollectiontime(), returngoodscount);
 				this.orderPartGoodsReturnService.updateOrderGoods(goodList);
+				//add start 反馈揽收状态/运单对照关系给tps add by zhouhuan 2016-08-30
+				CwbOrder co = this.cwbDAO.getCwbByCwbLock(ort.getCwb());
+				DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(ort.getCwb());
+				cwbOrderService.sendTranscwbRelationToTps(co,co.getTpstranscwb(),co.getTranscwb(),deliveryState.getShouldfare(),2,null,co.getPaybackfee(),false);
 			}
 		} catch (Exception e) {
 			return "{\"errorCode\":1,\"error\":\"订单部分退失败\"}";

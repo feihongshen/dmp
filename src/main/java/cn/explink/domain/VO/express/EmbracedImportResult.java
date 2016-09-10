@@ -1,5 +1,6 @@
 package cn.explink.domain.VO.express;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -8,7 +9,7 @@ import java.util.List;
  * @author  刘武强
  * @data   2015年10月10日
  */
-public class EmbracedImportResult {
+public class EmbracedImportResult implements Serializable {
 	private String id;
 
 	private boolean isFinished;

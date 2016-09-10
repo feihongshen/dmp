@@ -1,0 +1,3 @@
+﻿步骤1：先备份用户表 express_set_user
+
+步骤2：根据id回滚用户表的showmobileflag字段

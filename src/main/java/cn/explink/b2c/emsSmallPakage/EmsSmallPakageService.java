@@ -18,10 +18,12 @@ import org.springframework.util.StringUtils;
 import cn.explink.b2c.ems.EMSDAO;
 import cn.explink.b2c.ems.SendToEMSOrder;
 import cn.explink.core.common.model.json.DataGridReturn;
+import cn.explink.dao.CustomerDAO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.TranscwbOrderFlowDAO;
+import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
@@ -54,6 +56,8 @@ public class EmsSmallPakageService {
 	CwbOrderService cwbOrderService;
 	@Autowired
 	OrderFlowDAO orderFlowDAO;
+	@Autowired
+	CustomerDAO customerDao;
 	
 	/*
 	 * @author zhouhuan
@@ -318,7 +322,11 @@ public class EmsSmallPakageService {
 			throw new CwbException(scancwb,
 					ExceptionCwbErrorTypeEnum.DING_DAN_ZHUANG_TAI_BU_SHI_CHU_KU);
 		}
-		if (cwbOrder.getSendcarnum() > 1) {// 一票多件  运单当前操作状态校验
+		
+		Customer customer = customerDao.getCustomerById(cwbOrder.getCustomerid());
+		if (cwbOrder.getSendcarnum() > 1 
+				&& customer.getIsypdjusetranscwb() == 1 
+				&& customer.getIsUsetranscwb() == 0) {// 一票多件  运单当前操作状态校验
 			int transCount = transcwbOrderFlowDao
 					.getTransScanTimeByCwbFlowordertype(cwbOrder.getCwb(),
 							FlowOrderTypeEnum.ChuKuSaoMiao.getValue());
@@ -342,7 +350,9 @@ public class EmsSmallPakageService {
 					ExceptionCwbErrorTypeEnum.BU_SHI_GAI_PEI_SONG_ZHAN_EMS_CWB);
 		}
 		if (cwbOrder.getSendcarnum() > 1) { //一票多件扫描运单号检验
-			if (!StringUtil.isEmpty(cwbOrder.getTranscwb())) {
+			if (!StringUtil.isEmpty(cwbOrder.getTranscwb())  
+					&& customer.getIsypdjusetranscwb() == 1 
+					&& customer.getIsUsetranscwb() == 0) { //一票多件是否扫描运单号
 				boolean isScanTransCwb = false;
 				String[] split = cwbOrder.getTranscwb().split(",");
 				for (String string : split) {

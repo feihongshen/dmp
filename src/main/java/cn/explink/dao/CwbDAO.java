@@ -404,6 +404,8 @@ public class CwbDAO {
 			cwbOrder.setDeliverypermit(rs.getInt("delivery_permit"));
 			cwbOrder.setTpstranscwb(rs.getString("tpstranscwb"));
 			cwbOrder.setOrderSource(rs.getString("order_source"));
+			//zhili01.liang 20160830 货物尺寸类型修改审核
+			cwbOrder.setGoodsSizeType(rs.getInt("goods_size_type"));
 			return cwbOrder;
 		}
 	}
@@ -4544,7 +4546,8 @@ public class CwbDAO {
 				customerids, startbranchids, nextbranchids, cwbordertypeids,
 				orderflowcwbs, currentBranchid, dispatchbranchids, kufangid,
 				flowordertype, paywayid, sign, -1, servicetype);
-		sql += " order by " + orderName + " limit "
+		//sql += " order by " + orderName + " limit " 
+		sql += " limit "   //去掉order by排序，由于order by的唯一性不好，所以不使用索引，会导致全表扫描，严重损耗性能
 				+ ((page - 1) * Page.ONE_PAGE_NUMBER) + " ,"
 				+ Page.ONE_PAGE_NUMBER;
 		return this.jdbcTemplate.query(sql, new CwbMapper());
@@ -7340,17 +7343,17 @@ public class CwbDAO {
 			String begindate, String enddate, String orderName,
 			String customerids, String kufangids, String nextbranchids,
 			String cwbordertypeids, int type) {
-		String sql = "select de.* from express_ops_warehouse_to_branch as wtb FORCE INDEX(WAREcredateIdx) left join "
+		String sql = "select de.* from express_ops_warehouse_to_branch as wtb  left join " //去掉强制索引FORCE INDEX(WAREcredateIdx)，使用强制索引还会拖慢性能---刘武强
 				+ "express_ops_cwb_detail as de on wtb.cwb=de.cwb where de.state=1 and wtb.credate >=? and wtb.credate <=?";
 
 		sql = this.getcwbOrderByOutWarehouseSqlNew(sql, customerids, kufangids,
 				nextbranchids, cwbordertypeids, type);
-		sql += " order by " + orderName + " limit "
+		//sql += " order by " + orderName + " limit "
+		sql += " limit "   //去掉order by排序，由于order by的唯一性不好，所以不使用索引，会导致全表扫描，严重损耗性能
 				+ ((page - 1) * Page.ONE_PAGE_NUMBER) + " ,"
 				+ Page.ONE_PAGE_NUMBER;
 		return this.jdbcTemplate
 				.query(sql, new CwbMapper(), begindate, enddate);
-
 	}
 
 	private String getcwbOrderByOutWarehouseSqlNew(String sql,
@@ -10089,9 +10092,9 @@ public class CwbDAO {
 	 * @param cwb
 	 * @param cartype
 	 */
-	public void updateCwbCartype(String cwb, String cartype) {
-		String sql = "update express_ops_cwb_detail set cartype=? where cwb=? and state=1 ";
-		this.jdbcTemplate.update(sql, cartype, cwb);
+	public void updateCwbGoodsSizeType(String cwb, int goodsSizeType) {
+		String sql = "update express_ops_cwb_detail set goods_size_type=? where cwb=? and state=1 ";
+		this.jdbcTemplate.update(sql, goodsSizeType, cwb);
 	}
 	
 	/**

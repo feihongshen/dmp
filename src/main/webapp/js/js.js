@@ -455,6 +455,9 @@ function del(key) {
 			if (data.errorCode == 0) {
 				delSuccess(data);
 			}
+			if (data.errorCode == 1) {
+				alert(data.error);
+			}
 		}
 	});
 }
@@ -6031,8 +6034,13 @@ function filedownloadwithquestionfile(){
 	$("#morefilebutton").hide();
 }
 
-//根据订单创建对内扣罚单的时候的校验
+/**modify by bruce.shangguan 20160903
+ * 根据订单创建对内扣罚单的时候的校验
+ * @returns {Boolean}
+ */
 function check_createbycwb(){
+	var cwbgoodprice = jQuery("#cwbgoodprice").val().trim() ;
+	var cwbqitaprice = jQuery("#cwbqitaprice").val().trim() ;
 	if($("#cwb").val()==""){
 		alert("请输入订单号！！");
 		return false;
@@ -6043,6 +6051,18 @@ function check_createbycwb(){
 		alert("请输入责任机构！！");
 		return false;
 	}
+	// add by bruce shangguan 20160903 根据订单号创建对内扣罚单时，验证扣罚金额是否为数值
+	if(!isFloat(cwbgoodprice)){
+		alert("货物扣罚金额必须是数值！");
+		jQuery("#cwbgoodprice").select() ;
+		return false ;
+	}
+	if(!isFloat(cwbqitaprice)){
+		alert("其它扣罚金额必须是数值！");
+		jQuery("#cwbqitaprice").select() ;
+		return false ;
+	}
+	// end by bruce shangguan 20160903
 	if($("#punishdescribe").val().length>100){
 		alert("扣罚说明不能超过100个字噢！！");
 		return false;
@@ -7710,4 +7730,21 @@ function onCityChangeForBranch(contextPath, id) {
             });
         }
     });
+}
+	function liftLoginForbiddance(userid, contextPath) {
+	$.ajax({
+		type : "POST",
+		url : contextPath + "/user/liftLoginForbiddance",
+		dataType : "json",
+		data : {
+			userid : userid
+		},
+		success : function(data) {
+			if (data.errorCode == 0) {
+				alert(data.error);
+			} else {
+				alert("解禁失败");
+			}
+		}
+	});
 }

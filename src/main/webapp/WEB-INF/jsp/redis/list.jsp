@@ -70,8 +70,9 @@ function testDelAll(){
 <div class="right_box">
 	<div class="inputselect_box">
 	<form action="" method="post" id="searchForm" method="post" >
-		缓存名：<select id="cacheName" name="cacheName" class="input_text1" style="height:21px;">
+		缓存名：<select id="cacheName" name="cacheName" class="input_text1" style="height:21px;width:200px">
 		    <option value=""></option>
+		    <option value="EmbracedImportResult" <%if(cacheName.equals("EmbracedImportResult")){%>selected<%} %>>EmbracedImportResult</option>
 			<option value="YonghuiController" <%if(cacheName.equals("YonghuiController")){%>selected<%} %>>YonghuiController</option>
 			<option value="YihaodianController" <%if(cacheName.equals("YihaodianController")){%>selected<%} %>>YihaodianController</option>
 			<option value="JobUtilController" <%if(cacheName.equals("JobUtilController")){%>selected<%} %>>JobUtilController</option>
