@@ -10,7 +10,7 @@ SELECT 'dmp40_function派费结算菜单数据' AS '脚本注释',IF((SELECT COU
 UNION ALL
 SELECT 'dmp40_function派费结算菜单数据' AS '脚本注释',IF((SELECT COUNT(1) FROM dmp40_function WHERE ID = '809106' AND functionname='月度妥投率报表')= 1 ,'success','failed') AS '执行结果'
 UNION ALL
-SELECT 'dmp40_function派费结算菜单数据' AS '脚本注释',IF((SELECT COUNT(1) FROM dmp40_function WHERE ID = '809107' AND functionname='妥投考核报表')= 1 ,'success','failed') AS '执行结果'
+SELECT 'dmp40_function派费结算菜单数据' AS '脚本注释',IF((SELECT COUNT(1) FROM dmp40_function WHERE ID = '809107' AND functionname='小件员妥投补贴报表')= 1 ,'success','failed') AS '执行结果'
 UNION ALL
 SELECT 'dmp40_function派费结算菜单数据' AS '脚本注释',IF((SELECT COUNT(1) FROM dmp40_function WHERE ID = '809108' AND functionname='奖罚登记管理')= 1 ,'success','failed') AS '执行结果'
 UNION ALL
