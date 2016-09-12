@@ -118,6 +118,7 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.LogToDayService;
 import cn.explink.service.SmtCwbService;
+import cn.explink.service.UserService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.support.transcwb.TranscwbView;
 import cn.explink.util.DateTimeUtil;
@@ -233,10 +234,16 @@ public class CwbOrderController {
 	
 	@Autowired
 	EditCwbService editCwbService;
+	
+	@Autowired
+	UserService userService;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
-		return userDetail.getUser();
+		// 如果session用户的branchid为0则重新获取用户branchid--刘武强20160912
+		User currUser = userDetail.getUser();
+		userService.convertSessionUserBranchId(currUser);
+		return currUser;
 	}
 
 	@RequestMapping("/list/{page}")
