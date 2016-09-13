@@ -155,12 +155,19 @@ public enum B2cEnum {
 	TPS_KeJie(22511, "科捷-TPS", "kejietpsother",0),
 	TPS_JiaLeTao(22512, "家乐淘-TPS", "jialetaotpsother",0),
 	TPS_BjHuanQiuGou(22513, "北京环球购-TPS", "bjhuanqiugoutpsother",0),
-	TPS_TjYouGuanJu(22514, "天津邮管局-TPS", "tjyouguanjutpsother",0)
+	TPS_TjYouGuanJu(22514, "天津邮管局-TPS", "tjyouguanjutpsother",0),
+	//0909加洋驼,增益,万象
+	TPS_YangTuo(22515, "洋驼-TPS", "yangtuotpsother",0),
+	TPS_ZengYi(22516, "增益-TPS", "zengyitpsother",0),
+	TPS_WanXiang(22517, "万象-TPS", "wanxiangtpsother",0)
 	//zhili01.liang on 20160902, 下面这些EDI接口由TpsMQOrderSettingController负责展示====End====
 	;
 	//zhili01.liang on 20160902, 下面这些EDI接口由TpsMQOrderSettingController负责展示
 	/**所有EDI接口类型*/
-	public static B2cEnum[] TYPES_ALL_EDI = new B2cEnum[]{TPS_AliPay,TPS_KeJie,TPS_JiaLeTao,TPS_BjHuanQiuGou,TPS_TjYouGuanJu};
+	public static B2cEnum[] TYPES_ALL_EDI = new B2cEnum[]{
+			TPS_AliPay,TPS_KeJie,TPS_JiaLeTao,TPS_BjHuanQiuGou,TPS_TjYouGuanJu,
+			TPS_YangTuo,TPS_ZengYi,TPS_WanXiang//0909加洋驼,增益,万象
+	};
 
 	 
 
