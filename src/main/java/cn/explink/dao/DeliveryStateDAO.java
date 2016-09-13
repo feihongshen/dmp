@@ -1774,25 +1774,4 @@ public class DeliveryStateDAO {
 		String sql = "select * from express_ops_delivery_state where  state=1 and cwb in(" + cwbs + ")";
 		return this.jdbcTemplate.query(sql, new DeliveryStateRowMapper());
 	}
-	
-	/**
-	 * 根据订单查询最近的一条归班审核的记录  add by bruce shangguan 20160831
-	 * @param cwb
-	 * @param deliveryState
-	 * @return
-	 */
-	public DeliveryState findDeliveryStateLastAuditingTime(String cwb , int deliveryState){
-		try{
-			StringBuffer sql = new StringBuffer("SELECT * FROM express_ops_delivery_state ") ;
-			sql.append(" WHERE cwb = ? ") ;
-			sql.append(" AND deliverystate = ? ") ;
-			sql.append(" and state = 1 ") ;
-			sql.append(" ORDER BY auditingtime DESC LIMIT 0,1 ") ;
-			DeliveryState ob = this.jdbcTemplate.queryForObject(sql.toString(),new DeliveryStateRowMapper() , cwb , deliveryState);
-			return ob;
-		}catch(Exception ee){
-			ee.printStackTrace();
-			return null;
-		}
-	}
 }
