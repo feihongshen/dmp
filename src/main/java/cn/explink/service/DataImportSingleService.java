@@ -15,6 +15,7 @@ import cn.explink.domain.ImportValidationManager;
 import cn.explink.domain.SmtCwb;
 import cn.explink.domain.User;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.FlowOrderTypeEnum;
 
 @Service
 public class DataImportSingleService {
@@ -75,6 +76,10 @@ public class DataImportSingleService {
 			return;
 		}
 		
+		//只允许状态为1的订单导入系统-----刘武强20160914
+		if(cwbOrder.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()){
+			throw new RuntimeException("flowordertype不为1不允许导入");
+		}
 		if (cwbOrder.getEmaildateid() > 0) {
 			if (!isReImport) {
 				throw new RuntimeException("重复单号");
