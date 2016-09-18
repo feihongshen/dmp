@@ -244,6 +244,7 @@ public class DfFeeService {
                 county = order.getSendercounty();
             }
 
+
 //            if(StringUtils.isBlank(province)){
             //根据站点到TPS查找相应省份你的信息。
             SbOrgModel orgModelFromTPS = findOrgByCarrierAndSiteCode(branchId);
@@ -266,13 +267,21 @@ public class DfFeeService {
             if (StringUtils.isBlank(province)) {
                 province = getEffectiveAddressId(senderAddr, allProvince, null);
             }
+
+            String provinceCode = getAddressCode(province, allProvince, null);;
+            String cityCode = "";
+
             if (StringUtils.isNotBlank(province) && StringUtils.isBlank(city)) {
-                String parentCode = getAddressCode(province, allProvince);
-                city = getEffectiveAddressId(senderAddr, allCity, parentCode);
+                city = getEffectiveAddressId(senderAddr, allCity, provinceCode);
             }
-            if (StringUtils.isNotBlank(city) && StringUtils.isBlank(county)) {
-                String parentCode = getAddressCode(city, allCity);
-                county = getEffectiveAddressId(senderAddr, allCounty, parentCode);
+
+//            if (StringUtils.isNotBlank(city) && StringUtils.isBlank(county)) {
+//                cityCode = getAddressCode(city, allCity, provinceCode);
+//                county = getEffectiveAddressId(senderAddr, allCounty, cityCode);
+//            }
+            //产品要求查找区的搜索范围是在本省里面找
+            if (StringUtils.isBlank(county)) {
+                county = getEffectiveCountyByProvince(senderAddr, allCounty, allCity, provinceCode);
             }
 
             //如果有揽件员才生成基础数据。
@@ -352,8 +361,8 @@ public class DfFeeService {
                 }
 //                }
 
-                //如果没有匹配到省份，派件就拿本省的province code。
                 if (StringUtils.isBlank(province)) {
+                //如果没有匹配到省份，派件就拿本省的province code。
 //                    province = getEffectiveAddressId(receiverAddr, allProvince, null);
                     AdressVO currentProvince = provinceDAO.getProvinceByCode(ResourceBundleUtil.provinceCode);
                     if(currentProvince != null){
@@ -365,13 +374,24 @@ public class DfFeeService {
                     province = order.getCwbprovince();
                 }
 
-                if (StringUtils.isNotBlank(province) && StringUtils.isBlank(city)) {
-                    String parentCode = getAddressCode(province, allProvince);
-                    city = getEffectiveAddressId(receiverAddr, allCity, parentCode);
+                if (StringUtils.isBlank(province)) {
+                    province = getEffectiveAddressId(receiverAddr, allProvince, null);
                 }
-                if (StringUtils.isNotBlank(city) && StringUtils.isBlank(county)) {
-                    String parentCode = getAddressCode(city, allCity);
-                    county = getEffectiveAddressId(receiverAddr, allCounty, parentCode);
+
+                String provinceCode = getAddressCode(province, allProvince, null);
+                String cityCode = "";
+
+                if (StringUtils.isNotBlank(province) && StringUtils.isBlank(city)) {
+                    city = getEffectiveAddressId(receiverAddr, allCity, provinceCode);
+                }
+//                if (StringUtils.isNotBlank(city) && StringUtils.isBlank(county)) {
+//                    cityCode = getAddressCode(city, allCity, provinceCode);
+//                    county = getEffectiveAddressId(receiverAddr, allCounty, cityCode);
+//                }
+
+                //产品要求查找区的搜索范围是在本省里面找
+                if (StringUtils.isBlank(county)) {
+                    county = getEffectiveCountyByProvince(receiverAddr, allCounty, allCity, provinceCode);
                 }
 
                 if (order.getDeliverid() > 0) {
@@ -409,7 +429,7 @@ public class DfFeeService {
         }
     }
 
-    private SbOrgModel findOrgByCarrierAndSiteCode(long branchId) {
+	private SbOrgModel findOrgByCarrierAndSiteCode(long branchId) {
 
         Branch branch = branchDAO.getBranchById(branchId);
 
@@ -447,12 +467,33 @@ public class DfFeeService {
         return null;
     }
 
-    private String getAddressCode(String addressName, List<AdressVO> addresses) {
+    private String getEffectiveCountyByProvince(String address, List<AdressVO> allCounty, List<AdressVO> allCity, String provinceCode) {
+        for (AdressVO city : allCity) {
+            if (city.getParentCode().equals(provinceCode)) {
+                for (AdressVO county : allCounty) {
+                    if (county.getParentCode().equals(city.getCode())) {
+                        if (StringUtils.contains(address, county.getName())) {
+                            return county.getName();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private String getAddressCode(String addressName, List<AdressVO> addresses, String parentCode) {
         if (StringUtils.isNotBlank(addressName)) {
             if (CollectionUtils.isNotEmpty(addresses)) {
                 for (AdressVO adressVO : addresses) {
                     if (addressName.equals(adressVO.getName())) {
-                        return adressVO.getCode();
+                        if (StringUtils.isNotBlank(parentCode)) {
+                            if (parentCode.equals(adressVO.getParentCode())) {
+                                return adressVO.getCode();
+                            }
+                        } else {
+                            return adressVO.getCode();
+                        }
                     }
                 }
             }
@@ -674,7 +715,7 @@ public class DfFeeService {
 
         return adjustmentRecord;
     }
-    
+
     /**
      * @author zhili01.liang on 20160816
      * 根据条件获取计费记录

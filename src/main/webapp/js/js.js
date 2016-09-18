@@ -7703,7 +7703,35 @@ function transcwbswitch(){
 	}
 }
 
-function liftLoginForbiddance(userid, contextPath) {
+function onCityChangeForBranch(contextPath, id) {
+    var param = {
+        city:$(id).val()
+    }
+
+    var url = "branch/queryCounty";
+    if(contextPath){
+        url=  contextPath + "/branch/queryCounty"
+    }
+
+    $.ajax({
+        type: "post",
+        async: false, //设为false就是同步请求
+        url: url,
+        data:param,
+        datatype: "json",
+        success: function (result) {
+            var county = $("#brancharea");
+            county.empty();
+            county.append("<option value=''>请选择</option>");
+            $.each(result,function(index,item) {
+                item.code;
+                item.name;
+                county.append("<option value='"+item.id+"'>"+item.name+"</option>");
+            });
+        }
+    });
+}
+	function liftLoginForbiddance(userid, contextPath) {
 	$.ajax({
 		type : "POST",
 		url : contextPath + "/user/liftLoginForbiddance",

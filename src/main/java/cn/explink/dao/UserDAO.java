@@ -1247,5 +1247,18 @@ public class UserDAO {
 		}
 	}
 	
-	
+	/**
+	 * 获取在职人员
+	 * @author chunlei05.li
+	 * @date 2016年9月2日 上午10:18:58
+	 * @param roleids
+	 * @param branchid
+	 * @return
+	 */
+	public List<User> getOnJobUserByRole(long[] roleids, long branchid) {
+		String roleidsStr = StringUtil.toDbInStr(roleids);
+		String sql = "SELECT * FROM express_set_user WHERE  branchid=? and roleid in(" + roleidsStr + " ) and userDeleteFlag=1 and employeestatus<>3";
+		List<User> userList = this.jdbcTemplate.query(sql, new UserRowMapper(), branchid);
+		return userList;
+	}
 }

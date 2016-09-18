@@ -11,6 +11,7 @@
 <%@page import="net.sf.json.JSONObject"%>
 <%@page import="cn.explink.enumutil.OrgPayInTypeEnum"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ page import="cn.explink.domain.VO.express.AdressVO" %>
 <%
 	List<Menu> menuPDAList = (List<Menu>) request.getAttribute("PDAmenu");
 	List<Branch> zhongzhuanList = (List<Branch>) request.getAttribute("zhongzhuanList");
@@ -22,7 +23,9 @@
 	List<Branch> accountbranchList = (List<Branch>) request.getAttribute("accountbranchList");//结算对象
 	List<JSONObject> tlBankList = (List<JSONObject>)request.getAttribute("tlBankList");
 	List<JSONObject> cftBankList = (List<JSONObject>)request.getAttribute("cftBankList");
-%>	
+    AdressVO province  = (AdressVO)request.getAttribute("province");
+	List<AdressVO> cities = (List<AdressVO>)request.getAttribute("cities");
+%>
 
 <div id="box_bg" style="z-index:9005"></div>
 <div id="box_contant" style="z-index:9005">
@@ -38,7 +41,7 @@
 			<div id="la" hidden="true">请选择机构类型</div>
 				<ul>					
 					<li> 
-					<span>机构类型：</span> 
+					<span>机构类型：</span>
 					<select id ="sitetype" name ="sitetype" 
    			onChange="click_sitetype(<%=BranchEnum.ZhanDian.getValue()%>,
 			 <%=BranchEnum.YunYing.getValue()%>,<%=BranchEnum.KeFu.getValue()%>,
@@ -63,9 +66,36 @@
 		        <li><span>固定电话：</span><input type="text" name="branchphone" id="branchphone" maxlength="50" onblur="isbranchnum(this)"/></li>
 				<li><span>机构手机：</span><input type="text" name="branchmobile" id="branchmobile" maxlength="50" onblur="isbranchnum(this)"/></li>
 			    
-			    <li><span>省份：</span><input type="text" name="branchprovince" id="branchprovince"  maxlength="50"/></li>
+			    <%--<li><span>省份：</span><input type="text" name="branchprovince" id="branchprovince"  maxlength="50"/></li>
 			    <li><span>城市：</span><input type="text" name="branchcity" id="branchcity"  maxlength="50"/></li>
 			    <li><span>区/县：</span><input type="text" name="brancharea" id="brancharea"  maxlength="50"/></li>
+                --%>
+                    <li>
+                        <span>省份：</span>
+                        <select id="branchprovince" name="branchprovince" style="width: 100px;" disabled="disabled">
+                            <option value="<%=province.getCode()%>"><%=province.getName()%></option>
+                        </select>
+                    </li>
+                    <li>
+                        <span>城市：</span>
+                        <select id="branchcity" name="branchcity" style="width: 100px;"
+                                                onclick="onCityChangeForBranch('<%=request.getContextPath()%>', this);">
+                            <option value="">请选择</option>
+                            <%
+                                for (AdressVO city : cities) {
+                            %>
+                            <option value="<%=city.getId()%>"><%=city.getName()%></option>
+                            <%
+                                }
+                            %>
+                        </select>
+                    </li>
+                    <li><span>区/县：</span>
+                        <select id="brancharea" name="brancharea"
+                                style="width: 100px;">
+                            <option value="">请选择</option>
+                        </select>
+                    </li>
 			    <li><span>乡镇/街道：</span><input type="text" name="branchstreet" id="branchstreet"  maxlength="50"/></li>
 			    <li><span>地址：</span><input type="text" name="branchaddress" id="branchaddress" maxlength="50"/></li>
 				<li><span>邮箱：</span><input type="text" name="branchemail" id="branchemail" maxlength="50"/></li>

@@ -5,10 +5,15 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import cn.explink.dao.express.CityDAO;
+import cn.explink.dao.express.CountyDAO;
+import cn.explink.dao.express.ProvinceDAO;
+import cn.explink.domain.VO.express.AdressVO;
 import net.sf.json.JSONObject;
 
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +47,15 @@ public class BranchService {
 	BranchSyncToOspHelper branchSyncToOspHelper;
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    private ProvinceDAO provinceDAO;
+    @Autowired
+    private CityDAO cityDAO;
+    @Autowired
+    private CountyDAO countyDAO;
 
-	public Branch loadFormForBranch(HttpServletRequest request, MultipartFile file, List<String> functionids) {
+
+    public Branch loadFormForBranch(HttpServletRequest request, MultipartFile file, List<String> functionids) {
 		Branch bh = this.loadFormForBranch(request);
 		if ((file != null) && !file.isEmpty()) {
 			String filePath = ResourceBundleUtil.WAVPATH;
@@ -100,10 +112,44 @@ public class BranchService {
 	public Branch loadFormForBranch(HttpServletRequest request) {
 		Branch branch = new Branch();
 		branch.setBranchname(StringUtil.nullConvertToEmptyString(request.getParameter("branchname")));
-		branch.setBranchprovince(StringUtil.nullConvertToEmptyString(request.getParameter("branchprovince")));
-		branch.setBranchcity(StringUtil.nullConvertToEmptyString(request.getParameter("branchcity")));
-		branch.setBrancharea(StringUtil.nullConvertToEmptyString(request.getParameter("brancharea")));
-		branch.setBranchstreet(StringUtil.nullConvertToEmptyString(request.getParameter("branchstreet")));
+        //modified by Steve PENG. 修改新建或更新机构时的省市区为下拉菜单。
+//		branch.setBranchprovince(StringUtil.nullConvertToEmptyString(request.getParameter("branchprovince")));
+//		branch.setBranchcity(StringUtil.nullConvertToEmptyString(request.getParameter("branchcity")));
+//		branch.setBrancharea(StringUtil.nullConvertToEmptyString(request.getParameter("brancharea")));
+
+        String provinceCode = ResourceBundleUtil.provinceCode;
+        String provinceName = "";
+        if (provinceCode != null) {
+            AdressVO provinceFromDB = provinceDAO.getProvinceByCode(provinceCode);
+            if (provinceFromDB != null) {
+                provinceName = provinceFromDB.getName();
+            }
+        }
+        branch.setBranchprovince(provinceName);
+
+        String branchcityParam = request.getParameter("branchcity");
+
+        String cityName = "";
+        if (NumberUtils.isNumber(branchcityParam)){
+            AdressVO cityFromDB = cityDAO.getCityById(Integer.valueOf(branchcityParam));
+            if (cityFromDB != null) {
+                cityName = cityFromDB.getName();
+            }
+        }
+        branch.setBranchcity(cityName);
+
+        String branchareaParam = request.getParameter("brancharea");
+
+        String countyName = "";
+        if (NumberUtils.isNumber(branchareaParam)){
+            AdressVO countyFromDB = countyDAO.getCountyById(Integer.valueOf(branchareaParam));
+            if (countyFromDB != null) {
+                countyName = countyFromDB.getName();
+            }
+        }
+        branch.setBrancharea(countyName);
+
+        branch.setBranchstreet(StringUtil.nullConvertToEmptyString(request.getParameter("branchstreet")));
 		branch.setBranchaddress(StringUtil.nullConvertToEmptyString(request.getParameter("branchaddress")));
 		branch.setBranchcontactman(StringUtil.nullConvertToEmptyString(request.getParameter("branchcontactman")));
 		branch.setBranchphone(StringUtil.nullConvertToEmptyString(request.getParameter("branchphone")));

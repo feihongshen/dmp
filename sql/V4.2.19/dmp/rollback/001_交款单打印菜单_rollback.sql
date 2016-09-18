@@ -1,0 +1,1 @@
+DELETE FROM dmp40_function where functionname='交款单打印';

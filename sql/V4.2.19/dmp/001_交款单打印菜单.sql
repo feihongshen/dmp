@@ -1,0 +1,1 @@
+INSERT INTO `dmp40_function` VALUES ('505080', '2', '交款单打印', '505080', 'delivery/paymentListQuery?', '5050');

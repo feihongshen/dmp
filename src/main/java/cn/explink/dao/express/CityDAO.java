@@ -145,4 +145,15 @@ public class CityDAO {
         list = this.jdbcTemplate.query(sql.toString(), new CityRowMapper());
         return list;
     }
+
+    public AdressVO getCityById(int id) {
+        String sql = "select id,code,name,province_code as parentCode from express_set_city where id=?";
+        AdressVO adressVO = null;
+        try {
+            adressVO = this.jdbcTemplate.queryForObject(sql, new CityRowMapper(), id);
+        } catch (DataAccessException e) {
+            return null;
+        }
+        return adressVO;
+    }
 }
