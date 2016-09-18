@@ -292,7 +292,7 @@ function nowprint(){
 				<td width="86" valign="bottom" height="30">会员名称:</td>
 				<td width="86" valign="bottom"><%=co.getConsigneename()%></td>
 				<td width="77" valign="bottom">联系方式:</td>
-				<td  width="81"  valign="bottom"><%=co.getConsigneemobile()%></td>
+				<td  width="81"  valign="bottom"><%=co.getConsigneemobileOfkf()%></td>
 				<td colspan="3" valign="bottom">&nbsp;&nbsp;&nbsp;应收运费:&nbsp;&nbsp;&nbsp;&nbsp;<%=co.getShouldfare()%></td>
 			</tr>
 			<tr>
