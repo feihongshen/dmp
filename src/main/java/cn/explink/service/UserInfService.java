@@ -58,9 +58,6 @@ public class UserInfService {
 	 * 执行同步机构站点
 	 */
 	public void processSync(){
-		if(!isCloseOldInterface()){
-			return;
-		}
 		int isOpenFlag = jointService.getStateForJoint(PosEnum.Weisuda.getKey());
 		if (isOpenFlag == 0) {
 			logger.info("未开启唯速达[" + PosEnum.Weisuda.getKey() + "]接口！");
@@ -310,12 +307,14 @@ public class UserInfService {
 	
 	/**
 	 * 关闭旧接口
+	 * modify by jian_xie 2016-09-19
+	 * 因为oms的小件员更新需要通过mq，所以旧接口不能关闭，已把oms旧的同步代码注释
 	 */
 	public boolean isCloseOldInterface(){
-		String value = systemInstallService.getParameter("closeUserAndBranchOldInterface");
-		if(StringUtils.isNotEmpty(value) && "1".equals(value)){
-			return true;
-		}	
+//		String value = systemInstallService.getParameter("closeUserAndBranchOldInterface");
+//		if(StringUtils.isNotEmpty(value) && "1".equals(value)){
+//			return true;
+//		}	
 		return false;
 	}
 }
