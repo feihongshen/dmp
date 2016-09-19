@@ -1306,7 +1306,7 @@ public class WarehouseGroup_detailController {
 		String branchids = this.getStrings(branchid);
 		List<PrintView> printList = new ArrayList<PrintView>();
 		if (isshow > 0) {
-			List<GroupDetail> gdList = this.groupDetailDao.getCwbForChuKuPrintTimeNew(this.getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), "", "", "");
+			List<GroupDetail> gdList = this.groupDetailDao.getCwbForChuKuPrintTimeNew(this.getSessionUser().getBranchid(), branchids, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), strtime, endtime, "");
 			List<CwbOrder> orderlist = new ArrayList<CwbOrder>();
 			String cwbs = "";
 			for (GroupDetail deliveryZhiLiu : gdList) {
