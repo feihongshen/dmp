@@ -68,7 +68,7 @@
             float: left;
             width: 130px;
             height: 30px;
-            margin: 5px 20px;
+            margin: 5px 5px;
             border: 1px solid blue;
         }
         .jump_boxs a
@@ -92,7 +92,7 @@
 	
 		}
         .changBtn a{
-        	text-align: center;
+          text-align: center;
           font-size: 12px;
           text-decoration: none;
           line-height: 28px;
@@ -102,6 +102,10 @@
 		  
 
         }
+        .titleFont{
+		font: bold 14px black ;
+		text-align: left;
+		}
     </style>
 </head>
 <body>
@@ -122,14 +126,14 @@
 					<span style="margin-left:40px;font-size:16px;color: #0094ff;">入口列表</span>
 				</div>
 			</div>
-            
-			<div id="title_box">
+            <div class="jump_box" style="float:none;visibility:hidden;"></div>
+			<!-- <div id="title_box">
 				<div style="width:100%;">
 					<div class="jump_boxs" id="jump_box_1">
 					</div>
 			
 				</div>
-			</div>
+			</div> -->
 		
     </div>
 
@@ -138,149 +142,226 @@
 </div>
 	
 <script type="text/javascript">
+ 	var areaTypeEnu={
+		SouthCentral:"中南区",
+		EastChina:"华东区",
+		SouthWest:"西南区",
+		NorthWest:"西北区",
+		NorthChina:"华北区",
+		NorthEast:"东北区"
+	}
 	var areaList = [
 	    {
 	        "areaName": "沈阳",
-	        "linkUrl": "dmp.pjbest.com/sypj"
+	        "linkUrl": "dmp.pjbest.com/sypj",
+	        "areaType": areaTypeEnu.NorthEast
 	    },
 	    {
 	        "areaName": "上海",
-	        "linkUrl": "dmp.pjbest.com/shpj"
+	        "linkUrl": "dmp.pjbest.com/shpj",
+	        "areaType": areaTypeEnu.EastChina
 	    },
 	    {
 	        "areaName": "江苏",
-	        "linkUrl": "dmp.pjbest.com/szpj"
+	        "linkUrl": "dmp.pjbest.com/szpj",
+	        "areaType": areaTypeEnu.EastChina
 	    },
 	    {
 	        "areaName": "云南",
-	        "linkUrl": "dmp.pjbest.com/ynpx"
+	        "linkUrl": "dmp.pjbest.com/ynpx",
+	        "areaType": areaTypeEnu.SouthWest
 	    },
 	    {
 	        "areaName": "浙江",
-	        "linkUrl": "dmp.pjbest.com/zjfy"
+	        "linkUrl": "dmp.pjbest.com/zjfy",
+	        "areaType": areaTypeEnu.EastChina
 	    },
 	    {
 	        "areaName": "黑龙江",
-	        "linkUrl": "dmp.pjbest.com/hljpj"
+	        "linkUrl": "dmp.pjbest.com/hljpj",
+	        "areaType": areaTypeEnu.NorthEast
 	    },
 	    {
 	        "areaName": "安徽",
-	        "linkUrl": "dmp.pjbest.com/ahpx"
+	        "linkUrl": "dmp.pjbest.com/ahpx",
+	        "areaType": areaTypeEnu.EastChina
 	    },
 	    {
 	        "areaName": "新疆",
-	        "linkUrl": "dmp.pjbest.com/xjpx"
+	        "linkUrl": "dmp.pjbest.com/xjpx",
+	        "areaType": areaTypeEnu.SouthWest
 	    },
 	    {
 	        "areaName": "西藏",
-	        "linkUrl": "dmp.pjbest.com/xzpj"
+	        "linkUrl": "dmp.pjbest.com/xzpj",
+	        "areaType": areaTypeEnu.SouthWest
 	    },
 	    {
 	        "areaName": "四川",
-	        "linkUrl": "dmp.pjbest.com/scpj"
+	        "linkUrl": "dmp.pjbest.com/scpj",
+	        "areaType": areaTypeEnu.SouthWest
 	    },
 	    {
 	        "areaName": "贵州",
-	        "linkUrl": "dmp.pjbest.com/pxwl"
+	        "linkUrl": "dmp.pjbest.com/pxwl",
+	        "areaType": areaTypeEnu.SouthWest
 	    },
 	    {
 	        "areaName": "河北",
-	        "linkUrl": "dmp.pjbest.com/hebeipj"
+	        "linkUrl": "dmp.pjbest.com/hebeipj",
+	        "areaType": areaTypeEnu.NorthChina
 	    },
 	    {
 	        "areaName": "山东",
-	        "linkUrl": "dmp.pjbest.com/sdpj"
+	        "linkUrl": "dmp.pjbest.com/sdpj",
+	        "areaType": areaTypeEnu.EastChina
 	    },
 	    {
 	        "areaName": "江西",
-	        "linkUrl": "dmp.pjbest.com/jxfy"
+	        "linkUrl": "dmp.pjbest.com/jxfy",
+	        "areaType": areaTypeEnu.EastChina
 	    },
 	    {
 	        "areaName": "广州",
-	        "linkUrl": "dmp.pjbest.com/gztl"
+	        "linkUrl": "dmp.pjbest.com/gztl",
+	        "areaType": areaTypeEnu.SouthCentral
 	    },
 	    {
 	        "areaName": "广州分拨中心",
-	        "linkUrl": "dmp.pjbest.com/gztlfbzx"
+	        "linkUrl": "dmp.pjbest.com/gztlfbzx",
+	        "areaType": areaTypeEnu.SouthCentral
 	    },
 	    {
 	        "areaName": "广州TMS",
-	        "linkUrl": "dmp.pjbest.com/gztltms"
+	        "linkUrl": "dmp.pjbest.com/gztltms",
+	        "areaType": areaTypeEnu.SouthCentral
 	    },
 	    {
 	        "areaName": "吉林",
-	        "linkUrl": "dmp.pjbest.com/jlpj"
+	        "linkUrl": "dmp.pjbest.com/jlpj",
+	        "areaType": areaTypeEnu.NorthEast
 	    },
 	    {
 	        "areaName": "北京",
-	        "linkUrl": "dmp.pjbest.com/bjpj"
+	        "linkUrl": "dmp.pjbest.com/bjpj",
+	        "areaType": areaTypeEnu.NorthChina
 	    },
 	    {
 	        "areaName": "福建",
-	        "linkUrl": "dmp.pjbest.com/fjfy"
+	        "linkUrl": "dmp.pjbest.com/fjfy",
+	        "areaType": areaTypeEnu.SouthCentral
 	    },
 	    {
 	        "areaName": "重庆",
-	        "linkUrl": "dmp.pjbest.com/cqhy"
+	        "linkUrl": "dmp.pjbest.com/cqhy",
+	        "areaType": areaTypeEnu.SouthWest
 	    },
 	    {
 	        "areaName": "青海",
-	        "linkUrl": "dmp.pjbest.com/qhpj"
+	        "linkUrl": "dmp.pjbest.com/qhpj",
+	        "areaType": areaTypeEnu.NorthWest
 	    },
 	    {
 	        "areaName": "天津",
-	        "linkUrl": "dmp.pjbest.com/tjpj"
+	        "linkUrl": "dmp.pjbest.com/tjpj",
+	        "areaType": areaTypeEnu.NorthChina
 	    },
 	    {
 	        "areaName": "河南",
-	        "linkUrl": "dmp.pjbest.com/hnadx"
+	        "linkUrl": "dmp.pjbest.com/hnadx",
+	        "areaType": areaTypeEnu.NorthWest
 	    },
 	    {
 	        "areaName": "广西",
-	        "linkUrl": "dmp.pjbest.com/gxpx"
+	        "linkUrl": "dmp.pjbest.com/gxpx",
+	        "areaType": areaTypeEnu.SouthCentral
 	    },
 	    {
 	        "areaName": "山西",
-	        "linkUrl": "dmp.pjbest.com/sxpj"
+	        "linkUrl": "dmp.pjbest.com/sxpj",
+	        "areaType": areaTypeEnu.NorthChina
 	    },
 	    {
 	        "areaName": "西安",
-	        "linkUrl": "dmp.pjbest.com/xapx"
+	        "linkUrl": "dmp.pjbest.com/xapx",
+	        "areaType": areaTypeEnu.NorthWest
 	    },
 	    {
 	        "areaName": "宁夏",
-	        "linkUrl": "dmp.pjbest.com/nxpj"
+	        "linkUrl": "dmp.pjbest.com/nxpj",
+	        "areaType": areaTypeEnu.NorthWest
 	    },
 	    {
 	        "areaName": "湖南",
-	        "linkUrl": "dmp.pjbest.com/hnpj"
+	        "linkUrl": "dmp.pjbest.com/hnpj",
+	        "areaType": areaTypeEnu.SouthCentral
 	    },
 	    {
 	        "areaName": "甘肃",
-	        "linkUrl": "dmp.pjbest.com/gspj"
+	        "linkUrl": "dmp.pjbest.com/gspj",
+	        "areaType": areaTypeEnu.NorthWest
 	    },
 	    {
 	        "areaName": "海南",
-	        "linkUrl": "dmp.pjbest.com/hainpj"
+	        "linkUrl": "dmp.pjbest.com/hainpj",
+	        "areaType": areaTypeEnu.SouthCentral
 	    },
 	    {
 	        "areaName": "武汉",
-	        "linkUrl": "dmp.pjbest.com/whfy"
+	        "linkUrl": "dmp.pjbest.com/whfy",
+	        "areaType": areaTypeEnu.SouthCentral
 	    }
 	];
 	
-	var addrAllHtml = '';
+	var j = 0;
+	for(var temp in areaTypeEnu){
+		var sss = document.createElement("div");
+		var areaType_box = document.createElement("div");
+		areaType_box.className = 'titleFont';
+		var areaType_box_Text = document.createTextNode(areaTypeEnu[temp]+":");
+		areaType_box.appendChild(areaType_box_Text);
+		
+		var title_box = document.createElement("div");//创建id为title_box_i的div
+		title_box.id='title_box' + j;
+		title_box.style.width = '100%';
+		var jump_boxs = document.createElement("div");
+		jump_boxs.className = 'jump_boxs';
+		jump_boxs.id = 'jump_boxs_' + j;
+		title_box.appendChild(jump_boxs); 
+		
+		var flag;
+		var jump_box;
+		for (var i = 0; i < areaList.length; i++) {
+			flag = false;
+			var areaObj = areaList[i];
+			if(areaObj.areaType == areaTypeEnu[temp]){
+				jump_box = document.createElement("div");
+				jump_box.className = 'jump_box';
+				jump_box.id = 'jump_box_' + i;
+				var a = document.createElement("a");
+				a.href = "http://" + areaObj.linkUrl +"/";
+				var aText = document.createTextNode(areaObj.areaName);
+				a.appendChild(aText);
+				jump_box.appendChild(a);
+				flag = true;
+			}
+			if(flag){
+				jump_boxs.appendChild(jump_box);
+			}
+		}
+		var space = document.createElement("div");
+		space.className = 'jump_box';
+		jump_boxs.appendChild(space);
+		space.style.float = 'none';
+		space.style.visibility = 'hidden';
+		title_box.appendChild(jump_boxs);
+		document.getElementById('box').appendChild(areaType_box);
+		document.getElementById('box').appendChild(title_box); 
+		
+	} 
 	
-	for (var i = 0; i < areaList.length; i++) {
-		var areaObj = areaList[i];
-		var addrHtml = '<div class="jump_box">' +
-			'<a href="http://' + areaObj.linkUrl +'/">' + areaObj.areaName +'</a>' +
-			'</div>';
-		addrAllHtml += addrHtml;
-	}
-	
-	document.getElementById('jump_box_1').innerHTML = addrAllHtml;
-	
+
+
 </script>
 	
 </body>
