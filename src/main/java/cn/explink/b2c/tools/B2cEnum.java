@@ -159,14 +159,41 @@ public enum B2cEnum {
 	//0909加洋驼,增益,万象
 	TPS_YangTuo(22515, "洋驼-TPS", "yangtuotpsother",0),
 	TPS_ZengYi(22516, "增益-TPS", "zengyitpsother",0),
-	TPS_WanXiang(22517, "万象-TPS", "wanxiangtpsother",0)
+	TPS_WanXiang(22517, "万象-TPS", "wanxiangtpsother",0),
+	//zhili01.liang on 20160920加20家对接 ===begin===
+	TPS_YouSu(22518,"优速-TPS","yousutpsother",0),
+	TPS_NingBoHaiTaoKuaJingGou(22519,"宁波海淘跨境购-TPS","ningbohaitaokuajinggoutpsother",0),
+	TPS_HangZhouHaiGuan(22520,"杭州海关-TPS","hangzhouhaiguantpsother",0),
+	TPS_GuangDongJingDuMiYe(22521,"广东京都米业-TPS","guangdongjingdumiyetpsother",0),
+	TPS_MaiHaiXi(22522,"迈海西-TPS","maihaixitpsother",0),
+	TPS_JiShunTong(22523,"急顺通-TPS","jishuntongtpsother",0),
+	TPS_YouZanPingTai(22524,"有赞平台-TPS","youzanpingtaitpsother",0),
+	TPS_ZhongKu(22525,"众库-TPS","zhongkutpsother",0),
+	TPS_GuangZhouKunZai(22526,"广州坤载-TPS","guangzhoukunzaitpsother",0),
+	TPS_RuFengDa(22527,"如风达-TPS","rufengdatpsother",0),
+	TPS_FuJianChaoDa(22528,"福建超大-TPS","fujianchaodatpsother",0),
+	TPS_WoJiaHouYuan(22529,"我家后院-TPS","wojiahouyuantpsother",0),
+	TPS_MiYa(22530,"蜜芽-TPS","miyatpsother",0),
+	TPS_DaiEr(22531,"戴尔-TPS","daiertpsother",0),
+	TPS_WangDianGuanJia(22532,"网店管家-TPS","wangdianguanjiatpsother",0),
+	TPS_YinLianShangWuDaHuaJieTong(22533,"银联商务大华捷通-TPS","yinlianshangwudahuajietongtpsother",0),
+	TPS_QiLeKang(22534,"七乐康-TPS","qilekangtpsother",0),
+	TPS_DaJiaFen(22535,"大家分-TPS","dajiafentpsother",0),
+	TPS_AiHuaShi(22536,"爱华仕-TPS","aihuashitpsother",0),
+	TPS_HaiPaiKe(22537,"海拍客-TPS","haipaiketpsother",0)
+	//zhili01.liang on 20160920加20家对接 ===End===
 	//zhili01.liang on 20160902, 下面这些EDI接口由TpsMQOrderSettingController负责展示====End====
 	;
 	//zhili01.liang on 20160902, 下面这些EDI接口由TpsMQOrderSettingController负责展示
 	/**所有EDI接口类型*/
 	public static B2cEnum[] TYPES_ALL_EDI = new B2cEnum[]{
 			TPS_AliPay,TPS_KeJie,TPS_JiaLeTao,TPS_BjHuanQiuGou,TPS_TjYouGuanJu,
-			TPS_YangTuo,TPS_ZengYi,TPS_WanXiang//0909加洋驼,增益,万象
+			TPS_YangTuo,TPS_ZengYi,TPS_WanXiang,//0909加洋驼,增益,万象
+			//zhili01.liang on 20160920加20家对接
+			TPS_YouSu,TPS_NingBoHaiTaoKuaJingGou,TPS_HangZhouHaiGuan,TPS_GuangDongJingDuMiYe,
+			TPS_MaiHaiXi,TPS_JiShunTong,TPS_YouZanPingTai,TPS_ZhongKu,TPS_GuangZhouKunZai,TPS_RuFengDa,
+			TPS_FuJianChaoDa,TPS_WoJiaHouYuan,TPS_MiYa,TPS_DaiEr,TPS_WangDianGuanJia,
+			TPS_YinLianShangWuDaHuaJieTong,TPS_QiLeKang,TPS_DaJiaFen,TPS_AiHuaShi,TPS_HaiPaiKe
 	};
 
 	 
