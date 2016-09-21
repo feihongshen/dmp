@@ -271,16 +271,8 @@ function clearSelect(){
 			<select name ="cwbordertypeid" id ="cwbordertypeid" multiple="multiple" style="width:120px;">
 		          <%for(CwbOrderTypeIdEnum c : CwbOrderTypeIdEnum.values()){ 
 		          if(c.getValue() == CwbOrderTypeIdEnum.Express.getValue()){%>
-						<option value ="<%=c.getValue() %>" 
-		           <%if(!cwbordertypeidList.isEmpty()) 
-			            {for(int i=0;i<cwbordertypeidList.size();i++){
-			            	if(c.getValue()== new Long(cwbordertypeidList.get(i).toString())){
-			            		%>selected="selected"<%
-			            	 break;
-			            	}
-			            }
-				     }%> ><%=c.getText()%></option>
-		          <%}} %>
+						<option value ="<%=c.getValue() %>" selected="selected" ><%=c.getText()%></option>
+		          <%break;}} %>
 			</select>
 			 小件员
 			<select name ="deliverid" id ="deliverid" onclick="changeBranchDeliver();" class="select1">

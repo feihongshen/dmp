@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.OrderBackRuku;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
 
@@ -77,6 +78,8 @@ public class OrderBackRukuRecordDao {
 			}
 			if(cwbordertype>0){
 				sb.append(" and re.cwbordertypeid="+cwbordertype);
+			}else{ //如果没有选择订单类型，那么就排除掉上门退订单
+				sb.append(" and re.cwbordertypeid !="+CwbOrderTypeIdEnum.Shangmentui.getValue());
 			}
 			if(customerid>0){
 				sb.append(" and re.customerid="+customerid);
