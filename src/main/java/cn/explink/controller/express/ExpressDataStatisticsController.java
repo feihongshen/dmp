@@ -137,7 +137,7 @@ public class ExpressDataStatisticsController {
 	public String tuotousearch(Model model, @RequestParam(value = "begindate", required = false, defaultValue = "") String begindate,
 			@RequestParam(value = "enddate", required = false, defaultValue = "") String enddate, @RequestParam(value = "isaudit", required = false, defaultValue = "-1") long isaudit,
 			@RequestParam(value = "isauditTime", required = false, defaultValue = "0") long isauditTime, @RequestParam(value = "customerid", required = false, defaultValue = "") String[] customerid,
-			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "") String[] cwbordertypeid,
+			@RequestParam(value = "cwbordertypeid", required = false, defaultValue = "6") String[] cwbordertypeid,
 			@RequestParam(value = "paytype", required = false, defaultValue = "-1") long paywayid,
 			@RequestParam(value = "dispatchbranchid", required = false, defaultValue = "") String[] dispatchbranchid,
 			@RequestParam(value = "deliverid", required = false, defaultValue = "-1") long deliverid,
