@@ -1901,20 +1901,20 @@ private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
 				// =this.getOrderFlowByCwb(c.getCwb()).getCredate();
 				// Date yishenhe=this.getOrderFlowByCwbAndType(c.getCwb(),
 				// FlowOrderTypeEnum.YiShenHe.getValue(),"","").getCredate();
-				cwbOrderView.setAuditstate(orderflowList.get(c.getCwb()).get("Goclasstime") == null ? 0 : 1);// 审核状态
+				cwbOrderView.setAuditstate(orderflowList.get(c.getCwb()) == null ? 0 : orderflowList.get(c.getCwb()).get("Goclasstime") == null ? 0 : 1);// 审核状态
 				// cwbOrderView.setInstoreroomtime(ruku!=null?sdf.format(ruku):"");//入库时间
-				cwbOrderView.setInstoreroomtime(orderflowList.get(c.getCwb()).get("Instoreroomtime"));// 入库时间
-				cwbOrderView.setOutstoreroomtime(orderflowList.get(c.getCwb()).get("Outstoreroomtime"));// 出库时间
-				cwbOrderView.setInSitetime(orderflowList.get(c.getCwb()).get("InSitetime"));// 到站时间
+				cwbOrderView.setInstoreroomtime(orderflowList.get(c.getCwb()) == null ? "" : orderflowList.get(c.getCwb()).get("Instoreroomtime"));// 入库时间
+				cwbOrderView.setOutstoreroomtime(orderflowList.get(c.getCwb()) == null ? "" : orderflowList.get(c.getCwb()).get("Outstoreroomtime"));// 出库时间
+				cwbOrderView.setInSitetime(orderflowList.get(c.getCwb()) == null ? "" : orderflowList.get(c.getCwb()).get("InSitetime"));// 到站时间
 				long currentbranchid = daohuosaomiao.getBranchid();
 				//刘武强优化 -- 20160725
 				Branch thisbranch = this.getQueryBranch(branchList,currentbranchid);
 				String branchname = thisbranch != null ? thisbranch.getBranchname() : "";
 				cwbOrderView.setInSiteBranchname(branchname);
-				cwbOrderView.setPickGoodstime(orderflowList.get(c.getCwb()).get("PickGoodstime"));// 小件员领货时间
-				cwbOrderView.setGobacktime(orderflowList.get(c.getCwb()).get("Gobacktime"));// 反馈时间
-				cwbOrderView.setGoclasstime(orderflowList.get(c.getCwb()).get("Goclasstime"));// 归班时间
-				cwbOrderView.setNowtime(orderflowList.get(c.getCwb()).get("Newchangetime") != null ? orderflowList.get(c.getCwb()).get("Newchangetime") : "");// 最新修改时间
+				cwbOrderView.setPickGoodstime(orderflowList.get(c.getCwb()) == null ? "" : orderflowList.get(c.getCwb()).get("PickGoodstime"));// 小件员领货时间
+				cwbOrderView.setGobacktime(orderflowList.get(c.getCwb()) == null ? "" : orderflowList.get(c.getCwb()).get("Gobacktime"));// 反馈时间
+				cwbOrderView.setGoclasstime(orderflowList.get(c.getCwb()) == null ? "" : orderflowList.get(c.getCwb()).get("Goclasstime"));// 归班时间
+				cwbOrderView.setNowtime(orderflowList.get(c.getCwb()) == null ? "" : orderflowList.get(c.getCwb()).get("Newchangetime") != null ? orderflowList.get(c.getCwb()).get("Newchangetime") : "");// 最新修改时间
 				cwbOrderView.setBackreason(c.getBackreason());
 				cwbOrderView.setLeavedreasonStr(this.getQueryReason(reasonList, c.getLeavedreasonid()));// 滞留原因
 				// cwbOrderView.setExpt_code(); //异常编码
@@ -1938,7 +1938,7 @@ private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
 				if (deliverystate != null) {
 					cwbOrderView.setSigninman(deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue() ? c.getConsigneename() : "");
 					cwbOrderView
-							.setSignintime(deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue() ? (orderflowList.get(c.getCwb()).get("Gobacktime") != null ? orderflowList
+							.setSignintime(deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue() ? (orderflowList.get(c.getCwb()) == null ? "" : orderflowList.get(c.getCwb()).get("Gobacktime") != null ? orderflowList
 									.get(c.getCwb()).get("Gobacktime") : "") : "");
 					cwbOrderView.setPosremark(deliverystate.getPosremark());
 					cwbOrderView.setCheckremark(deliverystate.getCheckremark());
@@ -1952,8 +1952,8 @@ private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
 						cwbOrderView.setCustomerbrackhouseremark("");
 					}
 					cwbOrderView.setDeliverystate(deliverystate.getDeliverystate());
-					if ((deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) && (orderflowList.get(c.getCwb()).get("Gobacktime") != null)) {
-						cwbOrderView.setSendSuccesstime(orderflowList.get(c.getCwb()).get("Gobacktime"));// 配送成功时间
+					if ((deliverystate.getDeliverystate() == DeliveryStateEnum.PeiSongChengGong.getValue()) && orderflowList.get(c.getCwb()) != null && (orderflowList.get(c.getCwb()).get("Gobacktime") != null)) {
+						cwbOrderView.setSendSuccesstime(orderflowList.get(c.getCwb()) == null ? "" : orderflowList.get(c.getCwb()).get("Gobacktime"));// 配送成功时间
 					}
 				}
 				cwbOrderView.setShouldfare(c.getShouldfare());
