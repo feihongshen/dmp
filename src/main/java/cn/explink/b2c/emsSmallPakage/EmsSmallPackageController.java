@@ -160,7 +160,9 @@ public class EmsSmallPackageController {
 		scanems = scanems.trim();
 		Map<String,Object> map = new HashMap<String, Object>();
 		try {
-			this.emsSmallPakageService.rebingCwb(transcwb, scanems);
+			User user = this.getSessionUser();
+			this.emsSmallPakageService.rebingCwb(user,transcwb, scanems);
+			logger.info("重新绑定,运单号:"+transcwb+",邮政小包运单号:"+scanems);
 			//map.put("list", this.emsSmallPakageService.getEMSViewListByTransCwb("","","","",""));
 		} catch (CwbException e) {
 			logger.error("绑定邮政小包运单号发生异常", e);

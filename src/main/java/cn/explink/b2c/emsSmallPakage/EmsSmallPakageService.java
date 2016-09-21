@@ -260,9 +260,25 @@ public class EmsSmallPakageService {
 	 * @param transcwb
 	 * @param emscwb
 	 */
-	public void rebingCwb(String transcwb, String scanems) {
-		String bingTime = DateTimeUtil.getNowTime();
-		this.eMSDAO.updateEmscwb(transcwb, scanems, bingTime);
+	public void rebingCwb(User user,String transcwb, String scanems) {
+		boolean isFirst=false;
+		String cwb=null;
+		List<SendToEMSOrder> transcwbList = this.eMSDAO.getTransListByTransCwb(transcwb);
+		if(transcwbList!=null&&transcwbList.size()>0){
+			cwb=transcwbList.get(0).getCwb();
+			//注意:这里按时间排序是必须的
+			List<SendToEMSOrder> transcwbs = this.eMSDAO.getTransListByCwb(cwb);
+			if(transcwbs.get(0).getTranscwb().equals(transcwb)){
+				isFirst=true;//第一个邮政单号绑定时才需要传给tms
+			}
+		}
+		
+		this.eMSDAO.updateEmscwb(transcwb, scanems);
+		if(isFirst){
+			CwbOrder cwbOrder = cwbDAO.getCwbByCwb(cwb);
+			this.cwbOrderService.createFloworder(user, user.getBranchid(), cwbOrder, FlowOrderTypeEnum.BingEmsTrans, "", System.currentTimeMillis());
+			this.logger.info("重新绑定时发给tms,运单号:"+transcwb+",邮政小包运单号:"+scanems);
+		}
 	}
 	
 	/**
