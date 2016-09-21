@@ -180,8 +180,9 @@ public enum B2cEnum {
 	TPS_QiLeKang(22534,"七乐康-TPS","qilekangtpsother",0),
 	TPS_DaJiaFen(22535,"大家分-TPS","dajiafentpsother",0),
 	TPS_AiHuaShi(22536,"爱华仕-TPS","aihuashitpsother",0),
-	TPS_HaiPaiKe(22537,"海拍客-TPS","haipaiketpsother",0)
-	//zhili01.liang on 20160920加20家对接 ===End===
+	TPS_HaiPaiKe(22537,"海拍客-TPS","haipaiketpsother",0),
+	TPS_KangMei(22538,"康美-TPS","kangmeitpsother",0)
+	//zhili01.liang on 20160920加21家对接 ===End===
 	//zhili01.liang on 20160902, 下面这些EDI接口由TpsMQOrderSettingController负责展示====End====
 	;
 	//zhili01.liang on 20160902, 下面这些EDI接口由TpsMQOrderSettingController负责展示
@@ -189,11 +190,11 @@ public enum B2cEnum {
 	public static B2cEnum[] TYPES_ALL_EDI = new B2cEnum[]{
 			TPS_AliPay,TPS_KeJie,TPS_JiaLeTao,TPS_BjHuanQiuGou,TPS_TjYouGuanJu,
 			TPS_YangTuo,TPS_ZengYi,TPS_WanXiang,//0909加洋驼,增益,万象
-			//zhili01.liang on 20160920加20家对接
+			//zhili01.liang on 20160920加21家对接
 			TPS_YouSu,TPS_NingBoHaiTaoKuaJingGou,TPS_HangZhouHaiGuan,TPS_GuangDongJingDuMiYe,
 			TPS_MaiHaiXi,TPS_JiShunTong,TPS_YouZanPingTai,TPS_ZhongKu,TPS_GuangZhouKunZai,TPS_RuFengDa,
 			TPS_FuJianChaoDa,TPS_WoJiaHouYuan,TPS_MiYa,TPS_DaiEr,TPS_WangDianGuanJia,
-			TPS_YinLianShangWuDaHuaJieTong,TPS_QiLeKang,TPS_DaJiaFen,TPS_AiHuaShi,TPS_HaiPaiKe
+			TPS_YinLianShangWuDaHuaJieTong,TPS_QiLeKang,TPS_DaJiaFen,TPS_AiHuaShi,TPS_HaiPaiKe,TPS_KangMei
 	};
 
 	 
