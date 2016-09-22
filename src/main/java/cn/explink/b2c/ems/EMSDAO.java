@@ -305,7 +305,8 @@ public class EMSDAO {
 	 * @return
 	 */
 	public List<SendToEMSOrder> getTransListByCwb(String cwb) {
-		String sql  = "select * from express_ems_dmp_transcwb where cwb = ?";
+		//注意:这里排序是必须的
+		String sql  = "select * from express_ems_dmp_transcwb where cwb = ? order by bing_time";
 		List<SendToEMSOrder> list = this.jdbcTemplate.query(sql, new EMSTranscwbMapper(), cwb);
 		return list;
 	}
@@ -399,8 +400,8 @@ public class EMSDAO {
 	 * @param emscwbOld
 	 * @return
 	 */
-	public int updateEmscwb (String transcwb, String scanems, String bingTime) {
-		String sql = "update express_ems_dmp_transcwb set email_num = ?, bing_time = ? where transcwb = ?";
-		return this.jdbcTemplate.update(sql,scanems,bingTime,transcwb);
+	public int updateEmscwb (String transcwb, String scanems) {
+		String sql = "update express_ems_dmp_transcwb set email_num = ? where transcwb = ?";
+		return this.jdbcTemplate.update(sql,scanems,transcwb);
 	}
 }
