@@ -6662,7 +6662,7 @@ public class CwbOrderService extends BaseOrderService {
 			CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 			DeliveryState deliverystate = this.deliveryStateDAO.getActiveDeliveryStateByCwb(co.getCwb());
 			if (deliverystate == null) {
-				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiShenHe.getValue(), ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO);
+				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiShenHe.getValue(), ExceptionCwbErrorTypeEnum.ChaXunYiChangQingShuaXinYeMian);
 			}
 			if (deliverystate.getGcaid() > 0) {
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiShenHe.getValue(), ExceptionCwbErrorTypeEnum.ChongFuShenHe, co.getCwb());
