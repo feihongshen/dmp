@@ -6668,6 +6668,11 @@ public class CwbOrderService extends BaseOrderService {
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiShenHe.getValue(), ExceptionCwbErrorTypeEnum.ChongFuShenHe, co.getCwb());
 			}
 			
+			//如果订单已经被拦截了，那么 就不允许在审核了 ----刘武强20160922
+			if(co.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()){
+				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiShenHe.getValue(), ExceptionCwbErrorTypeEnum.DingDanYiLanJieBuYunXuShenHe, co.getCwb());
+			}
+			
 			//Added by leoliao at 2016-08-04  未反馈不允许进行归班审核
 			if(deliverystate.getDeliverystate() == DeliveryStateEnum.WeiFanKui.getValue()){
 				throw new CwbException(co.getCwb(), "订单("+co.getCwb()+")未反馈不允许进行归班审核");

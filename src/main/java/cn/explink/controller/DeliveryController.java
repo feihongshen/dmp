@@ -465,6 +465,10 @@ public class DeliveryController {
 			this.logger.warn("cwborder {} not exist" + ds.getCwb());
 			return null;
 		}
+		//如果订单已经被拦截了，那么 就不允许在审核了 ----刘武强20160922
+		if(cwbOrder.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()){
+			return null;
+		}
 		sdv.setCustomerid(cwbOrder.getCustomerid());
 		for (Customer c : customerList) {
 			if (cwbOrder.getCustomerid() == c.getCustomerid()) {
