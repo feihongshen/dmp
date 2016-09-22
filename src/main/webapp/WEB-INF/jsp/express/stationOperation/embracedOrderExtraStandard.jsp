@@ -94,11 +94,11 @@
 					<col width="15%">
 				</colgroup>
 				<tr style="line-height: 15px;">
-					<td class="tdrigth">快递单号:</td>
+					<td class="tdrigth">快递单号&nbsp<span style="color:#FF0000">*</span>:</td>
 					<td class="tdleft"><input type="text" name="orderNo" id="orderNo_id" onchange="getCwbOrderEmbraced()" value="${orderNo}" style=" font-size:22px;color:red;height:30px;width:100%;"/></td>
 					<td class="tdrigth">揽件站点<font>*</font>:</td>
 					<td><input type="text" name="prestation" id="prestation_id"  readonly="readonly"  style="background:#EBEBE4;width:100%;" value="${branchname }"/></td>
-					<td class="tdrigth">揽件员<font>*</font>:</td>
+					<td class="tdrigth">揽件员&nbsp<span style="color:#FF0000">*</span>:</td>
 					<td>
 						<select id="delivermanId_show" style="width:100%;">
 						    <option value="">请选择</option>
@@ -118,7 +118,7 @@
 	                <td class="tdleft"><input type="text" name="reserveOrderNo" id="reserveOrderNo"  
 	                      readonly="readonly" style="background:#EBEBE4;width:100%;" /></td>
                     <td id="recordVersionTd" style="display:none;"><input type="text" name="recordVersion" id="recordVersion"/></td>
-	                <td class="tdrigth">服务产品:</td>
+	                <td class="tdrigth">服务产品&nbsp<span style="color:#FF0000">*</span>:</td>
 	                <td>
 	                	<select name="express_product_type" id="express_product_type"  style="width:100%;" onchange="getFeeByCondition()">
 							<option value="1" >标准</option>
@@ -181,7 +181,7 @@
 								<td style="display:none;"><input type="text" name="sender_customerid" id="sender_customerid_id"/></td>
 							</tr>
 							<tr>
-								<td class="tdrigth">始发地<font>*</font>:</td>
+								<td class="tdrigth">始发地&nbsp<span style="color:#FF0000">*</span>:</td>
 	                            <td colspan="2">
 	                                <div class="col-xs-4">
 	                                    <input readonly="readonly" name="sender_cityselect" placeholder="请选择地区" type="text"
@@ -286,7 +286,7 @@
 								<td style="display:none;"><input type="text" name="consignee_customerid" id="consignee_customerid_id"/></td>
 							</tr>
 							<tr>
-								<td class="tdrigth">目的地<font>*</font>:</td>
+								<td class="tdrigth">目的地&nbsp<span style="color:#FF0000">*</span>:</td>
 								<td colspan="2">
 									<div class="col-xs-4" >
 										<input readonly="readonly"  name="consignee_cityselect" placeholder="请选择地区" type="text"   style="width:100%" id="area_consignee"/>
@@ -365,9 +365,9 @@
 					<td class="tdleft"><input type="text" name="goods_name" id="goods_name_id"style="width:100%;" /></td>
 					<td class="tdrigth">数量<font>*</font>:</td>
 					<td class="tdleft"><input type="text" name="goods_number" id="goods_number_id" style="width:100%;"/></td>
-					<td class="tdrigth">计费重量<font>*</font>：</td>
+					<td class="tdrigth">计费重量&nbsp<span style="color:#FF0000">*</span>:</td>
 					<td class="tdleft"><input type="text" name="charge_weight" id="charge_weight_id" style="width:100%;" onchange="toFix(this,2)"/></td>
-					<td class="tdrigth">实际重量<font>*</font>：</td>
+					<td class="tdrigth">实际重量&nbsp<span style="color:#FF0000">*</span>:</td>
 					<td class="tdleft"><input type="text" name="actual_weight" id="actual_weight_id" style="width:100%;" onchange="toFix(this,2)"/></td>
 					<td class="tdrigth"><input type="button" onclick="read()" value="读数"/></td>
 					<td class="tdrigth">长:</td>
@@ -411,7 +411,7 @@
 				<tr>
 					<td class="tdcenter">费用合计：</td>
 					<td class="tdleft"><input type="text" name="freight_total" id="freight_total_id"  readonly="readonly" style=" font-size:22px;color:red;height:30px;background:#EBEBE4;width:100%;"/></td>
-					<td class="tdrigth">运费<font>*</font>:</td>
+					<td class="tdrigth">运费&nbsp<span style="color:#FF0000">*</span>:</td>
 					<td class="tdleft"><input type="text" name="freight" id="freight_id" style="width:100%;" onchange="toFix(this,2)"/></td>
 					<td class="tdrigth">包装费用:</td>
 					<td class="tdleft"><input type="text" name="packing_amount" id="packing_amount_id" onblur="calculateFreight(this)" style="width:100%;" onchange="toFix(this,2)"/></td>
@@ -444,7 +444,7 @@
 					<col width="15%">
 				</colgroup>
 					<tr>
-						<td class="tdleft" style="vertical-align:middle; text-align:center;"><font size="3px" color="red">结算方式:</font></td>
+						<td class="tdleft" style="vertical-align:middle; text-align:center;"><font size="3px" color="red">结算方式 *:</font></td>
 						<td class="tdcenter"  style="vertical-align:middle; text-align:center;">
 							<input id="Radio1" type="radio" class="RadioClass" name="payment_method"  value="1" onchange="getFeeByCondition()"/>
 							<label id="Label1" for="Radio1" class="RadioLabelClass" ><font size="6px" >现付</font></label>
@@ -744,12 +744,14 @@
         	return false;
         }
       	if(msgArr.length > 0){
-      		msgArr.push("确认保存？");
-      		if(!confirm(msgArr.join(',')+"")){
-      			msgArr = [];
-        		return false;
-        	} 
+//       		msgArr.push("确认保存？");
+//       		if(!confirm(msgArr.join(',')+"")){
+//       			msgArr = [];
+//         		return false;
+//         	} 
+			alert(msgArr.join(',')+"");
       		msgArr = [];
+      		return false;
       	}
     	
     	/* $.messager.confirm("确认", msgArr.join('、')+"尚未填写" + ",确认保存？", function (r) {  
@@ -820,72 +822,73 @@
 		var payment_method = $("input[name='payment_method']:checked").val();//0为月结
 		var countySelect = $("#sender_countyid_id");
 		
-		//校验寄件人地址
-        if(sender_province.val() == "" || sender_city.val() == "" || sender_county.val() == ""){
-        	//$.messager.alert("提示", "请完善寄件人地址", "warning");
-			confirmFunction("始发地不完善");
-        	
-        }
-		
-      
-										
-		//校验寄件人客户编码是否超长
-      	/* if($.trim(sender_No.val()) != ""){
-      		if(!checkLength(sender_No, 10,"寄件人客户编码",10)){
-            	return false;
-            }
-      	} */
-       //如果为月结，校验寄件人公司是否为空
-      	if(payment_method == 0){
-	        if(!nullValidater(sender_companyName,"寄件人公司")){
-	        	confirmFunction("寄件人公司未填写");
+		//如果不属于补录，则第一次只要求填写寄件三级地址
+		if ($("#isadditionflag_id").val() == 0) {
+			//校验寄件人地址
+	        if(sender_province.val() == "" || sender_city.val() == "" || sender_county.val() == ""){
+	        	//$.messager.alert("提示", "请完善寄件人地址", "warning");
+				confirmFunction("始发地不完善");	
 	        }
-      	}
-      	//校验寄件人公司是否超长
-      	/* if(!checkLength(sender_companyName, 50, '寄件人公司', 50)){
-        	return false;
-        } */
-       	//校验寄件人是否为空
-       	
-        if(!nullValidater(sender_name,"寄件人")){
-        	confirmFunction("寄件人未填写");
-        }else
-      	//校验寄件人是否超长
-      	if(!checkLength(sender_name, 25, '寄件人', 25)){
-        	return false;
-        }
-      	//校验寄件人地址是否为空
-        if(!nullValidater(sender_adress,"寄件人地址")){
-        	confirmFunction("寄件人地址未填写");
-        }else
-      	//校验寄件人地址是否超长
-      	if(!checkLength(sender_adress, 100, '寄件人地址', 100)){
-        	return false;
-        }
-      	//校验寄件人电话和手机至少一个不为空
-      	var senderPhone = [sender_cellphone, sender_telephone];
-      	if(!multiNullValidater(senderPhone, "寄件人手机和固话")){
-      		confirmFunction("寄件人手机或固话未填写");
-        }
-      	//校验寄件人手机号是否正确
-      	/* if($.trim(sender_cellphone.val()) != ""){
-      		if(!cellPhoneValidater(sender_cellphone, "寄件人")){
-            	return false;
-            }
-      	} */
-      	//校验寄件人固话是否正确
-      	/* if($.trim(sender_telephone.val()) != ""){
-      		if(!phoneValidater(sender_telephone,"寄件人")){
-            	return false;
-            }
-      	} */
-      	//校验寄件人证件号是否超长
-      	if($.trim(sender_certificateNo.val()) != ""){
-      		if(!checkLength(sender_certificateNo, 25,"寄件人证件号",25)){
-            	return false;
-            }
-      	}
-      	
+		}else{
+			//校验寄件人客户编码是否超长
+	      	/* if($.trim(sender_No.val()) != ""){
+	      		if(!checkLength(sender_No, 10,"寄件人客户编码",10)){
+	            	return false;
+	            }
+	      	} */
+	       //如果为月结，校验寄件人公司是否为空
+	      	if(payment_method == 0){
+		        if(!nullValidater(sender_companyName,"寄件人公司")){
+		        	confirmFunction("寄件人公司未填写");
+		        }
+	      	}
+	      	//校验寄件人公司是否超长
+	      	/* if(!checkLength(sender_companyName, 50, '寄件人公司', 50)){
+	        	return false;
+	        } */
+	       	//校验寄件人是否为空
+	       	
+	        if(!nullValidater(sender_name,"寄件人")){
+	        	confirmFunction("寄件人未填写");
+	        }else
+	      	//校验寄件人是否超长
+	      	if(!checkLength(sender_name, 25, '寄件人', 25)){
+	        	return false;
+	        }
+	      	//校验寄件人地址是否为空
+	        if(!nullValidater(sender_adress,"寄件人地址")){
+	        	confirmFunction("寄件人地址未填写");
+	        }else
+	      	//校验寄件人地址是否超长
+	      	if(!checkLength(sender_adress, 100, '寄件人地址', 100)){
+	        	return false;
+	        }
+	      	//校验寄件人电话和手机至少一个不为空
+	      	var senderPhone = [sender_cellphone, sender_telephone];
+	      	if(!multiNullValidater(senderPhone, "寄件人手机和固话")){
+	      		confirmFunction("寄件人手机或固话未填写");
+	        }
+	      	//校验寄件人手机号是否正确
+	      	/* if($.trim(sender_cellphone.val()) != ""){
+	      		if(!cellPhoneValidater(sender_cellphone, "寄件人")){
+	            	return false;
+	            }
+	      	} */
+	      	//校验寄件人固话是否正确
+	      	/* if($.trim(sender_telephone.val()) != ""){
+	      		if(!phoneValidater(sender_telephone,"寄件人")){
+	            	return false;
+	            }
+	      	} */
+	      	//校验寄件人证件号是否超长
+	      	if($.trim(sender_certificateNo.val()) != ""){
+	      		if(!checkLength(sender_certificateNo, 25,"寄件人证件号",25)){
+	            	return false;
+	            }
+	      	}
+	      	
+		}
+			
       	return true;
 	}
 
@@ -905,65 +908,67 @@
 		var consignee_certificateNo = $("#consignee_certificateNo_id");
 		var consignee_No = $("#consignee_No_id");
 		
-		
-		//校验收件人地址
-        if(consignee_province.val() == "" || consignee_city.val() == "" || consignee_county.val() == ""){
-        	//$.messager.alert("提示", "请完善收件人地址", "warning");
-        	confirmFunction("目的地不完善");
-        }
-		//校验收件人客户编码是否超长
-      	/* if($.trim(consignee_No.val()) != ""){
-      		if(!checkLength(consignee_No, 10,"收件人客户编码",10)){
-            	return false;
-            }
-      	}
-		//校验收件人公司是否为空
-        if(!nullValidater(consignee_companyName,"收件人公司")){
-        	return false;
-        } 
-      	//校验收件人公司是否超长
-      	if(!checkLength(consignee_companyName, 50, '收件人公司', 50)){
-        	return false;
-        }*/
-       	//校验收件人是否为空
-        if(!nullValidater(consignee_name,"收件人")){
-        	confirmFunction("收件人未填写");
-        }else
-      	//校验收件人是否超长
-      	if(!checkLength(consignee_name, 25, '收件人', 25)){
-        	return false;
-        }
-      	//校验收件人地址是否为空
-        if(!nullValidater(consignee_adress,"收件人地址")){
-        	confirmFunction("收件人地址未填写");
-        }else
-      	//校验收件人地址是否超长
-      	if(!checkLength(consignee_adress, 100, '收件人地址', 100)){
-        	return false;
-        }
-      	//校验收件人电话和手机至少一个不为空
-      	var consigneePhone = [consignee_cellphone, consignee_telephone];
-      	if(!multiNullValidater(consigneePhone, "收件人手机和固话")){
-      		confirmFunction("收件人手机或固话未填写");
-        }
-      	//校验收件人手机号是否正确
-      	/* if($.trim(consignee_cellphone.val()) != ""){
-      		if(!cellPhoneValidater(consignee_cellphone, "收件人")){
-            	return false;
-            }
-      	} */
-      	//校验收件人固话是否正确
-      	/* if($.trim(consignee_telephone.val()) != ""){
-      		if(!phoneValidater(consignee_telephone, "收件人")){
-            	return false;
-            }
-      	} */
-      //校验收件人证件号码是否超长
-      	if($.trim(consignee_certificateNo.val()) != ""){
-      		if(!checkLength(consignee_certificateNo, 25, "收件人证件号",25)){
-            	return false;
-            }
-      	}
+		if($("#isadditionflag_id").val()==0){
+			//校验收件人地址
+	        if(consignee_province.val() == "" || consignee_city.val() == "" || consignee_county.val() == ""){
+	        	//$.messager.alert("提示", "请完善收件人地址", "warning");
+	        	confirmFunction("目的地不完善");
+	        }
+		}else{
+			//校验收件人客户编码是否超长
+	      	/* if($.trim(consignee_No.val()) != ""){
+	      		if(!checkLength(consignee_No, 10,"收件人客户编码",10)){
+	            	return false;
+	            }
+	      	}
+			//校验收件人公司是否为空
+	        if(!nullValidater(consignee_companyName,"收件人公司")){
+	        	return false;
+	        } 
+	      	//校验收件人公司是否超长
+	      	if(!checkLength(consignee_companyName, 50, '收件人公司', 50)){
+	        	return false;
+	        }*/
+	       	//校验收件人是否为空
+	        if(!nullValidater(consignee_name,"收件人")){
+	        	confirmFunction("收件人未填写");
+	        }else
+	      	//校验收件人是否超长
+	      	if(!checkLength(consignee_name, 25, '收件人', 25)){
+	        	return false;
+	        }
+	      	//校验收件人地址是否为空
+	        if(!nullValidater(consignee_adress,"收件人地址")){
+	        	confirmFunction("收件人地址未填写");
+	        }else
+	      	//校验收件人地址是否超长
+	      	if(!checkLength(consignee_adress, 100, '收件人地址', 100)){
+	        	return false;
+	        }
+	      	//校验收件人电话和手机至少一个不为空
+	      	var consigneePhone = [consignee_cellphone, consignee_telephone];
+	      	if(!multiNullValidater(consigneePhone, "收件人手机和固话")){
+	      		confirmFunction("收件人手机或固话未填写");
+	        }
+	      	//校验收件人手机号是否正确
+	      	/* if($.trim(consignee_cellphone.val()) != ""){
+	      		if(!cellPhoneValidater(consignee_cellphone, "收件人")){
+	            	return false;
+	            }
+	      	} */
+	      	//校验收件人固话是否正确
+	      	/* if($.trim(consignee_telephone.val()) != ""){
+	      		if(!phoneValidater(consignee_telephone, "收件人")){
+	            	return false;
+	            }
+	      	} */
+	      //校验收件人证件号码是否超长
+	      	if($.trim(consignee_certificateNo.val()) != ""){
+	      		if(!checkLength(consignee_certificateNo, 25, "收件人证件号",25)){
+	            	return false;
+	            }
+	      	}
+		}
       	return true;
 	}
 	
@@ -976,78 +981,82 @@
 		var goods_weight = $("#goods_weight_id");
 		var goods_other = $("#goods_other_id");
 		
-		//校验件数是否为空
-        if(!nullValidater(goods_name,"托物内容/名称")){
-        	confirmFunction("托物内容/名称未填写");
-        }else 
-		//校验件数是否超过长度
-        if(!checkLength(goods_name, 50, '托物内容/名称', 50)){
-        	return false;
-        }
-      	//校验数量是否为空
-        if(!nullValidater(goods_number,"数量")){
-        	confirmFunction("数量未填写");
-        }else
-      	//校验数量是否为0或正整数
-        if(!numberValidater(goods_number,'数量')){
-        	return false;
-        }else 
-		//校验数量是否超过大小
-        if(!checkNumber(goods_number,1000000,'数量')){
-        	return false;
-        }
-        //校验件数是不是大于0的数
-        if($.trim(goods_weight.val()) !="" && !NonNegativeValidater(goods_weight,'重量')){
-        	return false;
-        }
-      //校验其他是否超过长度
-        if($.trim(goods_other.val()) !="" && !checkLength(goods_other,50,'其他',50)){
-        	return false;
-        }
+		if($("#isadditionflag_id").val()!=0){
+			//校验件数是否为空
+	        if(!nullValidater(goods_name,"托物内容/名称")){
+	        	confirmFunction("托物内容/名称未填写");
+	        }else 
+			//校验件数是否超过长度
+	        if(!checkLength(goods_name, 50, '托物内容/名称', 50)){
+	        	return false;
+	        }
+	      	//校验数量是否为空
+	        if(!nullValidater(goods_number,"数量")){
+	        	confirmFunction("数量未填写");
+	        }else
+	      	//校验数量是否为0或正整数
+	        if(!numberValidater(goods_number,'数量')){
+	        	return false;
+	        }else 
+			//校验数量是否超过大小
+	        if(!checkNumber(goods_number,1000000,'数量')){
+	        	return false;
+	        }
+	        //校验件数是不是大于0的数
+	        if($.trim(goods_weight.val()) !="" && !NonNegativeValidater(goods_weight,'重量')){
+	        	return false;
+	        }
+	      //校验其他是否超过长度
+	        if($.trim(goods_other.val()) !="" && !checkLength(goods_other,50,'其他',50)){
+	        	return false;
+	        }
+		}
 		return true;
 	}
 	/*
 	 *校验业务类型
 	 */
 	function checkBusinessType(){
-		var collection_amount = $("#collection_amount_id");
-		var packing_amount = $("#packing_amount_id");
-		var insured_amount = $("#insured_amount_id");
-		var insured_cost = $("#insured_cost_id");
-		//如果保价声明价值可以填写，那么就悬着了保价，那么保价声明价值需要校验
-		if($("#collection_amount_id").attr("readonly") != 'readonly'){
-			//校验代收货款金额是否为空
-	        if(!nullValidater(collection_amount,"代收货款金额")){
-	        	confirmFunction("代收货款金额未填写");
-	        }else
-	      	//校验代收货款金额是否超过大小
-	        if(!checkNumber(collection_amount,1000000,'代收货款金额')){
-	        	return false;
-	        }else
-	      	//代收货款是否大于0
-	      	if(collection_amount.val() < 0){
-	      		$.messager.alert("提示", "代收货款应大于0", "warning");
-	      		return false;
-	      	}
-		}
-		//校验保证费用是否为大于0的数
-		if($.trim(packing_amount.val()) != "" && !NonNegativeValidater(packing_amount,'包装费用')){
-			return false;
-		}
-		
-		if($("#insured_amount_id").attr("readonly") != 'readonly'){
-			//校验价声明价值是否为空
-	        if(!nullValidater(insured_amount,"保价声明价值")){
-	        	confirmFunction("保价声明价值未填写");
-	        }else
-	      	//校验价声明价值是否超过大小
-	        if(!checkNumber(insured_amount,1000000,'保价声明价值')){
-	        	return false;
-	        }
-		}
-		//校验保价费用是否为大于0的数
-		if($.trim(insured_cost.val()) != "" && !NonNegativeValidater(insured_cost,'保价费用')){
-			return false;
+		if($("#isadditionflag_id").val()!=0){
+			var collection_amount = $("#collection_amount_id");
+			var packing_amount = $("#packing_amount_id");
+			var insured_amount = $("#insured_amount_id");
+			var insured_cost = $("#insured_cost_id");
+			//如果保价声明价值可以填写，那么就悬着了保价，那么保价声明价值需要校验
+			if($("#collection_amount_id").attr("readonly") != 'readonly'){
+				//校验代收货款金额是否为空
+		        if(!nullValidater(collection_amount,"代收货款金额")){
+		        	confirmFunction("代收货款金额未填写");
+		        }else
+		      	//校验代收货款金额是否超过大小
+		        if(!checkNumber(collection_amount,1000000,'代收货款金额')){
+		        	return false;
+		        }else
+		      	//代收货款是否大于0
+		      	if(collection_amount.val() < 0){
+		      		$.messager.alert("提示", "代收货款应大于0", "warning");
+		      		return false;
+		      	}
+			}
+			//校验保证费用是否为大于0的数
+			if($.trim(packing_amount.val()) != "" && !NonNegativeValidater(packing_amount,'包装费用')){
+				return false;
+			}
+			
+			if($("#insured_amount_id").attr("readonly") != 'readonly'){
+				//校验价声明价值是否为空
+		        if(!nullValidater(insured_amount,"保价声明价值")){
+		        	confirmFunction("保价声明价值未填写");
+		        }else
+		      	//校验价声明价值是否超过大小
+		        if(!checkNumber(insured_amount,1000000,'保价声明价值')){
+		        	return false;
+		        }
+			}
+			//校验保价费用是否为大于0的数
+			if($.trim(insured_cost.val()) != "" && !NonNegativeValidater(insured_cost,'保价费用')){
+				return false;
+			}
 		}
 		return true;
 	}
@@ -1138,9 +1147,13 @@
 	 */
 	function checkPayMethod(){
 		var payment_method = $("input[name='payment_method']:checked").val();
-		var monthly_account_number = $("#monthly_account_number_id");
-		if(payment_method == 0 || payment_method == 3){
+		console.log(payment_method);
+		if(!payment_method){
+			payment_method = "";
+			confirmFunction("结算方式未填写");
+		}else if(payment_method == 0 || payment_method == 3){
 			//校验月结账号是否为空
+			var monthly_account_number = $("#monthly_account_number_id");
 	        if(!nullValidater(monthly_account_number,"月结账号")){
 	        	confirmFunction("月结账号未填写");
 	        }
@@ -1554,6 +1567,8 @@
 					$("#freight_total_id").val(data.embracedOrderVO.freight_total); 
 					if(data.embracedOrderVO.freight != null && data.embracedOrderVO.freight != "0.00"){
 						$("#freight_id").val(data.embracedOrderVO.freight);
+						$("#freight_id").css('background','#EBEBE4');
+						$("#freight_id").attr("disabled","disabled");
 					}
 					$("#inputdatetime_id").val(data.embracedOrderVO.inputdatetime);
 					//把是否代收货款给选上 $("#collection_show").val(data.embracedOrderVO.collection);完成
@@ -1591,17 +1606,29 @@
 					if(data.embracedOrderVO.payment_method == 0){
 						$("#Radio3").attr("checked","checked");
 						$(".RadioClass").change();
-						$("#monthly_account_number_id").val(data.embracedOrderVO.monthly_account_number);					
+						$("#monthly_account_number_id").val(data.embracedOrderVO.monthly_account_number);
+						$("#Radio1").attr("disabled","disabled");
+						$("#Radio2").attr("disabled","disabled");
+						$("#Radio4").attr("disabled","disabled");
 					}else if(data.embracedOrderVO.payment_method == 1){
 						$("#Radio1").attr("checked","checked");
 						$(".RadioClass").change();
+						$("#Radio3").attr("disabled","disabled");
+						$("#Radio2").attr("disabled","disabled");
+						$("#Radio4").attr("disabled","disabled");
 					}else if(data.embracedOrderVO.payment_method == 2){
 						$("#Radio2").attr("checked","checked");
 						$(".RadioClass").change();
+						$("#Radio1").attr("disabled","disabled");
+						$("#Radio3").attr("disabled","disabled");
+						$("#Radio4").attr("disabled","disabled");
 					}else if(data.embracedOrderVO.payment_method == 3){
 						$("#Radio4").attr("checked","checked");
 						$("#monthly_account_number_id").val(data.embracedOrderVO.monthly_account_number);
 						$(".RadioClass").change();
+						$("#Radio1").attr("disabled","disabled");
+						$("#Radio2").attr("disabled","disabled");
+						$("#Radio3").attr("disabled","disabled");
 					}
 					$("#remarks_id").val(data.embracedOrderVO.remarks);
 					
@@ -1654,6 +1681,8 @@
     				
     				$("#express_product_type").val(data.embracedOrderVO.express_product_type);
     				$("#paywayid").val(data.embracedOrderVO.paywayid);
+    				$("#paywayid").css('background','#EBEBE4')
+    				$("#paywayid").attr("readonly",true);
 				}
 			});
 		}
@@ -2414,71 +2443,73 @@
 	}
 	
 	function getFeeByCondition(){
-		var productType = $.trim($("#express_product_type").val());
-		var actualWeight = $.trim($("#actual_weight_id").val());
-		var goodsLongth = $.trim($("#goods_longth_id").val());
-		var goodsWidth = $.trim($("#goods_width_id").val());
-		var goodsHeight = $.trim($("#goods_height_id").val());
-		var senderProvince = $.trim($("#sender_provinceName_id").val());
-		var senderCity = $.trim($("#sender_cityName_id").val());
-		var consigneeProvince = $.trim($("#consignee_provinceName_id").val());
-		var consigneeCity = $.trim($("#consignee_cityName_id").val());
-		var payMethod = $.trim($("input[name='payment_method']:checked").val());
-		//始发省份名称不能为空
-		if(senderProvince==""){
-			return;
-		}
-		//始发城市名称不能为空
-		if(senderCity==""){
-			return;
-		}
-		//目的省份名称不能为空
-		if(consigneeProvince==""){
-			return;
-		}
-		//目的城市名称不能为空
-		if(consigneeCity==""){
-			return;
-		}
-		//服务产品编码不能为空
-		if(productType==""){
-			return;
-		}
-		//支付类型不能为空，且只能为现金和到付
-		if(payMethod=="" || payMethod==0 || payMethod==3){
-			return;
-		}
-		//重量和体积二者必填其一
-		if((actualWeight==""||actualWeight<=0)&&($("#goods_kgs_id").val()==""||($("#goods_kgs_id").val()<=0))){
-			return;
-		}
-		$("#freight_id").val("");
-		$("#charge_weight_id").val("");
-		$.ajax({
-			type : "POST",
-			url : "<%=request.getContextPath()%>/express2/reserveOrder/getFeeByCondition",
-			dataType : "json",
-			async: false,
-			data:{
-				"productType":productType,
-			    "actualWeight":actualWeight,
-			    "goodsLongth":goodsLongth,
-			    "goodsWidth":goodsWidth,
-			    "goodsHeight":goodsHeight,
-			    "senderProvince":senderProvince,
-			    "senderCity":senderCity, 
-			    "consigneeProvince":consigneeProvince, 
-			    "consigneeCity":consigneeCity,
-		        "payMethod":payMethod 
-			},
-			success : function(data) {
-				if(data!=null){
-					$("#freight_id").val(data.price);
-					$("#charge_weight_id").val(data.calWeight);
-				}
-				 getFreightToal();
+		if ($("#isadditionflag_id").val() == 0){
+			var productType = $.trim($("#express_product_type").val());
+			var actualWeight = $.trim($("#actual_weight_id").val());
+			var goodsLongth = $.trim($("#goods_longth_id").val());
+			var goodsWidth = $.trim($("#goods_width_id").val());
+			var goodsHeight = $.trim($("#goods_height_id").val());
+			var senderProvince = $.trim($("#sender_provinceName_id").val());
+			var senderCity = $.trim($("#sender_cityName_id").val());
+			var consigneeProvince = $.trim($("#consignee_provinceName_id").val());
+			var consigneeCity = $.trim($("#consignee_cityName_id").val());
+			var payMethod = $.trim($("input[name='payment_method']:checked").val());
+			//始发省份名称不能为空
+			if(senderProvince==""){
+				return;
 			}
-		});
+			//始发城市名称不能为空
+			if(senderCity==""){
+				return;
+			}
+			//目的省份名称不能为空
+			if(consigneeProvince==""){
+				return;
+			}
+			//目的城市名称不能为空
+			if(consigneeCity==""){
+				return;
+			}
+			//服务产品编码不能为空
+			if(productType==""){
+				return;
+			}
+			//支付类型不能为空，且只能为现金和到付
+			if(payMethod=="" || payMethod==0 || payMethod==3){
+				return;
+			}
+			//重量和体积二者必填其一
+			if((actualWeight==""||actualWeight<=0)&&($("#goods_kgs_id").val()==""||($("#goods_kgs_id").val()<=0))){
+				return;
+			}
+			$("#freight_id").val("");
+			$("#charge_weight_id").val("");
+			$.ajax({
+				type : "POST",
+				url : "<%=request.getContextPath()%>/express2/reserveOrder/getFeeByCondition",
+				dataType : "json",
+				async: false,
+				data:{
+					"productType":productType,
+				    "actualWeight":actualWeight,
+				    "goodsLongth":goodsLongth,
+				    "goodsWidth":goodsWidth,
+				    "goodsHeight":goodsHeight,
+				    "senderProvince":senderProvince,
+				    "senderCity":senderCity, 
+				    "consigneeProvince":consigneeProvince, 
+				    "consigneeCity":consigneeCity,
+			        "payMethod":payMethod 
+				},
+				success : function(data) {
+					if(data!=null){
+						$("#freight_id").val(data.price);
+						$("#charge_weight_id").val(data.calWeight);
+					}
+					 getFreightToal();
+				}
+			});
+		}
 	}
 	
 	//日期格式化

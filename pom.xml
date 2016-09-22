@@ -834,6 +834,7 @@
 				<configuration>
 					<printSummary>false</printSummary>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+					<skip>true</skip>
 				</configuration>
 			</plugin>
 			<plugin>
