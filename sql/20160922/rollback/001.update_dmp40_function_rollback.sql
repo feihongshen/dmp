@@ -1,0 +1,1 @@
+update dmp40_function set functionname='拒收订单汇总' where functionname='投递失败订单汇总';

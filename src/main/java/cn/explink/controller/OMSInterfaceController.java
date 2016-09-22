@@ -1020,13 +1020,11 @@ public class OMSInterfaceController {
 	 */
 	@RequestMapping("/getEmsTransByCwb/{cwb}")
 	public @ResponseBody String getEmsTransByCwb(@PathVariable("cwb") String cwb) {
-		StringBuilder emsTrans = new StringBuilder();
+		String emsTrans = "";
 		List<SendToEMSOrder> list = this.eMSDAO.getTransListByCwb(cwb);
 		if (list != null && !list.isEmpty()) {
-			for (SendToEMSOrder order : list) {
-				emsTrans.append(order.getEmail_num()+",");
-			}
+			emsTrans=list.get(0).getEmail_num();//只传第一个邮政运单号给tms即可
 		}
-		return emsTrans.indexOf(",") > -1 ? emsTrans.substring(0, emsTrans.length() -1) : emsTrans.toString();
+		return emsTrans;
 	}
 }
