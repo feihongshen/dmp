@@ -83,7 +83,9 @@ public enum ExceptionCwbErrorTypeEnum {
 			FeiYundanluruAndLanjianruzhanAndRukuNotallowshixiao(229, "非运单录入或揽件入站或入库订单不允许失效"),
 			FeiYundanluruAndLanjianruzhanNotallowshixiao(230, "非运单录入或揽件入站订单不允许失效"),
 	
-	        ShangMenTuiYigeDingdanZhinengBangdingYigeKuaididanhao(231, "上门退订单一个订单只能绑定一个快递单号！");
+	        ShangMenTuiYigeDingdanZhinengBangdingYigeKuaididanhao(231, "上门退订单一个订单只能绑定一个快递单号！"),
+			DingDanYiLanJieBuYunXuShenHe(232, "订单已经拦截，不允许审核！"),
+			ChaXunYiChangQingShuaXinYeMian(233, "查询异常，请刷新页面！");
 
 	private int value;
 	private String text;

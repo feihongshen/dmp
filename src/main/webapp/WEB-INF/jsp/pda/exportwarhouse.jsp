@@ -223,20 +223,23 @@ var Cwbs="";
 	    $("#excelbranch").html("") ;
 	    $("#carweightDesc").html("") ;
 	    $("#cwbDetailshow").html("") ;
+	  // modify by bruce shangguan 20160922 获取稳定的重量数据
+	    console.log("weightTime:"+weightTime) ;
 	    jQuery("#weightNotice").text("正在称重中,请稍等......") ;
-	    var weightIntervalId = window.setInterval("setWeight()", 1);
 	    window.setTimeout(function waitForWeight(){
-	    	carrealweight = jQuery("#weightSpan").text(); // 获取电子秤重量
-	    	window.clearInterval(weightIntervalId) ;
-	    	if(carrealweight == undefined || parseFloat(carrealweight) <= 0){
-	    		jQuery("#weightNotice").text("") ;
+	    	var weightExp = /^[0-9]+(\.[0-9]+[1-9])?$/ ;
+		    carrealweight = jQuery("#weightSpan").text(); // 获取电子秤重量
+		    console.log("carrealweight:" + carrealweight) ;
+			if (!weightExp.test(carrealweight)) {
+				jQuery("#weightNotice").text("") ;
 	    		jQuery("#msg").html(scancwb + "(获取不到重量)，请手动输入重量！") ;
 	    		jQuery("#orderWeight").attr("disabled" , false) ;
 	    		jQuery("#orderWeight").focus() ;
 	        	return false ;
-	    	}
-	    exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,carrealweight);
-	},(weightTime + 0.1) * 1000) ;
+			}
+			  exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,carrealweight);
+	    } , (weightTime + 0.01) * 1000) ;
+	   //end by bruce shangguan  20160922 
 }
 
 function exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,requestbatchno,baleno,ck_switch,confirmflag,carrealweight){
@@ -266,9 +269,13 @@ function exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,reques
 					}
 					
 				}
+				var openDialonPDAUrl = pname+"/PDA/cwbexportwarhouse/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno ;
+		        if(needWeightFlag == "checked"){
+		        	openDialonPDAUrl = pname+"/PDA/cwbExportWarhouseWeight/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno+"&carrealweight="+carrealweight ; 
+		        }
 				$.ajax({
 					type: "POST",
-					url:pname+"/PDA/cwbexportwarhouse/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno,
+					url:openDialonPDAUrl,
 					dataType:"json",
 					success : function(data) {
 						jQuery("#weightSpan").text("0.00") ;
@@ -997,6 +1004,11 @@ function chuku(){
 	});
 }
 
+//add by bruce shangguan 20160922 实时读取电子秤数据
+function getWeightRepeatable() {
+	window.setInterval("setWeight()", 1);
+}
+
 function setWeight() {
 	try{
 		var weight = window.parent.document.getElementById("scaleApplet").getWeight();
@@ -1009,13 +1021,18 @@ function setWeight() {
 	}
 }
 
+// modify by bruce shangguan 20160922 勾选称重时，在显示实时重量数据、重量手动输入框
 function setNeedWeight(){
 	var needWeightFlag = jQuery("#needWeightFlag").attr("checked") ;
 	jQuery("#orderWeight").val("") ;
-	jQuery("#orderWeight").attr("disabled" , true) ;
 	jQuery("#weightSpan").text("0.00") ;
+	jQuery("#orderWeight").attr("disabled" , true) ;
 	jQuery("#weightNotice").text("") ;
-	
+	if(needWeightFlag == "checked"){
+		jQuery("#weightDiv").css("display","block") ;
+	}else{
+		jQuery("#weightDiv").css("display","none") ;
+	}
 }
 /**
  * 校验手动输入货物重量
@@ -1050,7 +1067,7 @@ function saveOrderWeight(keyCode){
 }
 </script>
 </head>
-<body style="background:#f5f5f5" marginwidth="0" marginheight="0">
+<body style="background:#f5f5f5" marginwidth="0" marginheight="0" onload="getWeightRepeatable();">
 <div id="emb"></div>
 <div class="saomiao_box2">
 	<div class="saomiao_tab2">
@@ -1191,6 +1208,7 @@ function saveOrderWeight(keyCode){
 								onclick="fengbao()" /> <input type="button" name="chuku" id="chuku" value="出库"
 								class="button" onclick="chuku()" />
 						</p>
+					<div id = "weightDiv" style = "display:none">
 					<p>
 					     <span style = "width:90px;">实际重量(Kg)：</span>
 					     <lable id="weightSpan">0.00</lable>
@@ -1199,6 +1217,7 @@ function saveOrderWeight(keyCode){
 					<p>
 						<span>重量(Kg):</span><input type="text" class="saomiao_inputtxt1" id="orderWeight" name="orderWeight" disabled = "true"  onKeyDown = "saveOrderWeight(event.keyCode)" maxlength = "7" />
 					</p>
+					</div>
 					</div>
 					<c:if test="${isOpenDialog=='open'}">
 						<div id="find" class="easyui-dialog" data-options="modal:true" title="提示信息"

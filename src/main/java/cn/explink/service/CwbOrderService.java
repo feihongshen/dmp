@@ -6662,10 +6662,15 @@ public class CwbOrderService extends BaseOrderService {
 			CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 			DeliveryState deliverystate = this.deliveryStateDAO.getActiveDeliveryStateByCwb(co.getCwb());
 			if (deliverystate == null) {
-				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiShenHe.getValue(), ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO);
+				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiShenHe.getValue(), ExceptionCwbErrorTypeEnum.ChaXunYiChangQingShuaXinYeMian);
 			}
 			if (deliverystate.getGcaid() > 0) {
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiShenHe.getValue(), ExceptionCwbErrorTypeEnum.ChongFuShenHe, co.getCwb());
+			}
+			
+			//如果订单已经被拦截了，那么 就不允许在审核了 ----刘武强20160922
+			if(co.getFlowordertype() == FlowOrderTypeEnum.DingDanLanJie.getValue()){
+				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiShenHe.getValue(), ExceptionCwbErrorTypeEnum.DingDanYiLanJieBuYunXuShenHe, co.getCwb());
 			}
 			
 			//Added by leoliao at 2016-08-04  未反馈不允许进行归班审核
@@ -7380,6 +7385,8 @@ public class CwbOrderService extends BaseOrderService {
 			(co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())) {
 			//Modified by leoliao at 2016-06-24 修改下一站为退货站(增加出库扫描时也可以拦截并修改下一站)
 			this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
+			//如果已经反馈了再拦截，那么就把反馈表里面的数据失效 ---刘武强20160922
+			this.shiXiaoDeliveryStateByCwb(cwb);
 			
 			boolean blnNeedUpdateCurrentBranch = true; //是否需要修改当前站为退货组
 			long    nextInterceptBranchId      = 0; //订单拦截的下一站(根据站点的流向配置，找到对应的退货组)
@@ -10197,10 +10204,30 @@ public class CwbOrderService extends BaseOrderService {
 		this.transCwbDetailDAO.saveWithMount(cwbTransOrderList);
 		// 保存主单
 		CwbOrderService.logger.info("拦截前数据  cwb:" + cwbTemp.getCwb() + ";扫描件数:" + cwbTemp.getScannum() + ";发货件数：" + cwbTemp.getSendnum() + ";取货件数：" + cwbTemp.getBackcarnum());
+		
+		//如果已经反馈了再拦截，那么就把反馈表里面的数据失效 ---刘武强20160922
+		this.shiXiaoDeliveryStateByCwb(cwbTemp.getCwb());
+		
 		this.handleInterceptChack(this.getSessionUser(), cwbTemp.getCwb(), cwbTemp.getCwb(), cwbTemp, isypdjusetranscwb, reason);
 		CwbOrderService.logger.info("拦截后数据  cwb:" + cwbTemp.getCwb() + ";扫描件数:" + cwbTemp.getScannum() + ";发货件数：" + cwbTemp.getSendnum() + ";取货件数：" + cwbTemp.getBackcarnum());
 	}
-
+	
+	/**
+	 * 
+	* @Title: shiXiaoDeliveryStateByCwb 
+	* @Description: 如果已经反馈，那么就把反馈表里面的数据失效
+	* @param @param cwb    设定文件 
+	* @return void    返回类型 
+	* @throws 
+	* @date 2016年9月22日 下午5:11:27 
+	* @author 刘武强
+	 */
+	private void shiXiaoDeliveryStateByCwb(String cwb){
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		if(co.getFlowordertype() == FlowOrderTypeEnum.YiFanKui.getValue()){//如果已经反馈了再拦截，那么就把反馈表里面的数据失效到 ---刘武强20160922
+			this.deliveryStateDAO.updateStateBycwb(cwb);
+		}
+	}
 	/**
 	 * @throws Exception
 	 *
