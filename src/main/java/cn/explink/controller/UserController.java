@@ -478,7 +478,9 @@ public class UserController {
 				if (((user.getRoleid() == 2) || (user.getRoleid() == 4)) && (user.getEmployeestatus() == 3)) {
 					this.courierService.carrierDel(user);
 				}
-				this.logger.info("operatorUser={},用户管理->createFile", this.getSessionUser().getUsername());
+				// 新接口 add by jian_xie
+				userInfService.saveUserInf(user, getSessionUser());
+				this.logger.info("operatorUser={},用户管理->createBranch", this.getSessionUser().getUsername());
 				// TODO 增加同步代码
 				String adressenabled = this.systemInstallService.getParameter("newaddressenabled");
 				if ((adressenabled != null) && adressenabled.equals("1")) {
