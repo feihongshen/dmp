@@ -49,7 +49,7 @@
 </style>
 </head>
 <body>
-	<div id="flag" style="display:none;">${flag }</div>
+	<div id="flag" style="display:none;">${flag}</div>
 	<div id="orderNoValue" style="display:none;"> ${orderNo}</div>
 	<div id="BranchprovinceId" style="display:none;" > ${BranchprovinceId}</div>
 	<div id="BranchcityId" style="display:none;"> ${BranchcityId}</div>
@@ -770,6 +770,7 @@
 		$("#delivermanId_id").val($("#delivermanId_show  option:selected").val());
 		$("#delivermanName_id").val($("#delivermanId_show  option:selected").text());
 		$("#goods_weight_id").val($("#actual_weight_id").val());
+		$("#paywayid").val($("#paywayid").val());
 	}
 	
 	/*
@@ -1568,7 +1569,7 @@
 					if(data.embracedOrderVO.freight != null && data.embracedOrderVO.freight != "0.00"){
 						$("#freight_id").val(data.embracedOrderVO.freight);
 						$("#freight_id").css('background','#EBEBE4');
-						$("#freight_id").attr("disabled","disabled");
+						$("#freight_id").attr("readonly","readonly");
 					}
 					$("#inputdatetime_id").val(data.embracedOrderVO.inputdatetime);
 					//把是否代收货款给选上 $("#collection_show").val(data.embracedOrderVO.collection);完成
@@ -1596,12 +1597,15 @@
 					}else{
 						$("#insured_cost_id").val(data.embracedOrderVO.insured_cost);
 					}
-					
+					$("#insured_cost_id").attr("readonly","readonly");
+					$("#insured_cost_id").css('background','#EBEBE4');					
 					if(data.embracedOrderVO.packing_amount == "" ){
 						$("#packing_amount_id").val("");
 					}else{
 						$("#packing_amount_id").val(data.embracedOrderVO.packing_amount);
 					}
+					$("#packing_amount_id").attr("readonly","readonly");
+					$("#packing_amount_id").css('background','#EBEBE4');
 					//把付款方式给选上 $("#payment_method_id").val(); 完成
 					if(data.embracedOrderVO.payment_method == 0){
 						$("#Radio3").attr("checked","checked");
