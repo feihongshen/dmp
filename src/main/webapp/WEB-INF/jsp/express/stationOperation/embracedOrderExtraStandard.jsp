@@ -1682,7 +1682,7 @@
     				$("#express_product_type").val(data.embracedOrderVO.express_product_type);
     				$("#paywayid").val(data.embracedOrderVO.paywayid);
     				$("#paywayid").css('background','#EBEBE4')
-    				$("#paywayid").attr("readonly",true);
+    				$("#paywayid").attr("disabled","disabled");
 				}
 			});
 		}
