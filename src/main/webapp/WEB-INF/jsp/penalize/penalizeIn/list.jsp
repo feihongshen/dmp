@@ -1279,12 +1279,8 @@ function reloaddutybranchid(dutybranchid) {
 						<td width="100" align="center" valign="middle"><%=view.getCreDate() ==null ? "" : view.getCreDate()%></td>
 						<td width="100" align="center" valign="middle"><%=view.getPunishcwbstatename() ==null ? "" : view.getPunishcwbstatename()%></td>
 						<td width="160" align="center" valign="middle">
-						<%if(view.getPunishcwbstate()==3||view.getPunishcwbstate()==4||roleid!=1){ %>
-						   	<a href="javascript:reviseopteration('<%=view.getId() %>');" ><font color="blue">修改</font></a>
-						<%} %>
-						<%if(roleid!=1){ %>
-						     <a href="javascript:shenheopteration('<%=view.getId() %>');" ><font color="blue">审核</font></a>
-						<%} %>
+						<a href="javascript:reviseopteration('<%=view.getId() %>');" <%if(view.getPunishcwbstate()==3||view.getPunishcwbstate()==4||roleid!=1){ %> style="display:none"   <%} %>><font color="blue">修改</font></a>
+						<a href="javascript:shenheopteration('<%=view.getId() %>');"  <%if(roleid!=1){ %> style="display:none"   <%} %>><font color="blue">审核</font></a>
 						<a href="javascript:findthisValue('<%=view.getId() %>');" ><font color="blue">查看</font></a>
 						</td>
 						<input type="hidden" id="checkshenhe<%=view.getId() %>" value="<%=view.getPunishcwbstate() %>"/>
