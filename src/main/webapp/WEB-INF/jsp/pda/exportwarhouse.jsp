@@ -269,9 +269,13 @@ function exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,reques
 					}
 					
 				}
+				var openDialonPDAUrl = pname+"/PDA/cwbexportwarhouse/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno ;
+		        if(needWeightFlag == "checked"){
+		        	openDialonPDAUrl = pname+"/PDA/cwbExportWarhouseWeight/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno+"&carrealweight="+carrealweight ; 
+		        }
 				$.ajax({
 					type: "POST",
-					url:pname+"/PDA/cwbexportwarhouse/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno,
+					url:openDialonPDAUrl,
 					dataType:"json",
 					success : function(data) {
 						jQuery("#weightSpan").text("0.00") ;
