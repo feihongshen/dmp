@@ -34,7 +34,6 @@
 <script type="text/javascript">
 var weightTime = <%=request.getAttribute("weightTime") == null ?10:Integer.parseInt(request.getAttribute("weightTime").toString())%> ;
 var requestContext = "<%=request.getContextPath()%>" ;
-var weightIntervalId = null ;
 	$(function() {
 		var $menuli = $(".kfsh_tabbtn ul li");
 		var $menulilink = $(".kfsh_tabbtn ul li a");
@@ -77,26 +76,25 @@ var weightIntervalId = null ;
 					trObj.attr("id") + "error");
 		}
 	}
-
 	
 	function submitWeight(keyCode) {
 		var waybillNo = jQuery("#waybillNo").val().trim()  ;
 		if(keyCode!=13 || waybillNo.length <= 0){
 			return ;
 		}
+		// modify by bruce shangguan 20160922 获取稳定的重量数据
+		console.log("weightTime:"+weightTime) ;
 		jQuery("#weightNotice").text("正在称重中,请稍等......") ;
-		weightIntervalId = window.setInterval("setWeight()", 1);
 		window.setTimeout(function waitForWeight(){
-			window.clearInterval(weightIntervalId) ;
-			console.log("weightTime:" + weightTime) ;
 			var weight = jQuery('#weightSpan').text();
-			$('#weight').val($('#weightSpan').text());
-			if (weight == null || weight == "" || weight == undefined || weight == "0.00") {
-				jQuery("#weightNotice").text("实际重量为空，检查电子称！");
+			var weightExp = /^[0-9]+(\.[0-9]+[1-9])?$/ ;
+			if (!weightExp.test(weight)) {
+				jQuery("#weightNotice").text("请检查系统是否已连接电子秤") ;
 				return;
 			}
 			saveOrUpdateWeight(waybillNo,weight) ;
-		} , (weightTime + 0.1) * 1000) ;
+		} , (weightTime + 0.01) * 1000) ;
+		// end 20160922
 	};
 
 	function saveOrUpdateWeight(waybillNo,weight){
@@ -118,9 +116,12 @@ var weightIntervalId = null ;
 			}}) ;
 	}
 	
+	// add by bruce shangguan 20160922 实时读取电子秤数据
+	function getWeightRepeatable() {
+		window.setInterval("setWeight()", 1);
+	}
 
 	function setWeight() {
-		console.log("setWeight") ;
         try{
         	var scaleApplet  =  window.parent.document.getElementById("scaleApplet") ;
         	var weight = scaleApplet.getWeight();
@@ -129,14 +130,12 @@ var weightIntervalId = null ;
     		}
         }catch(e){
         	document.getElementById("weightSpan").innerHTML = "0.00" ;
-        	jQuery("#weightNotice").text("实际重量为空，检查电子称！"); 
-        	window.clearInterval(weightIntervalId) ;
         }
 	}
 	
 </script>
 </head>
-<body style="background: #f5f5f5" marginwidth="0" marginheight="0" >
+<body style="background: #f5f5f5" marginwidth="0" marginheight="0" onload="getWeightRepeatable();" >
 	<div class="inputselect_box">
 			<table width="80%">
 				<tr>
