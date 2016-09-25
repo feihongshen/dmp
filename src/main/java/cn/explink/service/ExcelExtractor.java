@@ -1195,11 +1195,9 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			}
 
 			// 寄件人省是否填写，是否存在与数据库
-			if ((temp.getSender_provinceName() == null) || "".equals(temp.getSender_provinceName().trim())) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "寄件人省未填写", failList);
-				 * cwbOrders.remove(temp); continue;
-				 */
+			if ((temp.getSender_provinceName() == null) || "".equals(temp.getSender_provinceName().trim())) {			
+				 this.createErrNote(temp.getOrderNo(), "寄件人省未填写", failList);
+				 cwbOrders.remove(temp); continue;
 			} else {
 				for (AdressVO para : senderProvincesList) {
 					if (temp.getSender_provinceName().equals(para.getName())) {
@@ -1221,10 +1219,8 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			}
 			// 寄件人市是否填写，是否存在与数据库，父子关系是否正确
 			if ((temp.getSender_cityName() == null) || "".equals(temp.getSender_cityName().trim())) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "寄件人市未填写", failList);
-				 * cwbOrders.remove(temp); continue;
-				 */
+				 this.createErrNote(temp.getOrderNo(), "寄件人市未填写", failList);
+				 cwbOrders.remove(temp); continue;
 			} else {
 				for (AdressVO para : senderCitysList) {
 					if (temp.getSender_cityName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {
@@ -1244,10 +1240,8 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			}
 			// 寄件人区是否填写，是否存在与数据库，父子关系是否正确
 			if ((temp.getSender_countyName() == null) || "".equals(temp.getSender_countyName().trim())) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "寄件人区/县未填写", failList);
-				 * cwbOrders.remove(temp); continue;
-				 */
+				 this.createErrNote(temp.getOrderNo(), "寄件人区/县未填写", failList);
+				 cwbOrders.remove(temp); continue;
 			} else {
 				for (AdressVO para : senderCountysList) {
 					if (temp.getSender_countyName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {
@@ -1349,10 +1343,8 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			embracedUpdateOrderVO.setConsignee_name(temp.getConsignee_name());
 			// 收件人省是否在数据库存在
 			if ((temp.getConsignee_provinceName() == null) || "".equals(temp.getConsignee_provinceName().trim())) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "寄件人省未填写", failList);
-				 * cwbOrders.remove(temp); continue;
-				 */
+				 this.createErrNote(temp.getOrderNo(), "寄件人省未填写", failList);
+				 cwbOrders.remove(temp); continue;
 			} else if ((temp.getConsignee_provinceName() != null) && !"".equals(temp.getConsignee_provinceName().trim())) {
 				for (AdressVO para : consigneeProvincesList) {
 					if (temp.getConsignee_provinceName().equals(para.getName())) {
@@ -1397,11 +1389,9 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 				embracedUpdateOrderVO.setConsignee_cityName(temp.getConsignee_cityName());
 			}
 			// 收件人区是否填写，是否存在与数据库，父子关系是否正确
-			if ((temp.getConsignee_countyName() == null) || "".equals(temp.getConsignee_countyName().trim())) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "收件人区/县未填写", failList);
-				 * cwbOrders.remove(temp); continue;
-				 */
+			if ((temp.getConsignee_countyName() == null) || "".equals(temp.getConsignee_countyName().trim())) {	
+				 this.createErrNote(temp.getOrderNo(), "收件人区/县未填写", failList);
+				 cwbOrders.remove(temp); continue;
 			} else {
 				for (AdressVO para : consigneeCountysList) {
 					if (temp.getConsignee_countyName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {
@@ -1421,10 +1411,8 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			}
 			// 寄件人街道是否填写，是否存在与数据库，父子关系是否正确
 			if ((temp.getConsignee_townName() == null) || "".equals(temp.getConsignee_townName().trim())) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "寄件人街道未填写", failList);
-				 * cwbOrders.remove(temp); continue;
-				 */
+				 this.createErrNote(temp.getOrderNo(), "寄件人街道未填写", failList);
+				 cwbOrders.remove(temp); continue;
 			} else {
 				for (AdressVO para : consigneeTownsList) {
 					if (temp.getConsignee_townName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {

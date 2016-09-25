@@ -199,7 +199,7 @@
 							</tr>
 							<tr>
 								<td class="tdleft">寄件地址<font>*</font>:</td>
-								<td class="tdleft" colspan="4"><input type="text" name="sender_adress" id="sender_adress_id"style="width:100%;" value="${adressInfoDetailVO.getProvinceName()}${adressInfoDetailVO.getCityName()}" onchange="getFeeByCondition()"/></td>
+								<td class="tdleft" colspan="4"><input type="text" name="sender_adress" id="sender_adress_id"style="width:100%;" onchange="getFeeByCondition()"/></td>
 							</tr>
 							<tr><td colspan="6"><b>预约单：</b></font></td></tr>
 							<tr>
@@ -303,7 +303,7 @@
 							</tr>
 							<tr>
 								<td class="tdrigth">收件地址<font>*</font>:</td>
-								<td class="tdleft" colspan="6"><input type="text" name="consignee_adress" id="consignee_adress_id" style="width:100%;" onchange="getFeeByCondition()"/></td>
+								<td class="tdleft" colspan="6"><input type="text" name="consignee_adress" id="consignee_adress_id" style="width:100%;" onchange="getFeeByCondition()"/></td>								
 							</tr>
 							<tr><td colspan="6"><b>收件人历史信息：</b></font></td></tr>
 							<tr>
@@ -770,7 +770,6 @@
 		$("#delivermanId_id").val($("#delivermanId_show  option:selected").val());
 		$("#delivermanName_id").val($("#delivermanId_show  option:selected").text());
 		$("#goods_weight_id").val($("#actual_weight_id").val());
-		$("#paywayid").val($("#paywayid").val());
 	}
 	
 	/*
@@ -1452,6 +1451,7 @@
 	 */
 	function getCwbOrderEmbraced(){
 		var orderNo = $.trim($("#orderNo_id").val());
+		console.log('cwb change to ', orderNo);
 		if(!numberOrLetterValidater($("#orderNo_id"),"运单号")){
 			$("#orderNo_id").val("");
 			return ;
@@ -1539,6 +1539,7 @@
 					 }
 					
 					$("#sender_adress_id").val(data.embracedOrderVO.sender_adress);
+					console.log('sender_adress_id', $("#sender_adress_id").val());
 					$("#sender_cellphone_id").val(data.embracedOrderVO.sender_cellphone);
 					$("#sender_telephone_id").val(data.embracedOrderVO.sender_telephone);
 					
@@ -1546,6 +1547,8 @@
 					$("#consignee_companyName_id").find("option[id='"+data.embracedOrderVO.consignee_customerid+"']").attr("selected",true);
 					$("#consignee_companyName_id").change();
 					$("#consignee_adress_id").val(data.embracedOrderVO.consignee_adress);
+					$("#test_consignee_adress_id").val(data.embracedOrderVO.consignee_adress);
+					console.log('consignee_adress_id', $("#consignee_adress_id").val());
 					$("#consignee_cellphone_id").val(data.embracedOrderVO.consignee_cellphone);
 					$("#consignee_telephone_id").val(data.embracedOrderVO.consignee_telephone);
 					
@@ -1685,6 +1688,7 @@
     				
     				$("#express_product_type").val(data.embracedOrderVO.express_product_type);
     				$("#paywayid").val(data.embracedOrderVO.paywayid);
+					$("#test_payway_id").val(data.embracedOrderVO.paywayid);
     				$("#paywayid").css('background','#EBEBE4')
     				$("#paywayid").attr("disabled","disabled");
 				}
@@ -2360,6 +2364,8 @@
 		//$("#consignee_name_id").val($(consignee).find("td").eq(0).text());
 		
 		$("#sender_adress_id").val(sender_adress);
+		console.log('sender_adress_id', $("#sender_adress_id").val());
+		console.log('consignee_adress_id', $("#consignee_adress_id").val());
 	}
 	
 	/*****************edit by 周欢  修改双击tabel内容填充异常  2016-7-15 *******************/
@@ -2401,6 +2407,8 @@
 			$("#sender_telephone_id").val("");
 		}
 		$("#consignee_adress_id").val(consignee_adress);
+		console.log('sender_adress_id', $("#sender_adress_id").val());
+		console.log('consignee_adress_id', $("#consignee_adress_id").val());
 	}
 	
 	/*****************edit by 周欢  修改双击预约单tabel内容填充异常  2016-7-18 *******************/
@@ -2444,6 +2452,8 @@
 			$("#sender_telephone_id").val("");
 		}
 		//$("#consignee_adress_id").val(consignee_adress);
+		console.log('sender_adress_id', $("#sender_adress_id").val());
+		console.log('consignee_adress_id', $("#consignee_adress_id").val());
 	}
 	
 	function getFeeByCondition(){

@@ -338,13 +338,13 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("totalfee", StringUtils.isNotBlank(embracedOrderVO.getFreight_total()) ? embracedOrderVO.getFreight_total() : 0.00);
 		
 			params.put("express_product_type", embracedOrderVO.getExpress_product_type());// 快递二期增加支付方式
-			if(embracedOrderVO.getPayment_method()!=null&&embracedOrderVO.getPayment_method().equals("1")){
+/*			if(embracedOrderVO.getPayment_method()!=null&&embracedOrderVO.getPayment_method().equals("1")){
 				params.put("paywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
 				params.put("newpaywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
 			}else{
 				params.put("paywayid", "0");// 快递二期增加支付方式
 				params.put("newpaywayid", "0");// 快递二期增加支付方式
-			}
+			}*/
 			
 		} else if (flags == 2) {
 			this.logger.info("订单补录  cwb:" + embracedOrderVO.getOrderNo() + ";当前机构：" + this.getSessionUser().getBranchid() + ";当前时间：" + date);
@@ -360,9 +360,9 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			if(!"0".equals(embracedOrderVO.getPayment_method())){
 				params.put("customerid", 1000);// 默认1000，代表快递单
 			}
-			params.put("completehandlerid", user.getUserid());
+/*			params.put("completehandlerid", user.getUserid());
 			params.put("completehandlername", user.getUsername());
-			params.put("completedatetime", date);
+			params.put("completedatetime", date);*/
 			embracedOrderVO.setCompletedatetime(date.toString());
 			params.put("paymethod", StringUtils.isNotBlank(embracedOrderVO.getPayment_method()) ? embracedOrderVO.getPayment_method() : -1);// modified
 																																			// by
