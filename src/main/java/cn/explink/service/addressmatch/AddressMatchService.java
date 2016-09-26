@@ -228,7 +228,14 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 	private OrderVo getOrderVo(CwbOrder cwb) {
 		OrderVo ordervo = new OrderVo();
 		ordervo.setOrderId(cwb.getCwb());
-		ordervo.setAddressLine(cwb.getConsigneeaddress());
+		String  filterAddressFlag = this.systemInstallService.getParameter("filterAddressFlag"); // 从系统参数里面获取是否过滤地址里面的“我不清楚”的标志：filterAddressFlag --刘武强20160921
+		String addressLine;
+		if(filterAddressFlag != null  && "1".equals(filterAddressFlag.trim()) ){//排除掉空格的影响，防止用户不小心在1后面加了一个空格
+			addressLine = cwb.getConsigneeaddress() == null ? null : cwb.getConsigneeaddress().replace("我不清楚", "");//如果地址不为null，则将匹配地址中的“我不清楚”过滤掉 ----刘武强20160921
+		}else{
+			addressLine = cwb.getConsigneeaddress();
+		}
+		ordervo.setAddressLine(addressLine);
 		ordervo.setVendorId(cwb.getCustomerid());
 		ordervo.setCustomerId(Long.parseLong(ResourceBundleUtil.addresscustomerid));
 		return ordervo;
@@ -286,7 +293,7 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 						int successFlag = addressreturn.getResultCode().getCode();
 						if (successFlag == ResultCodeEnum.success.getCode()) {
 							OrderAddressMappingResult mappingResult = addressreturn.getResultMap().get(cwb);
-							this.logger.info("阡陌地址库匹配返回json={}", JacksonMapper.getInstance().writeValueAsString(mappingResult));
+							this.logger.info("cwb={} ,阡陌地址库匹配返回json={}", cwb,JacksonMapper.getInstance().writeValueAsString(mappingResult));
 							if (mappingResult != null) {
 								List<DeliveryStationVo> deliveryStationList = mappingResult.getDeliveryStationList();
 								List<DelivererVo> delivererList = mappingResult.getDelivererList();
@@ -550,7 +557,11 @@ public class AddressMatchService implements SystemConfigChangeListner, Applicati
 			JSONArray addressList = new JSONArray();
 
 			String addressenabled = this.systemInstallService.getParameter("newaddressenabled"); // 新旧地址库
-
+			
+			String  filterAddressFlag = this.systemInstallService.getParameter("filterAddressFlag"); // 从系统参数里面获取是否过滤地址里面的“我不清楚”的标志：filterAddressFlag --刘武强20160921
+			if(filterAddressFlag != null  && "1".equals(filterAddressFlag.trim()) ){//排除掉空格的影响，防止用户不小心在1后面加了一个空格
+				Address = Address == null ? null : Address.replace("我不清楚", "");// 如果地址字符串不为空，那么就过滤掉地址中的“我不清楚” --刘武强20160921
+			}
 			if ((addressenabled != null) && addressenabled.equals("1")) {
 
 				addressList = this.invokeNewAddressMatchService(itemno, Address);
