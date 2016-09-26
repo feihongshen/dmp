@@ -1,1 +1,1 @@
-SELECT '001' AS '脚本注释', IF((SELECT count(1) from dmp40_function where functionname='投递失败订单汇总') = 1,'success','failed') AS '执行结果'
+SELECT '001' AS '脚本注释', IF((SELECT count(1) from dmp40_function where functionname='投递失败订单汇总') = 1,'success','failed') AS '执行结果';
