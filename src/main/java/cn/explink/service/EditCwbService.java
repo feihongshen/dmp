@@ -2019,15 +2019,16 @@ public class EditCwbService {
 				//如果快递运费修改之前 和修改 之后没有变化，不需要生成调整记录
 				return;
 			}
-			int isadditionflag = order.getIsadditionflag(); //是否补录完成
-			String completedatetime = order.getCompletedatetime(); //补录完成时间
-			if(StringUtils.isBlank(completedatetime)){
-				//补录完成时间为空 不生成调整记录
+//			int isadditionflag = order.getIsadditionflag(); //是否补录完成
+//			String completedatetime = order.getCompletedatetime(); //补录完成时间
+			String inputdatetime = order.getInputdatetime();
+			if(StringUtils.isBlank(inputdatetime)){
+				//快件录入时间为空 不生成调整记录
 				return;
 			}
 			String todayStr = DateTimeUtil.formatDate(new Date(), DateTimeUtil.DEF_DATE_FORMAT);
-			String completedatetimeStr = DateTimeUtil.translateFormatDate(completedatetime, DateTimeUtil.DEF_DATETIME_FORMAT, DateTimeUtil.DEF_DATE_FORMAT);
-			if (isadditionflag == 1 && !todayStr.equals(completedatetimeStr)) {//已补录完成 且 补录完成时间与快递运费修改时间不在同一天生成订单调整记录
+			String inputdatetimeStr = DateTimeUtil.translateFormatDate(inputdatetime, DateTimeUtil.DEF_DATETIME_FORMAT, DateTimeUtil.DEF_DATE_FORMAT);
+			if (!todayStr.equals(inputdatetimeStr)) {//快递录入时间与快递运费修改时间不在同一天生成订单调整记录
 				
 				List<FnOrgRecharges> fnOrgRechargesList = new ArrayList<FnOrgRecharges>();
 				
@@ -2098,10 +2099,7 @@ public class EditCwbService {
 				if(!fnOrgRechargesList.isEmpty()){
 					fnOrgRechargesRptmodeDAO.batchInsertOrgRecharges(fnOrgRechargesList);
 				}
-			}
-			
-		
-			
+			}			
 		}
 	}
 	
