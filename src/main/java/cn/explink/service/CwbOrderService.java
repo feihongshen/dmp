@@ -1507,7 +1507,9 @@ public class CwbOrderService extends BaseOrderService {
 		 */
 		this.backIntoprintDAO.creChangeIntoprint(co, user, driverid, nextbranchid, "", "", "", "", comment);
 
+		TranscwbOrderFlow lastTof=null;//运单的上一个操作状态
 		if ((isypdjusetranscwb == 1) && isypdj) {
+			lastTof= this.transcwborderFlowDAO.getTranscwbOrderFlowByCwbAndState(scancwb,cwb);
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, comment);
 			this.intoAndOutwarehouseYpdjCre(user, co, scancwb, flowOrderTypeEnum.getValue(), isypdjusetranscwb, 0, isAutoSupplyLink);
 		}
@@ -1522,10 +1524,19 @@ public class CwbOrderService extends BaseOrderService {
 		Branch userbranch = this.branchDAO.getBranchByBranchid(currentbranchid);
 		Branch startbranch = this.branchDAO.getBranchByBranchid(co.getStartbranchid());
 
-		// 如果订单为出库状态 &&同一个库房进行出库入库
-		if (((co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue())) && (co.getStartbranchid() == currentbranchid)) {
-			CwbOrderService.logger.info("重复入库");
-			throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
+		if ((isypdjusetranscwb == 1) && isypdj) {
+			if(lastTof!=null){
+				if (((lastTof.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) || (lastTof.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue())) && (lastTof.getBranchid() == currentbranchid)) {
+					CwbOrderService.logger.info("运单重复入库");
+					throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
+				}
+			}
+		}else {
+			// 如果订单为出库状态 &&同一个库房进行出库入库
+			if (((co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue())) && (co.getStartbranchid() == currentbranchid)) {
+				CwbOrderService.logger.info("重复入库");
+				throw new CwbException(cwb, flowOrderTypeEnum.getValue(), ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
+			}
 		}
 
 		// ==========结算中转入库扫描逻辑=======
