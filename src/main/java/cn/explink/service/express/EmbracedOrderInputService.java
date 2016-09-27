@@ -327,25 +327,11 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("totalfee", StringUtils.isNotBlank(embracedOrderVO.getFreight_total()) ? embracedOrderVO.getFreight_total() : 0.00);
 		} else if (flags == 1) {
 			this.logger.info("订单补录后在修改  cwb:" + embracedOrderVO.getOrderNo() + ";当前机构：" + this.getSessionUser().getBranchid() + ";当前时间：" + date);
-			params.put("completehandlerid", user.getUserid());
-			params.put("completehandlername", user.getUsername());
-			params.put("completedatetime", date);
 			embracedOrderVO.setCompletedatetime(date.toString());
-			params.put("paymethod", StringUtils.isNotBlank(embracedOrderVO.getPayment_method()) ? embracedOrderVO.getPayment_method() : -1);// modified
-																																			// by
-																																			// jiangyu
+			params.put("paymethod", StringUtils.isNotBlank(embracedOrderVO.getPayment_method()) ? embracedOrderVO.getPayment_method() : -1);// modified																																			// b																																			// jiangyu
 			params.put("shouldfare", StringUtils.isNotBlank(embracedOrderVO.getFreight()) ? embracedOrderVO.getFreight() : 0.00);
-			params.put("totalfee", StringUtils.isNotBlank(embracedOrderVO.getFreight_total()) ? embracedOrderVO.getFreight_total() : 0.00);
-		
-			params.put("express_product_type", embracedOrderVO.getExpress_product_type());// 快递二期增加支付方式
-/*			if(embracedOrderVO.getPayment_method()!=null&&embracedOrderVO.getPayment_method().equals("1")){
-				params.put("paywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
-				params.put("newpaywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
-			}else{
-				params.put("paywayid", "0");// 快递二期增加支付方式
-				params.put("newpaywayid", "0");// 快递二期增加支付方式
-			}*/
-			
+			params.put("totalfee", StringUtils.isNotBlank(embracedOrderVO.getFreight_total()) ? embracedOrderVO.getFreight_total() : 0.00);		
+			params.put("express_product_type", embracedOrderVO.getExpress_product_type());// 快递二期增加支付方式			
 		} else if (flags == 2) {
 			this.logger.info("订单补录  cwb:" + embracedOrderVO.getOrderNo() + ";当前机构：" + this.getSessionUser().getBranchid() + ";当前时间：" + date);
 			params.put("cwb", embracedOrderVO.getOrderNo());
@@ -360,9 +346,6 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			if(!"0".equals(embracedOrderVO.getPayment_method())){
 				params.put("customerid", 1000);// 默认1000，代表快递单
 			}
-/*			params.put("completehandlerid", user.getUserid());
-			params.put("completehandlername", user.getUsername());
-			params.put("completedatetime", date);*/
 			embracedOrderVO.setCompletedatetime(date.toString());
 			params.put("paymethod", StringUtils.isNotBlank(embracedOrderVO.getPayment_method()) ? embracedOrderVO.getPayment_method() : -1);// modified
 																																			// by
@@ -404,12 +387,6 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 		params.put("inputhandlerid", user.getUserid());
 		params.put("inputhandlername", user.getUsername());
 
-		// params.put("sendercustomcode",
-		// StringUtils.isNotBlank(embracedOrderVO.getSender_No()) ?
-		// embracedOrderVO.getSender_No() : null);
-		// params.put("sendercompany",
-		// StringUtils.isNotBlank(embracedOrderVO.getSender_companyName()) ?
-		// embracedOrderVO.getSender_companyName() : null);
 		if ((flags != 0) && (embracedOrderVO.getSender_customerid() != null) && (embracedOrderVO.getSender_customerid() != -1)) {
 			params.put("customerid", embracedOrderVO.getSender_customerid());
 		}
@@ -423,12 +400,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 		}
 		params.put("senderstreet", StringUtils.isNotBlank(embracedOrderVO.getSender_townName()) ? embracedOrderVO.getSender_townName() : null);
 		params.put("senderid", StringUtils.isNotBlank(embracedOrderVO.getSender_certificateNo()) ? embracedOrderVO.getSender_certificateNo() : null);
-		// params.put("consigneeno",
-		// StringUtils.isNotBlank(embracedOrderVO.getConsignee_No()) ?
-		// embracedOrderVO.getConsignee_No() : null);
-		// params.put("reccompany",
-		// StringUtils.isNotBlank(embracedOrderVO.getConsignee_companyName()) ?
-		// embracedOrderVO.getConsignee_companyName() : null);
+		
 		if ((flags != 0) && (embracedOrderVO.getConsignee_customerid() != null) && (embracedOrderVO.getConsignee_customerid() != -1)) {
 			params.put("reccustomerid", embracedOrderVO.getConsignee_customerid());
 		}
@@ -467,6 +439,9 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				.nullConvertToEmptyString(embracedOrderVO.getGoods_height()) + "CM");// 俊哥说这个的弄成-1，刘武强-11.06
 		if (this.checkEmbracedVO(embracedOrderVO, this.checkmMap)) {
 			params.put("isadditionflag", 1);
+			params.put("completehandlerid", user.getUserid());
+			params.put("completehandlername", user.getUsername());
+			params.put("completedatetime", date);
 			//如果详细地址里面已经含省+市+区，则不再加入省市区
 			String cneeProv = StringUtil.nullConvertToEmptyString((String) (params.get("cwbprovince")));
 			String cneeCity = StringUtil.nullConvertToEmptyString((String) (params.get("cwbcity")));
@@ -474,20 +449,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			String cneeTown = StringUtil.nullConvertToEmptyString((String) params.get("recstreet"));
 			String consigneeaddress = StringUtil.nullConvertToEmptyString(embracedOrderVO.getConsignee_adress());
 			String temp = cneeProv + cneeCity + cneeRegion + cneeTown;
-//			if (null != consigneeaddress) {
-//				if ((null != cneeTown) && (consigneeaddress.indexOf(cneeTown) < 0)) {//从地址小的开始处理
-//					consigneeaddress = cneeTown + consigneeaddress;
-//				}
-//				if ((null != cneeRegion) && (consigneeaddress.indexOf(cneeRegion) < 0)) {
-//					consigneeaddress = cneeRegion + consigneeaddress;
-//				}
-//				if ((null != cneeCity) && (consigneeaddress.indexOf(cneeCity) < 0)) {
-//					consigneeaddress = cneeCity + consigneeaddress;
-//				}
-//				if ((null != cneeProv) && (consigneeaddress.indexOf(cneeProv) < 0)) {
-//					consigneeaddress = cneeProv + consigneeaddress;
-//				}
-//			}
+
 			// add by jian_xie 2016-07-19，如果省市区街道，整个没有包含在详细中，就在左边拼接
 			if(consigneeaddress.indexOf(temp) == -1){
 				consigneeaddress = temp + consigneeaddress;
