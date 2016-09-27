@@ -269,13 +269,13 @@ function exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,reques
 					}
 					
 				}
-				var openDialonPDAUrl = pname+"/PDA/cwbexportwarhouse/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno ;
+				var exportWarhouseUrl = pname+"/PDA/cwbexportwarhouse/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno ;
 		        if(needWeightFlag == "checked"){
-		        	openDialonPDAUrl = pname+"/PDA/cwbExportWarhouseWeight/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno+"&carrealweight="+carrealweight ; 
+		        	exportWarhouseUrl = exportWarhouseUrl+"&carrealweight="+carrealweight ; 
 		        }
 				$.ajax({
 					type: "POST",
-					url:openDialonPDAUrl,
+					url:exportWarhouseUrl,
 					dataType:"json",
 					success : function(data) {
 						jQuery("#weightSpan").text("0.00") ;
@@ -397,7 +397,7 @@ function exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,reques
 						}
 				        var openDialonPDAUrl = pname+"/PDA/cwbexportwarhouse/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno ;
 				        if(needWeightFlag == "checked"){
-				        	openDialonPDAUrl = pname+"/PDA/cwbExportWarhouseWeight/"+scancwb+"?branchid="+branchid+"&driverid="+driverid+"&truckid="+truckid+"&confirmflag="+confirmflag+"&requestbatchno="+requestbatchno+"&baleno="+baleno+"&carrealweight="+carrealweight ; 
+				        	openDialonPDAUrl = openDialonPDAUrl+"&carrealweight="+carrealweight ; 
 				        }
 						$.ajax({
 							type: "POST",
@@ -455,15 +455,6 @@ function exportWarehouseForWeight(pname,scancwb,branchid,driverid,truckid,reques
 									$('#find').dialog('open');
 									$("#scancwb").blur();
 									addAndRemoval(scancwb,"errorTable",false,$("#branchid").val());
-								}else if(data.statuscode=="0002"){
-									$("#excelbranch").html("");
-									$("#carweightDesc").html("") ;
-									$("#showcwb").html("");
-									$("#msg1").html(data.errorinfo);
-									$('#find').dialog('open');
-									$("#scancwb").blur();
-									addAndRemoval(scancwb,"errorTable",false,$("#branchid").val());
-									//errorvedioplay(pname,data);
 								}else{
 									$("#excelbranch").html("");
 									$("#carweightDesc").html("") ;
