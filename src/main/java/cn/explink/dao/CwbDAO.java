@@ -9300,6 +9300,7 @@ public class CwbDAO {
 					+ cwb4TakeGoodsQuery.getEndTime() + "'");
 			sql.append(" or instationdatetime is null)");
 		}
+		sql.append(" and state=1 ");//快递揽件查询排除失效订单的----刘武强20160926
 		return sql.toString();
 	}
 
