@@ -269,7 +269,9 @@ public class AutoOrderStatusService {
 	
 	/**
 	* @Title: getOutWarePermitFlag 
-	* @Description: TODO(这里用一句话描述这个方法的作用) 
+	* @Description: tps自动化出库前校验订单是否处于数据导入状态
+	* 				一票一件：主表的状态处于订单导入或者入库
+	* 				一票多件：运单号处于数据导入状态或者入库（运单表没有数据，或者floworderetype为数据导入或入库）
 	* @param @param cwbOrder    设定文件 
 	* @param @param scancwb
 	* @return void    返回类型 
