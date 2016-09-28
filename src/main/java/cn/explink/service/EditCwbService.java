@@ -2159,8 +2159,10 @@ public class EditCwbService {
 				record.setFreightAmount(order.getShouldfare() == null ? BigDecimal.ZERO : order.getShouldfare());			
 				// 修改前的运费
 				record.setModifyFee(order.getShouldfare() == null ? BigDecimal.ZERO : order.getShouldfare());
+				/************* modify by bruce shangguan 20160927 作废现付快递单时，调整金额取该快递单的费用合计金额(totalfee)****/
 				//修改金额
-				record.setAdjustAmount(order.getShouldfare().negate());
+				record.setAdjustAmount(order.getTotalfee() == null ? BigDecimal.ZERO :order.getTotalfee().negate());
+				/**************end modify 20160927*******************/
 				//设置收款状态
 				record.setStatus(FnCwbStatusEnum.Received.getIndex());
 				
