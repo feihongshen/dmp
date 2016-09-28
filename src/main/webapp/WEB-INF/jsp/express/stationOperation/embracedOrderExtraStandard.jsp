@@ -810,7 +810,7 @@
 	 function checkSender(){
 		 var sender_province = $("#sender_provinceid_id");
 		 var sender_city = $("#sender_cityid_id");
-		 var sender_county = $("#sender_countyid_id");
+/* 		 var sender_county = $("#sender_countyid_id"); */
 		 
 		var sender_adress = $("#sender_adress_id");
 		var sender_cellphone = $("#sender_cellphone_id");
@@ -820,12 +820,12 @@
 		var sender_certificateNo = $("#sender_certificateNo_id");
 		var sender_No = $("#sender_No_id");
 		var payment_method = $("input[name='payment_method']:checked").val();//0为月结
-		var countySelect = $("#sender_countyid_id");
+/* 		var countySelect = $("#sender_countyid_id"); */
 		
 		//如果不属于补录，则第一次只要求填写寄件三级地址
 		if ($("#isadditionflag_id").val() == 0) {
 			//校验寄件人地址
-	        if(sender_province.val() == "" || sender_city.val() == "" || sender_county.val() == ""){
+	        if(sender_province.val() == "" || sender_city.val() == "" ){
 	        	//$.messager.alert("提示", "请完善寄件人地址", "warning");
 				confirmFunction("始发地不完善");	
 	        }
@@ -898,7 +898,7 @@
 	function checkConsignee(){
 		 var consignee_province = $("#consignee_provinceid_id");
 		 var consignee_city = $("#consignee_cityid_id");
-		 var consignee_county = $("#consignee_countyid_id");
+/* 		 var consignee_county = $("#consignee_countyid_id"); */
 		 
       	var consignee_adress = $("#consignee_adress_id");
 		var consignee_cellphone = $("#consignee_cellphone_id");
@@ -910,7 +910,7 @@
 		
 		if($("#isadditionflag_id").val()==0){
 			//校验收件人地址
-	        if(consignee_province.val() == "" || consignee_city.val() == "" || consignee_county.val() == ""){
+	        if(consignee_province.val() == "" || consignee_city.val() == ""){
 	        	//$.messager.alert("提示", "请完善收件人地址", "warning");
 	        	confirmFunction("目的地不完善");
 	        }

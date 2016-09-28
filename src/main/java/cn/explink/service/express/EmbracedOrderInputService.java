@@ -105,8 +105,8 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			this.put("Monthly_account_number", 4);
 			this.put("Sender_provinceName", 5);
 			this.put("Sender_cityName", 6);
-			this.put("Sender_countyName", 7);
-			this.put("Sender_townName", 8);
+//			this.put("Sender_countyName", 7);
+//			this.put("Sender_townName", 8);
 			this.put("Sender_adress", 9);
 			this.put("Sender_cellphone", 10);
 			this.put("Sender_telephone", 11);
@@ -121,8 +121,8 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			this.put("Consignee_name", 20);
 			this.put("Consignee_provinceName", 21);
 			this.put("Consignee_cityName", 22);
-			this.put("Consignee_countyName", 23);
-			this.put("Consignee_townName", 24);
+//			this.put("Consignee_countyName", 23);
+//			this.put("Consignee_townName", 24);
 			this.put("Consignee_adress", 25);
 			this.put("Consignee_cellphone", 26);
 			this.put("Consignee_telephone", 27);
