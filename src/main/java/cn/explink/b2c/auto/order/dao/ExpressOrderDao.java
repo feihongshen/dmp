@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -327,8 +328,8 @@ public class ExpressOrderDao {
 		sql.append(" startbranchid,currentbranchid,nextbranchid,deliverybranchid,excelbranch,addresscodeedittype");
 		sql.append(" ,totalfee,fnorgoffset,infactfare,paybackfee,isadditionflag,credate ");
 		sql.append(" , cnor_corp_no,cnor_corp_name,account_id,packagefee,express_image,cnee_corp_name,express_product_type,customerid,hasinsurance,paymethod,newpaywayid,monthsettleno");
-		sql.append(" , tpstranscwb,senderprovinceid,sendercityid,sendercountyid,senderstreetid,recprovinceid,reccityid,reccountyid,recstreetid,order_source)");
-		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		sql.append(" , tpstranscwb,senderprovinceid,sendercityid,sendercountyid,senderstreetid,recprovinceid,reccityid,reccountyid,recstreetid,order_source,inputdatetime)");
+		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
@@ -501,6 +502,12 @@ public class ExpressOrderDao {
 					ps.setInt(++i, 0);
 				}
 				ps.setInt(++i, expressDetailTemp.getOrderSource());// 订单来源
+				if(expressDetailTemp.getIsAcceptProv() == 1){
+					//如果是接收省份，则填写 inputdatetime
+					ps.setTimestamp(++i, Timestamp.valueOf(DateTimeUtil.getNowTime()));
+				}else{
+					ps.setNull(++i, Types.TIMESTAMP);
+				}
 				return ps;
 			}
 		}, key);
