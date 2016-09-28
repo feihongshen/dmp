@@ -7485,6 +7485,9 @@ public class CwbOrderService extends BaseOrderService {
 			}
 			// 删除包关联表
 		}
+		//订单拦截，情况缺件记录----刘武强20160928
+		ypdjHandleRecordDAO.delYpdjHandleRecordByCwb(cwb);
+		logger.info("订单拦截->清除缺件记录,订单号:{}", cwb);
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -10220,6 +10223,11 @@ public class CwbOrderService extends BaseOrderService {
 		this.shiXiaoDeliveryStateByCwb(cwbTemp.getCwb());
 		
 		this.handleInterceptChack(this.getSessionUser(), cwbTemp.getCwb(), cwbTemp.getCwb(), cwbTemp, isypdjusetranscwb, reason);
+		
+		//订单拦截，情况缺件记录----刘武强20160928
+		ypdjHandleRecordDAO.delYpdjHandleRecordByCwb(cwbTemp.getCwb());
+		CwbOrderService.logger.info("订单拦截->清除缺件记录,订单号:{}", cwbTemp.getCwb());
+		
 		CwbOrderService.logger.info("拦截后数据  cwb:" + cwbTemp.getCwb() + ";扫描件数:" + cwbTemp.getScannum() + ";发货件数：" + cwbTemp.getSendnum() + ";取货件数：" + cwbTemp.getBackcarnum());
 	}
 	
