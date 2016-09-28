@@ -21,8 +21,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import cn.explink.dao.BranchDAO;
+import cn.explink.dao.TranscwbOrderFlowDAO;
 import cn.explink.domain.Branch;
+import cn.explink.domain.CwbOrder;
+import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.AutoCommonStatusEnum;
+import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.service.CwbRouteService;
 import cn.explink.service.KufangBranchMappingService;
 import net.sf.json.JSONArray;
@@ -50,6 +54,9 @@ public class AutoOrderStatusService {
 	
 	@Autowired
 	KufangBranchMappingService kufangBranchMappingService;
+	
+	@Autowired
+	private TranscwbOrderFlowDAO transcwbOrderFlowDAO;
 	
 	private final static String ORDER_STATUS_TMP_SAVE_SQL="insert into express_auto_order_status_tmp (cwb,transportno,operatetype,msg,createtime,status) values(?,?,?,?,?,?)";
 	//private final static String ORDER_STATUS_TMP_UPDATE_SQL="update express_auto_order_status_tmp set status=? where cwb=? and operatetype=? and status=1";
@@ -216,4 +223,91 @@ public class AutoOrderStatusService {
 		}
 		
 	}
+	/**
+	* @Title: getIntoWarePermitFlag 
+	* @Description: tps自动化入库前校验订单是否处于数据导入状态
+	* 				一票一件：主表的状态处于订单导入
+	* 				一票多件：运单号处于数据导入状态（运单表没有数据，或者floworderetype为数据导入）
+	* @param @param cwbOrder
+	* @param @param scancwb
+	* @param @return    设定文件 
+	* @return void    返回类型 
+	* @throws 
+	* @date 2016年9月28日 下午5:02:42 
+	* @author 刘武强
+	 */
+	public void getIntoWarePermitFlag(CwbOrder cwbOrder, String scancwb){
+		if(cwbOrder == null){//如果传进来的订单信息为空，则抛出异常
+			throw new AutoWaitException("自动化入库时没找到此订单");
+		}
+		if(scancwb == null){//如果传进来的运单号为空，则抛出异常
+			throw new AutoWaitException("自动化入库时运单号为空");
+		}
+		if(cwbOrder.getSendcarnum() == 1 && cwbOrder.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()){//如果是一票一件，订单主表的状态不是数据导入，也跑出去异常
+			throw new AutoWaitException("一票一件，订单不处于数据导入状态，不允许自动化入库");
+		}
+		if(cwbOrder.getSendcarnum() > 1){//如果是一票多件,并且运单号存在
+			if(cwbOrder.getCwb() != null && scancwb.trim().equals(cwbOrder.getCwb().trim())){
+				this.logger.info("自动化入库，一票多件，运单号等于订单号");
+				// TODO 如果一票多件，运单号等于订单号，要如何去校验，目前没有这种情况，所以不考虑
+			}
+			//查询运单的轨迹
+			Map<String, Object> paramMap = new HashMap<String, Object>();
+			paramMap.put("cwb", cwbOrder.getCwb());
+			paramMap.put("scancwb", scancwb);
+			paramMap.put("isnow", 1);
+			//当前操作记录List
+			List<TranscwbOrderFlow> currentOptList = transcwbOrderFlowDAO.queryTranscwbOrderFlow(paramMap, "t.credate DESC");
+			//当前轨迹条数为0，则是导入数据;倘若有轨迹，那也只能是处于数据导入状态
+			if(currentOptList.size() == 0 || (currentOptList.size() == 1 && currentOptList.get(0).getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue())){
+				return;
+			}else{//如果运单不满足要求，则不允许自动化入库
+				throw new AutoWaitException("一票多件，运单不处于数据导入状态，不允许自动化入库");
+			}
+		}
+	} 
+	
+	/**
+	* @Title: getOutWarePermitFlag 
+	* @Description: TODO(这里用一句话描述这个方法的作用) 
+	* @param @param cwbOrder    设定文件 
+	* @param @param scancwb
+	* @return void    返回类型 
+	* @throws 
+	* @date 2016年9月28日 下午5:41:53 
+	* @author 刘武强
+	 */
+	public void getOutWarePermitFlag(CwbOrder cwbOrder, String scancwb){
+		if(cwbOrder == null){//如果传进来的订单信息为空，则抛出异常
+			throw new AutoWaitException("自动化出库时没找到此订单");
+		}
+		if(scancwb == null){//如果传进来的运单号为空，则抛出异常
+			throw new AutoWaitException("自动化出库时运单号为空");
+		}
+		//如果是一票一件，订单主表的状态不是数据导入，也不是入库，也跑出去异常
+		if(cwbOrder.getSendcarnum() == 1 && cwbOrder.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue() && cwbOrder.getFlowordertype() != FlowOrderTypeEnum.RuKu.getValue()){
+			throw new AutoWaitException("一票一件，订单不处于数据导入状态，不允许自动化出库");
+		}
+		if(cwbOrder.getSendcarnum() > 1){//如果是一票多件,并且运单号存在
+			if(cwbOrder.getCwb() != null && scancwb.trim().equals(cwbOrder.getCwb().trim())){
+				this.logger.info("自动化出库，一票多件，运单号等于订单号");
+				// TODO 如果一票多件，运单号等于订单号，要如何去校验，目前没有这种情况，所以不考虑
+			}
+			//查询运单的轨迹
+			Map<String, Object> paramMap = new HashMap<String, Object>();
+			paramMap.put("cwb", cwbOrder.getCwb());
+			paramMap.put("scancwb", scancwb);
+			paramMap.put("isnow", 1);
+			//当前操作记录List
+			List<TranscwbOrderFlow> currentOptList = transcwbOrderFlowDAO.queryTranscwbOrderFlow(paramMap, "t.credate DESC");
+			//当前轨迹条数为0，则是导入数据;倘若有轨迹，那也只能是处于数据导入状态或者入库状态
+			if(currentOptList.size() == 0 || (currentOptList.size() == 1 && (currentOptList.get(0).getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue() || cwbOrder.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()))){
+				return;
+			}else{//如果运单不满足要求，则不允许自动化出库
+				throw new AutoWaitException("一票多件，运单不处于数据导入状态，不允许自动出库");
+			}
+		}
+	}
+	
+	
 }

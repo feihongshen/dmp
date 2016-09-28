@@ -140,18 +140,22 @@ public class AutoOutWarehouseService {
 				}
 				
 				//有箱号则扫箱号，没则扫订单号
-				String scannum=cwb;
+				String scancwb=cwb;
 				if(boxno!=null&&isypdjusetranscwb==1){
-					scannum=boxno;
+					scancwb=boxno;
 				}
+				
+				///自动出库前，对订单进行校验，只有订单/运单处于订单导入、入库的状态才能做自动化出库--- 刘武强20160928
+				this.autoOrderStatusService.getOutWarePermitFlag(cwbOrder, scancwb);
+				
 				if(baleno==null||!needHebao){
 					//非按包出库
-					cwbOrder = this.cwborderService.outWarehous(user, cwb, scannum, driverid, truckid, branchid,
+					cwbOrder = this.cwborderService.outWarehous(user, cwb, scancwb, driverid, truckid, branchid,
 								requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0 : Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, false, anbaochuku);
 				}else{
 					//按包出库
-					this.baleService.baleaddcwbChukuCheck(user, baleno, scannum, confirmflag == 1, user.getBranchid(), branchid);
-					this.baleService.baleaddcwb(user, baleno, scannum, branchid);
+					this.baleService.baleaddcwbChukuCheck(user, baleno, scancwb, confirmflag == 1, user.getBranchid(), branchid);
+					this.baleService.baleaddcwb(user, baleno, scancwb, branchid);
 					Bale bale = this.baleDAO.getBaleWeifengbao(baleno.trim());
 					if(bale!=null){
 						this.baleDAO.updateAddBaleScannum(bale.getId());
@@ -162,10 +166,4 @@ public class AutoOutWarehouseService {
 					//fengbao todo
 				}
 		}
-	
-
-
-
-
-
 }

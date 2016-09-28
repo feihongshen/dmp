@@ -43,6 +43,8 @@ public class AutoInWarehouseService {
 	private TransCwbDetailDAO transCwbDetailDAO;
 	@Autowired
 	private TpsCwbFlowService tpsCwbFlowService;
+	@Autowired
+	private AutoOrderStatusService autoOrderStatusService;
 	
 	@Transactional
 	public void autoInWarehouse(AutoPickStatusVo data,User user){
@@ -126,11 +128,18 @@ public class AutoInWarehouseService {
 				//validateIsSubCwb 验证箱号是否正确? //catch the ExceptionCwbErrorTypeEnum.Qing_SAO_MIAO_YUN_DAN_HAO ?
 				//集单也用这个方法去出库？？？
 				//不区分扫箱号标志？？？
-				String scancwb=null;
+				String scancwb=cwb;
+				if(boxno!=null&&isypdjusetranscwb==1){
+					scancwb=boxno;
+				}
+				
+				//自动入库前，对订单进行校验，只有订单/运单处于订单导入的状态才能做自动化入库--- 刘武强20160928
+				this.autoOrderStatusService.getIntoWarePermitFlag(cwbOrder, scancwb);
+				
 				if(boxno!=null&&isypdjusetranscwb==1){
 					//一票多件有箱号且要扫箱号;
 					//一票一件有箱号且要扫箱号;
-					scancwb=boxno;
+					//scancwb=boxno;
 					this.cwborderService.intoWarehous(user, cwb,scancwb, customerid, driverid, requestbatchno, comment, "", false);
 				}else{
 					//测试用例：
@@ -141,7 +150,7 @@ public class AutoInWarehouseService {
 					//一票多件有箱号且不要扫箱号;
 					//一票一件有箱号且不要扫箱号;
 					//throw new CwbException(cwb,FlowOrderTypeEnum.RuKu.getValue(),"入库时没找到箱号");
-					scancwb=cwb;
+					//scancwb=cwb;
 					this.cwborderService.intoWarehous(user, cwb,scancwb, customerid, driverid, requestbatchno, comment, "", false);
 					
 				}
