@@ -454,10 +454,14 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			if(consigneeaddress.indexOf(temp) == -1){
 				consigneeaddress = temp + consigneeaddress;
 			}
+			
+			logger.info("手动录入快递单,orderNumber:" + embracedOrderVO.getOrderNo() + ",consigneeaddress:" + consigneeaddress);
 			params.put("consigneeaddress", consigneeaddress);
 			params.put("senderaddress", embracedOrderVO.getConsignee_adress() == null ? "" : StringUtil.nullConvertToEmptyString((String) (params.get("senderprovince"))) + StringUtil
 					.nullConvertToEmptyString((String) (params.get("sendercity"))) + StringUtil.nullConvertToEmptyString((String) (params.get("sendercounty"))) + StringUtil
 					.nullConvertToEmptyString((String) params.get("senderstreet")) + StringUtil.nullConvertToEmptyString(embracedOrderVO.getSender_adress()));
+			
+			logger.info("手动录入快递单,orderNumber:" + embracedOrderVO.getOrderNo() + ",senderaddress:" + StringUtil.nullConvertToEmptyString((String) params.get("senderaddress")));
 			// 订单补录成功的时候，jms异步方式，调用地址库，将目的站点id存到订单表中
 			Boolean matchFlag = this.tpsInterfaceExecutor.autoMatch(embracedOrderVO.getOrderNo(), user.getUserid(), (String) params.get("consigneeaddress"), AddressMatchEnum.OrderEmbraceMatch
 					.getValue());

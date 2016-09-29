@@ -1046,6 +1046,12 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 		List<EmbracedImportErrOrder> failList = new ArrayList<EmbracedImportErrOrder>();
 		List<EmbracedOrderVO> cwbUpdateOrders = new ArrayList<EmbracedOrderVO>();
 		for (EmbracedImportOrderVO temp : cwbImportOrders) {
+			/*********add by bruce shangguan 20160929  快递单地址信息 添加日志*************/
+			if(temp != null){
+				logger.info("批量导入快递单,单号："+temp.getOrderNo()+",寄件人地址："+temp.getSender_adress()+",寄件人姓名：" + temp.getSender_name());
+				logger.info("收件人地址："+temp.getConsignee_adress()+",收件人姓名：" + temp.getConsignee_name());
+			}
+			/***************end by bruce shangguan 20160929*****************************/
 			boolean flag = false; // 出错的标志
 			EmbracedOrderVO embracedOrdervo = new EmbracedOrderVO();
 			EmbracedOrderVO embracedUpdateOrderVO = new EmbracedOrderVO();
