@@ -2019,17 +2019,17 @@ public class EditCwbService {
 				//如果快递运费修改之前 和修改 之后没有变化，不需要生成调整记录
 				return;
 			}
-//			int isadditionflag = order.getIsadditionflag(); //是否补录完成
-//			String completedatetime = order.getCompletedatetime(); //补录完成时间
-			String inputdatetime = order.getInputdatetime();
+			/***************modify by bruce shangguan 20160928  按揽件入站时间，生成调整记录 ******************************/
+			//int isadditionflag = order.getIsadditionflag(); //是否补录完成
+			String inputdatetime = order.getInputdatetime(); //补录完成时间
 			if(StringUtils.isBlank(inputdatetime)){
-				//快件录入时间为空 不生成调整记录
+				//补录完成时间为空 不生成调整记录
 				return;
 			}
 			String todayStr = DateTimeUtil.formatDate(new Date(), DateTimeUtil.DEF_DATE_FORMAT);
 			String inputdatetimeStr = DateTimeUtil.translateFormatDate(inputdatetime, DateTimeUtil.DEF_DATETIME_FORMAT, DateTimeUtil.DEF_DATE_FORMAT);
-			if (!todayStr.equals(inputdatetimeStr)) {//快递录入时间与快递运费修改时间不在同一天生成订单调整记录
-				
+			if (!todayStr.equals(inputdatetimeStr)) {//已补录完成 且 补录完成时间与快递运费修改时间不在同一天生成订单调整记录
+			/*******************end 20160928************************************/	
 				List<FnOrgRecharges> fnOrgRechargesList = new ArrayList<FnOrgRecharges>();
 				
 				int currentSettleMode = this.getCurrentSettleModeFromSysConfig();
@@ -2099,7 +2099,10 @@ public class EditCwbService {
 				if(!fnOrgRechargesList.isEmpty()){
 					fnOrgRechargesRptmodeDAO.batchInsertOrgRecharges(fnOrgRechargesList);
 				}
-			}			
+			}
+			
+		
+			
 		}
 	}
 	
@@ -2113,16 +2116,17 @@ public class EditCwbService {
 		//只有现付的快递订单才 生成调整记录
 		if (order != null && CwbOrderTypeIdEnum.Express.getValue() == order.getCwbordertypeid() && order.getPaymethod() == 1) {
 			
-			int isadditionflag = order.getIsadditionflag(); //是否补录完成
-			String completedatetime = order.getCompletedatetime(); //补录完成时间
-			if(StringUtils.isBlank(completedatetime)){
-				//补录完成时间为空 不生成调整记录
+			/************modify by bruce shangguan 20160928 快递单失效，按揽件入站时间，生成调整记录 ***************/
+			//int isadditionflag = order.getIsadditionflag(); //是否补录完成
+			String inputdatetime = order.getInputdatetime(); //揽件入站时间
+			if(StringUtils.isBlank(inputdatetime)){
+				//揽件入站时间为空 不生成调整记录
 				return;
 			}
 			String todayStr = DateTimeUtil.formatDate(new Date(), DateTimeUtil.DEF_DATE_FORMAT);
-			String completedatetimeStr = DateTimeUtil.translateFormatDate(completedatetime, DateTimeUtil.DEF_DATETIME_FORMAT, DateTimeUtil.DEF_DATE_FORMAT);
-			if (isadditionflag == 1 && !todayStr.equals(completedatetimeStr)) {//已补录完成 且 补录完成时间与快递运费修改时间不在同一天生成订单调整记录
-				
+			String inputdatetimeStr = DateTimeUtil.translateFormatDate(inputdatetime, DateTimeUtil.DEF_DATETIME_FORMAT, DateTimeUtil.DEF_DATE_FORMAT);
+			if (!todayStr.equals(inputdatetimeStr)) {//揽件入站时间与快递运费修改时间不在同一天生成订单调整记录
+			/****************end by 20160928***************************/	
 				List<FnOrgRecharges> fnOrgRechargesList = new ArrayList<FnOrgRecharges>();
 				
 				int currentSettleMode = this.getCurrentSettleModeFromSysConfig();
