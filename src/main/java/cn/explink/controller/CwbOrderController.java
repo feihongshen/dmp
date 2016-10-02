@@ -1936,12 +1936,8 @@ public class CwbOrderController {
 				//生成订单调整记录（余额报表） added by gordon.zhou 2016/08/24
 				this.editCwbService.createFnOrgOrderAdjustRecordForDisabledOrder(co);
 				
-				//订单失效的时候，把订单-运单对照表删掉---刘武强 20161002
-				this.transCwbDao.deleteTranscwb(cwb);
 				//订单失效的时候，把订单轨迹表删掉---刘武强 20161002
 				this.orderFlowDAO.deleteOrderFlowByCwb(cwb);
-				//订单失效的时候，把运单轨迹表删掉---刘武强 20161002
-				this.transcwbOrderFlowDAO.deleteByCwb(cwb);
 				
 
                 //added by Steve PENG. 失效订单需要进行派费相关操作。 start
