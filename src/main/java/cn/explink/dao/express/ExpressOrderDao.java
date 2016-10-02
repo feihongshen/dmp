@@ -680,11 +680,11 @@ public class ExpressOrderDao {
 						ps.setString(j++, embracedOrder.getActual_weight());
 						ps.setString(j++, embracedOrder.getMonthly_account_number());
 						ps.setString(j++, StringUtil.nullConvertToEmptyString(embracedOrder.getSender_provinceName()) + StringUtil.nullConvertToEmptyString(embracedOrder.getSender_cityName()) + StringUtil
-								.nullConvertToEmptyString(embracedOrder.getSender_countyName()) + StringUtil.nullConvertToEmptyString(embracedOrder.getSender_townName()) + embracedOrder
-								.getSender_adress());
+								.nullConvertToEmptyString(embracedOrder.getSender_countyName()) + StringUtil.nullConvertToEmptyString(embracedOrder.getSender_townName()) + StringUtil.nullConvertToEmptyString(embracedOrder
+								.getSender_adress()));
 						ps.setString(j++, StringUtil.nullConvertToEmptyString(embracedOrder.getConsignee_provinceName()) + StringUtil.nullConvertToEmptyString(embracedOrder.getConsignee_cityName()) + StringUtil
-								.nullConvertToEmptyString(embracedOrder.getConsignee_countyName()) + StringUtil.nullConvertToEmptyString(embracedOrder.getConsignee_townName()) + embracedOrder
-								.getConsignee_adress());
+								.nullConvertToEmptyString(embracedOrder.getConsignee_countyName()) + StringUtil.nullConvertToEmptyString(embracedOrder.getConsignee_townName()) + StringUtil.nullConvertToEmptyString(embracedOrder
+								.getConsignee_adress()));
 						ps.setString(j++, embracedOrder.getGoods_longth());
 						ps.setString(j++, embracedOrder.getGoods_width());
 						ps.setString(j++, embracedOrder.getGoods_height());
@@ -735,9 +735,9 @@ public class ExpressOrderDao {
 	 */
 	public void updateImportEmbracedData(List<EmbracedOrderVO> list, User userparam, Branch branch) {
 		final User user = userparam;
-		final String sqlUpdate = "update  express_ops_cwb_detail set cwb=?,flowordertype=?,cwbstate=?,collectorid=?,collectorname=?,inputdatetime=?,cwbordertypeid=?,paymethod=?,customerid=?,transcwb=?,isadditionflag=?,senderprovinceid=?,senderprovince=?,sendercityid=?,sendercity=?,sendercellphone=?,sendertelephone=?,recprovinceid=?,cwbprovince=?,reccityid=?,cwbcity=?,consigneemobile=?,consigneephone=?,sendcarnum=?,inputhandlerid=?,inputhandlername=?,sendername=?,sendercountyid=?,sendercounty=?,senderstreetid=?,senderstreet=?,consigneename=?,reccountyid=?,cwbcounty=?,entrustname=?,sendnum=?,carrealweight=?,hascod=?,receivablefee=?,hasinsurance=?,insuredfee=?,realweight=?,monthsettleno=?,senderaddress=?,consigneeaddress=?,length=?,width=?,height=?,other=?,recstreetid=?,recstreet=?,announcedvalue=?,shouldfare=?,totalfee=?,packagefee=?,chargeweight=?,recareacode=?,sendareacode=?,kgs=?,instationhandlerid=?,instationhandlername=?,instationdatetime=?,instationid=?,instationname=?,carsize=? where cwb =? and state=1";
+		final String sqlUpdate = "update  express_ops_cwb_detail set cwb=?,flowordertype=?,cwbstate=?,collectorid=?,collectorname=?,cwbordertypeid=?,paymethod=?,customerid=?,transcwb=?,isadditionflag=?,senderprovinceid=?,senderprovince=?,sendercityid=?,sendercity=?,sendercellphone=?,sendertelephone=?,recprovinceid=?,cwbprovince=?,reccityid=?,cwbcity=?,consigneemobile=?,consigneephone=?,sendcarnum=?,inputhandlerid=?,inputhandlername=?,sendername=?,sendercountyid=?,sendercounty=?,senderstreetid=?,senderstreet=?,consigneename=?,reccountyid=?,cwbcounty=?,entrustname=?,sendnum=?,carrealweight=?,hascod=?,receivablefee=?,hasinsurance=?,insuredfee=?,realweight=?,monthsettleno=?,senderaddress=?,consigneeaddress=?,length=?,width=?,height=?,other=?,recstreetid=?,recstreet=?,announcedvalue=?,shouldfare=?,totalfee=?,packagefee=?,chargeweight=?,recareacode=?,sendareacode=?,kgs=?,instationhandlerid=?,instationhandlername=?,instationdatetime=?,instationid=?,instationname=?,carsize=? where cwb =? and state=1";
 		int circleTimes = (list.size() / Tools.DB_OPERATION_MAX) + 1;
-		final String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+//		final String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 		for (int i = 0; i < circleTimes; i++) {
 			int startIndex = Tools.DB_OPERATION_MAX * i;
 			int endIndex = Tools.DB_OPERATION_MAX * (i + 1);
@@ -766,7 +766,7 @@ public class ExpressOrderDao {
 						//如果是更新，那么当前站点不需要更新---刘武强20160616
 						// ps.setLong(j++, user.getBranchid());
 						//ps.setDate(j++, new java.sql.Date((System.currentTimeMillis())));
-						ps.setString(j++, date); //new java.sql.Date((System.currentTimeMillis()))只有年月日，但是时间不能只为年月日，要精确到时分秒
+//						ps.setString(j++, date); //new java.sql.Date((System.currentTimeMillis()))只有年月日，但是时间不能只为年月日，要精确到时分秒
 						ps.setLong(j++, CwbOrderTypeIdEnum.Express.getValue());
 						ps.setString(j++, embracedOrder.getPayment_method());
 						ps.setLong(j++, embracedOrder.getSender_customerid() == null ? 1000 : embracedOrder.getSender_customerid());// 如果客户id为空，这默认为1000
