@@ -1,0 +1,3 @@
+SELECT '1.修改transcwb' AS '脚本注释',IF((SELECT count(1) from information_schema.`COLUMNS` where TABLE_SCHEMA = schema() AND TABLE_NAME='EXPRESS_OPS_APPLYEDITCARTYPE' and COLUMN_NAME='transcwb' and COLUMN_TYPE='mediumtext') =1,'success','failed') AS '执行结果'
+UNION ALL
+SELECT '2.修改do_type' AS '脚本注释',IF((SELECT count(1) from information_schema.`COLUMNS` where TABLE_SCHEMA = schema() AND TABLE_NAME='EXPRESS_OPS_APPLYEDITCARTYPE' and COLUMN_NAME='do_type' and COLUMN_TYPE='int(11)') =1,'success','failed') AS '执行结果';
