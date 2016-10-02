@@ -301,7 +301,7 @@ public class BaleController {
 		try {
 			Bale baleOld = this.baleDAO.getBaleWeifengbaoByLock(baleno.trim()); 	//加悲观锁解决：
 																				//#1502 出库扫描 出库后订单数增加，但是件数不增加（扫描数与发货数不一致）
-																				//以下都是轻操作应该无性能问题
+			logger.info("根据包号扫描订单baleaddcwb,包号："+baleno.trim());																	//以下都是轻操作应该无性能问题
 			CwbOrder cwbOrder=this.baleService.baleaddcwb(this.getSessionUser(), baleno.trim(), cwb.trim(), branchid);
 //			cwb=this.cwbOrderService.translateCwb(cwb);
 			
