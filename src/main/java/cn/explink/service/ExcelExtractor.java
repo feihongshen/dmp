@@ -419,8 +419,11 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 						addressPrefix.append(" ").append(countyString);
 					}
 				}
+				if(addressString.toString()!=null){
+                    addressPrefix.append(addressString);
+                }
 			}
-			cwbOrder.setConsigneeaddress(addressPrefix.append(addressString).toString());
+			cwbOrder.setConsigneeaddress(addressPrefix.toString());
 		}
 		if (excelColumnSet.getConsigneepostcodeindex() != 0) {
 			cwbOrder.setConsigneepostcode(this.getXRowCellData(row, excelColumnSet.getConsigneepostcodeindex()));
@@ -1053,6 +1056,8 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			}
 			/***************end by bruce shangguan 20160929*****************************/
 			boolean flag = false; // 出错的标志
+			//如果属于补录则inputStatus=0,否则为1
+			int inputStatus = this.checkIfimportedBefore(temp, cwbordersList);
 			EmbracedOrderVO embracedOrdervo = new EmbracedOrderVO();
 			EmbracedOrderVO embracedUpdateOrderVO = new EmbracedOrderVO();
 			String addressCode = "";
@@ -1078,14 +1083,21 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			if (flag) {
 				continue;
 			}
+            EmbracedOrderVO originVo = this.getEmbracedOrderVO(temp, cwbordersList);
+            if (originVo!=null&&"1".equals(originVo.getIsadditionflag())) {
+                this.createErrNote(temp.getOrderNo(), "运单已经保存并且不可补录", failList);
+                cwbOrders.remove(temp);
+                continue;
+            }
 			embracedOrdervo.setOrderNo(temp.getOrderNo());
 			embracedUpdateOrderVO.setOrderNo(temp.getOrderNo());
 			// 校验寄件人是否填写
 			if ((temp.getSender_name() == null) || "".equals(temp.getSender_name().trim())) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "寄件人未填写", failList);
-				 * cwbOrders.remove(temp); continue;
-				 */
+				if(inputStatus==1) {
+                    this.createErrNote(temp.getOrderNo(), "寄件人未填写", failList);
+                    cwbOrders.remove(temp);
+                    continue;
+                }
 			}
 			embracedOrdervo.setSender_name(temp.getSender_name());
 			embracedUpdateOrderVO.setSender_name(temp.getSender_name());
@@ -1142,20 +1154,17 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 				continue;
 			}
 			if ((temp.getPayment_method() == null) || "".equals(temp.getPayment_method().trim())) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "付款方式未填写或填写不符合要求",
-				 * failList); cwbOrders.remove(temp); continue;
-				 */
+				 this.createErrNote(temp.getOrderNo(), "付款方式未填写或填写不符合要求", failList);
+                 cwbOrders.remove(temp);
+                 continue;
 			} else if ("0".equals(temp.getPayment_method().trim()) && ((temp.getSender_companyName() == null) || "".equals(temp.getSender_companyName().trim()))) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "月结账户单位名称未填写",
-				 * failList); cwbOrders.remove(temp); continue;
-				 */
+				 this.createErrNote(temp.getOrderNo(), "月结账户单位名称未填写", failList);
+                 cwbOrders.remove(temp);
+                 continue;
 			} else if ("0".equals(temp.getPayment_method().trim()) && ((temp.getMonthly_account_number() == null) || "".equals(temp.getMonthly_account_number().trim()))) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "月结账户客户账号未填写",
-				 * failList); cwbOrders.remove(temp); continue;
-				 */
+				 this.createErrNote(temp.getOrderNo(), "月结账户客户账号未填写",failList);
+                 cwbOrders.remove(temp);
+                 continue;
 			} else if ("0".equals(temp.getPayment_method().trim())) {
 				for (Customer senderCompanyName : senderCompanyNamesList) {
 					if (temp.getSender_companyName().equals(senderCompanyName.getCompanyname())) {
@@ -1201,9 +1210,10 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			}
 
 			// 寄件人省是否填写，是否存在与数据库
-			if ((temp.getSender_provinceName() == null) || "".equals(temp.getSender_provinceName().trim())) {			
+			if ((temp.getSender_provinceName() == null) || "".equals(temp.getSender_provinceName().trim())) {
 				 this.createErrNote(temp.getOrderNo(), "寄件人省未填写", failList);
-				 cwbOrders.remove(temp); continue;
+				 cwbOrders.remove(temp);
+                 continue;
 			} else {
 				for (AdressVO para : senderProvincesList) {
 					if (temp.getSender_provinceName().equals(para.getName())) {
@@ -1226,7 +1236,8 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			// 寄件人市是否填写，是否存在与数据库，父子关系是否正确
 			if ((temp.getSender_cityName() == null) || "".equals(temp.getSender_cityName().trim())) {
 				 this.createErrNote(temp.getOrderNo(), "寄件人市未填写", failList);
-				 cwbOrders.remove(temp); continue;
+				 cwbOrders.remove(temp);
+                 continue;
 			} else {
 				for (AdressVO para : senderCitysList) {
 					if (temp.getSender_cityName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {
@@ -1246,8 +1257,11 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			}
 			// 寄件人区是否填写，是否存在与数据库，父子关系是否正确
 			if ((temp.getSender_countyName() == null) || "".equals(temp.getSender_countyName().trim())) {
-				 this.createErrNote(temp.getOrderNo(), "寄件人区/县未填写", failList);
-				 cwbOrders.remove(temp); continue;
+                if(inputStatus==1) {
+                    this.createErrNote(temp.getOrderNo(), "寄件人区/县未填写", failList);
+                    cwbOrders.remove(temp);
+                    continue;
+                }
 			} else {
 				for (AdressVO para : senderCountysList) {
 					if (temp.getSender_countyName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {
@@ -1268,10 +1282,11 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 
 			// 寄件人街道是否填写，是否存在与数据库，父子关系是否正确
 			if ((temp.getSender_townName() == null) || "".equals(temp.getSender_townName().trim())) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "寄件人街道未填写", failList);
-				 * cwbOrders.remove(temp); continue;
-				 */
+                if(inputStatus==1) {
+                    this.createErrNote(temp.getOrderNo(), "寄件人街道未填写", failList);
+                    cwbOrders.remove(temp);
+                    continue;
+                }
 			} else {
 				for (AdressVO para : sendertownsList) {
 					if (temp.getSender_townName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {
@@ -1288,39 +1303,61 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 				embracedOrdervo.setSender_townName(temp.getSender_townName());
 				embracedUpdateOrderVO.setSender_townName(temp.getSender_townName());
 			}
-			embracedOrdervo.setSender_adress(temp.getSender_adress());
-			embracedUpdateOrderVO.setSender_adress(temp.getSender_adress());
+            if ((temp.getSender_adress() == null) || "".equals(temp.getSender_adress().trim())) {
+                if(inputStatus==1) {
+                    this.createErrNote(temp.getOrderNo(), "寄件人地址未填写", failList);
+                    cwbOrders.remove(temp);
+                    continue;
+                }
+            }else{
+                embracedOrdervo.setSender_adress(temp.getSender_adress());
+                embracedUpdateOrderVO.setSender_adress(temp.getSender_adress());
+            }
 			// 判断寄件人手机号和固话是否至少有一个，且格式是否正确
 			if (((temp.getSender_cellphone() == null) || "".equals(temp.getSender_cellphone().trim())) && ((temp.getSender_telephone() == null) || "".equals(temp.getSender_telephone().trim()))) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "寄件人手机和固话至少填写一个",
-				 * failList); cwbOrders.remove(temp); continue;
-				 */
+                if(inputStatus==1) {
+                    this.createErrNote(temp.getOrderNo(), "寄件人手机和固话至少填写一个", failList);
+                    cwbOrders.remove(temp);
+                    continue;
+                }
 			}
 			if (!((temp.getSender_cellphone() == null) || "".equals(temp.getSender_cellphone().trim())) && !ExcelExtractor.isMobiPhoneNum(temp.getSender_cellphone().trim())) {
 				this.createErrNote(temp.getOrderNo(), "寄件人手机号不合法", failList);
 				cwbOrders.remove(temp);
 				continue;
-			}
-			embracedOrdervo.setSender_cellphone(temp.getSender_cellphone());
-			embracedUpdateOrderVO.setSender_cellphone(temp.getSender_cellphone());
+			}else{
+                embracedOrdervo.setSender_cellphone(temp.getSender_cellphone());
+                embracedUpdateOrderVO.setSender_cellphone(temp.getSender_cellphone());
+            }
+
 
 			if (!((temp.getSender_telephone() == null) || "".equals(temp.getSender_telephone().trim())) && !ExcelExtractor.isTelePhoneNum(temp.getSender_telephone().trim())) {
 				this.createErrNote(temp.getOrderNo(), "寄件人固话不合法", failList);
 				cwbOrders.remove(temp);
 				continue;
-			}
-			embracedOrdervo.setSender_telephone(temp.getSender_telephone());
-			embracedOrdervo.setGoods_name(temp.getGoods_name());
-			embracedUpdateOrderVO.setSender_telephone(temp.getSender_telephone());
-			embracedUpdateOrderVO.setGoods_name(temp.getGoods_name());
+			}else{
+                embracedOrdervo.setSender_telephone(temp.getSender_telephone());
+                embracedUpdateOrderVO.setSender_telephone(temp.getSender_telephone());
+            }
+
+			if((temp.getGoods_name() == null) || "".equals(temp.getGoods_name().trim())){
+                if(inputStatus==1){
+                    this.createErrNote(temp.getOrderNo(), "托物内容没有填", failList);
+                    cwbOrders.remove(temp);
+                    continue;
+                }
+            }else{
+                embracedOrdervo.setGoods_name(temp.getGoods_name());
+                embracedUpdateOrderVO.setGoods_name(temp.getGoods_name());
+            }
 
 			// 数量必须为非负数
 			if ((temp.getGoods_number() == null) || "".equals(temp.getGoods_number().trim())) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "寄件人区/县未填写", failList);
-				 * cwbOrders.remove(temp); continue;
-				 */
+                if(inputStatus==1) {
+                    this.createErrNote(temp.getOrderNo(), "数量没有未填写", failList);
+                    cwbOrders.remove(temp);
+                    continue;
+                }
 			} else {
 				if ((temp.getGoods_number() != null) && !"".equals(temp.getGoods_number().trim()) && !ExcelExtractor.isPositiveNumber(temp.getGoods_number().trim())) {
 					this.createErrNote(temp.getOrderNo(), "商品数量不为大于0的数", failList);
@@ -1332,10 +1369,9 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			}
 			// 重量必须为非负数
 			if ((temp.getCharge_weight() == null) || "".equals(temp.getCharge_weight().trim())) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "寄件人区/县未填写", failList);
-				 * cwbOrders.remove(temp); continue;
-				 */
+                    this.createErrNote(temp.getOrderNo(), "计费重量未填写", failList);
+                    cwbOrders.remove(temp);
+                    continue;
 			} else {
 				if ((temp.getCharge_weight() != null) && !"".equals(temp.getCharge_weight().trim()) && !ExcelExtractor.isPositiveNumber(temp.getCharge_weight().trim())) {
 					this.createErrNote(temp.getOrderNo(), "计费重量不为大于0的数", failList);
@@ -1345,11 +1381,20 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 				embracedOrdervo.setCharge_weight(temp.getCharge_weight());
 				embracedUpdateOrderVO.setCharge_weight(temp.getCharge_weight());
 			}
-			embracedOrdervo.setConsignee_name(temp.getConsignee_name());
-			embracedUpdateOrderVO.setConsignee_name(temp.getConsignee_name());
+
+            if ((temp.getConsignee_name() == null) || "".equals(temp.getConsignee_name().trim())) {
+                if(inputStatus==1) {
+                    this.createErrNote(temp.getOrderNo(), "收件人未填写", failList);
+                    cwbOrders.remove(temp);
+                    continue;
+                }
+            }else {
+                embracedOrdervo.setConsignee_name(temp.getConsignee_name());
+                embracedUpdateOrderVO.setConsignee_name(temp.getConsignee_name());
+            }
 			// 收件人省是否在数据库存在
 			if ((temp.getConsignee_provinceName() == null) || "".equals(temp.getConsignee_provinceName().trim())) {
-				 this.createErrNote(temp.getOrderNo(), "寄件人省未填写", failList);
+				 this.createErrNote(temp.getOrderNo(), "收件人省未填写", failList);
 				 cwbOrders.remove(temp); continue;
 			} else if ((temp.getConsignee_provinceName() != null) && !"".equals(temp.getConsignee_provinceName().trim())) {
 				for (AdressVO para : consigneeProvincesList) {
@@ -1373,10 +1418,9 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			}
 			// 收件人市是否填写，是否存在与数据库，父子关系是否正确
 			if ((temp.getConsignee_cityName() == null) || "".equals(temp.getConsignee_cityName().trim())) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "收件人市未填写", failList);
-				 * cwbOrders.remove(temp); continue;
-				 */
+				 this.createErrNote(temp.getOrderNo(), "收件人市未填写", failList);
+				 cwbOrders.remove(temp);
+                 continue;
 			} else {
 				for (AdressVO para : consigneeCitysList) {
 					if (temp.getConsignee_cityName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {
@@ -1395,9 +1439,12 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 				embracedUpdateOrderVO.setConsignee_cityName(temp.getConsignee_cityName());
 			}
 			// 收件人区是否填写，是否存在与数据库，父子关系是否正确
-			if ((temp.getConsignee_countyName() == null) || "".equals(temp.getConsignee_countyName().trim())) {	
-				 this.createErrNote(temp.getOrderNo(), "收件人区/县未填写", failList);
-				 cwbOrders.remove(temp); continue;
+			if ((temp.getConsignee_countyName() == null) || "".equals(temp.getConsignee_countyName().trim())) {
+                if(inputStatus==1) {
+                    this.createErrNote(temp.getOrderNo(), "收件人区/县未填写", failList);
+                    cwbOrders.remove(temp);
+                    continue;
+                }
 			} else {
 				for (AdressVO para : consigneeCountysList) {
 					if (temp.getConsignee_countyName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {
@@ -1417,8 +1464,11 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			}
 			// 寄件人街道是否填写，是否存在与数据库，父子关系是否正确
 			if ((temp.getConsignee_townName() == null) || "".equals(temp.getConsignee_townName().trim())) {
-				 this.createErrNote(temp.getOrderNo(), "寄件人街道未填写", failList);
-				 cwbOrders.remove(temp); continue;
+                if(inputStatus==1) {
+                    this.createErrNote(temp.getOrderNo(), "收件人街道未填写", failList);
+                    cwbOrders.remove(temp);
+                    continue;
+                }
 			} else {
 				for (AdressVO para : consigneeTownsList) {
 					if (temp.getConsignee_townName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {
@@ -1437,36 +1487,41 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			}
 
 			if ((temp.getConsignee_adress() == null) || "".equals(temp.getConsignee_adress().trim())) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "收件人详细地址未填写",
-				 * failList); cwbOrders.remove(temp); continue;
-				 */
-			}
-			embracedOrdervo.setConsignee_adress(temp.getConsignee_adress());
-			embracedUpdateOrderVO.setConsignee_adress(temp.getConsignee_adress());
+                if(inputStatus==1) {
+                    this.createErrNote(temp.getOrderNo(), "收件人详细地址未填写", failList);
+                    cwbOrders.remove(temp);
+                    continue;
+                }
+			}else {
+                embracedOrdervo.setConsignee_adress(temp.getConsignee_adress());
+                embracedUpdateOrderVO.setConsignee_adress(temp.getConsignee_adress());
+            }
 			// 判断收件人手机号和固话是否至少有一个，且格式是否正确
 			if (((temp.getConsignee_cellphone() == null) || "".equals(temp.getConsignee_cellphone().trim())) && ((temp.getConsignee_telephone() == null) || "".equals(temp.getConsignee_telephone()
 					.trim()))) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "收件人手机和固话至少填写一个",
-				 * failList); cwbOrders.remove(temp); continue;
-				 */
+                if(inputStatus==1) {
+                    this.createErrNote(temp.getOrderNo(), "收件人手机和固话至少填写一个", failList);
+                    cwbOrders.remove(temp);
+                    continue;
+                }
 			}
 			if (!((temp.getConsignee_cellphone() == null) || "".equals(temp.getConsignee_cellphone().trim())) && !ExcelExtractor.isMobiPhoneNum(temp.getConsignee_cellphone().trim())) {
 				this.createErrNote(temp.getOrderNo(), "收件人手机号不合法", failList);
 				cwbOrders.remove(temp);
 				continue;
-			}
-			embracedOrdervo.setConsignee_cellphone(temp.getConsignee_cellphone());
-			embracedUpdateOrderVO.setConsignee_cellphone(temp.getConsignee_cellphone());
+			}else {
+                embracedOrdervo.setConsignee_cellphone(temp.getConsignee_cellphone());
+                embracedUpdateOrderVO.setConsignee_cellphone(temp.getConsignee_cellphone());
+            }
 
 			if (!((temp.getConsignee_telephone() == null) || "".equals(temp.getConsignee_telephone().trim())) && !ExcelExtractor.isTelePhoneNum(temp.getConsignee_telephone().trim())) {
 				this.createErrNote(temp.getOrderNo(), "收件人固话不合法", failList);
 				cwbOrders.remove(temp);
 				continue;
-			}
-			embracedOrdervo.setConsignee_telephone(temp.getConsignee_telephone());
-			embracedUpdateOrderVO.setConsignee_telephone(temp.getConsignee_telephone());
+			}else {
+                embracedOrdervo.setConsignee_telephone(temp.getConsignee_telephone());
+                embracedUpdateOrderVO.setConsignee_telephone(temp.getConsignee_telephone());
+            }
 			// 揽件员是否存在于本站点
 			if ((temp.getDelivermanName() != null) && !"".equals(temp.getDelivermanName().trim())) {
 				for (User para : delivermanNamesList) {
@@ -1615,10 +1670,9 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 
 			// 实际重量校验 非负数
 			if ((temp.getActual_weight() == null) || "".equals(temp.getActual_weight().trim())) {
-				/*
-				 * this.createErrNote(temp.getOrderNo(), "实际重量未填写", failList);
-				 * cwbOrders.remove(temp); continue;
-				 */
+				 this.createErrNote(temp.getOrderNo(), "实际重量未填写", failList);
+				 cwbOrders.remove(temp);
+                 continue;
 			} else {
 				if ((temp.getActual_weight() != null) && !"".equals(temp.getActual_weight().trim()) && !ExcelExtractor.isPositiveNumber(temp.getActual_weight().trim())) {
 					this.createErrNote(temp.getOrderNo(), "实际重量不为大于0的数", failList);
@@ -1659,54 +1713,96 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 					break;
 				}
 			}
+            if (flag) {
+                continue;
+            }
 			//this.embracedOrderInputService.checkTranscwb(temp.getOrderNo());//校验录入运单号是否与系统订单号/运单号重复
 			//end add by vic.liang@pjbest.com 2016-08-05
-			
-			
-			for (EmbracedOrderVO cwborder : cwbordersList) {
-				if ((cwborder.getOrderNo() != null) && cwborder.getOrderNo().equals(temp.getOrderNo())) {
-					if ("1".equals(cwborder.getIsadditionflag())) {
-						this.createErrNote(temp.getOrderNo(), "运单已经保存并且不可补录", failList);
-						cwbOrders.remove(temp);
-						flag = true; // 已经出错，下面不用在执行
-						break;
-					} else {
-						if (this.embracedOrderInputService.checkEmbracedVO(embracedUpdateOrderVO, this.checkmMap)) {
-							embracedUpdateOrderVO.setIsadditionflag("1");
-						} else {
-							embracedUpdateOrderVO.setIsadditionflag("0");
-						}
-						embracedUpdateOrderVO.setInstationhandlerid(cwborder.getInstationhandlerid());
-						embracedUpdateOrderVO.setInstationhandlername(cwborder.getInstationhandlername());
-						embracedUpdateOrderVO.setInstationdatetime(cwborder.getInstationdatetime());
-						embracedUpdateOrderVO.setInstationid(cwborder.getInstationid());
-						embracedUpdateOrderVO.setFlowordertype(cwborder.getFlowordertype());
-
-						embracedOrdervo.setInstationhandlerid(cwborder.getInstationhandlerid());
-						embracedOrdervo.setInstationhandlername(cwborder.getInstationhandlername());
-						embracedOrdervo.setInstationdatetime(cwborder.getInstationdatetime());
-						embracedOrdervo.setInstationid(cwborder.getInstationid());
-						embracedOrdervo.setFlowordertype(cwborder.getFlowordertype());
-
-						cwbUpdateOrders.add(embracedUpdateOrderVO);
-						flag = true; // 已经出错，下面不用在执行
-						break;
-					}
-				} 
-			}
-			this.setNullToZero(embracedOrdervo, user);
-			this.setNullToZero(embracedUpdateOrderVO, user);
-			if (flag) {
-				continue;
-			}
-
-			if (this.embracedOrderInputService.checkEmbracedVO(embracedOrdervo, this.checkmMap)) {
-				embracedOrdervo.setIsadditionflag("1");
-			} else {
-				embracedOrdervo.setIsadditionflag("0");
-			}
-
-			cwbCheckedOrders.add(embracedOrdervo);
+            //检查如果是第二阶段录入，第一阶段录入的数据是否跟第二阶段的数据有不一致的地方
+            if(originVo!=null){
+                if(embracedOrdervo.getCharge_weight()!=null){
+                    Double s =  Double.valueOf(embracedOrdervo.getCharge_weight());
+                    String formatWeight = String.format("%.2f", s);
+                    Double os =  Double.valueOf(originVo.getCharge_weight());
+                    String formatOSWeight = String.format("%.2f", os);
+                    if(!"0.00".equals(formatOSWeight)&&!formatWeight.trim().equals(formatOSWeight.trim())) {
+                        this.createErrNote(temp.getOrderNo(), "补录不能修改计费重量,之前的计费重量为："+formatOSWeight, failList);
+                        cwbOrders.remove(temp);
+                        flag = true; // 已经出错，下面不用在执行
+                    }
+                }
+                if(embracedOrdervo.getActual_weight()!=null){
+                    Double s =  Double.valueOf(embracedOrdervo.getActual_weight());
+                    String formatWeight = String.format("%.2f", s);
+                    Double os =  Double.valueOf(originVo.getActual_weight());
+                    String formatOSWeight = String.format("%.2f", os);
+                    if(!"0.00".equals(formatOSWeight)&&!formatWeight.trim().equals(formatOSWeight.trim())) {
+                        this.createErrNote(temp.getOrderNo(), "补录不能修改实际重量，之前的实际重量为："+formatOSWeight, failList);
+                        cwbOrders.remove(temp);
+                        flag = true; // 已经出错，下面不用在执行
+                    }
+                }
+                if(embracedOrdervo.getFreight()!=null){
+                    Double s =  Double.valueOf(embracedOrdervo.getFreight());
+                    String formatFreight = String.format("%.2f", s);
+                    Double os =  Double.valueOf(originVo.getFreight());
+                    String formatOSFreight = String.format("%.2f", os);
+                    if(!"0.00".equals(formatOSFreight)&&!formatFreight.trim().equals(formatOSFreight.trim())) {
+                        this.createErrNote(temp.getOrderNo(), "补录不能修改运费，之前的运费为："+formatOSFreight, failList);
+                        cwbOrders.remove(temp);
+                        flag = true; // 已经出错，下面不用在执行
+                    }
+                }
+                if(embracedOrdervo.getPayment_method()!=null&&originVo.getPayment_method()!=null&&!embracedOrdervo.getPayment_method().trim().equals(originVo.getPayment_method().trim())){
+                    this.createErrNote(temp.getOrderNo(), "补录不能修改结算方式", failList);
+                    cwbOrders.remove(temp);
+                    flag = true; // 已经出错，下面不用在执行
+                }
+//                if(embracedOrdervo.getPayment_method()!=null&&originVo.getPayment_method()!=null){
+//                    if("0".equals(embracedOrdervo.getPayment_method())||"3".equals(embracedOrdervo.getPayment_method())){
+//                        if(embracedOrdervo.getMonthly_account_number()!=null&&originVo.getMonthly_account_number()!=null&&!embracedOrdervo.getMonthly_account_number().trim().equals(originVo.getMonthly_account_number().trim())){
+//                            this.createErrNote(temp.getOrderNo(), "补录不能修改月结/第三方支付账户", failList);
+//                            cwbOrders.remove(temp);
+//                            flag = true; // 已经出错，下面不用在执行
+//                        }
+//                    }else if("1".equals(embracedOrdervo.getPayment_method())){
+//                        if(embracedOrdervo.getPaywayid()!=null&&originVo.getPaywayid()!=null&&embracedOrdervo.getPaywayid()!=originVo.getPaywayid()){
+//                            this.createErrNote(temp.getOrderNo(), "补录不能修改支付方式", failList);
+//                            cwbOrders.remove(temp);
+//                            flag = true; // 已经出错，下面不用在执行
+//                        }
+//                    }
+//                }
+                if (flag) {
+                    continue;
+                }
+                if (this.embracedOrderInputService.checkEmbracedVO(embracedUpdateOrderVO, this.checkmMap)) {
+                    embracedUpdateOrderVO.setIsadditionflag("1");
+                } else {
+                    embracedUpdateOrderVO.setIsadditionflag("0");
+                }
+                embracedUpdateOrderVO.setInstationhandlerid(originVo.getInstationhandlerid());
+                embracedUpdateOrderVO.setInstationhandlername(originVo.getInstationhandlername());
+//                embracedUpdateOrderVO.setInstationdatetime(originVo.getInstationdatetime());
+                embracedUpdateOrderVO.setInstationid(originVo.getInstationid());
+                embracedUpdateOrderVO.setFlowordertype(originVo.getFlowordertype());
+                this.setNullToZero(embracedUpdateOrderVO, user);
+                cwbUpdateOrders.add(embracedUpdateOrderVO);
+            }else {
+                this.setNullToZero(embracedOrdervo, user);
+                if (this.embracedOrderInputService.checkEmbracedVO(embracedOrdervo, this.checkmMap)) {
+                    embracedOrdervo.setIsadditionflag("1");
+                } else {
+                    embracedOrdervo.setIsadditionflag("0");
+                }
+                if(embracedOrdervo.getInputdatetime() == null){
+                    Date date = new Date();
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String dd = df.format(date);
+                    embracedOrdervo.setInputdatetime(dd);
+                }
+                cwbCheckedOrders.add(embracedOrdervo);
+            }
 		}
 		resultCollector.setFailList(failList);
 		// 订单表中没有的订单需要执行insert语句的订单
@@ -1714,27 +1810,6 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 		// 订单表中已有订单需要执行update语句的订单
 		map.put("updateOrders", cwbUpdateOrders);
 		return map;
-		/*
-		 * this.put("OrderNo", 1); /this.put("Sender_name", 2);
-		 * /this.put("Sender_companyName", 3);客户名、客户编号、客户id
-		 * /this.put("Monthly_account_number", 4);
-		 * /this.put("Sender_provinceName", 5);province的id和name
-		 * /this.put("Sender_cityName", 6);city的id和name
-		 * /this.put("Sender_countyName", 7);county的id和name
-		 * /this.put("Sender_townName", 8);town的id和name
-		 * /this.put("Sender_adress", 9); /this.put("Sender_cellphone", 10);
-		 * /this.put("Sender_telephone", 11); /this.put("Goods_name", 12);
-		 * /this.put("Goods_number", 13); /this.put("Goods_weight", 14);
-		 * /this.put("Consignee_name", 15); /this.put("Consignee_provinceName",
-		 * 16);province的id和name /this.put("Consignee_cityName", 17);city的id和name
-		 * /this.put("Consignee_countyName", 18);county的id和name
-		 * /this.put("Consignee_adress", 19); /this.put("Consignee_cellphone",
-		 * 20); /this.put("Consignee_telephone", 21);
-		 * /this.put("DelivermanName", 22);delivermanName和delivermanid
-		 * /this.put("Xianfu", 23); /this.put("Daofu", 24); 这三个决定付款方式
-		 * /this.put("Yuejie", 25); /this.put("Collection_amount", 26);
-		 * /this.put("Insured_cost", 27);
-		 */
 	}
 
 	/**
@@ -3517,7 +3592,6 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			String dd = df.format(date);
 			vo.setInstationdatetime(dd);
 		}
-
 	}
 
 	/**
@@ -3562,4 +3636,22 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 				.equals(b.trim()) && "".equals(c.trim()));
 		return flag;
 	}
+
+	private int checkIfimportedBefore(EmbracedImportOrderVO cwbImportOrders, List<EmbracedOrderVO> cwbordersList){
+		for(EmbracedOrderVO embracedOrderVO : cwbordersList){
+			if(cwbImportOrders.getOrderNo().equals(embracedOrderVO.getOrderNo())){
+				return 1;
+			}
+		}
+		return 0;
+	}
+
+	private EmbracedOrderVO getEmbracedOrderVO(EmbracedImportOrderVO cwbImportOrders, List<EmbracedOrderVO> cwbordersList){
+        for(EmbracedOrderVO embracedOrderVO : cwbordersList){
+            if(cwbImportOrders.getOrderNo().equals(embracedOrderVO.getOrderNo())){
+                return embracedOrderVO;
+            }
+        }
+        return null;
+    }
 }
