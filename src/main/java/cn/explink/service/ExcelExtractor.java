@@ -1747,6 +1747,28 @@ public abstract class ExcelExtractor extends ExpressCommonService {
                         flag = true; // 已经出错，下面不用在执行
                     }
                 }
+                if(embracedOrdervo.getPacking_amount()!=null){
+                    Double s =  Double.valueOf(embracedOrdervo.getPacking_amount());
+                    String formatPackingAmount = String.format("%.2f", s);
+                    Double os =  Double.valueOf(originVo.getPacking_amount());
+                    String formatOSPackaingAmount = String.format("%.2f", os);
+                    if(!"0.00".equals(formatOSPackaingAmount)&&!formatPackingAmount.trim().equals(formatOSPackaingAmount.trim())) {
+                        this.createErrNote(temp.getOrderNo(), "补录不能修改包装费，之前的包装费为："+formatOSPackaingAmount, failList);
+                        cwbOrders.remove(temp);
+                        flag = true; // 已经出错，下面不用在执行
+                    }
+                }
+                if(embracedOrdervo.getInsured_cost()!=null){
+                    Double s =  Double.valueOf(embracedOrdervo.getInsured_cost());
+                    String formatInsuredCost = String.format("%.2f", s);
+                    Double os =  Double.valueOf(originVo.getInsured_cost());
+                    String formatOSinsuredCost = String.format("%.2f", os);
+                    if(!"0.00".equals(formatOSinsuredCost)&&!formatInsuredCost.trim().equals(formatOSinsuredCost.trim())) {
+                        this.createErrNote(temp.getOrderNo(), "补录不能修改保价费用，之前的保价费用为："+formatOSinsuredCost, failList);
+                        cwbOrders.remove(temp);
+                        flag = true; // 已经出错，下面不用在执行
+                    }
+                }
                 if(embracedOrdervo.getPayment_method()!=null&&originVo.getPayment_method()!=null&&!embracedOrdervo.getPayment_method().trim().equals(originVo.getPayment_method().trim())){
                     this.createErrNote(temp.getOrderNo(), "补录不能修改结算方式", failList);
                     cwbOrders.remove(temp);
