@@ -3116,6 +3116,7 @@ public class PDAController {
 					}
 					if (!intohouseFailed && (cwbs.length() > 0)) {
 						// 分拣库入库自动拆包 added by songkaojun 2015-11-09
+						logger.info("分拣库入库自动拆包，包号：" + isbale.getBaleno());
 						this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.BuKeYong.getValue());
 						msg = scancwb + " 成功扫描" + batchCount.getThissuccess() + "单";
 						// 移除下一站显示信息 songkaojun 2015-11-06
@@ -3994,6 +3995,7 @@ public class PDAController {
 				}
 			}
 			//if(openbale!=null&&openbale.equals("1")){
+			logger.info("cwbsubstationGoods，分站到货扫描，包号：" + isbale.getBaleno());
 			this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.YiDaoHuo.getValue());
 			//}
 		}
@@ -4250,6 +4252,7 @@ public class PDAController {
 			explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.SYS_ERROR.getVediourl());
 			return explinkResponse;
 		} else {
+			logger.info("cwbintowarhouseByPackageCode，按包号入库扫描，包号：" + isbale.getBaleno());
 			this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.YiDaoHuo.getValue());
 			ExplinkResponse explinkResponse = new ExplinkResponse("000000", CwbFlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getText(), obj);
 			explinkResponse.setErrorinfo("\n按包到货成功，已到货");
@@ -6281,17 +6284,20 @@ public class PDAController {
 			//obj.put("errorinfo", "1");
 		} else {
 			if (isbale.getBranchid() == this.getSessionUser().getBranchid()) {
+				logger.info("包到货扫描，已出库，包号:" + isbale.getBaleno()) ;
 				this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.YiRuKu.getValue());
 
 				gdcwblist = this.groupDetailDAO.getBroupDetailForBale(isbale.getId(), driverid, BaleStateEnum.YiRuKu.getValue(), this.getSessionUser().getBranchid());
 
 			} else {// 非本站包
+				logger.info("包到货扫描，非本站包，包号:" + isbale.getBaleno()) ;
 				this.baleDAO.saveForBranchidAndState(isbale.getId(), this.getSessionUser().getBranchid(), BaleStateEnum.FeiBenZhanBao.getValue());
 				gdcwblist = this.groupDetailDAO.getBroupDetailForBale(isbale.getId(), driverid, BaleStateEnum.FeiBenZhanBao.getValue(), this.getSessionUser().getBranchid());
 
 			}
 			if (this.groupDetailDAO.getBroupDetailForBale(isbale.getId(), driverid, BaleStateEnum.WeiDaoZhan.getValue(), this.getSessionUser().getBranchid()).size() > 0) {
 				long groupid = gdcwblist.get(0).getGroupid();
+				logger.info("包到货扫描，包号:" + isbale.getBaleno()) ;
 				this.baleDAO.saveForBranchidAndGroupid(this.getSessionUser().getBranchid(), BaleStateEnum.YiDaoHuo.getValue(), groupid);
 			}
 

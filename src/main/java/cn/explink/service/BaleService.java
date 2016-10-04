@@ -2096,6 +2096,7 @@ public class BaleService {
 		}
 		
 		if(bale!=null){
+			logger.info("disableBale，包号：" + bale.getBaleno());
 			this.baleDAO.updateBalesate(bale.getId(), BaleStateEnum.BuKeYong.getValue());
 		}
 	}
@@ -2133,6 +2134,7 @@ public class BaleService {
 		//出库时有可能自动补环节令包失效,恢复它的状态
 		Bale nowBale=this.baleDAO.getBaleById(bale.getId());
 		if(bale.getBalestate()!=nowBale.getBalestate()){
+			logger.info("出库时有可能自动补环节令包失效,恢复它的状态,包号：" + bale.getBaleno() + "，包状态：" + bale.getBalestate());
 			this.baleDAO.updateBalesate(bale.getId(), bale.getBalestate());
 		}
 	}

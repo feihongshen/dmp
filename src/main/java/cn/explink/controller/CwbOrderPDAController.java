@@ -891,6 +891,7 @@ public class CwbOrderPDAController {
 			}
 			if (successCount > 0) {// 成功
 				// 更改包的状态
+				logger.info("outStore，出库，更改包状态，包号：" + bale.getBaleno());
 				this.baleDao.updateBalesate(bale.getId(), BaleStateEnum.YiFengBaoChuKu.getValue());
 				statuscode = "000000";
 				errorinfo = "成功" + String.valueOf(successCount) + "件,失败" + String.valueOf(errorCount) + "件";
@@ -983,7 +984,7 @@ public class CwbOrderPDAController {
 			CwbOrderPDAEnum cwbOrderPDAEnum = this.verficationCwb(orderNO);
 			statuscode = cwbOrderPDAEnum.getCode();
 			if (CwbOrderPDAEnum.OK.getCode().equals(cwbOrderPDAEnum.getCode())) {
-
+                logger.info("扫描单号,checkOrderForPackage,包号："+baleNO+" , 订单号："+orderNO);
 				int iType = this.cwbDAO.getCwbByCwb(orderNO).getCwbordertypeid();
 				if (iType == 1) {// 库房出库
 					this.baleService.baleaddcwbChukuCheck(this.getSessionUser(), baleNO.trim(), orderNO.trim(), isForceOutstore, this.getSessionUser().getBranchid(), nextBranchid);

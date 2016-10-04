@@ -317,6 +317,7 @@ public class ExpressOutStationService {
 			// 更新包的状态以及定相关信息的修改
 			if (successCount > 0) {
 				// 更改包的状态
+				logger.info("expressOrderBatchIntoStation,更改包的状态,包号："+bale.getBaleno() + " , 当前包状态：" + bale.getBalestate() + " , 更改后的包状态："+BaleStateEnum.YiFengBaoChuKu.getValue());
 				this.baleDAO.updateBalesateAndNextBranchId(bale.getId(), BaleStateEnum.YiFengBaoChuKu.getValue(), nextBranchId, currentBranchId);
 			}
 
@@ -401,6 +402,7 @@ public class ExpressOutStationService {
 			// 将包号置为不可用
 			Bale bale=this.baleDAO.getBaleOnway(order.getPackagecode());
 			if(bale!=null){
+				logger.info("orderIntoStationValidation，订单操作揽件出站前的校验，包号：" + bale.getBaleno());
 				this.baleDAO.updateBalesate(bale.getId(), BaleStateEnum.BuKeYong.getValue());
 			}
 			// throw new CwbException(scanNo,

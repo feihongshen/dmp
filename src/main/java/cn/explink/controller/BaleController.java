@@ -736,6 +736,7 @@ public class BaleController {
 				 * gztl 封包逻辑变更
 				 */
 				if(bale!=null){
+					logger.info("按包 库房出库扫描,封包出库，包号：" + baleno);
 					obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + bale.getScannum() + "件");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 					this.baleDAO.updateBalesate(bale.getId(), BaleStateEnum.YiFengBaoChuKu.getValue());
@@ -856,6 +857,7 @@ public class BaleController {
 			//参考 baleChuKu的实现，只是更新包的状态
 			if( flag ){
 				if(bale!=null){
+					logger.info("按包 中转库房出库扫描 , 包号:" + baleno);
 					obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + bale.getScannum() + "件");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 					this.baleDAO.updateBalesate(bale.getId(), BaleStateEnum.YiFengBaoChuKu.getValue());
@@ -901,6 +903,7 @@ public class BaleController {
 					// 订单到货
 					CwbOrder cwbOrder = this.cwbOrderService.substationGoods(this.getSessionUser(), cwb, cwb, driverid, requestbatchno, comment, "", true);
 					// 更改包的状态
+					logger.info("到货扫描 按包 到货扫描，包号：" + isbale.getBaleno() + "，订单号：" + cwb + " 在此包中");
 					this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.BuKeYong.getValue());
 					obj.put("errorinfo", "(合包到货)" + cwb + "到货成功");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
@@ -986,6 +989,7 @@ public class BaleController {
 			//参考 baleChuKu的实现，只是更新包的状态
 			if( flag ){
 				if(bale!=null){
+					logger.info("baletuihuochuzhan，按包退货出站 ，包号：" + baleno);
 					obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + bale.getScannum() + "件");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 					this.baleDAO.updateBalesate(bale.getId(), BaleStateEnum.YiFengBaoChuKu.getValue());
@@ -1025,6 +1029,7 @@ public class BaleController {
 					// 订单到货
 					CwbOrder cwbOrder = this.cwbOrderService.backIntoWarehous(this.getSessionUser(), cwb, cwb, driverid, 0, comment, true, 0, 0);
 					// 更改包的状态
+					logger.info("退货站入库 按包到货，包号：" + isbale.getBaleno());
 					this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.YiDaoHuo.getValue());
 					obj.put("errorinfo", "(合包到货)" + cwb + "到货成功");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
@@ -1074,7 +1079,7 @@ public class BaleController {
 					String scancwb = cwb;
 					cwb = this.cwbOrderService.translateCwb(cwb);
 					this.cwbOrderService.changeintoWarehous(this.getSessionUser(), cwb, scancwb, customerid, 0, 0, comment, "", false, 0, 0);
-
+                    logger.info("中转到货，扫描包号：" + isbale.getBaleno()) ;
 					// 更改包的状态
 					this.baleDAO.updateBalesate(isbale.getId(), BaleStateEnum.YiDaoHuo.getValue());
 					obj.put("errorinfo", "(合包到货)" + cwb + "到货成功");
@@ -1147,6 +1152,7 @@ public class BaleController {
 			//参考 baleChuKu的实现，只是更新包的状态
 			if( flag ){
 				if(bale!=null){
+					logger.info("baletocustomerchuku按包出库，包号：" + baleno); 
 					obj.put("errorinfo", "(按包出库成功)" + baleno + "包号共" + bale.getScannum() + "件");
 					explinkResponse.setWavPath(request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl());
 					this.baleDAO.updateBalesate(bale.getId(), BaleStateEnum.YiFengBaoChuKu.getValue());
