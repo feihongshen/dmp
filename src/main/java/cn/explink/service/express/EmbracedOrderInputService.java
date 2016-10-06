@@ -840,9 +840,8 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				paramObj.setRequestlist(requestlist);
 				this.tpsInterfaceExecutor.executTpsInterface(paramObj);
 			} catch (Exception e) {
-				e.printStackTrace();
 				this.logger.info("发送jms消息异常！");
-				this.logger.info("发送时的异常为：" + e.getMessage());
+				logger.error("发送时的异常为：" + e);
 			}
 		}
 	}
