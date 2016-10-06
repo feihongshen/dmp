@@ -1184,7 +1184,7 @@ public class BaleService {
 	@Transactional
 	public void baleaddcwbChukuCheck(User user, String baleno, String cwb, boolean forceOut, long currentbranchid, long branchid) {
 		if (!"".equals(baleno) && !"".equals(cwb)) {
-			this.logger.info("===封包检查开始===");
+			this.logger.info("===库房出库包号扫描封包检查开始===");
 			this.logger.info("开始验证包号" + baleno);
 
 			// ==================验证包号=======================
@@ -1406,7 +1406,7 @@ public class BaleService {
 	@Transactional
 	public void baleaddcwbTuiHuoCheck(User user, String baleno, String cwb, boolean forceOut, long currentbranchid, long branchid) {
 		if (!"".equals(baleno) && !"".equals(cwb)) {
-			this.logger.info("===封包检查开始===");
+			this.logger.info("===退货出站封包检查开始===");
 			this.logger.info("开始验证包号" + baleno);
 			String scancwb = cwb;
 			cwb = this.cwbOrderService.translateCwb(cwb);
@@ -1638,7 +1638,7 @@ public class BaleService {
 			//add by neo01.huang，2016-7-19，转换session用户的branchid
 			userService.convertSessionUserBranchId(user);
 			/* ***************add end***********************/
-			
+			logger.info("库房出库根据包号扫描订单,包号："+baleno);
 			Bale bale=this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
 
 			/**
@@ -1683,7 +1683,7 @@ public class BaleService {
 			// 如果订单存在原来的包号 包号表的订单数-1
 			String scancwb = cwb;
 			cwb = this.cwbOrderService.translateCwb(cwb);
-
+            logger.info("退货出站根据包号扫描订单,包号：" + baleno);
 			Bale bale=this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
 
 			this.cwbOrderService.outUntreadWarehous(user, cwb, scancwb, 0, 0, branchid, 0, false, "", baleno, false);
@@ -1704,7 +1704,7 @@ public class BaleService {
 			// 如果订单存在原来的包号 包号表的订单数-1
 			String scancwb = cwb;
 			cwb = this.cwbOrderService.translateCwb(cwb);
-
+            logger.info("退供货商出库根据包号扫描订单,包号："+baleno);
 			Bale bale=this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
 
 			this.cwbOrderService.backtocustom(user, cwb, scancwb, 0, baleno, true);
@@ -1729,7 +1729,7 @@ public class BaleService {
 
 			String scancwb = cwb;
 			cwb = this.cwbOrderService.translateCwb(cwb);
-
+            logger.info("分拣中转出库根据包号扫描订单,包号：" + baleno);
 			Bale bale=this._baleaddcwb(user, baleno, cwb, scancwb, branchid);
 
 			this.cwbOrderService.sortAndChangeOutWarehouse(user, cwb, scancwb, 0, 0, branchid, 0, false, "", baleno, 0, false, false);
@@ -2096,6 +2096,7 @@ public class BaleService {
 		}
 		
 		if(bale!=null){
+			logger.info("disableBale，包号：" + bale.getBaleno());
 			this.baleDAO.updateBalesate(bale.getId(), BaleStateEnum.BuKeYong.getValue());
 		}
 	}
@@ -2133,6 +2134,7 @@ public class BaleService {
 		//出库时有可能自动补环节令包失效,恢复它的状态
 		Bale nowBale=this.baleDAO.getBaleById(bale.getId());
 		if(bale.getBalestate()!=nowBale.getBalestate()){
+			logger.info("出库时有可能自动补环节令包失效,恢复它的状态,包号：" + bale.getBaleno() + "，包状态：" + bale.getBalestate());
 			this.baleDAO.updateBalesate(bale.getId(), bale.getBalestate());
 		}
 	}
