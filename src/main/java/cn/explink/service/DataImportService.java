@@ -864,7 +864,30 @@ public class DataImportService {
 			}
 		}
 	}
-
+	
+	/**
+	* @Title: getStringsByList 
+	* @Description: 根据list获得sql中in里的内容 
+	* @param @param strArr
+	* @param @return    设定文件 
+	* @return String    返回类型 
+	* @throws 
+	* @date 2016年10月4日 上午10:49:02 
+	* @author 刘武强
+	 */
+	public String getStringsByList(List<String> strArr) {
+		String strs = "'',";
+		if (strArr.size() > 0) {
+			for (String str : strArr) {
+				strs += "'"+str + "',";
+			}
+		}
+		if (strs.length() > 0) {
+			strs = strs.substring(0, strs.length() - 1);
+		}
+		return strs;
+	}
+	
 	public String getStrings(List<String> strArr) {
 		String strs = "";
 		if (strArr.size() > 0) {

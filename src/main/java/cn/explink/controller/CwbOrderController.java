@@ -1938,7 +1938,7 @@ public class CwbOrderController {
 				
 				//订单失效的时候，把订单轨迹表删掉---刘武强 20161002
 				this.orderFlowDAO.deleteOrderFlowByCwb(cwb);
-				this.logger.info(cwb + "失效成功！");
+				this.logger.info("失效订单,cwb:{}， 操作人{}", cwb, this.getSessionUser().getUserid());
 
                 //added by Steve PENG. 失效订单需要进行派费相关操作。 start
                 //注释掉因为手动失效订单不需要执行相关的派费的操作。所有失效操作只在接口完成。

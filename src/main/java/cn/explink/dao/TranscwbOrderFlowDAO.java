@@ -413,4 +413,24 @@ public class TranscwbOrderFlowDAO {
 			this.jdbcTemplate.update("delete from express_ops_transcwb_orderflow where cwb=?", cwb.trim());
 		} catch (Exception ex) {}
 	}
+	
+	/**
+	* @Title: deleteByCwbs 
+	* @Description: 按订单号集合删除运单轨迹表数据
+	* @param @param cwbs    设定文件 
+	* @return void    返回类型 
+	* @throws 
+	* @date 2016年10月4日 上午9:53:57 
+	* @author 刘武强
+	 */
+	public void deleteByCwbs(String cwbs) {
+		try {
+			if(cwbs == null || cwbs.trim().equals("")){
+				return;
+			}
+			
+			String sql = "delete from express_ops_transcwb_orderflow where cwb in(" + cwbs + ")";
+			this.jdbcTemplate.update(sql);
+		}catch(Exception ex){}
+	}
 }
