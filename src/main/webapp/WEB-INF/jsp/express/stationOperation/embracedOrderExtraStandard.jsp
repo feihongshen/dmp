@@ -1465,7 +1465,21 @@
 				data:{
 					"orderNo":orderNo
 				},
-				success : function(data) {	
+				success : function(data) {
+					//每次修改运单号，都重新加载小件员列表，防止离职的小件员的快递单无法再补录----刘武强20161005
+					$("#delivermanId_show").css('background','#ffffff');
+					$("#delivermanId_show").attr("disabled",false);
+					if(data.deliveryMansList != null && typeof(data.deliveryMansList)  != "undefined" && data.deliveryMansList != "" && data.deliveryMansList.length > 0){ //只有当后台返回的列表存在小件员的时候才更新列表
+						$("#delivermanId_show").empty();
+						$("#delivermanId_show").append(" <option value=''>请选择</option>");
+						var tmpUser;
+						for(var i = 0; i < data.deliveryMansList.length; i++){
+							tmpUser = data.deliveryMansList[i];
+							$("#delivermanId_show").append("<option value='" + tmpUser.userid + "'>" + tmpUser.realname + "</option>");
+						}
+						$("#delivermanId_show").find("option[text='请选择']").attr("selected",true);
+					}
+					
 					if(typeof(data.embracedOrderVO)  == "undefined" || data.embracedOrderVO.orderNo == ""){						
 						    $("#isadditionflag_id").attr("value",0);
 				        	//根据运单号，去订单表查数据，带出小件员
@@ -1639,10 +1653,9 @@
 					}
 					$("#remarks_id").val(data.embracedOrderVO.remarks);
 					
-					
-					var delivermanId = data.embracedOrderVO.delivermanId;
-    				var delivermanIdSelect = $("#delivermanId_show");
+					var delivermanIdSelect = $("#delivermanId_show");
     				var delivermanIdSelectOptions = $("#delivermanId_show option");
+					var delivermanId = data.embracedOrderVO.delivermanId;
     				var flag = true;
     				if(delivermanId != ""){
     					for(var i = 0; i < delivermanIdSelectOptions.size(); i++){
@@ -1653,7 +1666,7 @@
     							flag = false;
     							break;
     					    }
-    					  }
+    					 }
     					 if(flag && delivermanId != 0){
     						alert("该运单号的小件员不属于本站点");
     						$("#orderNo_id").attr("value","");

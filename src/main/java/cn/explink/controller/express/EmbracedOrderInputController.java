@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import cn.explink.b2c.pjwl.ExpressCwbOrderDataImportDAO;
 import cn.explink.dao.CwbDAO;
+import cn.explink.dao.UserDAO;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.express.AdressInfoDetailVO;
 import cn.explink.domain.VO.express.AdressVO;
@@ -77,6 +79,8 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 	CwbDAO cwbDAO;
 	@Autowired
 	ReserveOrderService reserveOrderService;
+	@Autowired
+	UserDAO userDAO;
 
 	private ExcelExtractor excelExtractor = null;
 	private static final String CONTENT_TYPE = "text/html; charset=GBK";
@@ -311,6 +315,13 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 	public JSONObject getCwbOrderEmbraced(String orderNo) {
 		JSONObject obj = new JSONObject();
 		EmbracedOrderVO embracedOrderVO = this.embracedOrderInputService.judgeCwbOrderByCwb(orderNo);
+		//获取揽件员的信息，如果已经离职了，只要是本站点的，就需要显示 ，防止因为本站小件员离职后，他手上的未完结快递单无法再补录---刘武强20161005
+		User collector = this.embracedOrderInputService.getCollector(embracedOrderVO);
+		List<User> deliveryMansList = this.embracedOrderInputService.getDeliveryManBybranchid();
+		if(collector != null && !deliveryMansList.contains(collector)){
+			deliveryMansList.add(collector);
+		}
+		
 		ExpressWeigh expressWeigh = this.embracedOrderInputService.getWeighByCwb(orderNo, this.getSessionUser().getBranchid());
 		//查询快递单号的图片路径
 		String expressImage = expressCwbOrderDataImportDAO.getExpressImageById(orderNo);
@@ -328,6 +339,7 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 			}
 		}
 		boolean isRepeat = this.embracedOrderInputService.checkTranscwb(orderNo);//校验录入运单号是否与系统订单号/运单号重复 add by vic.liang@pjbest.com 2016-08-05
+		obj.put("deliveryMansList", deliveryMansList);//重新加载小件员下拉列表数据
 		obj.put("embracedOrderVO", embracedOrderVO);
 		obj.put("expressWeigh", expressWeigh);
 		obj.put("branchid", this.getSessionUser().getBranchid());
