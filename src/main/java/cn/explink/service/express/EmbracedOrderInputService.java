@@ -495,7 +495,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				return "hasSaved";
 			}
 			flag = this.generalDAO.insert(params, "express_ops_cwb_detail") == false ? "false" : "true";
-			System.out.println("补录：inset方法，补录标志位：" + embracedOrderVO.getOrderNo() +"   " +  embracedOrderVO.getIsadditionflag());
+			this.logger.info("补录：inset方法，补录标志位：" + embracedOrderVO.getOrderNo() +"   " +  embracedOrderVO.getIsadditionflag());
 			// 如果是新建运单，那么他的状态为入站，调用tps状态反馈接口 11.19 如果状态有改变，且变为揽件入站，则需要保存流程信息
 			this.executeTpsTransInterface(embracedOrderVO, user);
 			CwbOrder order = this.cwbOrderService.getCwbByCwb(embracedOrderVO.getOrderNo());
@@ -517,7 +517,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			map.put("cwb", embracedOrderVO.getOrderNo());
 			map.put("state", 1);
 			flag = this.generalDAO.update(params, "express_ops_cwb_detail", map) == false ? "false" : "true";
-			System.out.println("补录：update方法，补录标志位："+ embracedOrderVO.getOrderNo() +"   " + embracedOrderVO.getIsadditionflag());
+			this.logger.info("补录：update方法，补录标志位："+ embracedOrderVO.getOrderNo() +"   " + embracedOrderVO.getIsadditionflag());
 			if (flowflag) { // 如果状态转变为揽件入站，那么就保存
 				CwbOrder order = this.cwbOrderService.getCwbByCwb(embracedOrderVO.getOrderNo());
 				this.cwbOrderService.createFloworder(user, branch.getBranchid(), order, FlowOrderTypeEnum.LanJianRuZhan, "", System.currentTimeMillis());
@@ -841,7 +841,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				this.tpsInterfaceExecutor.executTpsInterface(paramObj);
 			} catch (Exception e) {
 				this.logger.info("发送jms消息异常！");
-				this.logger.info(e.toString());
+				logger.error("发送时的异常为：" + e);
 			}
 		}
 	}
@@ -1039,4 +1039,30 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 		
 		return false;
 	}
+	
+	/**
+	* @Title: getCollector 
+	* @Description: 根据运单对象，找到揽件员的 信息，判断该揽件员是否是这个站点的，是的话则输出该揽件员对象，否则就输出null
+	* @param @param embracedOrderVO
+	* @param @return    设定文件 
+	* @return User    返回类型 
+	* @throws 
+	* @date 2016年10月5日 上午11:20:19 
+	* @author 刘武强
+	 */
+	public User getCollector(EmbracedOrderVO embracedOrderVO){
+		User collector = null;
+		Branch userBranch = this.getBracnch();
+		try{
+			if(embracedOrderVO != null ){
+				collector = this.userDAO.getAllUserByid(StringUtils.isNotBlank(embracedOrderVO.getDelivermanId())? Long.parseLong(embracedOrderVO.getDelivermanId()) : 0);
+			}
+		}catch(Exception e){
+			this.logger.info("根据输入的运单号，获取小件员异常 ：" + e.getMessage());
+		}
+		if(collector == null || collector.getBranchid() != userBranch.getBranchid()){//userBranch不可能为null了，所以不做空判断;如果揽件员不属于该站点，就置空
+			collector = null;
+		}
+		return collector;
+	} 
 }

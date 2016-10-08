@@ -1629,4 +1629,24 @@ public class OrderFlowDAO {
 			return 0l;
 		}
 	}
+	
+	/**
+	* @Title: deleteByCwbs 
+	* @Description: 根据订单号的集合删除订单轨迹
+	* @param @param cwbs    设定文件 
+	* @return void    返回类型 
+	* @throws 
+	* @date 2016年10月4日 上午9:59:15 
+	* @author 刘武强
+	 */
+	public void deleteByCwbs(String cwbs) {
+		try {
+			if(cwbs == null || cwbs.trim().equals("")){
+				return;
+			}
+			
+			String sql = "delete from express_ops_order_flow where cwb in(" + cwbs + ")";
+			this.jdbcTemplate.update(sql);
+		}catch(Exception ex){}
+	}
 }

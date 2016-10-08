@@ -40,9 +40,12 @@ import cn.explink.dao.EmailDateDAO;
 import cn.explink.dao.ExcelImportEditDao;
 import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.ImportFieldDAO;
+import cn.explink.dao.OrderFlowDAO;
 import cn.explink.dao.ShiXiaoDAO;
 import cn.explink.dao.SysConfigDAO;
 import cn.explink.dao.SystemInstallDAO;
+import cn.explink.dao.TransCwbDetailDAO;
+import cn.explink.dao.TranscwbOrderFlowDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.AccountArea;
 import cn.explink.domain.Branch;
@@ -57,6 +60,7 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
+import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.BranchService;
@@ -160,6 +164,15 @@ public class DataImportController {
 	
 	@Autowired
 	private BranchService branchService;
+	
+	@Autowired
+	TransCwbDetailDAO transCwbDetailDAO;
+	
+	@Autowired
+	TranscwbOrderFlowDAO transcwbOrderFlowDAO;
+	
+	@Autowired
+	OrderFlowDAO orderFlowDAO;
 
 	private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -254,23 +267,42 @@ public class DataImportController {
 	public String datalose(Model model, @RequestParam(value = "emaildate", defaultValue = "0", required = false) long emaildateid,
 			@RequestParam(value = "isEdit", defaultValue = "no", required = false) String isEdit) {
 		if ("yes".equals(isEdit) && !ServiceUtil.isNowImport(emaildateid)) {
-			List<String> cwblist = this.cwbDAO.getCwbsListByEmailDateId(emaildateid);
-
-			for(String cwb:cwblist){
-				CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
-				this.shixiaoDao.creAbnormalOrdernew(co.getOpscwbid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), co.getCurrentbranchid(), co.getCustomerid(), cwb, co
-						.getDeliverybranchid(), co.getFlowordertype(), co.getNextbranchid(), co.getStartbranchid(), this.getSessionUser().getUserid(), 129, co.getCwbstate(), co.getEmaildate());
+			List<CwbOrder>  cwblist  = this.cwbDAO.getCwbsByEmailDateId(emaildateid);
+			
+			boolean flag = true;//判断是否可以按批次失效,只要批次中含有订单不处于数据导入状态，则不允许在按批次失效 ----刘武强20161003
+			for(CwbOrder cwbOrder:cwblist){
+				if(cwbOrder.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue()){
+					flag = false;
+					model.addAttribute("ReturnMessage", "本批次中订单已经不处于数据导入状态，不能再按批次失效！");
+				}
 			}
-			this.transCwbDao.deleteTranscwbByCwbs(this.dataImportService.getStrings(cwblist));
-			this.cwbDAO.dataLose(emaildateid);
-			this.emaildateDAO.loseEmailDateById(emaildateid);
-			model.addAttribute("ReturnMessage", "操作成功");
-			try {
-				this.dataImportService.datalose(emaildateid);
-				logger.error("JMS : Send : jms:topic:loseCwb : loseCwbByEmaildateid :成功");
-			} catch (Exception e) {
-				logger.error("", e);
-				logger.error("JMS : Send : jms:topic:loseCwb : loseCwbByEmaildateid : " + emaildateid);
+			if(flag){
+				List<String> cwbs = new ArrayList<String>();
+				for(CwbOrder cwbOrder:cwblist){
+					cwbs.add(cwbOrder.getCwb());
+					this.shixiaoDao.creAbnormalOrdernew(cwbOrder.getOpscwbid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), cwbOrder.getCurrentbranchid(), cwbOrder.getCustomerid(), cwbOrder.getCwb(), cwbOrder
+							.getDeliverybranchid(), cwbOrder.getFlowordertype(), cwbOrder.getNextbranchid(), cwbOrder.getStartbranchid(), this.getSessionUser().getUserid(), 129, cwbOrder.getCwbstate(), cwbOrder.getEmaildate());
+				}
+				String cwbStr = this.dataImportService.getInStrings(cwbs);
+				
+				
+				this.cwbDAO.dataLose(emaildateid);//按批次失效主表的数据
+				this.emaildateDAO.loseEmailDateById(emaildateid);//失效掉批次的数据
+				//刘武强20161004
+				this.transCwbDao.deleteTranscwbByCwbs(cwbStr);//批量删除订单-运单对照表数据 
+				this.transCwbDetailDAO.deleteByCwbs(cwbStr);//批量删除运单详情表数据
+				this.transcwbOrderFlowDAO.deleteByCwbs(cwbStr);//批量删除运单轨迹表数据
+				this.orderFlowDAO.deleteByCwbs(cwbStr);//批量 删除订单轨迹表数据   
+				this.logger.info("批次id：{} 失效成功，操作人{}",emaildateid, this.getSessionUser().getUserid());
+				
+				model.addAttribute("ReturnMessage", "操作成功");
+				try {
+					this.dataImportService.datalose(emaildateid);
+					logger.error("JMS : Send : jms:topic:loseCwb : loseCwbByEmaildateid :成功");
+				} catch (Exception e) {
+					logger.error("", e);
+					logger.error("JMS : Send : jms:topic:loseCwb : loseCwbByEmaildateid : " + emaildateid);
+				}
 			}
 		} else if ("yes".equals(isEdit) && ServiceUtil.isNowImport(emaildateid)) {
 			model.addAttribute("ReturnMessage", "对应的批次仍然正在导入，请稍后再试。");

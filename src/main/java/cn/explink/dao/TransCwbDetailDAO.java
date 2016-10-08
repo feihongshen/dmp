@@ -440,4 +440,24 @@ public class TransCwbDetailDAO {
 			this.jdbcTemplate.update(sql, cwb.trim());
 		}catch(Exception ex){}
 	}
+	
+	/**
+	* @Title: deleteByCwbs 
+	* @Description: 按订单号集合删除订单明细表
+	* @param @param cwbs    设定文件 
+	* @return void    返回类型 
+	* @throws 
+	* @date 2016年10月3日 下午5:49:00 
+	* @author 刘武强
+	 */
+	public void deleteByCwbs(String cwbs) {
+		try {
+			if(cwbs == null || cwbs.trim().equals("")){
+				return;
+			}
+			
+			String sql = "delete from express_ops_transcwb_detail where cwb in(" + cwbs + ")";
+			this.jdbcTemplate.update(sql);
+		}catch(Exception ex){}
+	}
 }

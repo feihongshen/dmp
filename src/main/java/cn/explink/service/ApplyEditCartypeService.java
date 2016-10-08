@@ -97,7 +97,7 @@ public class ApplyEditCartypeService {
 				}catch(Exception e){
 					opsResult.setValid(false);
 					opsResult.setRemark(ApplyEditCartypeResultView.REMARK_APPLY_EXCEPTION);
-					logger.error("AEC01:创建货物类型修改申请出错，订单号："+cwbOrder.getCwb()+" 异常："+e);
+					logger.info("AEC01:创建货物类型修改申请出错，订单号："+cwbOrder.getCwb()+" 异常："+e);
 				}
 			}
 			if(opsResult.isValid()){

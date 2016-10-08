@@ -2100,9 +2100,6 @@ public class EditCwbService {
 					fnOrgRechargesRptmodeDAO.batchInsertOrgRecharges(fnOrgRechargesList);
 				}
 			}
-			
-		
-			
 		}
 	}
 	
