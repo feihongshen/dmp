@@ -879,11 +879,6 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			this.logger.info("vo为空");
 			return false;
 		}
-		
-		
-		
-		
-		
 		// 首先校验付款方式  
 		if (this.jugNull(embracedOrderVO.getPayment_method())) {
 			this.logger.info("付款方式未输入");
@@ -925,8 +920,8 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			return false;
 		}
 		for (String key : keys) {
-			if ("OrderNo".equals(key) || "Monthly_account_number".equals(key) || "Sender_companyName".equals(key) || "Sender_townName".equals(key) || "Sender_cellphone".equals(key) || "Sender_telephone"
-					.equals(key) || "Goods_length".equals(key) || "Goods_width".equals(key) || "Goods_high".equals(key) || "Goods_other".equals(key) || "Consignee_townName".equals(key) || "Consignee_cellphone"
+			if ("OrderNo".equals(key) || "Monthly_account_number".equals(key) || "Sender_companyName".equals(key) || "Sender_countyName".equals(key) || "Sender_townName".equals(key) || "Sender_adress".equals(key) ||"Sender_cellphone".equals(key) || "Sender_telephone"
+					.equals(key) || "Goods_length".equals(key) || "Goods_width".equals(key) || "Goods_high".equals(key) || "Goods_other".equals(key) || "Consignee_cellphone"
 					.equals(key) || "Consignee_telephone".equals(key) || "Xianfu".equals(key) || "Daofu".equals(key) || "Yuejie".equals(key) || "Collection_amount".equals(key) || "Insured_amount"
 					.equals(key) || "Insured_cost".equals(key) || "Packing_amount".equals(key)) {
 				continue;

@@ -305,7 +305,7 @@
 								<td class="tdrigth">收件地址<font>*</font>:</td>
 								<td class="tdleft" colspan="6"><input type="text" name="consignee_adress" id="consignee_adress_id" style="width:100%;" onchange="getFeeByCondition()"/></td>								
 							</tr>
-							<tr><td colspan="6"><b>收件人历史信息：</b></font></td></tr>
+							<tr><td colspan="6"><b>收件人历史信息：</b></td></tr>
 							<tr>
 							    <td colspan="6">
 									<table class="table1" border="1px" id="consigneeHistoryTable" width="100%">
@@ -810,7 +810,7 @@
 	 function checkSender(){
 		 var sender_province = $("#sender_provinceid_id");
 		 var sender_city = $("#sender_cityid_id");
-/* 		 var sender_county = $("#sender_countyid_id"); */
+// 		 var sender_county = $("#sender_countyid_id");
 		 
 		var sender_adress = $("#sender_adress_id");
 		var sender_cellphone = $("#sender_cellphone_id");
@@ -820,7 +820,7 @@
 		var sender_certificateNo = $("#sender_certificateNo_id");
 		var sender_No = $("#sender_No_id");
 		var payment_method = $("input[name='payment_method']:checked").val();//0为月结
-/* 		var countySelect = $("#sender_countyid_id"); */
+// 		var countySelect = $("#sender_countyid_id");
 		
 		//如果不属于补录，则第一次只要求填写寄件三级地址
 		if ($("#isadditionflag_id").val() == 0) {
@@ -830,6 +830,12 @@
 				confirmFunction("始发地不完善");	
 	        }
 		}else{
+			//校验寄件人地址
+			if(sender_province.val() == "" || sender_city.val() == "" ){
+				//$.messager.alert("提示", "请完善寄件人地址", "warning");
+				confirmFunction("始发地不完善");
+			}
+			//
 			//校验寄件人客户编码是否超长
 	      	/* if($.trim(sender_No.val()) != ""){
 	      		if(!checkLength(sender_No, 10,"寄件人客户编码",10)){
@@ -857,7 +863,7 @@
 	        }
 	      	//校验寄件人地址是否为空
 	        if(!nullValidater(sender_adress,"寄件人地址")){
-	        	confirmFunction("寄件人地址未填写");
+//	        	confirmFunction("寄件人地址未填写");
 	        }else
 	      	//校验寄件人地址是否超长
 	      	if(!checkLength(sender_adress, 100, '寄件人地址', 100)){
@@ -896,9 +902,10 @@
 	 *校验收件人的数据
 	 */
 	function checkConsignee(){
-		 var consignee_province = $("#consignee_provinceid_id");
-		 var consignee_city = $("#consignee_cityid_id");
-/* 		 var consignee_county = $("#consignee_countyid_id"); */
+		var consignee_province = $("#consignee_provinceid_id");
+		var consignee_city = $("#consignee_cityid_id");
+		var consignee_county = $("#consignee_countyid_id");
+		var consignee_town = $("#consignee_townid_id");
 		 
       	var consignee_adress = $("#consignee_adress_id");
 		var consignee_cellphone = $("#consignee_cellphone_id");
@@ -915,20 +922,11 @@
 	        	confirmFunction("目的地不完善");
 	        }
 		}else{
-			//校验收件人客户编码是否超长
-	      	/* if($.trim(consignee_No.val()) != ""){
-	      		if(!checkLength(consignee_No, 10,"收件人客户编码",10)){
-	            	return false;
-	            }
-	      	}
-			//校验收件人公司是否为空
-	        if(!nullValidater(consignee_companyName,"收件人公司")){
-	        	return false;
-	        } 
-	      	//校验收件人公司是否超长
-	      	if(!checkLength(consignee_companyName, 50, '收件人公司', 50)){
-	        	return false;
-	        }*/
+			//校验收件人地址
+			if(consignee_province.val() == "" || consignee_city.val() == ""|| consignee_county.val() == "" || consignee_town.val() == "") {
+				//$.messager.alert("提示", "请完善收件人地址", "warning");
+				confirmFunction("目的地不完善");
+			}
 	       	//校验收件人是否为空
 	        if(!nullValidater(consignee_name,"收件人")){
 	        	confirmFunction("收件人未填写");
