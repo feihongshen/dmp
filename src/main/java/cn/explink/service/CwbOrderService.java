@@ -7449,7 +7449,7 @@ public class CwbOrderService extends BaseOrderService {
 			if(nextInterceptBranchId <= 0 && publicTuiHuoBranch != null && publicTuiHuoBranch.getBranchid() != 0){//如果没有配置逆向退货站，并且系统中存在退货站，那就把第一个当做其逆向的退货站--刘武强20161008
 				nextInterceptBranchId = publicTuiHuoBranch.getBranchid();
 				logger.info("订单["+co.getCwb()+"],没有配置逆向退货组,但是从系统中获取第一个退货站作为其逆向的退货站");
-			}else{
+			}else if (nextInterceptBranchId <= 0){
 				logger.info("订单["+co.getCwb()+"],没有配置逆向退货组,并且系统中也不存在退货站");
 			}
 			logger.info("订单拦截：订单(订单号={}),blnNeedUpdateCurrentBranch={},nextInterceptBranchId={})", co.getCwb(), blnNeedUpdateCurrentBranch, nextInterceptBranchId);
