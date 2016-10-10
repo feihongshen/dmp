@@ -123,7 +123,7 @@ function checkCwbs(cwbs){
  		<td align="center" valign="middle" bgcolor="#EEF6FF">
  		<select name="Newpaywayid_<%=cods.getCwbOrder().getCwb() %>">
  		<%for(PaytypeEnum paytypeEnum:PaytypeEnum.values()){ %>
- 		    <%if(paytypeEnum.getValue() != PaytypeEnum.CodPos.getValue() && paytypeEnum.getValue() != PaytypeEnum.getByValue(Integer.valueOf(cods.getCwbOrder().getNewpaywayid())).getValue()){ %>
+ 		    <%if(paytypeEnum.getValue() != PaytypeEnum.getByValue(Integer.valueOf(cods.getCwbOrder().getNewpaywayid())).getValue()){ %>
  			<option value="<%=paytypeEnum.getValue() %>" <%=(Integer.valueOf(cods.getCwbOrder().getNewpaywayid())==paytypeEnum.getValue())?"selected":"" %>><%=paytypeEnum.getText() %></option>
  			<%} %>
  		<%} %>

@@ -2361,6 +2361,11 @@ public class CwbOrderService extends BaseOrderService {
 			this.validateCwbChongFu(co, scancwb, flowOrderTypeEnum.getValue(), currentbranchid, 0, 0, ExceptionCwbErrorTypeEnum.CHONG_FU_RU_KU);
 		}
 		if (co.getFlowordertype() == flowOrderTypeEnum.getValue()) {
+			// 重算当前操作的扫描数，modify by jian_xie 2016_10_09
+			if(isypdjusetranscwb == 1){
+				int transCount = transcwborderFlowDAO.getTransScanTimeByCwbFlowordertype(co.getCwb(), flowOrderTypeEnum.getValue());
+				co.setScannum(transCount);
+			}
 			if (co.getScannum() < 1) {
 				this.handleBackIntoWarehous(user, cwb, scancwb, currentbranchid, requestbatchno, comment, co, flowOrderTypeEnum, isypdjusetranscwb, true, false, driverid);
 			}
