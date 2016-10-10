@@ -1008,6 +1008,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			paramObj.setTransNoFeedBack(transNoFeedBack);
 			// 发送JMS消息
 			this.tpsInterfaceExecutor.executTpsInterface(paramObj);
+			this.logger.info("快递单：" + order.getOrderNo() + ",发送揽件入站轨迹反馈给tps！");
 		}
 	}
 
