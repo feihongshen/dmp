@@ -863,7 +863,7 @@
 	        }
 	      	//校验寄件人地址是否为空
 	        if(!nullValidater(sender_adress,"寄件人地址")){
-//	        	confirmFunction("寄件人地址未填写");
+	        	confirmFunction("寄件人地址未填写");
 	        }else
 	      	//校验寄件人地址是否超长
 	      	if(!checkLength(sender_adress, 100, '寄件人地址', 100)){
