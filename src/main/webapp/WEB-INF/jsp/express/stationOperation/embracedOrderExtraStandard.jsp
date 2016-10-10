@@ -305,7 +305,7 @@
 								<td class="tdrigth">收件地址<font>*</font>:</td>
 								<td class="tdleft" colspan="6"><input type="text" name="consignee_adress" id="consignee_adress_id" style="width:100%;" onchange="getFeeByCondition()"/></td>								
 							</tr>
-							<tr><td colspan="6"><b>收件人历史信息：</b></font></td></tr>
+							<tr><td colspan="6"><b>收件人历史信息：</b></td></tr>
 							<tr>
 							    <td colspan="6">
 									<table class="table1" border="1px" id="consigneeHistoryTable" width="100%">
@@ -810,7 +810,7 @@
 	 function checkSender(){
 		 var sender_province = $("#sender_provinceid_id");
 		 var sender_city = $("#sender_cityid_id");
-/* 		 var sender_county = $("#sender_countyid_id"); */
+// 		 var sender_county = $("#sender_countyid_id");
 		 
 		var sender_adress = $("#sender_adress_id");
 		var sender_cellphone = $("#sender_cellphone_id");
@@ -820,7 +820,7 @@
 		var sender_certificateNo = $("#sender_certificateNo_id");
 		var sender_No = $("#sender_No_id");
 		var payment_method = $("input[name='payment_method']:checked").val();//0为月结
-/* 		var countySelect = $("#sender_countyid_id"); */
+// 		var countySelect = $("#sender_countyid_id");
 		
 		//如果不属于补录，则第一次只要求填写寄件三级地址
 		if ($("#isadditionflag_id").val() == 0) {
@@ -830,6 +830,12 @@
 				confirmFunction("始发地不完善");	
 	        }
 		}else{
+			//校验寄件人地址
+			if(sender_province.val() == "" || sender_city.val() == "" ){
+				//$.messager.alert("提示", "请完善寄件人地址", "warning");
+				confirmFunction("始发地不完善");
+			}
+			//
 			//校验寄件人客户编码是否超长
 	      	/* if($.trim(sender_No.val()) != ""){
 	      		if(!checkLength(sender_No, 10,"寄件人客户编码",10)){
@@ -857,7 +863,7 @@
 	        }
 	      	//校验寄件人地址是否为空
 	        if(!nullValidater(sender_adress,"寄件人地址")){
-	        	confirmFunction("寄件人地址未填写");
+//	        	confirmFunction("寄件人地址未填写");
 	        }else
 	      	//校验寄件人地址是否超长
 	      	if(!checkLength(sender_adress, 100, '寄件人地址', 100)){
@@ -880,25 +886,27 @@
 	            	return false;
 	            }
 	      	} */
-	      	//校验寄件人证件号是否超长
-	      	if($.trim(sender_certificateNo.val()) != ""){
-	      		if(!checkLength(sender_certificateNo, 25,"寄件人证件号",25)){
-	            	return false;
-	            }
-	      	}
-	      	
 		}
-			
-      	return true;
+
+		 //校验寄件人证件号是否超长
+		 if($.trim(sender_certificateNo.val()) != ""){
+			 if(!checkLength(sender_certificateNo, 25,"寄件人证件号",25)){
+				 return false;
+			 }
+		 }
+
+
+		 return true;
 	}
 
 	/*
 	 *校验收件人的数据
 	 */
 	function checkConsignee(){
-		 var consignee_province = $("#consignee_provinceid_id");
-		 var consignee_city = $("#consignee_cityid_id");
-/* 		 var consignee_county = $("#consignee_countyid_id"); */
+		var consignee_province = $("#consignee_provinceid_id");
+		var consignee_city = $("#consignee_cityid_id");
+		var consignee_county = $("#consignee_countyid_id");
+		var consignee_town = $("#consignee_townid_id");
 		 
       	var consignee_adress = $("#consignee_adress_id");
 		var consignee_cellphone = $("#consignee_cellphone_id");
@@ -915,20 +923,11 @@
 	        	confirmFunction("目的地不完善");
 	        }
 		}else{
-			//校验收件人客户编码是否超长
-	      	/* if($.trim(consignee_No.val()) != ""){
-	      		if(!checkLength(consignee_No, 10,"收件人客户编码",10)){
-	            	return false;
-	            }
-	      	}
-			//校验收件人公司是否为空
-	        if(!nullValidater(consignee_companyName,"收件人公司")){
-	        	return false;
-	        } 
-	      	//校验收件人公司是否超长
-	      	if(!checkLength(consignee_companyName, 50, '收件人公司', 50)){
-	        	return false;
-	        }*/
+			//校验收件人地址
+			if(consignee_province.val() == "" || consignee_city.val() == ""|| consignee_county.val() == "" || consignee_town.val() == "") {
+				//$.messager.alert("提示", "请完善收件人地址", "warning");
+				confirmFunction("目的地不完善");
+			}
 	       	//校验收件人是否为空
 	        if(!nullValidater(consignee_name,"收件人")){
 	        	confirmFunction("收件人未填写");
@@ -962,13 +961,15 @@
 	            	return false;
 	            }
 	      	} */
-	      //校验收件人证件号码是否超长
-	      	if($.trim(consignee_certificateNo.val()) != ""){
-	      		if(!checkLength(consignee_certificateNo, 25, "收件人证件号",25)){
-	            	return false;
-	            }
-	      	}
 		}
+
+		//校验收件人证件号码是否超长
+		if($.trim(consignee_certificateNo.val()) != ""){
+			if(!checkLength(consignee_certificateNo, 25, "收件人证件号",25)){
+				return false;
+			}
+		}
+
       	return true;
 	}
 	
@@ -993,23 +994,28 @@
 	      	//校验数量是否为空
 	        if(!nullValidater(goods_number,"数量")){
 	        	confirmFunction("数量未填写");
-	        }else
-	      	//校验数量是否为0或正整数
-	        if(!numberValidater(goods_number,'数量')){
-	        	return false;
-	        }else 
+	        }
+		}
+
+		//如果已经填写了数量
+		if(nullValidater(goods_number,"数量")){
+			//校验数量是否为0或正整数
+			if(!numberValidater(goods_number,'数量')){
+				return false;
+			}else
 			//校验数量是否超过大小
-	        if(!checkNumber(goods_number,1000000,'数量')){
-	        	return false;
-	        }
-	        //校验件数是不是大于0的数
-	        if($.trim(goods_weight.val()) !="" && !NonNegativeValidater(goods_weight,'重量')){
-	        	return false;
-	        }
-	      //校验其他是否超过长度
-	        if($.trim(goods_other.val()) !="" && !checkLength(goods_other,50,'其他',50)){
-	        	return false;
-	        }
+			if(!checkNumber(goods_number,1000000,'数量')){
+				return false;
+			}
+		}
+
+		//校验件数是不是大于0的数
+		if($.trim(goods_weight.val()) !="" && !NonNegativeValidater(goods_weight,'重量')){
+			return false;
+		}
+		//校验其他是否超过长度
+		if($.trim(goods_other.val()) !="" && !checkLength(goods_other,50,'其他',50)){
+			return false;
 		}
 		return true;
 	}
@@ -1017,46 +1023,55 @@
 	 *校验业务类型
 	 */
 	function checkBusinessType(){
+		var collection_amount = $("#collection_amount_id");
+		var packing_amount = $("#packing_amount_id");
+		var insured_amount = $("#insured_amount_id");
+		var insured_cost = $("#insured_cost_id");
 		if($("#isadditionflag_id").val()!=0){
-			var collection_amount = $("#collection_amount_id");
-			var packing_amount = $("#packing_amount_id");
-			var insured_amount = $("#insured_amount_id");
-			var insured_cost = $("#insured_cost_id");
 			//如果保价声明价值可以填写，那么就悬着了保价，那么保价声明价值需要校验
 			if($("#collection_amount_id").attr("readonly") != 'readonly'){
 				//校验代收货款金额是否为空
 		        if(!nullValidater(collection_amount,"代收货款金额")){
 		        	confirmFunction("代收货款金额未填写");
-		        }else
-		      	//校验代收货款金额是否超过大小
-		        if(!checkNumber(collection_amount,1000000,'代收货款金额')){
-		        	return false;
-		        }else
-		      	//代收货款是否大于0
-		      	if(collection_amount.val() < 0){
-		      		$.messager.alert("提示", "代收货款应大于0", "warning");
-		      		return false;
-		      	}
+		        }
 			}
-			//校验保证费用是否为大于0的数
-			if($.trim(packing_amount.val()) != "" && !NonNegativeValidater(packing_amount,'包装费用')){
-				return false;
-			}
-			
+
 			if($("#insured_amount_id").attr("readonly") != 'readonly'){
 				//校验价声明价值是否为空
 		        if(!nullValidater(insured_amount,"保价声明价值")){
 		        	confirmFunction("保价声明价值未填写");
-		        }else
-		      	//校验价声明价值是否超过大小
-		        if(!checkNumber(insured_amount,1000000,'保价声明价值')){
-		        	return false;
 		        }
 			}
-			//校验保价费用是否为大于0的数
-			if($.trim(insured_cost.val()) != "" && !NonNegativeValidater(insured_cost,'保价费用')){
+		}
+
+		//如果已经填写了待收货金额
+		if(nullValidater(collection_amount,"代收货款金额")){
+			if(!checkNumber(collection_amount,1000000,'代收货款金额')){
+				return false;
+			}else
+			//代收货款是否大于0
+			if(collection_amount.val() < 0){
+				$.messager.alert("提示", "代收货款应大于0", "warning");
 				return false;
 			}
+		}
+
+		//校验保证费用是否为大于0的数
+		if($.trim(packing_amount.val()) != "" && !NonNegativeValidater(packing_amount,'包装费用')){
+			return false;
+		}
+
+		//如果已经填写了保价声明
+		if(nullValidater(insured_amount,"保价声明价值")){
+			//校验价声明价值是否超过大小
+			if(!checkNumber(insured_amount,1000000,'保价声明价值')){
+				return false;
+			}
+		}
+
+		//校验保价费用是否为大于0的数
+		if($.trim(insured_cost.val()) != "" && !NonNegativeValidater(insured_cost,'保价费用')){
+			return false;
 		}
 		return true;
 	}
