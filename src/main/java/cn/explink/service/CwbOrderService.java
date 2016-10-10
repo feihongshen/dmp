@@ -7389,7 +7389,7 @@ public class CwbOrderService extends BaseOrderService {
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
-	private CwbOrder handleTuihuoChack(User user, String cwb, String scancwb, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, long reasonid) {
+	private CwbOrder handleTuihuoChack(User user, String cwb, String scancwb, CwbOrder co, FlowOrderTypeEnum flowOrderTypeEnum, long isypdjusetranscwb, long reasonid){
 		if ((co.getSendcarnum() > co.getScannum()) || (co.getBackcarnum() > co.getScannum())) {
 			this.cwbDAO.updateScannum(co.getCwb(), co.getScannum() + 1);
 			co.setScannum(co.getScannum() + 1);
@@ -7398,7 +7398,7 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		if ((co.getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()) || ((co.getFlowordertype() == FlowOrderTypeEnum.YiFanKui
 				.getValue()) && (co.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue())) || (co.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue()) ||
-			(co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue())) {
+			(co.getFlowordertype() == FlowOrderTypeEnum.ChuKuSaoMiao.getValue()) || (co.getFlowordertype() == FlowOrderTypeEnum.ZhongZhuanZhanChuKu.getValue())) {
 			//Modified by leoliao at 2016-06-24 修改下一站为退货站(增加出库扫描时也可以拦截并修改下一站)
 			this.updateCwbState(cwb, CwbStateEnum.TuiHuo);
 			//如果已经反馈了再拦截，那么就把反馈表里面的数据失效 ---刘武强20160922
@@ -7408,9 +7408,10 @@ public class CwbOrderService extends BaseOrderService {
 			long    nextInterceptBranchId      = 0; //订单拦截的下一站(根据站点的流向配置，找到对应的退货组)
 			
 			Branch currentBranch = this.branchDAO.getBranchByBranchid(co.getCurrentbranchid());
-			if(co.getCurrentbranchid() == 0 || currentBranch == null){
+			Branch publicTuiHuoBranch = this.getPublicTuiHuoBranch();//如果拦截机构没有配置逆向退货站，那就把系统中的一个退货站当做拦截的退货站 --- 刘武强20161008
+			if(co.getCurrentbranchid() == 0 || currentBranch == null || currentBranch.getBranchid() == 0){
 				Branch startBranch = this.branchDAO.getBranchByBranchid(co.getStartbranchid());
-				if(co.getStartbranchid() == 0 || startBranch == null){
+				if(co.getStartbranchid() == 0 || startBranch == null || startBranch.getBranchid() == 0){
 					//如果上一站、当前站都为0，则表明订单处于导入状态，需要根据下一站找到对应的退货组
 					CwbOrder cwbOrderNew = this.cwbDAO.getCwbByCwb(co.getCwb());
 					long   nextBranchId = (cwbOrderNew==null?0 : cwbOrderNew.getNextbranchid());
@@ -7423,7 +7424,7 @@ public class CwbOrderService extends BaseOrderService {
 						//根据站点的流向配置，找到对应的退货组
 						nextInterceptBranchId = this.getNextInterceptBranchId(nextBranchId);
 						if(nextInterceptBranchId <= 0){
-							logger.error("订单(订单号={},下一站={})没有配置逆向退货组", co.getCwb(), nextBranch.getBranchname());
+							logger.info("订单(订单号={},下一站={})没有配置逆向退货组", co.getCwb(), nextBranch.getBranchname());
 							//throw new Exception("订单[订单号="+co.getCwb()+",下一站="+nextBranch.getBranchname()+"]没有配置逆向退货组");
 						}
 					}
@@ -7450,6 +7451,12 @@ public class CwbOrderService extends BaseOrderService {
 				logger.info("订单(订单号={},当前站={})当前站是退货组不用修改下一站", co.getCwb(), currentBranch.getBranchname());
 			}
 			
+			if(nextInterceptBranchId <= 0 && publicTuiHuoBranch != null && publicTuiHuoBranch.getBranchid() != 0){//如果没有配置逆向退货站，并且系统中存在退货站，那就把第一个当做其逆向的退货站--刘武强20161008
+				nextInterceptBranchId = publicTuiHuoBranch.getBranchid();
+				logger.info("订单["+co.getCwb()+"],没有配置逆向退货组,但是从系统中获取第一个退货站作为其逆向的退货站");
+			}else if (nextInterceptBranchId <= 0 && (publicTuiHuoBranch == null || publicTuiHuoBranch.getBranchid() == 0)){
+				logger.info("订单["+co.getCwb()+"],没有配置逆向退货组,并且系统中也不存在退货站");
+			}
 			logger.info("订单拦截：订单(订单号={}),blnNeedUpdateCurrentBranch={},nextInterceptBranchId={})", co.getCwb(), blnNeedUpdateCurrentBranch, nextInterceptBranchId);
 			
 			if(blnNeedUpdateCurrentBranch && nextInterceptBranchId != 0){
@@ -10814,5 +10821,22 @@ public class CwbOrderService extends BaseOrderService {
 		req.setGoods(reqGoods);
 		return req;
 	}
-
+	
+	/**
+	* @Title: getPublicTuiHuoBranch 
+	* @Description: 获取系统中排在第一位的退货站
+	* @param @return    设定文件 
+	* @return Branch    返回类型 
+	* @throws 
+	* @date 2016年10月8日 下午7:38:39 
+	* @author 刘武强
+	 */
+	public Branch getPublicTuiHuoBranch(){
+		Branch branch = new Branch();
+		List<Branch> branchList = this.branchDAO.getBranchBySiteType(BranchEnum.TuiHuo.getValue());
+		if(branchList != null && branchList.size() > 0){
+			branch = branchList.get(0);
+		}
+		return branch;
+	}
 }
