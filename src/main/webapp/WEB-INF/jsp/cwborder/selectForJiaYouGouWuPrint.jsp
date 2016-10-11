@@ -130,7 +130,7 @@ function nowprint(){
 								<td>订单编号：<%=smtcd.getCwb() %></td>
 							</tr>
 							<tr>
-								<td>手&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;机：<%=smtcd.getConsigneephone() %></td>
+								<td>手&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;机：<%=smtcd.getConsigneemobile() %></td>
 							</tr>
 							<tr>
 								<td style="border-bottom:2px dashed #CCCCCC" >商品配套：<%if(smtcd.getRemark4().length()>=14){ %><%=smtcd.getRemark4().substring(0,14) %><%}else{%><%=smtcd.getRemark4() %><%}%></td>
