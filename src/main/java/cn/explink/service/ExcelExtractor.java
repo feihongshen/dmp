@@ -1349,7 +1349,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			embracedUpdateOrderVO.setConsignee_name(temp.getConsignee_name());
 			// 收件人省是否在数据库存在
 			if ((temp.getConsignee_provinceName() == null) || "".equals(temp.getConsignee_provinceName().trim())) {
-				 this.createErrNote(temp.getOrderNo(), "寄件人省未填写", failList);
+				 this.createErrNote(temp.getOrderNo(), "收件人省未填写", failList);
 				 cwbOrders.remove(temp); continue;
 			} else if ((temp.getConsignee_provinceName() != null) && !"".equals(temp.getConsignee_provinceName().trim())) {
 				for (AdressVO para : consigneeProvincesList) {
