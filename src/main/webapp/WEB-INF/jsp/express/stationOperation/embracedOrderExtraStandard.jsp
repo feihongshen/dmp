@@ -829,6 +829,19 @@
 	        	//$.messager.alert("提示", "请完善寄件人地址", "warning");
 				confirmFunction("始发地不完善");	
 	        }
+
+			if(nullValidater(sender_name,"寄件人")){
+				if(!checkLength(sender_name, 25, '寄件人', 25)){
+					return false;
+				}
+			}
+
+			if(nullValidater(sender_adress,"寄件人地址")){
+				//校验寄件人地址是否超长
+				if(!checkLength(sender_adress, 100, '寄件人地址', 100)){
+					return false;
+				}
+			}
 		}else{
 			//校验寄件人地址
 			if(sender_province.val() == "" || sender_city.val() == "" ){
@@ -924,7 +937,7 @@
 	        }
 		}else{
 			//校验收件人地址
-			if(consignee_province.val() == "" || consignee_city.val() == ""|| consignee_county.val() == "" || consignee_town.val() == "") {
+			if(consignee_province.val() == "" || consignee_city.val() == ""|| consignee_county.val() == "" ) {
 				//$.messager.alert("提示", "请完善收件人地址", "warning");
 				confirmFunction("目的地不完善");
 			}
