@@ -926,7 +926,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 		for (String key : keys) {
 			if ("OrderNo".equals(key) || "Monthly_account_number".equals(key) || "Sender_companyName".equals(key) || "Sender_countyName".equals(key) || "Sender_townName".equals(key) ||"Sender_cellphone".equals(key) || "Sender_telephone"
 					.equals(key) || "Goods_length".equals(key) || "Goods_width".equals(key) || "Goods_high".equals(key) || "Goods_other".equals(key) || "Consignee_cellphone"
-					.equals(key) || "Consignee_telephone".equals(key) || "Xianfu".equals(key) || "Daofu".equals(key) || "Yuejie".equals(key) || "Collection_amount".equals(key) || "Insured_amount"
+					.equals(key) || "Consignee_telephone".equals(key) || "Consignee_townName".equals(key) || "Xianfu".equals(key) || "Daofu".equals(key) || "Yuejie".equals(key) || "Collection_amount".equals(key) || "Insured_amount"
 					.equals(key) || "Insured_cost".equals(key) || "Packing_amount".equals(key)) {
 				continue;
 			}

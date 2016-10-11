@@ -1464,11 +1464,11 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 			}
 			// 寄件人街道是否填写，是否存在与数据库，父子关系是否正确
 			if ((temp.getConsignee_townName() == null) || "".equals(temp.getConsignee_townName().trim())) {
-                if(inputStatus==1) {
-                    this.createErrNote(temp.getOrderNo(), "收件人街道未填写", failList);
-                    cwbOrders.remove(temp);
-                    continue;
-                }
+//                if(inputStatus==1) {
+//                    this.createErrNote(temp.getOrderNo(), "收件人街道未填写", failList);
+//                    cwbOrders.remove(temp);
+//                    continue;
+//                }
 			} else {
 				for (AdressVO para : consigneeTownsList) {
 					if (temp.getConsignee_townName().equals(para.getName()) && (para.getParentCode() != null) && para.getParentCode().equals(addressCode)) {
