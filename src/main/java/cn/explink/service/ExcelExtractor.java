@@ -1304,11 +1304,11 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 				embracedUpdateOrderVO.setSender_townName(temp.getSender_townName());
 			}
             if ((temp.getSender_adress() == null) || "".equals(temp.getSender_adress().trim())) {
-//                if(inputStatus==1) {
-//                    this.createErrNote(temp.getOrderNo(), "寄件人地址未填写", failList);
-//                    cwbOrders.remove(temp);
-//                    continue;
-//                }
+                if(inputStatus==1) {
+                    this.createErrNote(temp.getOrderNo(), "寄件人地址未填写", failList);
+                    cwbOrders.remove(temp);
+                    continue;
+                }
             }else{
                 embracedOrdervo.setSender_adress(temp.getSender_adress());
                 embracedUpdateOrderVO.setSender_adress(temp.getSender_adress());

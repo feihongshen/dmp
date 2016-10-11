@@ -105,8 +105,8 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			this.put("Monthly_account_number", 4);
 			this.put("Sender_provinceName", 5);
 			this.put("Sender_cityName", 6);
-//			this.put("Sender_countyName", 7);
-//			this.put("Sender_townName", 8);
+			this.put("Sender_countyName", 7);
+			this.put("Sender_townName", 8);
 			this.put("Sender_adress", 9);
 			this.put("Sender_cellphone", 10);
 			this.put("Sender_telephone", 11);
@@ -121,8 +121,8 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			this.put("Consignee_name", 20);
 			this.put("Consignee_provinceName", 21);
 			this.put("Consignee_cityName", 22);
-//			this.put("Consignee_countyName", 23);
-//			this.put("Consignee_townName", 24);
+			this.put("Consignee_countyName", 23);
+			this.put("Consignee_townName", 24);
 			this.put("Consignee_adress", 25);
 			this.put("Consignee_cellphone", 26);
 			this.put("Consignee_telephone", 27);
@@ -924,7 +924,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			return false;
 		}
 		for (String key : keys) {
-			if ("OrderNo".equals(key) || "Monthly_account_number".equals(key) || "Sender_companyName".equals(key) || "Sender_countyName".equals(key) || "Sender_townName".equals(key) || "Sender_adress".equals(key) ||"Sender_cellphone".equals(key) || "Sender_telephone"
+			if ("OrderNo".equals(key) || "Monthly_account_number".equals(key) || "Sender_companyName".equals(key) || "Sender_countyName".equals(key) || "Sender_townName".equals(key) ||"Sender_cellphone".equals(key) || "Sender_telephone"
 					.equals(key) || "Goods_length".equals(key) || "Goods_width".equals(key) || "Goods_high".equals(key) || "Goods_other".equals(key) || "Consignee_cellphone"
 					.equals(key) || "Consignee_telephone".equals(key) || "Xianfu".equals(key) || "Daofu".equals(key) || "Yuejie".equals(key) || "Collection_amount".equals(key) || "Insured_amount"
 					.equals(key) || "Insured_cost".equals(key) || "Packing_amount".equals(key)) {
