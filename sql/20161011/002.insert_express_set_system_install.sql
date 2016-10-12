@@ -1,0 +1,1 @@
+insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('OrderStatusInfoLength','100', '订单状态信息长度');
