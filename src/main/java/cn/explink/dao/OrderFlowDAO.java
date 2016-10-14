@@ -25,6 +25,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import cn.explink.dao.OrderFlowDAO.OrderFlowRowMapper;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
@@ -1343,6 +1344,24 @@ public class OrderFlowDAO {
 		}
 	}
 	
+	/**
+	* @Title: getLingHuoOrderFlowByCwb 
+	* @Description: 获取订单最新的领货记录
+	* @param @param cwb
+	* @param @return    设定文件 
+	* @return OrderFlow    返回类型 
+	* @throws 
+	* @date 2016年10月13日 下午8:24:13 
+	* @author 刘武强
+	 */
+	public OrderFlow getLingHuoOrderFlowByCwb(String cwb) {
+		try {
+			String sql = "select * from express_ops_order_flow where cwb=? and flowordertype=9 order by floworderid desc limit 1" ;
+			return this.jdbcTemplate.queryForObject(sql, new OrderFlowRowMapper(),cwb);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	/**
 	 * 获取时间范围内订单流程记录数

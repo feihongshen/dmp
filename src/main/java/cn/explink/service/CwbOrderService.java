@@ -6776,6 +6776,19 @@ public class CwbOrderService extends BaseOrderService {
 			int changealowflag = this.getChangealowflagById(co);
 			if ((changealowflag == 1) && (co.getDeliverystate() == DeliveryStateEnum.DaiZhongZhuan.getValue())) {// 要中转申请，就自动插入一条数据
 				OrderFlow of = this.orderFlowDAO.getOrderFlowCwb(cwb);
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String arrivebranchtime = "";
+				if(of != null ){//如果有到货/领货的轨迹，那么就取这个轨迹的时间 -- 刘武强20161013
+					arrivebranchtime = sdf.format(of.getCredate());
+				}else{//如果是直接领货，没有到货/到错货，那就取领货的轨迹
+					of = this.orderFlowDAO.getLingHuoOrderFlowByCwb(cwb);
+					if(of != null){
+						arrivebranchtime = sdf.format(of.getCredate());
+					}else{//如果领货的轨迹也没有，那就去现在的时间
+						arrivebranchtime = sdf.format(new Date());
+					}
+				}
+				
 				CwbApplyZhongZhuan cwbApplyZhongZhuan = new CwbApplyZhongZhuan();
 				cwbApplyZhongZhuan.setApplybranchid(user.getBranchid());
 				cwbApplyZhongZhuan.setApplytime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
@@ -6787,8 +6800,8 @@ public class CwbOrderService extends BaseOrderService {
 				cwbApplyZhongZhuan.setReceivablefee(co.getReceivablefee());
 				cwbApplyZhongZhuan.setCwb(co.getCwb());
 				cwbApplyZhongZhuan.setApplyzhongzhuanremark("申请中转");
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				cwbApplyZhongZhuan.setArrivebranchtime(sdf.format(of.getCredate()));
+				
+				cwbApplyZhongZhuan.setArrivebranchtime(arrivebranchtime);
 
 				this.cwbApplyZhongZhuanDAO.creAndUpdateCwbApplyZhongZhuan(cwbApplyZhongZhuan);
 			}
