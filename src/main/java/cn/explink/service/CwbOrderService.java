@@ -203,6 +203,7 @@ import cn.explink.enumutil.StockDetailEnum;
 import cn.explink.enumutil.StockDetailStocktypeEnum;
 import cn.explink.enumutil.TransCwbStateEnum;
 import cn.explink.enumutil.express.ExpressOperationEnum;
+import cn.explink.enumutil.express.ExpressPaymethodEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.exception.ExplinkException;
 import cn.explink.pos.tools.JacksonMapper;
@@ -235,6 +236,7 @@ import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderServiceHelper;
 import com.pjbest.deliveryorder.bizservice.PjDoStatusGoodsRequest;
 import com.pjbest.deliveryorder.bizservice.PjDoStatusRequest;
 import com.pjbest.deliveryorder.bizservice.PjDoStatusResponse;
+import com.pjbest.deliveryorder.enumeration.PaymentEnum;
 import com.pjbest.deliveryorder.service.OmOrderTransportModel;
 import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
 import com.vip.osp.core.exception.OspException;
@@ -5693,6 +5695,14 @@ public class CwbOrderService extends BaseOrderService {
 					// cod扫码支付方式
 					receivedfeecodpos = co.getBusinessFee();
 				}
+				// add by bruce shangguan 20161014  报障编号:2066  结算方式为月结、第三方支付的快递单 ；如果该快递单有代收货款，而且原支付方式为零，其代收货款的支付方式默认为现金
+				if(co.getCwbordertypeid() == CwbOrderTypeIdEnum.Express.getValue() && paywayid == 0
+						&& (co.getReceivablefee() != null && BigDecimal.ZERO.compareTo(co.getReceivablefee()) == -1)
+						&& (co.getPaymethod() == ExpressPaymethodEnum.YueJie.getValue() || co.getPaymethod() == ExpressPaymethodEnum.DiSanFangZhiFu.getValue())){
+					// 现金支付
+					receivedfeecash = co.getBusinessFee();
+				}
+				// end by bruce shangguan 
 			}
 			if (!isjutui) {
 				paybackedfee = co.getPaybackfee();

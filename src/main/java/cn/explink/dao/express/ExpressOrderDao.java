@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.cxf.common.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.express.ExpressCombineTypeEnum;
+import cn.explink.enumutil.express.ExpressPaymethodEnum;
 import cn.explink.util.DateTimeUtil;
 import cn.explink.util.Page;
 import cn.explink.util.SecurityUtil;
@@ -612,7 +614,7 @@ public class ExpressOrderDao {
 	 */
 	public void importEmbracedData(List<EmbracedOrderVO> list, User userparam, Branch branch) {
 		final User user = userparam;
-		final String sql = "insert into express_ops_cwb_detail (" + "cwb," + "flowordertype," + "cwbstate," + "collectorid," + "collectorname," + "currentbranchid," + "inputdatetime," + "cwbordertypeid," + "paymethod," + "customerid," + "transcwb," + "isadditionflag," + "senderprovinceid," + "senderprovince," + "sendercityid," + "sendercity," + "sendercellphone," + "sendertelephone," + "recprovinceid," + "cwbprovince," + "reccityid," + "cwbcity," + "consigneemobile," + "consigneephone," + "sendcarnum," + "inputhandlerid," + "inputhandlername," + "sendername," + "sendercountyid," + "sendercounty," + "senderstreetid," + "senderstreet," + "consigneename," + "reccountyid," + "cwbcounty," + "entrustname," + "sendnum," + "carrealweight," + "hascod," + "receivablefee," + "hasinsurance," + "insuredfee," + "realweight," + "monthsettleno," + "senderaddress," + "consigneeaddress," + "length," + "width," + "height," + "other," + "recstreetid," + "recstreet," + "announcedvalue," + "shouldfare," + "totalfee," + "packagefee," + "chargeweight," + "recareacode," + "sendareacode," + "kgs," + "emaildateid," + "instationhandlerid," + "instationhandlername," + "instationdatetime," + "instationid," + "instationname," + "carsize," + "credate)" + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		final String sql = "insert into express_ops_cwb_detail (" + "cwb," + "flowordertype," + "cwbstate," + "collectorid," + "collectorname," + "currentbranchid," + "inputdatetime," + "cwbordertypeid," + "paymethod," + "customerid," + "transcwb," + "isadditionflag," + "senderprovinceid," + "senderprovince," + "sendercityid," + "sendercity," + "sendercellphone," + "sendertelephone," + "recprovinceid," + "cwbprovince," + "reccityid," + "cwbcity," + "consigneemobile," + "consigneephone," + "sendcarnum," + "inputhandlerid," + "inputhandlername," + "sendername," + "sendercountyid," + "sendercounty," + "senderstreetid," + "senderstreet," + "consigneename," + "reccountyid," + "cwbcounty," + "entrustname," + "sendnum," + "carrealweight," + "hascod," + "receivablefee," + "hasinsurance," + "insuredfee," + "realweight," + "monthsettleno," + "senderaddress," + "consigneeaddress," + "length," + "width," + "height," + "other," + "recstreetid," + "recstreet," + "announcedvalue," + "shouldfare," + "totalfee," + "packagefee," + "chargeweight," + "recareacode," + "sendareacode," + "kgs," + "emaildateid," + "instationhandlerid," + "instationhandlername," + "instationdatetime," + "instationid," + "instationname," + "carsize," + "credate,newpaywayid)" + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		int circleTimes = (list.size() / Tools.DB_OPERATION_MAX) + 1;
 		final String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 		for (int i = 0; i < circleTimes; i++) {
@@ -709,6 +711,17 @@ public class ExpressOrderDao {
 						ps.setString(j++, StringUtil.nullConvertToEmptyString(embracedOrder.getGoods_longth()) + "CM *" + StringUtil.nullConvertToEmptyString(embracedOrder.getGoods_width()) + "CM *" + StringUtil
 								.nullConvertToEmptyString(embracedOrder.getGoods_height()) + "CM");
 						ps.setTimestamp(j++, Timestamp.valueOf(DateTimeUtil.getNowTime()));
+						// add by bruce shangguan 20161014 报障编号:2066 , 导入快递单，如果其结算方式是月结、第三方支付，该快递单的支付方式就默认为0 ；
+						int paywayId = 1 ;
+						String paymethod = embracedOrder.getPayment_method();
+						if(!StringUtils.isEmpty(paymethod)){
+							int paymethodInt = Integer.valueOf(paymethod)  ;
+							if(ExpressPaymethodEnum.YueJie.getValue() == paymethodInt || ExpressPaymethodEnum.DiSanFangZhiFu.getValue() == paymethodInt){
+								paywayId = 0 ;
+							}
+						}
+						ps.setInt(j++, paywayId);
+						// end by bruce shangguan 20161014
 					}
 
 					@Override
