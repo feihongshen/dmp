@@ -271,6 +271,8 @@ public class ChinaUmsService_toPayAmount extends ChinaUmsService {
 			parameters.put("sign_man", getSignpeopleProxy(cwbOrder, rootnote,version));
 			parameters.put("sign_time", DateTimeUtil.getNowTime());
 			parameters.put("nosysyemflag", "1");//
+			// add by jian_xie 2016-10-12 当全部退
+			parameters.put("comefrompage", "1");
 			// cwbOrderService.deliverStatePod(getUser(deliverid),alipayRespNote.getOrder_no(),parameters);
 			cwbOrderService.deliverStatePod(getUser(respNote.getDeliverid()), respNote.getOrder_no(), respNote.getOrder_no(), parameters);
 
