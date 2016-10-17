@@ -1,0 +1,3 @@
+SELECT '1.添加揽件入站时间' AS '脚本注释',IF((SELECT count(1) from information_schema.`COLUMNS` where TABLE_SCHEMA = schema() AND TABLE_NAME='fn_org_order_adjustment_record' and COLUMN_NAME='inputdatetime' ) =1,'success','failed') AS '执行结果'
+UNION ALL
+SELECT '2.添加快递单支付方式' AS '脚本注释',IF((SELECT count(1) from information_schema.`COLUMNS` where TABLE_SCHEMA = schema() AND TABLE_NAME='fn_org_order_adjustment_record' and COLUMN_NAME='express_settle_way' ) =1,'success','failed') AS '执行结果';

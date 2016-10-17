@@ -2070,6 +2070,11 @@ public class EditCwbService {
 				//设置收款状态
 				record.setStatus(record.getAdjustAmount().compareTo(BigDecimal.ZERO) < 0 ? FnCwbStatusEnum.Received.getIndex() : FnCwbStatusEnum.Unreceive.getIndex());
 				
+				/**add by bruce shangguan 20161011 取消快递单时，保存揽件入站时间*/
+				record.setInputDateTime(inputdatetime);
+				record.setExpressSettleWay(order.getPaymethod());
+				/**end by bruce shangguan*/
+				
 				this.fnOrgOrderAdjustRecordDAO.creOrderAdjustmentRecord(record);
 
 				
@@ -2166,7 +2171,10 @@ public class EditCwbService {
 				/**************end modify 20160927*******************/
 				//设置收款状态
 				record.setStatus(FnCwbStatusEnum.Received.getIndex());
-				
+				/**add by bruce shangguan 20161011 取消快递单时，保存揽件入站时间*/
+				record.setInputDateTime(inputdatetime);
+				record.setExpressSettleWay(order.getPaymethod());
+				/**end by bruce shangguan*/
 				this.fnOrgOrderAdjustRecordDAO.creOrderAdjustmentRecord(record);
 
 				
