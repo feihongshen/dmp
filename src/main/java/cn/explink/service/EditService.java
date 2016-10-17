@@ -168,7 +168,7 @@ public class EditService {
 				return;
 			}*/
 			// 如果不区分大小写先将订单号的大小写存入
-			this.logger.info("订单号,站点{}", dmpcwbOrder.getCwb(), dmpcwbOrder.getDeliverybranchid());
+			this.logger.info("订单号{},站点{}", dmpcwbOrder.getCwb(), dmpcwbOrder.getDeliverybranchid());
 			ExcelImportEdit e = this.excelImportEditDao.getEditInfoByCwb(dmpcwbOrder.getCwb());
 			if (e == null) {
 				this.excelImportEditDao.insertEditInfo(dmpcwbOrder);
