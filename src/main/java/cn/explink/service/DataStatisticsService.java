@@ -229,9 +229,9 @@ public class DataStatisticsService {
 			String orderflowcwbs      = "";
 			if(sign == 8){
 				//分站到货
-				sqlOrderFlowBySome = orderFlowDAO.genSqlOrderFlowBySome(begindate, enddate, 
-																FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), 
-																this.getStrings(currentBranchid), isnowdata, false);
+				//sqlOrderFlowBySome = orderFlowDAO.genSqlOrderFlowBySome(begindate, enddate, 
+				//												FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue(), 
+				//												this.getStrings(currentBranchid), isnowdata, false);
 			}else{
 				orderflowcwbs = this.getCwbs(sign, begindate, enddate, isauditTime, nextbranchid, startbranchid, isaudit, 
 											 operationOrderResultTypes, dispatchbranchid, deliverid, flowordertype,
@@ -253,8 +253,8 @@ public class DataStatisticsService {
 				begindate = enddate = "";
 				kufangid = nextbranchid = new String[] {};
 			} else if (sign == 8) {// 分站到货
-				begindate = enddate = "";
-				currentBranchid = new String[] {};
+				//begindate = enddate = "";
+				//currentBranchid = new String[] {};
 				String cid = ((request.getParameter("customerids") == null) || "0".equals(request.getParameter("customerids"))) ? "" : request.getParameter("customerids");
 				String[] cs = new String[] { cid };
 				customerids = cs;
@@ -303,10 +303,12 @@ public class DataStatisticsService {
 			
 			if(sign == 8){
 				//分站到货
-				final String sql = orderFlowDAO.genSqlForExport(sqlOrderFlowBySome, page, begindate, enddate, this.getStrings(customerids), 
-											 this.getStrings(startbranchid), this.getStrings(nextbranchid),this.getStrings(cwbordertypeids), 
-											 this.getStrings(currentBranchid), this.getStrings(dispatchbranchid), 
-											 strKufangid, flowordertype, paywayid, sign, paybackfeeIsZero, servicetype, true);
+				String flowordertypes   = "";
+				if (isnowdata > 0) {
+					flowordertypes   = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
+				}
+				String sql =this.cwbDAO.getDaoHuoSql(this.getStrings(customerids), this.getStrings(cwbordertypeids), strKufangid, flowordertypes,begindate, enddate, this.getStrings(currentBranchid));
+				sql=sql+" limit "+page+","+Page.EXCEL_PAGE_NUMBER;//page is begin
 				
 				DataStatisticsExcelUtils excelUtil = new DataStatisticsExcelUtils(DataStatisticsService.this);
 				excelUtil.setCloumnName4(cloumnName4);

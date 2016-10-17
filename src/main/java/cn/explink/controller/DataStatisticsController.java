@@ -1183,9 +1183,12 @@ public class DataStatisticsController {
 			}
 
 			//Modified by leoliao at 2016-07-29 优化分站到货查询性能
-			String flowordertypes   = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
+			String flowordertypes   = "";
+			if (isnowdata > 0) {
+				flowordertypes   = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
+			}
 			String currentBranchids = this.dataStatisticsService.getStrings(currentBranchid);
-			String sqlOrderFlow      = this.orderFlowDAO.genSqlOrderFlowBySome(begindate, enddate, flowordertypes, currentBranchids, isnowdata, false);
+			//String sqlOrderFlow      = this.orderFlowDAO.genSqlOrderFlowBySome(begindate, enddate, flowordertypes, currentBranchids, isnowdata, false);
 			//String sqlOrderFlowLimit = this.orderFlowDAO.genSqlOrderFlowBySome(begindate, enddate, flowordertypes, currentBranchids, isnowdata, true);
 			
 			String cwbordertypeids = this.dataStatisticsService.getStrings(cwbordertypeid);
@@ -1197,12 +1200,12 @@ public class DataStatisticsController {
 			}
 			
 			// 获订单总数
-			count = this.cwbDAO.getDaoHuoCount(customerid, cwbordertypeids, kufangids, "", sqlOrderFlow);
+			count = this.cwbDAO.getDaoHuoCount(customerid, cwbordertypeids, kufangids,flowordertypes,begindate, enddate, currentBranchids);
 			// 获取订单中金额
-			sum   = this.cwbDAO.getDaoHuoSum(customerid, cwbordertypeids, kufangids, "", sqlOrderFlow);
+			sum   = this.cwbDAO.getDaoHuoSum(customerid, cwbordertypeids, kufangids, flowordertypes,begindate, enddate, currentBranchids);
 			//获取订单明细
 			//clist = this.cwbDAO.getDaoHuoByPage(page, customerid, cwbordertypeids, kufangids, "", sqlOrderFlowLimit);
-			clist = this.cwbDAO.getDaoHuoByPage(page, customerid, cwbordertypeids, kufangids, "", sqlOrderFlow);
+			clist = this.cwbDAO.getDaoHuoByPage(page, customerid, cwbordertypeids, kufangids,flowordertypes,begindate, enddate, currentBranchids);
 			
 			/*
 			List<String> orderFlowList = this.orderFlowDAO
