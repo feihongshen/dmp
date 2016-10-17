@@ -15,7 +15,10 @@ public enum OrderTrackEnum {
 	LingHuo(FlowOrderTypeEnum.FenZhanLingHuo.getValue(),"9","派送中、领货"),
 	QianShou(FlowOrderTypeEnum.YiShenHe.getValue(),"10","签收"),
 	ZhiLiu(FlowOrderTypeEnum.YiShenHe.getValue(),"11","滞留"),
-	JuShou(FlowOrderTypeEnum.YiShenHe.getValue(),"12","拒收");
+	JuShou(FlowOrderTypeEnum.YiShenHe.getValue(),"12","拒收"),
+	TuiHuoChuZhan(FlowOrderTypeEnum.TuiHuoChuZhan.getValue(),"14","退货出站"),
+	TuiHuoRuKu(FlowOrderTypeEnum.TuiHuoZhanRuKu.getValue(),"15","入退货库"),
+	TuiGongYingShangChuKu(FlowOrderTypeEnum.TuiGongYingShangChuKu.getValue(),"16","退供货商出库");
 	
 	private int flowordertype;
 	public long getFlowordertype() {
