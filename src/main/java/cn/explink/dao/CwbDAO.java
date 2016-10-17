@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9969,11 +9970,16 @@ public class CwbDAO {
 	 * @return
 	 */
 	@DataSource(DatabaseType.REPLICA)
-	public long getDaoHuoCount(String customerids, String cwbordertypeids, String kufangids, String flowordertypes, String sqlOrderFlow) {
+	public long getDaoHuoCount(String customerids, String cwbordertypeids, String kufangids, String flowordertypes,String begindate, String enddate, String currentBranchids) {
 		StringBuffer sbSql = new StringBuffer();
-		sbSql.append("select count(1) from express_ops_cwb_detail a, (").append(sqlOrderFlow).append(") b where b.cwb = a.cwb and a.state=1 ");
+		sbSql.append("select count(1) from express_ops_cwb_detail a, express_ops_branch_daohuo b where b.cwb = a.cwb and a.state=1 ");
+		sbSql.append(" and b.credate >= str_to_date('" + begindate + "','%Y-%m-%d %H:%i:%s') and b.credate <= str_to_date('" + enddate + "','%Y-%m-%d %H:%i:%s') ");
 		
-		if (!customerids.equals("0")) {
+		if(currentBranchids!=null&&currentBranchids.length()>0){
+			sbSql.append(" and b.branchid in(").append(currentBranchids).append( ") ");
+		}
+		
+		if (customerids.length()>0&&!customerids.equals("0")) {
 			sbSql.append(" and a.customerid in(").append(customerids).append(") ");
 		}
 		
@@ -10010,12 +10016,17 @@ public class CwbDAO {
 	 * @return
 	 */
 	@DataSource(DatabaseType.REPLICA)
-	public CwbOrder getDaoHuoSum(String customerids, String cwbordertypeids, String kufangids, String flowordertypes, String sqlOrderFlow) {
+	public CwbOrder getDaoHuoSum(String customerids, String cwbordertypeids, String kufangids, String flowordertypes,String begindate, String enddate, String currentBranchids) {
 		StringBuffer sbSql = new StringBuffer();
 		sbSql.append("select sum(receivablefee) as receivablefee,sum(paybackfee) as paybackfee from express_ops_cwb_detail a, ");
-		sbSql.append("(").append(sqlOrderFlow).append(") b where b.cwb = a.cwb and a.state=1 "); 
+		sbSql.append("express_ops_branch_daohuo b where b.cwb = a.cwb and a.state=1 "); 
+		sbSql.append(" and b.credate >= str_to_date('" + begindate + "','%Y-%m-%d %H:%i:%s') and b.credate <= str_to_date('" + enddate + "','%Y-%m-%d %H:%i:%s') ");
 		
-		if (!customerids.equals("0")) {
+		if(currentBranchids!=null&&currentBranchids.length()>0){
+			sbSql.append(" and b.branchid in(").append(currentBranchids).append( ") ");
+		}
+		
+		if (customerids.length()>0&&!customerids.equals("0")) {
 			sbSql.append(" and a.customerid in(" + customerids + ") ");
 		}
 		
@@ -10044,14 +10055,28 @@ public class CwbDAO {
 	
 	// 分站到货统计查询订单list
 	@DataSource(DatabaseType.REPLICA)
-	public List<CwbOrder> getDaoHuoByPage(long page, String customerids, String cwbordertypeids, String kufangids, String flowordertypes, String sqlOrderFlow) {
+	public List<CwbOrder> getDaoHuoByPage(long page, String customerids, String cwbordertypeids, String kufangids, String flowordertypes,String begindate, String enddate, String currentBranchids) {
 		//在order flow里分页
 		//sqlOrderFlow = sqlOrderFlowLimit.replace(OrderFlowDAO.LIMIT_FLAG, " limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 		
-		StringBuffer sbSql = new StringBuffer();
-		sbSql.append("select a.* from express_ops_cwb_detail a, (").append(sqlOrderFlow).append(") b where b.cwb = a.cwb and a.state=1 ");
+		String sbSql =getDaoHuoSql(customerids, cwbordertypeids, kufangids, flowordertypes,begindate, enddate, currentBranchids);
+		sbSql=sbSql+" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER;
+		logger.info("CwbDAO getDaoHuoByPage sql:{}", sbSql);
 		
-		if (!customerids.equals("0")) {
+		return this.jdbcTemplate.query(sbSql, new CwbMapper());
+	}
+	
+	//分站到货sql
+	public String getDaoHuoSql(String customerids, String cwbordertypeids, String kufangids, String flowordertypes,String begindate, String enddate, String currentBranchids) {
+		StringBuffer sbSql = new StringBuffer();
+		sbSql.append("select a.* from express_ops_cwb_detail a, express_ops_branch_daohuo b where b.cwb = a.cwb and a.state=1 ");
+		sbSql.append(" and b.credate >= str_to_date('" + begindate + "','%Y-%m-%d %H:%i:%s') and b.credate <= str_to_date('" + enddate + "','%Y-%m-%d %H:%i:%s') ");
+		
+		if(currentBranchids!=null&&currentBranchids.length()>0){
+			sbSql.append(" and b.branchid in(").append(currentBranchids).append( ") ");
+		}
+		
+		if (customerids.length()>0&&!customerids.equals("0")) {
 			sbSql.append(" and a.customerid in(").append(customerids).append(") ");
 		}
 
@@ -10069,11 +10094,9 @@ public class CwbDAO {
 			sbSql.append(" and a.flowordertype in(").append(flowordertypes).append(") ");
 		}
 		
-		sbSql.append(" limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
+		sbSql.append(" order by b.credate ");
 		
-		logger.info("CwbDAO getDaoHuoByPage sql:{}", sbSql);
-		
-		return this.jdbcTemplate.query(sbSql.toString(), new CwbMapper());
+		return sbSql.toString();
 	}
 	
 	/**
@@ -10110,5 +10133,24 @@ public class CwbDAO {
 		String cwbStr = StringUtil.toDbInStr(cwbs);
 		String sql = "SELECT SUM(receivablefee) receivablefeeSum, SUM(paybackfee) paybackfeeSum FROM express_ops_cwb_detail WHERE cwb in(" + cwbStr + ")";
 		return this.jdbcTemplate.queryForMap(sql);
+	}
+	
+	/**
+	 * 写入到站点到货记录表
+	 * @author jianrong.gao
+	 * @date 2016年10月09日 上午10:24:18
+	 * @param cwb,branchid
+	 * @return
+	 */
+	public void saveBranchDaohuo(String cwb,long branchid,Timestamp credate) {
+		String sqlCount = "SELECT count(1) FROM express_ops_branch_daohuo WHERE cwb=? and branchid=?";
+		int cnt=this.jdbcTemplate.queryForInt(sqlCount,cwb,branchid);
+		if(cnt>0){
+			return;//存在就不写
+		}else{
+			String sqlInsert="insert into express_ops_branch_daohuo (cwb,branchid,credate) values(?,?,?)";
+			this.jdbcTemplate.update(sqlInsert,cwb,branchid,credate);
+		}
+		
 	}
 }
