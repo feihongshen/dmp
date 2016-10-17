@@ -114,6 +114,16 @@ public class OrgOrderAdjustmentRecord {
 	 * 调整类型:0-货款，1-运费
 	 */
 	private int adjustType;
+	
+	/**
+	 * 揽件入站时间
+	 */
+	private String inputDateTime ;
+	
+	/**
+	 * 快递单结算方式
+	 */
+	private Integer expressSettleWay;
 
 	public Long getId() {
 		return id;
@@ -314,4 +324,21 @@ public class OrgOrderAdjustmentRecord {
 	public void setAdjustType(int adjustType) {
 		this.adjustType = adjustType;
 	}
+
+	public String getInputDateTime() {
+		return inputDateTime;
+	}
+
+	public void setInputDateTime(String inputDateTime) {
+		this.inputDateTime = inputDateTime;
+	}
+
+	public Integer getExpressSettleWay() {
+		return expressSettleWay;
+	}
+
+	public void setExpressSettleWay(Integer expressSettleWay) {
+		this.expressSettleWay = expressSettleWay;
+	}
+	
 }

@@ -1,1 +1,1 @@
-insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('OrderStatusInfoLength','100', '¶©µ¥×´Ì¬ĞÅÏ¢³¤¶È');
+insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('OrderStatusInfoLength','100', 'è®¢å•çŠ¶æ€ä¿¡æ¯é•¿åº¦');
