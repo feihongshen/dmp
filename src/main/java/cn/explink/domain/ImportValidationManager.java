@@ -13,6 +13,7 @@ import cn.explink.service.validator.CargoAmountShouldAboveZeroAndBelowBillon;
 import cn.explink.service.validator.CargoRealWeigghtShouldAboveZero;
 import cn.explink.service.validator.CommonnumberValidator;
 import cn.explink.service.validator.CwbDeliverTypeValidator;
+import cn.explink.service.validator.CwbOrderTransCwbValidator;
 import cn.explink.service.validator.CwbOrderTypeValidator;
 import cn.explink.service.validator.CwbValidator;
 import cn.explink.service.validator.EmaildateValidator;
@@ -63,6 +64,9 @@ public class ImportValidationManager {
 
 	@Autowired
 	private CwbOrderTypeValidator cwbOrderTypeValidator;
+	
+	@Autowired
+	private CwbOrderTransCwbValidator cwbOrderTransCwbValidator;
 
 	@Autowired
 	private CwbDeliverTypeValidator cwbDeliverTypeVilidator;
@@ -208,6 +212,12 @@ public class ImportValidationManager {
 	 */
 	public List<CwbOrderValidator> getExcelImportVailidators(ExcelColumnSet excelColumnSet, Customer customer) {
 		List<CwbOrderValidator> list = getVailidators(excelColumnSet);
+		
+		//增加运单号的校验，不能含有重复的运单号---刘武强20161018
+		if (excelColumnSet.getTranscwbindex() != 0) {
+			list.add(cwbOrderTransCwbValidator);
+		}
+		
 		//手工导入增加验证发货数量和运单数量 add by vic.liang@pjbest.com 2016-08-23
 		if (excelColumnSet.getTranscwbindex() != 0 && excelColumnSet.getSendcargonumindex() != 0) {
 			transCwbSendcarNumValidator.setCustomer(customer);
