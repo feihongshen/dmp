@@ -1,0 +1,2 @@
+insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('ORGINFONOTEDIT','0', '机构名称与机构编码关闭编辑,0、可编辑，1、不可编辑');
+insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('JOBCODENEED','0', '人员管理工号是否必录,0、不是必录，1、必录');
