@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.cxf.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -13,7 +14,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import cn.explink.domain.OrgOrderAdjustmentRecord;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FnCwbStatusEnum;
+import cn.explink.util.DateTimeUtil;
 
 @Component
 public class FnOrgOrderAdjustRecordDAO {
@@ -60,17 +63,27 @@ public class FnOrgOrderAdjustRecordDAO {
 		}
 	}
 
+   /**
+    * modify by bruce shangguan 20161014 根据订单类型生成不同的调整记录明细
+    */
 	public void creOrderAdjustmentRecord(
 			final OrgOrderAdjustmentRecord orderAdjustmentRecord) {
-		this.jdbcTemplate.update("insert into fn_org_order_adjustment_record "
-				+ "(" + "order_no," + "bill_id," + "bill_no,"
-				+ "adjust_bill_no," + "customer_id," + "receive_fee,"
-				+ "refund_fee," + "modify_fee," + "adjust_amount," + "remark,"
-				+ "creator," + "create_time," + "order_type," + "pay_method,"
-				+ "deliver_id," + "sign_time," + "deliverybranchid,"
-				+ "goods_amount," + "pay_way_change_flag," + "adjust_type,"
-				+ "freight_amount, status" + ") "
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+		  StringBuffer sql = new StringBuffer("insert into fn_org_order_adjustment_record (order_no,bill_id,bill_no,") ;
+		     sql.append("adjust_bill_no,customer_id,receive_fee,") ;
+		     sql.append("refund_fee,modify_fee,adjust_amount,remark,") ;
+		     sql.append("creator,create_time,order_type,pay_method,") ;
+		     sql.append("deliver_id," + "sign_time," + "deliverybranchid,") ;
+		     sql.append("goods_amount," + "pay_way_change_flag," + "adjust_type,") ;
+		     sql.append("freight_amount, status") ;
+		if(CwbOrderTypeIdEnum.Express.getValue() == orderAdjustmentRecord.getOrderType()){
+			 sql.append(",inputdatetime,express_settle_way") ;   
+		}
+		     sql.append(" ) ").append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?") ;
+	    if(CwbOrderTypeIdEnum.Express.getValue() == orderAdjustmentRecord.getOrderType()){
+			sql.append(",?,?") ;   
+		} 
+	    sql.append(")") ;
+		this.jdbcTemplate.update(sql.toString(),
 				new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps)
@@ -110,9 +123,14 @@ public class FnOrgOrderAdjustRecordDAO {
 						ps.setBigDecimal(21,
 								orderAdjustmentRecord.getFreightAmount());
 						ps.setInt(22, orderAdjustmentRecord.getStatus() == null ? FnCwbStatusEnum.Unreceive.getIndex() : orderAdjustmentRecord.getStatus().intValue());
+						if(CwbOrderTypeIdEnum.Express.getValue() == orderAdjustmentRecord.getOrderType()){
+							ps.setDate(23, StringUtils.isEmpty(orderAdjustmentRecord.getInputDateTime()) ? null :DateTimeUtil.StringToDate(orderAdjustmentRecord.getInputDateTime(), "yyyy-MM-dd HH:mm:ss"));
+							ps.setInt(24, orderAdjustmentRecord.getExpressSettleWay() == null ? 0 : orderAdjustmentRecord.getExpressSettleWay());
+						}
 					}
 				});
 	}
+	
 
 	/**
 	 * 通过订单获取到对应订单的调整单

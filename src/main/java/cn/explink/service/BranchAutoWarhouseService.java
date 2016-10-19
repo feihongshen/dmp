@@ -42,10 +42,11 @@ public class BranchAutoWarhouseService {
 		Customer customer = this.customerDAO.getCustomerById(cwbOrder.getCustomerid());
 
 		this.logger.info("自动到货cwb={},b2cenum={}", cwbOrder.getCwb(), customer.getB2cEnum());
-
-		if ((customer.getB2cEnum() != null) && !customer.getB2cEnum().equals(this.getB2cEnumKeys(customer, "vipshop"))) {
+		
+		//不论是唯品会的揽退单，还是其他客户的揽退单，都应该做自动到货 -----刘武强20161017
+/*		if ((customer.getB2cEnum() != null) && !customer.getB2cEnum().equals(this.getB2cEnumKeys(customer, "vipshop"))) {
 			return;
-		}
+		}*/
 
 		if ((cwbOrder.getFlowordertype() == CwbFlowOrderTypeEnum.WeiDaoHuo.getValue()) || (cwbOrder.getFlowordertype() == CwbFlowOrderTypeEnum.TiHuo.getValue())
 				|| (cwbOrder.getFlowordertype() == CwbFlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue())) {

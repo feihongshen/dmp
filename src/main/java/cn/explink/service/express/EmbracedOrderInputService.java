@@ -759,7 +759,8 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					}
 					doReq.setCnorRemark(embracedOrderVO.getRemarks());
 					//快递二期新增：运费
-					doReq.setActualFee(Double.parseDouble(embracedOrderVO.getFreight()));
+					doReq.setActualFee(((embracedOrderVO.getFreight() != null) && (!"".equals(embracedOrderVO.getFreight()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
+							.getFreight()), 2) : 0); //自动截取两位有效小数，防止小数过长，tps校验不通过，导致接口发送失败---刘武强20161018
 					doReq.setProductType(embracedOrderVO.getExpress_product_type());
 					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					try {
