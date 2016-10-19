@@ -11,6 +11,7 @@
 	List<Role> roleList = (List<Role>)request.getAttribute("roles") ;
 	List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
 	long loginForbiddenPleaseWaitMinutes = Long.valueOf(request.getAttribute("loginForbiddenPleaseWaitMinutes").toString());
+	boolean userJobnumIsNeed = (Boolean)request.getAttribute("userJobnumIsNeed");
 %>
 
 <%
@@ -34,7 +35,7 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="closeBox()"></div>修改用户</h1>
 		<form id="user_save_Form" name="user_save_Form" enctype="multipart/form-data"
-			 onSubmit="if(check_user()){submitSaveUser(this,<%=u.getUserid() %>);}return false;" 
+			 onSubmit="if(check_user(<%=userJobnumIsNeed %>)){submitSaveUser(this,<%=u.getUserid() %>);}return false;" 
 			 action="<%=request.getContextPath()%>/user/saveFile/<%=u.getUserid() %>;jsessionid=<%=session.getId()%>" method="post"  >
 		<div id="box_form">
 			<ul>
@@ -145,7 +146,7 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 			         <li><span>备注信息：</span><input type="text" id="userremark" name="userremark" value="<%=u.getUserremark() %>" /></li> --%>
 			         
 			         <li><span>入职日期：</span><input type="text"  id="startworkdate" name="startworkdate" value="<%=u.getStartworkdate()==null?"":u.getStartworkdate() %>" maxlength="50"/></li>
-			         <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="<%=u.getJobnum()==null?"":u.getJobnum() %>" maxlength="50"/></li>
+			         <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="<%=u.getJobnum()==null?"":u.getJobnum() %>" maxlength="50"/><%if(userJobnumIsNeed){ %>*<%} %></li>
 	             	 <li><span>最高扣款额度：</span><input type="text"  id="maxcutpayment" name="maxcutpayment" value="<%=u.getMaxcutpayment()==null?"":u.getMaxcutpayment() %>" maxlength="50"/></li>
 	             	 <li><span>基础预付款：</span><input type="text"  id="basicadvance" name="basicadvance" value="<%=u.getBasicadvance()==null?"":u.getBasicadvance() %>" maxlength="50"/></li>
 	             	 <li><span>后期预付款：</span><input type="text"  id="lateradvance" name="lateradvance" value="<%=u.getLateradvance()==null?"":u.getLateradvance() %>" maxlength="50"/></li>
