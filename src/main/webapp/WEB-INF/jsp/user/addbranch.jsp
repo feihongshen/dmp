@@ -6,6 +6,7 @@
 <%
 	Branch branch = (Branch)request.getAttribute("branch") ;
 List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
+boolean userJobnumIsNeed = (Boolean)request.getAttribute("userJobnumIsNeed");
 %>
 <div id="box_bg"></div>
 <div id="box_contant">
@@ -13,7 +14,7 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="closeBox()"></div>创建用户</h1>
 		<form id="user_cre_Form" name="user_cre_Form" 
-			 onSubmit="if(check_userbranch()){submitCreateFormAndCloseBox(this);}return false;" 
+			 onSubmit="if(check_userbranch(<%=userJobnumIsNeed %>)){submitCreateFormAndCloseBox(this);}return false;" 
 			 action="<%=request.getContextPath()%>/user/createBranch;jsessionid=<%=session.getId()%>" method="post"  >
 		<div id="box_form">
 				<ul>
@@ -61,7 +62,7 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 					<li><span>手机：</span><input type="text" id="usermobile"  name="usermobile" value="" maxlength="50"/><span style="text-align: left;" name="tip" id="tip">*(必填项)</span></li>
 					<li><span>Email/QQ/MSN：</span><input type="text"  id="useremail" name="useremail" value="" /></li>
 	        		<li><span>入职日期：</span><input type="text"  id="startworkdate" name="startworkdate" value="" maxlength="50"/>*(无需填写,点击确认时自动生成入职日期!)</li>
-			        <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="" maxlength="50"/></li>
+			        <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="" maxlength="50"/><%if(userJobnumIsNeed){ %>*<%} %></li>
 	             	<li><span>最高扣款额度：</span><input type="text"  id="maxcutpayment" name="maxcutpayment" value="" maxlength="50"/></li>
 	             	<li><span>基础预付款：</span><input type="text"  id="basicadvance" name="basicadvance" value="" maxlength="50"/></li>
 	             	<li><span>后期预付款：</span><input type="text"  id="lateradvance" name="lateradvance" value="" maxlength="50"/>*(无需填写,动态变化的结果!)</li>

@@ -124,4 +124,8 @@ public class SystemInstallService implements ApplicationListener<ContextRefreshe
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		init();
 	}
+	
+	public boolean isBoolenInstall(String name){
+		return systemInstallDAO.isBoolenInstall(name);
+	}
 }
