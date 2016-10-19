@@ -847,6 +847,6 @@ public class UserController {
 	 * @return true 必录
 	 */
 	public boolean isNeedJobnum(){
-		return systemInstallService.isBoolenInstall("userJobnumIsNeed");
+		return systemInstallService.isBoolenInstall("JOBCODENEED");
 	}
 }

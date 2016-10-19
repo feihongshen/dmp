@@ -1,0 +1,1 @@
+SELECT '004' AS '脚本注释',IF((select count(1) from express_set_system_install where name ='ORGINFONOTEDIT' or name='JOBCODENEED') =2,'success','failed') AS '执行结果';
