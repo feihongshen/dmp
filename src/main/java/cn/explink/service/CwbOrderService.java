@@ -1937,8 +1937,6 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		//add by huangzh 2016-6-27 在站点的扫描、批量、合包到货操作，都需要添加数据到临时表express_ops_tps_flow_tmp
 		this.tpsCwbFlowService.save(co, scancwb, FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao,user.getBranchid(),null,true,null,null);
-		//写入站点到货记录表
-		this.cwbDAO.saveBranchDaohuo(cwb, currentbranchid,new Timestamp(credate));
 		return this.cwbDAO.getCwbByCwb(cwb);
 	}
 
@@ -2023,6 +2021,11 @@ public class CwbOrderService extends BaseOrderService {
 
 			flowOrderTypeEnum = FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao;
 
+		}
+		
+		//第一件扫描时才写入站点到货记录表
+		if (!(((co.getCurrentbranchid() == currentbranchid) && (co.getFlowordertype() == flowOrderTypeEnum.getValue())) || (newMPSOrder && (co.getScannum() > 0)))) {
+			this.cwbDAO.saveBranchDaohuo(cwb, currentbranchid,new Timestamp(credate));
 		}
 
 		/**
@@ -2124,8 +2127,6 @@ public class CwbOrderService extends BaseOrderService {
 		if ((ed != null) && (ed.getState() == 0)) {// 如果批次为未到货 变更为已到货
 			this.emailDateDAO.saveEmailDateToEmailDate(co.getEmaildateid());
 		}
-		//写入站点到货记录表
-		this.cwbDAO.saveBranchDaohuo(cwb, currentbranchid,new Timestamp(credate));
 
 		// ============结算逻辑站点到货扫描&&站点到错货处理小件员记录=======================
 		Branch nextbranch = this.branchDAO.getBranchByBranchid(co.getNextbranchid());

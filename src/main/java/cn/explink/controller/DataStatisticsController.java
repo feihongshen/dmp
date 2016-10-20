@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.b2c.tools.DataTranferService;
 import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CommonDAO;
 import cn.explink.dao.ComplaintDAO;
@@ -147,6 +148,8 @@ public class DataStatisticsController {
 	private JdbcTemplate jdbcTemplate;
 	@Autowired
 	ComplaintDAO complaintDAO;
+	@Autowired
+	DataTranferService dataTranferService;
 
 	private ObjectMapper om = new ObjectMapper();
 
@@ -2609,4 +2612,41 @@ public class DataStatisticsController {
 		return "datastatistics/shixiao";
 	}
 
+	@RequestMapping("/daohuoqianyi/{page}")
+	public String daohuoqianyi(Model model,@PathVariable(value = "page") String page, HttpServletResponse response, HttpServletRequest request) {
+		if(page!=null&&page.equals("1")){
+			String err=null;
+			try {
+					Thread thread1 = new Thread(
+							new Runnable() {
+					            public void run() {
+					            	dataTranferService.transferData();
+					            }
+							});
+					thread1.start();
+					this.logger.info("站点到货数据迁移线程启动.");
+			} catch (Exception e) {
+					this.logger.error("站点到货数据迁移线程出错.",e);
+					err="站点到货数据迁移线程出错."+e.getMessage();
+			}
+			model.addAttribute("err", err);
+		}else if(page!=null&&page.equals("2")){	
+			String state=dataTranferService.queryState();
+			model.addAttribute("state", state);
+		}else if(page!=null&&page.equals("3")){	
+			dataTranferService.stop=true;
+			String state=dataTranferService.queryState();
+			model.addAttribute("state", state);
+		}
+
+		model.addAttribute("pager", page);
+
+		model.addAttribute("lastFlowIdVar", dataTranferService.lastFlowIdVar);
+		model.addAttribute("firstFlowIdVar", dataTranferService.firstFlowIdVar);
+		model.addAttribute("endIdVar", dataTranferService.endIdVar);
+		model.addAttribute("startIdVar", dataTranferService.startIdVar);
+		model.addAttribute("startDate", dataTranferService.startDate);
+		model.addAttribute("endDate", dataTranferService.endDate);
+		return "datastatistics/branchqianyi";
+	}
 }

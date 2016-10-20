@@ -10143,14 +10143,7 @@ public class CwbDAO {
 	 * @return
 	 */
 	public void saveBranchDaohuo(String cwb,long branchid,Timestamp credate) {
-		String sqlCount = "SELECT count(1) FROM express_ops_branch_daohuo WHERE cwb=? and branchid=?";
-		int cnt=this.jdbcTemplate.queryForInt(sqlCount,cwb,branchid);
-		if(cnt>0){
-			return;//存在就不写
-		}else{
-			String sqlInsert="insert into express_ops_branch_daohuo (cwb,branchid,credate) values(?,?,?)";
-			this.jdbcTemplate.update(sqlInsert,cwb,branchid,credate);
-		}
-		
+		String sqlInsert="insert into express_ops_branch_daohuo (cwb,branchid,credate) values(?,?,?)";
+		this.jdbcTemplate.update(sqlInsert,cwb,branchid,credate);
 	}
 }
