@@ -1884,7 +1884,14 @@ private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
 				//刘武强优化 -- 20160725
 				OrderFlow daohuosaomiao = null;
 				try {
-					daohuosaomiao = this.getLastObject(orderflowListByCwbsAndFlowordertype_fenzhandaohuo, OrderFlow.class);
+					//获取到货轨迹集合中，这个订单的所有到货记录 -----刘武强20161020
+					List<OrderFlow> tempOrderList = new ArrayList<OrderFlow>();
+ 					for(OrderFlow temp : orderflowListByCwbsAndFlowordertype_fenzhandaohuo){
+						if(c.getCwb() != null && c.getCwb().equals(temp.getCwb())){
+							tempOrderList.add(temp);
+						}
+					}
+					daohuosaomiao = this.getLastObject(tempOrderList, OrderFlow.class);
 					if (daohuosaomiao.getCwb() == null) {
 						//刘武强优化 -- 20160725
 						daohuosaomiao = this.getLastObject(orderflowListByCwbsAndFlowordertype_fenzhandaohuoyouhuowudan, OrderFlow.class);
