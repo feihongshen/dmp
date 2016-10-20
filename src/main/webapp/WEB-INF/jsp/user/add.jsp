@@ -7,7 +7,6 @@
 	List<Branch> branchList = (List<Branch>)request.getAttribute("branches") ;
 	List<Role> roleList = (List<Role>)request.getAttribute("roles") ;
 	List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
-	boolean userJobnumIsNeed = (Boolean)request.getAttribute("userJobnumIsNeed");
 %>
 <div id="box_bg"></div>
 <div id="box_contant">
@@ -15,7 +14,7 @@
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="closeBox()"></div>创建用户</h1>
 		<form id="user_cre_Form" name="user_cre_Form" enctype="multipart/form-data"
-			 onSubmit="if(check_user(<%=userJobnumIsNeed %>)){submitAddUser(this);}return false;" 
+			 onSubmit="if(check_user()){submitAddUser(this);}return false;" 
 			 action="<%=request.getContextPath()%>/user/createFile;jsessionid=<%=session.getId()%>" method="post"  >
 		<div id="box_form">
 				<ul>
@@ -107,7 +106,7 @@
 			        <!-- <li><span>备注信息：</span><input type="text" id="userremark" name="userremark" value="" /></li> -->
 			        
 			         <li><span>入职日期：</span><input type="text"  id="startworkdate" name="startworkdate" value="" maxlength="50"/>*(无需填写,点击确认时自动生成入职日期!)</li>
-			         <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="" maxlength="50"/><%if(userJobnumIsNeed){ %>*<%} %></li>
+			         <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="" maxlength="50"/></li>
 	             	 <li><span>最高扣款额度：</span><input type="text"  id="maxcutpayment" name="maxcutpayment" value="" maxlength="50"/></li>
 	             	 <li><span>基础预付款：</span><input type="text"  id="basicadvance" name="basicadvance" value="" maxlength="50"/></li>
 	             	 <li><span>后期预付款：</span><input type="text"  id="lateradvance" name="lateradvance" value="" maxlength="50"/>*(无需填写,动态变化的结果!)</li>

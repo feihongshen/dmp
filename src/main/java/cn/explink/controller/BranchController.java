@@ -304,13 +304,6 @@ public class BranchController {
 				branch.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
 			Branch oldBranch =this.branchDAO.getBranchByBranchid(branchid);
-			//add by jian_xie 2016-10-19 机构编码与名称是否可编辑 true 不可修改
-	        boolean closeBranchNameAndTpscodeEdit = systemInstallService.isBoolenInstall("closeBranchNameAndTpscodeEdit");
-	        if(closeBranchNameAndTpscodeEdit){
-	        	branch.setBranchname(oldBranch.getBranchname());
-	        	branch.setTpsbranchcode(oldBranch.getTpsbranchcode());
-	        }
-			
 			try {
 				branchService.saveBranchAndSyncOsp(branch);
 			} catch (Exception e) {
@@ -380,12 +373,6 @@ public class BranchController {
 			if (!rs.isResult()) {
 				return "{\"errorCode\":1,\"error\":\"" + rs.getMessage() +"\"}";
 			}
-			//add by jian_xie 2016-10-19 机构编码与名称是否可编辑 true 不可修改
-	        boolean closeBranchNameAndTpscodeEdit = systemInstallService.isBoolenInstall("closeBranchNameAndTpscodeEdit");
-	        if(closeBranchNameAndTpscodeEdit){
-	        	branch.setBranchname(oldBranch.getBranchname());
-	        	branch.setTpsbranchcode(oldBranch.getTpsbranchcode());
-	        }
 			try {
 				branchService.saveBranchAndSyncOsp(branch);
 			} catch (Exception e) {
@@ -462,10 +449,7 @@ public class BranchController {
                 }
             }
         }
-        
-        //add by jian_xie 2016-10-19 机构编码与名称是否可编辑
-        boolean closeBranchNameAndTpscodeEdit = systemInstallService.isBoolenInstall("closeBranchNameAndTpscodeEdit");
-        model.addAttribute("closeBranchNameAndTpscodeEdit", closeBranchNameAndTpscodeEdit);
+
         return "branch/edit";
 	}
 
@@ -527,7 +511,6 @@ public class BranchController {
 		User user=this.getSessionUser();
 		String userloginname=user.getUsername();
 		model.addAttribute("flag", userloginname.equals("admin") ? true : false);
-		model.addAttribute("roleid", getSessionUser().getRoleid());
 		return "branch/list";
 	}
 

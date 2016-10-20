@@ -9,7 +9,6 @@
 	Branch branch = (Branch)request.getAttribute("branch") ;
 	List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
 	long loginForbiddenPleaseWaitMinutes = Long.valueOf(request.getAttribute("loginForbiddenPleaseWaitMinutes").toString());
-	boolean userJobnumIsNeed = (Boolean)request.getAttribute("userJobnumIsNeed");
 %>
 <%if(request.getAttribute("user")!=null){%>
 <script type="text/javascript">
@@ -25,7 +24,7 @@ initUser[1]="<%=u.getEmployeestatus() %>,employeestatus";
 	<div id="box_in_bg">
 		<h1><div id="close_box" onclick="closeBox()"></div>修改用户</h1>
 		<form id="user_save_Form" name="user_save_Form" 
-			 onSubmit="if(check_userbranch(<%=userJobnumIsNeed %>)){submitSaveFormAndCloseBox(this);}return false;" 
+			 onSubmit="if(check_userbranch()){submitSaveFormAndCloseBox(this);}return false;" 
 			 action="<%=request.getContextPath()%>/user/saveBranch/<%=u.getUserid() %>;jsessionid=<%=session.getId()%>" method="post"  >
 		<div id="box_form">
 			<ul>
@@ -82,7 +81,7 @@ initUser[1]="<%=u.getEmployeestatus() %>,employeestatus";
 					<li><span>手机：</span><input type="text" id="usermobile"  name="usermobile" value="<%=u.getUsermobile() %>" maxlength="50"/><span style="text-align: left;" name="tip" id="tip">*</span></li>
 					<li><span>Email/QQ/MSN：</span><input type="text"  id="useremail" name="useremail" value="<%=u.getUseremail() %>" maxlength="50"/></li>
 	        		<li><span>入职日期：</span><input type="text"  id="startworkdate" name="startworkdate" value="<%=u.getStartworkdate()==null?"":u.getStartworkdate() %>" maxlength="50"/></li>
-			        <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="<%=u.getJobnum()==null?"":u.getJobnum() %>" maxlength="50"/><%if(userJobnumIsNeed){ %>*<%} %></li>
+			        <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="<%=u.getJobnum()==null?"":u.getJobnum() %>" maxlength="50"/></li>
 	             	<li><span>最高扣款额度：</span><input type="text"  id="maxcutpayment" name="maxcutpayment" value="<%=u.getMaxcutpayment()==null?"":u.getMaxcutpayment() %>" maxlength="50"/></li>
 	             	<li><span>基础预付款：</span><input type="text"  id="basicadvance" name="basicadvance" value="<%=u.getBasicadvance()==null?"":u.getBasicadvance() %>" maxlength="50"/></li>
 	             	<li><span>后期预付款：</span><input type="text"  id="lateradvance" name="lateradvance" value="<%=u.getLateradvance()==null?"":u.getLateradvance() %>" maxlength="50"/></li>

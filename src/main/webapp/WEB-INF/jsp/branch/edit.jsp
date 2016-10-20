@@ -26,7 +26,6 @@
 	List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
 	List<JSONObject> tlBankList = (List<JSONObject>)request.getAttribute("tlBankList");
 	List<JSONObject> cftBankList = (List<JSONObject>)request.getAttribute("cftBankList");
-	boolean closeBranchNameAndTpscodeEdit = (Boolean)request.getAttribute("closeBranchNameAndTpscodeEdit");
 	
 	int payMethodTypeValue = 0;
 	if(branch.getBankCardNo()!=null && !branch.getBankCardNo().equals("")) {
@@ -112,7 +111,7 @@
 	            </li>
           		<li>
           			<span>机构名称：</span>
-          			<input type="text" <%if(closeBranchNameAndTpscodeEdit){ %> readOnly="true" disabled="true"<%} %> name="branchname" id="branchname" value ="<%=branch.getBranchname()%>" maxlength="50"/>
+          			<input type="text" name="branchname" id="branchname" value ="<%=branch.getBranchname()%>" maxlength="50"/>
           			*
           		</li>
           		<li>
@@ -122,7 +121,7 @@
        			</li>
        			<li>
           			<span>机构编码：</span>
-          			<input type="text" <%if(closeBranchNameAndTpscodeEdit){ %> readOnly="true" disabled="true"<%} %> name="tpsbranchcode" id="tpsbranchcode" value ="<%=branch.getTpsbranchcode() %>" maxlength="50"/>
+          			<input type="text" name="tpsbranchcode" id="tpsbranchcode" value ="<%=branch.getTpsbranchcode() %>" maxlength="50"/>
           			*
        			</li>
        			<li>

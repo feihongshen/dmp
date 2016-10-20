@@ -6,7 +6,6 @@
 <%
   List<Branch> branches = (List<Branch>)request.getAttribute("branches");
   Page page_obj = (Page)request.getAttribute("page_obj");
-  long roleid = request.getAttribute("roleid") == null ? -1 : (Long)request.getAttribute("roleid");
 %>
 
 
@@ -104,9 +103,6 @@ function delSuccess(data){
 }
 $(function() {
 	$("#sync_button").click(function() {
-		if(!confirm("确定同步站点机构？")){
-			return;
-		}
 		$("#exportForm").submit();
 		alert("正在同步中，请稍等几分钟。同步结果将输出到excel文件中.");
 	});
@@ -118,14 +114,11 @@ $(function() {
 
 <div class="right_box">
 	<div class="inputselect_box">
-	    <!-- 只有管理员才可以同步机构 -->
-	    <% if(roleid == 0){%>
 		<span>
 			<form action="<%=request.getContextPath()%>/branch/syncAllBranchToOsp" method="post" id="exportForm">
 				<input name="" type="button" value="同步机构" class="input_button1"  id="sync_button"  />
 			</form>
 		</span>
-		<%} %>
 		<span><input name="" type="button" value="创建机构" class="input_button1"  id="add_button"  />
 		</span>
 		<form action="<%=request.getAttribute("page")==null?"1":request.getAttribute("page") %>" method="post" id="searchForm">

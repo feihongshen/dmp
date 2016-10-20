@@ -175,7 +175,6 @@ public class UserController {
 		model.addAttribute("branches", this.branchDAO.getAllEffectBranches());
 		model.addAttribute("roles", this.roleDAO.getRoles());
 		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Derlivery.getValue()));
-		model.addAttribute("userJobnumIsNeed", isNeedJobnum());
 		return "user/add";
 	}
 
@@ -281,7 +280,6 @@ public class UserController {
 		model.addAttribute("roles", this.roleDAO.getRoles());
 		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Derlivery.getValue()));
 		model.addAttribute("loginForbiddenPleaseWaitMinutes", this.getLoginForbiddenPleaseWaitMinutes(userid));
-		model.addAttribute("userJobnumIsNeed", isNeedJobnum());
 		return "user/edit";
 	}
 
@@ -460,7 +458,6 @@ public class UserController {
 	public String addBranch(Model model) throws Exception {
 		model.addAttribute("branch", this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()));
 		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Derlivery.getValue()));
-		model.addAttribute("userJobnumIsNeed", isNeedJobnum());
 		return "user/addbranch";
 	}
 
@@ -503,7 +500,6 @@ public class UserController {
 		model.addAttribute("user", this.userDAO.getUserByUserid(userid));
 		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Derlivery.getValue()));
 		model.addAttribute("loginForbiddenPleaseWaitMinutes", this.getLoginForbiddenPleaseWaitMinutes(userid));
-		model.addAttribute("userJobnumIsNeed", isNeedJobnum());
 		return "user/editbranch";
 	}
 
@@ -840,13 +836,5 @@ public class UserController {
 			}
 		}
 		return "{\"errorCode\":0,\"error\":\"解禁成功\"}";
-	}
-	
-	/**
-	 * 工号是否必录
-	 * @return true 必录
-	 */
-	public boolean isNeedJobnum(){
-		return systemInstallService.isBoolenInstall("userJobnumIsNeed");
 	}
 }
