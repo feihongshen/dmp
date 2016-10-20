@@ -1,2 +1,2 @@
-insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('ORGINFONOTEDIT','0', '»ú¹¹Ãû³ÆÓë»ú¹¹±àÂë¹Ø±Õ±à¼­,0¡¢¿É±à¼­£¬1¡¢²»¿É±à¼­');
-insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('JOBCODENEED','0', 'ÈËÔ±¹ÜÀí¹¤ºÅÊÇ·ñ±ØÂ¼,0¡¢²»ÊÇ±ØÂ¼£¬1¡¢±ØÂ¼');
+insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('ORGINFONOTEDIT','0', 'æœºæ„åç§°ä¸æœºæ„ç¼–ç å…³é—­ç¼–è¾‘,0ã€å¯ç¼–è¾‘ï¼Œ1ã€ä¸å¯ç¼–è¾‘');
+insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('JOBCODENEED','0', 'äººå‘˜ç®¡ç†å·¥å·æ˜¯å¦å¿…å½•,0ã€ä¸æ˜¯å¿…å½•ï¼Œ1ã€å¿…å½•');
