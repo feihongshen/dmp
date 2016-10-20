@@ -1,1 +1,0 @@
-delete from express_set_system_install where name ='ORGINFONOTEDIT' or name='JOBCODENEED';

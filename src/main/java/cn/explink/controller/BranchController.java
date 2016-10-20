@@ -305,7 +305,7 @@ public class BranchController {
 			}
 			Branch oldBranch =this.branchDAO.getBranchByBranchid(branchid);
 			//add by jian_xie 2016-10-19 机构编码与名称是否可编辑 true 不可修改
-	        boolean closeBranchNameAndTpscodeEdit = systemInstallService.isBoolenInstall("ORGINFONOTEDIT");
+	        boolean closeBranchNameAndTpscodeEdit = systemInstallService.isBoolenInstall("closeBranchNameAndTpscodeEdit");
 	        if(closeBranchNameAndTpscodeEdit){
 	        	branch.setBranchname(oldBranch.getBranchname());
 	        	branch.setTpsbranchcode(oldBranch.getTpsbranchcode());
@@ -381,7 +381,7 @@ public class BranchController {
 				return "{\"errorCode\":1,\"error\":\"" + rs.getMessage() +"\"}";
 			}
 			//add by jian_xie 2016-10-19 机构编码与名称是否可编辑 true 不可修改
-	        boolean closeBranchNameAndTpscodeEdit = systemInstallService.isBoolenInstall("ORGINFONOTEDIT");
+	        boolean closeBranchNameAndTpscodeEdit = systemInstallService.isBoolenInstall("closeBranchNameAndTpscodeEdit");
 	        if(closeBranchNameAndTpscodeEdit){
 	        	branch.setBranchname(oldBranch.getBranchname());
 	        	branch.setTpsbranchcode(oldBranch.getTpsbranchcode());
@@ -464,7 +464,7 @@ public class BranchController {
         }
         
         //add by jian_xie 2016-10-19 机构编码与名称是否可编辑
-        boolean closeBranchNameAndTpscodeEdit = systemInstallService.isBoolenInstall("ORGINFONOTEDIT");
+        boolean closeBranchNameAndTpscodeEdit = systemInstallService.isBoolenInstall("closeBranchNameAndTpscodeEdit");
         model.addAttribute("closeBranchNameAndTpscodeEdit", closeBranchNameAndTpscodeEdit);
         return "branch/edit";
 	}
