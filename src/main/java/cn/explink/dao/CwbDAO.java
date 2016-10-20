@@ -9971,13 +9971,15 @@ public class CwbDAO {
 	 */
 	@DataSource(DatabaseType.REPLICA)
 	public long getDaoHuoCount(String customerids, String cwbordertypeids, String kufangids, String flowordertypes,String begindate, String enddate, String currentBranchids) {
-		StringBuffer sbSql = new StringBuffer();
-		sbSql.append("select count(1) from express_ops_cwb_detail a, express_ops_branch_daohuo b where b.cwb = a.cwb and a.state=1 ");
-		sbSql.append(" and b.credate >= str_to_date('" + begindate + "','%Y-%m-%d %H:%i:%s') and b.credate <= str_to_date('" + enddate + "','%Y-%m-%d %H:%i:%s') ");
-		
+		StringBuffer dhSql = new StringBuffer("");
+		dhSql.append("select distinct cwb from express_ops_branch_daohuo");
+		dhSql.append(" where credate >= str_to_date('" + begindate + "','%Y-%m-%d %H:%i:%s') and credate <= str_to_date('" + enddate + "','%Y-%m-%d %H:%i:%s') ");
 		if(currentBranchids!=null&&currentBranchids.length()>0){
-			sbSql.append(" and b.branchid in(").append(currentBranchids).append( ") ");
+			dhSql.append(" and branchid in(").append(currentBranchids).append( ") ");
 		}
+		
+		StringBuffer sbSql = new StringBuffer();
+		sbSql.append("select count(1) from express_ops_cwb_detail a, ("+dhSql.toString()+") b where b.cwb = a.cwb and a.state=1 ");
 		
 		if (customerids.length()>0&&!customerids.equals("0")) {
 			sbSql.append(" and a.customerid in(").append(customerids).append(") ");
@@ -10017,14 +10019,16 @@ public class CwbDAO {
 	 */
 	@DataSource(DatabaseType.REPLICA)
 	public CwbOrder getDaoHuoSum(String customerids, String cwbordertypeids, String kufangids, String flowordertypes,String begindate, String enddate, String currentBranchids) {
+		StringBuffer dhSql = new StringBuffer("");
+		dhSql.append("select distinct cwb from express_ops_branch_daohuo");
+		dhSql.append(" where credate >= str_to_date('" + begindate + "','%Y-%m-%d %H:%i:%s') and credate <= str_to_date('" + enddate + "','%Y-%m-%d %H:%i:%s') ");
+		if(currentBranchids!=null&&currentBranchids.length()>0){
+			dhSql.append(" and branchid in(").append(currentBranchids).append( ") ");
+		}
+		
 		StringBuffer sbSql = new StringBuffer();
 		sbSql.append("select sum(receivablefee) as receivablefee,sum(paybackfee) as paybackfee from express_ops_cwb_detail a, ");
-		sbSql.append("express_ops_branch_daohuo b where b.cwb = a.cwb and a.state=1 "); 
-		sbSql.append(" and b.credate >= str_to_date('" + begindate + "','%Y-%m-%d %H:%i:%s') and b.credate <= str_to_date('" + enddate + "','%Y-%m-%d %H:%i:%s') ");
-		
-		if(currentBranchids!=null&&currentBranchids.length()>0){
-			sbSql.append(" and b.branchid in(").append(currentBranchids).append( ") ");
-		}
+		sbSql.append("("+dhSql.toString()+") b where b.cwb = a.cwb and a.state=1 "); 
 		
 		if (customerids.length()>0&&!customerids.equals("0")) {
 			sbSql.append(" and a.customerid in(" + customerids + ") ");
@@ -10068,14 +10072,16 @@ public class CwbDAO {
 	
 	//分站到货sql
 	public String getDaoHuoSql(String customerids, String cwbordertypeids, String kufangids, String flowordertypes,String begindate, String enddate, String currentBranchids) {
-		StringBuffer sbSql = new StringBuffer();
-		sbSql.append("select a.* from express_ops_cwb_detail a, express_ops_branch_daohuo b where b.cwb = a.cwb and a.state=1 ");
-		sbSql.append(" and b.credate >= str_to_date('" + begindate + "','%Y-%m-%d %H:%i:%s') and b.credate <= str_to_date('" + enddate + "','%Y-%m-%d %H:%i:%s') ");
-		
+		StringBuffer dhSql = new StringBuffer("");
+		dhSql.append("select distinct cwb from express_ops_branch_daohuo");
+		dhSql.append(" where credate >= str_to_date('" + begindate + "','%Y-%m-%d %H:%i:%s') and credate <= str_to_date('" + enddate + "','%Y-%m-%d %H:%i:%s') ");
 		if(currentBranchids!=null&&currentBranchids.length()>0){
-			sbSql.append(" and b.branchid in(").append(currentBranchids).append( ") ");
+			dhSql.append(" and branchid in(").append(currentBranchids).append( ") ");
 		}
 		
+		StringBuffer sbSql = new StringBuffer();
+		sbSql.append("select a.* from express_ops_cwb_detail a, ("+dhSql.toString()+") b where b.cwb = a.cwb and a.state=1 ");
+
 		if (customerids.length()>0&&!customerids.equals("0")) {
 			sbSql.append(" and a.customerid in(").append(customerids).append(") ");
 		}
@@ -10093,8 +10099,6 @@ public class CwbDAO {
 		if (flowordertypes.length() > 0) {
 			sbSql.append(" and a.flowordertype in(").append(flowordertypes).append(") ");
 		}
-		
-		sbSql.append(" order by b.credate ");
 		
 		return sbSql.toString();
 	}
