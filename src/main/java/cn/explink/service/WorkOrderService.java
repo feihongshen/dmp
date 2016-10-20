@@ -164,11 +164,12 @@ public class WorkOrderService {
 		CwbOrder cwbOrder = null;
 		boolean isValidated = true;
 		int[] sequence;
-		if (type == 1)
+		if (type == 1){
 			sequence = new int[]{5,4,6,7,8,9,10,1};
-		else 
+		}else{ 
 			sequence = new int[]{5,4,6,7,8,9,10,11,1};
-		
+		}
+		extractor.changeXRowCellTypeToString(row, sequence.length); // 在读取模板之前，把excel单位格类型全部转化成字符---刘武强20161018
 		for (int index : sequence) {
 			switch(index) {
 			case 1 : //联系人
@@ -232,13 +233,14 @@ public class WorkOrderService {
 					break;
 				}
 				complain = new CsComplaintAcceptViewVo(true);
-				try {
+				//把这个转换去掉，可能会转化出错，譬如cwb太长，导致int类型溢出，其替代方法：在模板读取前将模板转化为是字符串 ---刘武强20161018
+				/*try {
 					BigDecimal temp = new BigDecimal(cwb);
 					cwb = temp.intValue()+"";//去除纯数字订单号小数点
 				} catch (NumberFormatException e) {
 					//doNothing
 					logger.error("订单号非数字", e);
-				}
+				}*/
 				cwbOrder = cwbdao.getCwbByCwb(cwb);
 				if (cwbOrder != null) {
 					complain.setOrderNo(cwb);

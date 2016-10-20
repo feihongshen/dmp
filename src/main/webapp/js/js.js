@@ -1273,7 +1273,7 @@ function checkUsername() {
 	});
 }
 
-function check_user() {
+function check_user(userJobnumIsNeed) {
 	//var checkuserformid = "user_cre_Form";
 	roleChange();
 	if ($("#realname").val().length == 0) {
@@ -1365,6 +1365,11 @@ function check_user() {
 	
 	if ($("#idcardno").val().length == 0) {
 		alert("身份证号不能为空!");
+		return false;
+	}
+	
+	if(userJobnumIsNeed && !$("#jobnum").val()){
+		alert("工号不能为空");
 		return false;
 	}
 	
@@ -4725,7 +4730,7 @@ function check_describeAndDutyInfo() {
 	return true;
 }
 
-function check_userbranch() {
+function check_userbranch(userJobnumIsNeed) {
 	if ($("#realname").val().length == 0) {
 		alert("员工姓名不能为空");
 		return false;
@@ -4791,6 +4796,10 @@ function check_userbranch() {
 	}
 	if ($("#idcardno").val().length == 0) {
 		alert("身份证号不能为空!");
+		return false;
+	}
+	if(userJobnumIsNeed && !$("#jobnum").val()){
+		alert("工号不能为空");
 		return false;
 	}
 	var creandsave = $("#creandsave").val();
