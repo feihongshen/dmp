@@ -308,7 +308,7 @@ public class DataStatisticsService {
 					flowordertypes   = FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue();
 				}
 				String sql =this.cwbDAO.getDaoHuoSql(this.getStrings(customerids), this.getStrings(cwbordertypeids), strKufangid, flowordertypes,begindate, enddate, this.getStrings(currentBranchid));
-				sql=sql+" limit "+page+","+Page.EXCEL_PAGE_NUMBER;//page is begin
+				sql=sql+OrderFlowDAO.LIMIT_FLAG;//page is begin
 				
 				DataStatisticsExcelUtils excelUtil = new DataStatisticsExcelUtils(DataStatisticsService.this);
 				excelUtil.setCloumnName4(cloumnName4);
