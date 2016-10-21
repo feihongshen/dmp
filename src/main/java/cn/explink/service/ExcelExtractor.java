@@ -419,11 +419,8 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 						addressPrefix.append(" ").append(countyString);
 					}
 				}
-				if(addressString.toString()!=null){
-                    addressPrefix.append(addressString);
-                }
 			}
-			cwbOrder.setConsigneeaddress(addressPrefix.toString());
+			cwbOrder.setConsigneeaddress(addressPrefix.append(addressString).toString());
 		}
 		if (excelColumnSet.getConsigneepostcodeindex() != 0) {
 			cwbOrder.setConsigneepostcode(this.getXRowCellData(row, excelColumnSet.getConsigneepostcodeindex()));
