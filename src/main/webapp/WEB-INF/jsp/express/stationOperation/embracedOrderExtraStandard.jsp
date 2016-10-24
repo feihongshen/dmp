@@ -842,6 +842,16 @@
 					return false;
 				}
 			}
+			//如果为月结，校验寄件人公司是否为空 -----第三方支付的时候（payment_method == 3）也要求寄件人单位必填，并且如果选择1000的这个，就不允许选择第三方支付  20161022
+			if(payment_method == 0 || payment_method == 3){
+	      		if(!nullValidater(sender_companyName,"寄件人公司")){
+	      			return false;
+		        }
+		        if(payment_method == 3 && $("#sender_companyName_id  option:selected").attr("code") == 1000){
+		        	alert("寄件人公司是系统默认'快递单'的时候不允许选择第三方支付");
+		        	return false;
+		        }
+	      	}
 		}else{
 			//校验寄件人地址
 			if(sender_province.val() == "" || sender_city.val() == "" ){
@@ -855,10 +865,20 @@
 	            	return false;
 	            }
 	      	} */
-	       //如果为月结，校验寄件人公司是否为空
+	       	//如果为月结，校验寄件人公司是否为空
 	      	if(payment_method == 0){
 		        if(!nullValidater(sender_companyName,"寄件人公司")){
 		        	confirmFunction("寄件人公司未填写");
+		        }
+	      	}
+	      	//如果为月结，校验寄件人公司是否为空 -----第三方支付的时候（payment_method == 3）也要求寄件人单位必填，并且如果选择1000的这个，就不允许选择第三方支付  20161022
+	      	if(payment_method == 0 || payment_method == 3){
+	      		if(!nullValidater(sender_companyName,"寄件人公司")){
+	      			return false;
+		        }
+		        if(payment_method == 3 && $("#sender_companyName_id  option:selected").attr("code") == 1000){
+		        	alert("寄件人公司是系统默认'快递单'的时候不允许选择第三方支付");
+		        	return false;
 		        }
 	      	}
 	      	//校验寄件人公司是否超长
