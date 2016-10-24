@@ -12,6 +12,7 @@ import cn.explink.service.validator.BackCargoNumShouldAboveZero;
 import cn.explink.service.validator.CargoAmountShouldAboveZeroAndBelowBillon;
 import cn.explink.service.validator.CargoRealWeigghtShouldAboveZero;
 import cn.explink.service.validator.CommonnumberValidator;
+import cn.explink.service.validator.ConsigneeaddressNewValidator;
 import cn.explink.service.validator.CwbDeliverTypeValidator;
 import cn.explink.service.validator.CwbOrderTransCwbValidator;
 import cn.explink.service.validator.CwbOrderTypeValidator;
@@ -88,6 +89,9 @@ public class ImportValidationManager {
 	
 	@Autowired
 	private TransCwbSendcarNumValidator transCwbSendcarNumValidator; //发货数量和运单数量验证
+	
+	@Autowired
+	private ConsigneeaddressNewValidator ConsigneeaddressNewValidator;
 
 	/*
 	 * @Autowired private ConsigneemobileValidator consigneemobileValidator;
@@ -222,6 +226,11 @@ public class ImportValidationManager {
 		if (excelColumnSet.getTranscwbindex() != 0 && excelColumnSet.getSendcargonumindex() != 0) {
 			transCwbSendcarNumValidator.setCustomer(customer);
 			list.add(transCwbSendcarNumValidator);
+		}
+		
+		// 导入添加收货地址为空的校难除 add by jian_xie 2016-10-24
+		if(excelColumnSet.getConsigneeaddressindex() != 0){
+			list.add(ConsigneeaddressNewValidator);
 		}
 		return list;
 	}
