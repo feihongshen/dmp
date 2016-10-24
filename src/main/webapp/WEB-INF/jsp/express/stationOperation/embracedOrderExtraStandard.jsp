@@ -820,8 +820,8 @@
 		var sender_certificateNo = $("#sender_certificateNo_id");
 		var sender_No = $("#sender_No_id");
 		var payment_method = $("input[name='payment_method']:checked").val();//0为月结
+		var sender_companyName_id = $("#sender_companyName_id  option:selected").attr("id");
 // 		var countySelect = $("#sender_countyid_id");
-		
 		//如果不属于补录，则第一次只要求填写寄件三级地址
 		if ($("#isadditionflag_id").val() == 0) {
 			//校验寄件人地址
@@ -845,11 +845,12 @@
 			//如果为月结，校验寄件人公司是否为空 -----第三方支付的时候（payment_method == 3）也要求寄件人单位必填，并且如果选择1000的这个，就不允许选择第三方支付  20161022
 			if(payment_method == 0 || payment_method == 3){
 	      		if(!nullValidater(sender_companyName,"寄件人公司")){
-	      			return false;
+	      			confirmFunction("月结和第三方支付时寄件人公司必填");
+	      			//return false;
 		        }
-		        if(payment_method == 3 && $("#sender_companyName_id  option:selected").attr("code") == 1000){
-		        	alert("寄件人公司是系统默认'快递单'的时候不允许选择第三方支付");
-		        	return false;
+		        if(payment_method == 3 && (sender_companyName_id == 1000)){
+		        	confirmFunction("第三方支付时寄件人公司不能是是系统默认值");
+		        	//return false;
 		        }
 	      	}
 		}else{
@@ -865,20 +866,17 @@
 	            	return false;
 	            }
 	      	} */
-	       	//如果为月结，校验寄件人公司是否为空
-	      	if(payment_method == 0){
-		        if(!nullValidater(sender_companyName,"寄件人公司")){
-		        	confirmFunction("寄件人公司未填写");
-		        }
-	      	}
 	      	//如果为月结，校验寄件人公司是否为空 -----第三方支付的时候（payment_method == 3）也要求寄件人单位必填，并且如果选择1000的这个，就不允许选择第三方支付  20161022
 	      	if(payment_method == 0 || payment_method == 3){
 	      		if(!nullValidater(sender_companyName,"寄件人公司")){
-	      			return false;
+	      			confirmFunction("月结和第三方支付时寄件人公司必填");
+	      			//$.messager.alert("提示", "月结和第三方支付，寄件人公司必填！", "warning");
+	      			//return false;
 		        }
-		        if(payment_method == 3 && $("#sender_companyName_id  option:selected").attr("code") == 1000){
-		        	alert("寄件人公司是系统默认'快递单'的时候不允许选择第三方支付");
-		        	return false;
+	      		debugger
+		        if(payment_method == 3 && (sender_companyName_id == 1000)){
+		        	confirmFunction("第三方支付时寄件人公司不能是是系统默认值");
+		        	//return false;
 		        }
 	      	}
 	      	//校验寄件人公司是否超长

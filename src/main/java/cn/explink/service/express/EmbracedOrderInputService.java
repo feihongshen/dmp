@@ -894,9 +894,9 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			this.logger.info("月结运单客户未输入");
 			return false;
 		}
-		// 如果为月结，那么校验送检人单位是否填写 ---刘武强20160721（如果tps传月结账号的话，要求送件人单位不为空或""）
-		if ("0".equals(embracedOrderVO.getPayment_method()) && ((embracedOrderVO.getSender_companyName() == null) || "".equals(embracedOrderVO.getSender_companyName().trim()))) {
-			this.logger.info("月结运单寄件人单位未输入");
+		// 如果为月结或第三方支付，那么校验送检人单位是否填写 ---刘武强20160721（如果tps传月结账号的话，要求送件人单位不为空或""）
+		if (("0".equals(embracedOrderVO.getPayment_method()) || "3".equals(embracedOrderVO.getPayment_method())) && ((embracedOrderVO.getSender_companyName() == null) || "".equals(embracedOrderVO.getSender_companyName().trim()))) {
+			this.logger.info("月结或第三方支付运单寄件人单位未输入");
 			return false;
 		}
 		// 如果为月结，那么校验月结账号
