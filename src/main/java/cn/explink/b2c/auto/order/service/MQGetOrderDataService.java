@@ -559,6 +559,9 @@ public class MQGetOrderDataService {
 
 	public String toDateForm(Long data){
 		String dataStr="";
+		if (0 == data) {
+			data = System.currentTimeMillis();
+		}
 		if(data!=null){
 			Timestamp scurrtest = new Timestamp(data);
 			dataStr = String.valueOf(scurrtest).substring(0,19);// 简易最迟配送时间
