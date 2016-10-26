@@ -494,11 +494,13 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				System.out.println("快递单：" + embracedOrderVO.getOrderNo() +"已经有数据，不能再isnert");
 				return "hasSaved";
 			}
+			logger.info("newpaywayid:" + params.get("newpaywayid") + ", paywayid" + params.get("paywayid"));
 			flag = this.generalDAO.insert(params, "express_ops_cwb_detail") == false ? "false" : "true";
 			this.logger.info("补录：inset方法，补录标志位：" + embracedOrderVO.getOrderNo() +"   " +  embracedOrderVO.getIsadditionflag());
 			// 如果是新建运单，那么他的状态为入站，调用tps状态反馈接口 11.19 如果状态有改变，且变为揽件入站，则需要保存流程信息
 			this.executeTpsTransInterface(embracedOrderVO, user);
 			CwbOrder order = this.cwbOrderService.getCwbByCwb(embracedOrderVO.getOrderNo());
+			logger.info("newpaywayid:" + order.getNewpaywayid() + ", paywayid" + order.getPaywayid());
 			this.cwbOrderService.createFloworder(user, branch.getBranchid(), order, FlowOrderTypeEnum.LanJianRuZhan, "", System.currentTimeMillis());
 		} else {
 			boolean flowflag = false;
