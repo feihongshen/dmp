@@ -149,15 +149,13 @@ public class EpaiApiService_Download extends EpaiApiService {
 		List<OrderDto> orderList = orderListDto.getOrderDtoList();
 		if (orderList != null && orderList.size() > 0) {
 			cwbList = new ArrayList<Map<String, String>>();
-
 			for (OrderDto order : orderList) {
-
 				try {
 					Map<String, String> cwbMap = new HashMap<String, String>();
-
 					CwbOrderDTO cwbOrder = dataImportDAO_B2c.getCwbByCwbB2ctemp(order.getCwb());
 					if (cwbOrder != null) {
 						logger.warn("获取0系统上游0订单中含有重复数据cwb={}", order.getCwb());
+						dataImportDAO_B2c.updateIsB2cSuccessFlagFalseByCwbs(order.getCwb());
 						continue;
 					}
 
@@ -200,7 +198,6 @@ public class EpaiApiService_Download extends EpaiApiService {
 				} catch (Exception e) {
 					logger.error("下游获取订单数据构建异常cwb=" + order.getCwb(), e);
 				}
-
 			}
 		}
 		return cwbList;

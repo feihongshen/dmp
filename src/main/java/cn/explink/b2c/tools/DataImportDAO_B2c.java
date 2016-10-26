@@ -327,6 +327,15 @@ public class DataImportDAO_B2c {
 				+ MaxCount;
 		return this.jdbcTemplate.query(sql, new CwbDTO4TempMapper());
 	}
+	
+	/**
+	 * 修改为未反馈给b2c(改成未成功)
+	 * @author jian.xie
+	 */
+	public void updateIsB2cSuccessFlagFalseByCwbs(String cwb){
+		String sql = "update express_ops_cwb_detail_b2ctemp set isB2cSuccessFlag=0 where cwb =? and state=1  and isB2cSuccessFlag=1";
+		this.jdbcTemplate.update(sql, cwb);
+	}
 
 	/**
 	 * 修改为已 反馈给B2C（已经成功）
