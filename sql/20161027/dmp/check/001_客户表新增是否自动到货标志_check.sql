@@ -1,0 +1,1 @@
+SELECT '添加揽退单自动到货标志' AS '脚本注释',IF((SELECT count(1) from information_schema.`COLUMNS` where TABLE_SCHEMA = schema() AND TABLE_NAME='express_set_customer_info' and COLUMN_NAME='autoarrivalbranchflag' ) =1,'success','failed') AS '执行结果';

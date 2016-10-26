@@ -65,6 +65,14 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 							<option  value="1"<%if(customer.getIsAutoProductcwb()==1){ %>selected<%} %>>是</option>
 						</select>
 					</li>
+					
+					<li><span>揽退单是否自动到货</span>
+						<select id ="autoArrivalBranchFlag" name ="autoArrivalBranchFlag" class="select1" >
+							<option  value="0"<%if(customer.getAutoArrivalBranchFlag()==0){ %>selected<%} %>>否</option>
+							<option  value="1"<%if(customer.getAutoArrivalBranchFlag()==1){ %>selected<%} %>>是</option>
+						</select>
+					</li>
+					
 					<div id="auto" <%if(customer.getIsAutoProductcwb()==0){ %>style="display: none;"<%} %>>
 						<li style="color:#900">
 							模板要求：

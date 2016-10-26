@@ -66,6 +66,14 @@ List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelis
 							<option value="1">是</option>
 						</select>
 					</li>
+					
+					<li><span>揽退单是否自动到货</span>
+						<select id ="autoArrivalBranchFlag" name ="autoArrivalBranchFlag" class="select1" >
+							<option  value="0" selected>否</option>
+							<option  value="1" >是</option>
+						</select>
+					</li>
+					
 					<div id="auto" style="display: none;">
 						<li style="color:#900">
 							模板要求：
