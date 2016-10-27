@@ -232,8 +232,20 @@ public class BranchSyncToOspHelper {
 			List<SbOrgModel> models = findOrgByCarrierAndSiteCode(carrierCode,
 					carrierSiteCode);
 			if (models != null && models.size() > 0) {
-				// osp中已经存在的机构不需要同步
-				resultVo.setResult("机构已存在，不需要同步");
+				// osp中已存在此机构，更新
+				try {
+					SbOrgResponse result = updateBranchSyncToOsp(branch);
+					if (result.getResultCode().equals(RETURN_CODE_SUCCESS)) {
+						resultVo.setResult("机构已存在，同步成功");
+					} else {
+						// 同步新增失败
+						resultVo.setResult("机构已存在，同步但不成功");
+						resultVo.setMessage(result.getResultMsg());
+					}
+				} catch (Exception e) {
+					resultVo.setResult("机构已存在，同步但不成功");
+					resultVo.setMessage(e.getMessage());
+				}
 			} else {
 				// osp中未存在此机构，新增
 				try {
@@ -250,7 +262,6 @@ public class BranchSyncToOspHelper {
 					resultVo.setResult("机构未存在，同步但不成功");
 					resultVo.setMessage(e.getMessage());
 				}
-				
 			}
 			batchSyncResultVos.add(resultVo);
 		}
