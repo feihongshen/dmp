@@ -28,7 +28,11 @@ public class Customer implements java.io.Serializable {
 	private long pfruleid;// 派费规则id
 
 	private int mpsswitch;//mps开关（0：未开启，1：开启库房集单，2：开启站点集单）
-
+	/*
+	 * 客户开启上门退自动到货开关   0不开启,1开启 ---刘武强20161026
+	 */
+	private int autoArrivalBranchFlag;
+	
 	/**
 	 * @return the pfruleid
 	 */
@@ -205,4 +209,13 @@ public class Customer implements java.io.Serializable {
 		this.mpsswitch = mpsswitch;
 	}
 
+	public int getAutoArrivalBranchFlag() {
+		return autoArrivalBranchFlag;
+	}
+
+	public void setAutoArrivalBranchFlag(int autoArrivalBranchFlag) {
+		this.autoArrivalBranchFlag = autoArrivalBranchFlag;
+	}
+	
+	
 }

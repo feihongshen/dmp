@@ -16,6 +16,7 @@ import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.User;
+import cn.explink.enumutil.CustomerAutoArrivalBranEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 
@@ -40,7 +41,12 @@ public class BranchAutoWarhouseService {
 		}
 
 		Customer customer = this.customerDAO.getCustomerById(cwbOrder.getCustomerid());
-
+		//如果没有找到客户信息，或者客户没有开启揽退单自动到货，那么就直接结束 ---刘武强20161026
+		if (customer == null || customer.getAutoArrivalBranchFlag() != CustomerAutoArrivalBranEnum.kaiqi.getValue()) {
+			this.logger.info("cwb={},揽退单是否自动到货标志：AutoArrivalBranchFlag={},结束自动到货", cwbOrder.getCwb(), customer.getAutoArrivalBranchFlag());
+			return;
+		}
+		
 		this.logger.info("自动到货cwb={},b2cenum={}", cwbOrder.getCwb(), customer.getB2cEnum());
 		
 		//不论是唯品会的揽退单，还是其他客户的揽退单，都应该做自动到货 -----刘武强20161017

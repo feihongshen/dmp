@@ -59,6 +59,7 @@ public class CustomerService {
 		customer.setIsqufendaxiaoxie(Long.parseLong(request.getParameter("isqufendaxiaoxie")));
 		customer.setPfruleid(Long.parseLong(request.getParameter("pfruleid")));
 		customer.setWavFilePath(this.saveFile(request, file));
+		customer.setAutoArrivalBranchFlag(Integer.parseInt(request.getParameter("autoArrivalBranchFlag")));
 		
 		String isJiDan = request.getParameter("ifjidan");
 		int mpsswitch = Integer.parseInt(request.getParameter("mpsswitch") == null ? "0" : request.getParameter("mpsswitch"));
