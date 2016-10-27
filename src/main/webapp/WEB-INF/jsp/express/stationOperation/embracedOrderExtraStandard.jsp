@@ -1597,7 +1597,7 @@
 					$("#goods_height_id").blur();
 					
 					$("#freight_total_id").val(data.embracedOrderVO.freight_total); 
-					if(data.embracedOrderVO.freight != null && data.embracedOrderVO.freight != "0.00"){
+					if(data.embracedOrderVO.freight != null){
 						$("#freight_id").val(data.embracedOrderVO.freight);
 						$("#freight_id").css('background','#EBEBE4');
 						$("#freight_id").attr("readonly","readonly");
