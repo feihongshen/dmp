@@ -14,8 +14,6 @@ import com.vip.platform.middleware.vms.IVMSCallback;
 import com.vip.platform.middleware.vms.VMSEventArgs;
 
 import cn.explink.b2c.auto.order.service.AutoExceptionService;
-import cn.explink.b2c.auto.order.service.AutoOrderStatusService;
-import cn.explink.b2c.auto.order.service.AutoUserService;
 import cn.explink.b2c.auto.order.service.PjdSignImgService;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
@@ -66,9 +64,8 @@ public class PjdSignImgCallback implements IVMSCallback{
 	        	}
 	        	
 	        	if(isOpenFlag==1){
-		        	//msg = new String(e.getPayload(), MSG_ENCODE);
-		        	msg="{custOrderNo:'cwb814',orgCode:'222',transportNo:'3333',imageUrl:'a.jpg'}";
-		            this.logger.info("PJD签收图片报文 auto dispatch msg:" + msg);
+		        	msg = new String(e.getPayload(), MSG_ENCODE);
+		            this.logger.info("PJD签收图片报文消息:" + msg);
 		            
 		            //解析json
 		            JSONObject jsonObj = JSONObject.fromObject(msg);  
@@ -92,7 +89,7 @@ public class PjdSignImgCallback implements IVMSCallback{
 	        	}
 	        	
 				AutoMQExceptionDto mqe=new AutoMQExceptionDto();
-				mqe.setBusiness_id("");
+				mqe.setBusiness_id(custOrderNo==null?"":custOrderNo);
 				mqe.setException_info(errinfo);
 				mqe.setMessage(msg);
 				mqe.setRefid(detailId);
@@ -122,12 +119,11 @@ public class PjdSignImgCallback implements IVMSCallback{
 					errorMsg=encodeErrorMsg(err);
 					pjdExceptionSender.send(errorMsg);
 				} catch (Throwable et) {
-		        	logger.error("反馈异常到TPS时出错，send exception to TPS error,errorMsg:"+errorMsg,et);
+		        	logger.error("反馈异常到PJD时出错,errorMsg:"+errorMsg,et);
 
 		        	long refid=err.getRefid();//
 		        	try{
-		        		//fankui_fanjian TODO
-			        	long msgid=this.autoExceptionService.createAutoExceptionMsg(errorMsg, AutoInterfaceEnum.fankui_fanjian.getValue());
+			        	long msgid=this.autoExceptionService.createAutoExceptionMsg(errorMsg, AutoInterfaceEnum.pjdsignimg_exception.getValue());
 			        	this.autoExceptionService.createAutoExceptionDetail(err.getBusiness_id(),"","DMP反馈异常到PJD时出错."+et.getMessage(),AutoExceptionStatusEnum.xinjian.getValue(),msgid, refid,"");
 					} catch (Exception ee) {
 		        		logger.error("PJD createAutoException error",ee);
@@ -143,9 +139,14 @@ public class PjdSignImgCallback implements IVMSCallback{
 		mqe.setExchange_name(consumerTemplate.getExchangeName());//
 		mqe.setQueue_name(consumerTemplate.getQueueName());//
 		mqe.setRemark("");
-		mqe.setRouting_key("*");//
 		mqe.setSystem_name("DMP");//
 		mqe.setMessage("<![CDATA["+mqe.getMessage()+"]]>");//250 length?
+		String routingKeyStr[] = consumerTemplate.getQueueName().split("_");
+		String routingKey = "*";
+		if(routingKeyStr.length>1){
+			routingKey = routingKeyStr[routingKeyStr.length-1];
+		}
+		mqe.setRouting_key(routingKey);//
 		
 		String msg=XmlUtil.toXml(AutoMQExceptionDto.class, mqe); 
 		msg=StringEscapeUtils.unescapeXml(msg);
