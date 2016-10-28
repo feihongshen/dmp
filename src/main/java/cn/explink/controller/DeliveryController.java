@@ -1,5 +1,7 @@
 package cn.explink.controller;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,6 +17,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.SimpleHttpConnectionManager;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -497,6 +507,7 @@ public class DeliveryController {
 		sdv.setChangereason(cwbOrder.getChangereason());
 		sdv.setShouldfare(ds.getShouldfare());
 		sdv.setInfactfare(ds.getInfactfare());
+		sdv.setSign_img(ds.getSign_img());
 		return sdv;
 	}
 
@@ -2080,5 +2091,65 @@ public class DeliveryController {
 			numArray[i++] = Integer.parseInt(str);
 		}
 		return numArray;
+	}
+	
+	/**
+	 * 查看签收图片
+	 * @author jianrong.gao
+	 * @date 2016年10月27日 下午2:14:50
+	 * @param cwb
+	 * @return
+	 */
+	@RequestMapping("/pjdimg")
+	public void pjdimg(Model model, @RequestParam(value = "cwb", defaultValue = "", required = false) String cwb,HttpServletResponse response) {
+		try {
+			DeliveryState ds = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
+			if(ds!=null&&ds.getSign_img()!=null&&ds.getSign_img().length()>0){
+				getPjdImg(ds.getSign_img(),"","",response);
+			}
+		} catch (Exception e) {
+			logger.error("从pjd读取签收图片出错,cwb="+cwb,e);
+		}
+	}
+	
+	private  void getPjdImg(String url, String params, String method,HttpServletResponse response) throws Exception {
+		InputStream is = null;
+		// HttpClient httpClient = new HttpClient();
+		HttpClient httpClient = new HttpClient(new HttpClientParams(), new SimpleHttpConnectionManager(true));
+		httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(10000);
+		httpClient.getHttpConnectionManager().getParams().setSoTimeout(40000);
+		PostMethod postMethod = new PostMethod(url);
+		postMethod.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
+		postMethod.getParams().setSoTimeout(30 * 1000);
+		String[] paramStr = params.split("&");// 按“&”拆分
+		if (paramStr != null && paramStr.length > 0 && params.indexOf("&")>-1 ) {
+			for (int i = 0; i < paramStr.length; i++) {
+				postMethod.addParameter(paramStr[i].split("=")[0], paramStr[i].split("=")[1]);// 按“=”拆分，第一个做为参数名，第二个作为参数值
+			}
+		}
+		try {
+			int statusCode = httpClient.executeMethod(postMethod); // post数据
+			if (statusCode == HttpStatus.SC_OK) {
+				is = postMethod.getResponseBodyAsStream();
+				if(is!=null){
+					OutputStream out = response.getOutputStream();
+					byte [] buf=new byte[1024];
+					int len=0;
+					while((len=is.read(buf))>0){
+						out.write(buf, 0, len);
+					}
+					out.flush();
+				}else{
+					throw new Exception("从pjd读取签收图片时InputStream为空");
+				}
+			} else {
+				throw new Exception("从pjd读取签收图片Response Code:"+ statusCode);
+			}
+		} catch (Exception e) {
+			throw e;
+		}finally {
+			postMethod.releaseConnection();
+
+		}
 	}
 }

@@ -47,6 +47,9 @@ String deliveryxiaojianyuan=request.getAttribute("deliveryxiaojianyuan")==null?"
 <link href="<%=request.getContextPath()%>/css/index.css" rel="stylesheet" type="text/css" />
 <script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
 <script language="javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/easyui/jquery.easyui.min.js"></script>
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/js/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/js/easyui/themes/icon.css">
 <script>
 function thisCheck(){
 	$("#podresultid", parent.document).change(function(){//监控配送状态变化 对显示字段做相应处理
@@ -559,6 +562,9 @@ function exportYifankui(){
 								<%}else{ %>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:noSub('<%=ds.getCwb() %>',<%=ds.getReceivedfee() %>,<%=ds.getCash() %>,<%=ds.getPos() %>,0,0);">暂不处理</a>]
 								<%}} %>
+								<%if(ds.getSign_img()!=null&&ds.getSign_img().length()>0){%>
+									<a href="#" onclick="javascript:$('#signimg').attr('src','pjdimg?'+new Date().getTime()+'&cwb=<%=ds.getCwb()%>');javascript:$('#dlg-signimg').dialog('open');">[查看签名]</a>
+								<%} %>
 								</td>
 								<%} %>
 							</tr>
@@ -1171,5 +1177,15 @@ function exportYifankui(){
 	</div>
 
 <input type="hidden" id="edit" value="<%=request.getContextPath()%>/delivery/getnowDeliveryState/" />
-</body>
+
+   <div id="dlg-signimg" class="easyui-dialog" style="padding:5px;width:600px;height:400px;" closed="true"
+            title="电子签名图片" iconCls="icon-ok" resizable="true"
+             buttons="#dlg-buttons-signimg">
+        <img id="signimg" src="" alt="" />
+    </div>
+
+    <div id="dlg-buttons-signimg">
+        <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg-signimg').dialog('close')">关闭</a>
+    </div>
+ </body>
 </html>
