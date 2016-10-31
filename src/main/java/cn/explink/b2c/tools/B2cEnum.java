@@ -199,8 +199,13 @@ public enum B2cEnum {
 	TPS_XinTongYiLiao(22550,"信同医疗-TPS","xintongyiliaotpsother",0),
 	TPS_NanFangChuanMei(22551,"南方传媒-TPS","nanfangchuanmeitpsother",0),
 	TPS_ZheMengXiTong(22552,"哲盟系统-TPS","zhemengxitongtpsother",0),
-	TPS_JingJingXiYi(22553,"净净洗衣-TPS","jingjingxiyitpsother",0)
+	TPS_JingJingXiYi(22553,"净净洗衣-TPS","jingjingxiyitpsother",0),
 	//zhili01.liang on 20161017加4家对接 ===End====
+	//zhili01.liang on 20161027加2家对接 
+	TPS_HaiTunXianSheng(22554,"海豚鲜生-TPS","haitunxianshengtpsother",0),
+	TPS_PaiKe(22555,"派客-TPS","paiketpsother",0),
+	TPS_Backup1(22556,"备用1-TPS","backup1tpsother",0),
+	TPS_Backup2(22557,"备用2-TPS","backup1tpsother",0)
 	//zhili01.liang on 20160902, 下面这些EDI接口由TpsMQOrderSettingController负责展示====End====
 	;
 	//zhili01.liang on 20160902, 下面这些EDI接口由TpsMQOrderSettingController负责展示
@@ -217,7 +222,9 @@ public enum B2cEnum {
 			TPS_DaGuan,TPS_ZhongLiang,TPS_ZhongHaoTuSheng,TPS_Udi,TPS_TianTu,
 			TPS_FeiChangGou,TPS_MeiLinKai,TPS_JiXianDa,TPS_JingHua,TPS_HongTu,
 			//zhili01.liang on 20161017加4家对接
-			TPS_XinTongYiLiao,TPS_NanFangChuanMei,TPS_ZheMengXiTong,TPS_JingJingXiYi
+			TPS_XinTongYiLiao,TPS_NanFangChuanMei,TPS_ZheMengXiTong,TPS_JingJingXiYi,
+			//zhili01.liang on 20161027加2家对接 
+			TPS_HaiTunXianSheng,TPS_PaiKe,TPS_Backup1,TPS_Backup2
 	};
 
 	 
