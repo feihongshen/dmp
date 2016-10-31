@@ -27,6 +27,7 @@ import cn.explink.domain.CwbOrder;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.AutoCommonStatusEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.exception.CwbException;
 import cn.explink.service.CwbRouteService;
 import cn.explink.service.KufangBranchMappingService;
 import net.sf.json.JSONArray;
@@ -281,14 +282,14 @@ public class AutoOrderStatusService {
 	 */
 	public void getOutWarePermitFlag(CwbOrder cwbOrder, String scancwb){
 		if(cwbOrder == null){//如果传进来的订单信息为空，则抛出异常
-			throw new AutoWaitException("自动化出库时没找到此订单");
+			throw new CwbException("",FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"自动化出库时没找到此订单");
 		}
 		if(scancwb == null){//如果传进来的运单号为空，则抛出异常
-			throw new AutoWaitException("自动化出库时运单号为空");
+			throw new CwbException(cwbOrder.getCwb(),FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"自动化出库时运单号为空");
 		}
 		//如果是一票一件，订单主表的状态不是数据导入，也不是入库，也跑出去异常
 		if(cwbOrder.getSendcarnum() == 1 && cwbOrder.getFlowordertype() != FlowOrderTypeEnum.DaoRuShuJu.getValue() && cwbOrder.getFlowordertype() != FlowOrderTypeEnum.RuKu.getValue()){
-			throw new AutoWaitException("一票一件，订单不处于数据导入状态，不允许自动化出库");
+			throw new CwbException(cwbOrder.getCwb(),FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"一票一件，订单不处于数据导入状态，不允许自动化出库");
 		}
 		if(cwbOrder.getSendcarnum() > 1){//如果是一票多件,并且运单号存在
 			if(cwbOrder.getCwb() != null && scancwb.trim().equals(cwbOrder.getCwb().trim())){
@@ -306,7 +307,7 @@ public class AutoOrderStatusService {
 			if(currentOptList.size() == 0 || (currentOptList.size() == 1 && (currentOptList.get(0).getFlowordertype() == FlowOrderTypeEnum.DaoRuShuJu.getValue() || cwbOrder.getFlowordertype() == FlowOrderTypeEnum.RuKu.getValue()))){
 				return;
 			}else{//如果运单不满足要求，则不允许自动化出库
-				throw new AutoWaitException("一票多件，运单不处于数据导入状态，不允许自动出库");
+				throw new CwbException(cwbOrder.getCwb(),FlowOrderTypeEnum.ChuKuSaoMiao.getValue(),"一票多件，运单不处于数据导入状态，不允许自动出库");
 			}
 		}
 	}
