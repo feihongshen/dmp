@@ -1849,7 +1849,7 @@ private Map<String, DeliveryState> getDeliveryListByCwbs(List<String> cwbs) {
 				cwbOrderView.setPaybackfee(c.getPaybackfee());
 
 				//DeliveryState deliverystate = this.getDeliveryByCwb(c.getCwb());
-				cwbOrderView.setPaytype(this.getOldPayWayType(Long.parseLong(c.getNewpaywayid())));// 新支付方式
+				cwbOrderView.setPaytype(this.getOldPayWayType(Long.parseLong(c.getNewpaywayid() == null ? "1" : c.getNewpaywayid())));// 新支付方式
 				cwbOrderView.setPaytype_old(this.getOldPayWayType(c.getPaywayid()));// 原支付方式
 				cwbOrderView.setRemark1(c.getRemark1());
 				cwbOrderView.setRemark2(c.getRemark2());
