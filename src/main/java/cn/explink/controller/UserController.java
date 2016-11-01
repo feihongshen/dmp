@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -54,6 +53,8 @@ import cn.explink.domain.addressvo.AddressSyncServiceResult;
 import cn.explink.domain.addressvo.ApplicationVo;
 import cn.explink.domain.addressvo.BatchSyncAdressResultVo;
 import cn.explink.domain.addressvo.DelivererVo;
+import cn.explink.enumutil.BranchEnum;
+import cn.explink.enumutil.BranchTypeEnum;
 import cn.explink.enumutil.PaiFeiRuleTypeEnum;
 import cn.explink.enumutil.UserEmployeestatusEnum;
 import cn.explink.schedule.Constants;
@@ -175,7 +176,6 @@ public class UserController {
 		model.addAttribute("branches", this.branchDAO.getAllEffectBranches());
 		model.addAttribute("roles", this.roleDAO.getRoles());
 		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Derlivery.getValue()));
-		model.addAttribute("userJobnumIsNeed", isNeedJobnum());
 		return "user/add";
 	}
 
@@ -276,12 +276,13 @@ public class UserController {
 
 	@RequestMapping("/edit/{id}")
 	public String edit(@PathVariable("id") long userid, Model model) {
+		User user = this.userDAO.getUserByUserid(userid);
 		model.addAttribute("branches", this.branchDAO.getAllBranches());
-		model.addAttribute("user", this.userDAO.getUserByUserid(userid));
+		model.addAttribute("user", user);
 		model.addAttribute("roles", this.roleDAO.getRoles());
 		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Derlivery.getValue()));
 		model.addAttribute("loginForbiddenPleaseWaitMinutes", this.getLoginForbiddenPleaseWaitMinutes(userid));
-		model.addAttribute("userJobnumIsNeed", isNeedJobnum());
+		model.addAttribute("userJobnumIsNeed", isCheckJobnum(user.getBranchid()));
 		return "user/edit";
 	}
 
@@ -458,9 +459,10 @@ public class UserController {
 
 	@RequestMapping("/addBranch")
 	public String addBranch(Model model) throws Exception {
-		model.addAttribute("branch", this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()));
+		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+		model.addAttribute("branch", branch);
 		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Derlivery.getValue()));
-		model.addAttribute("userJobnumIsNeed", isNeedJobnum());
+		model.addAttribute("userJobnumIsNeed", isCheckJobnum(branch.getBranchid()));
 		return "user/addbranch";
 	}
 
@@ -499,11 +501,12 @@ public class UserController {
 
 	@RequestMapping("/editBranch/{id}")
 	public String editBranch(@PathVariable("id") long userid, Model model) {
-		model.addAttribute("branch", this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid()));
+		Branch branch = this.branchDAO.getBranchByBranchid(this.getSessionUser().getBranchid());
+		model.addAttribute("branch", branch);
 		model.addAttribute("user", this.userDAO.getUserByUserid(userid));
 		model.addAttribute("pfrulelist", this.pfFeiRuleDAO.getPaiFeiRuleByType(PaiFeiRuleTypeEnum.Derlivery.getValue()));
 		model.addAttribute("loginForbiddenPleaseWaitMinutes", this.getLoginForbiddenPleaseWaitMinutes(userid));
-		model.addAttribute("userJobnumIsNeed", isNeedJobnum());
+		model.addAttribute("userJobnumIsNeed", isCheckJobnum(branch.getBranchid()));
 		return "user/editbranch";
 	}
 
@@ -846,7 +849,26 @@ public class UserController {
 	 * 工号是否必录
 	 * @return true 必录
 	 */
-	public boolean isNeedJobnum(){
+	private boolean isNeedJobnum(){
 		return systemInstallService.isBoolenInstall("JOBCODENEED");
+	}
+	
+	/**
+	 * 检查 工号
+	 * @return
+	 */
+	@RequestMapping("/isCheckJobnum")
+	@ResponseBody
+	public boolean isCheckJobnum(@RequestParam (value="branchid") long branchid){
+		boolean jobcodeneed = isNeedJobnum();
+		Branch branch = branchDAO.getBranchByBranchid(branchid);
+		// 开启检查工号参数，并且 是直营、二级站点，三级站点 的站点
+		if(jobcodeneed && branch.getSitetype() == BranchEnum.ZhanDian.getValue() 
+				&& ((BranchTypeEnum.ZhiYing.getValue() + "").equals(branch.getContractflag()) 
+						|| (BranchTypeEnum.ErJiZhan.getValue() + "").equals(branch.getContractflag())
+							|| (BranchTypeEnum.SanJiZhan.getValue() + "").equals(branch.getContractflag()))){
+			return true;
+		}		
+		return false;
 	}
 }

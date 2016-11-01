@@ -1273,6 +1273,35 @@ function checkUsername() {
 	});
 }
 
+/**
+ * 用户管理机构变化
+ * @param userJobnumIsNeed
+ * @returns {Boolean}
+ */
+function branchChange(branchid){	
+	var isCheckJobnum = false;
+	branchid = branchid || $("#branchid").val();	
+	if("-1" != branchid){
+		$.ajax({
+			url:"user/isCheckJobnum",
+			async:false,
+			data:{"branchid": branchid},
+			dataType: "json",
+			success:function(data){
+				isCheckJobnum = data;
+			}
+		});
+	}
+	
+	
+	$('#userJobnumIsNeed').val(isCheckJobnum);
+	if(isCheckJobnum){
+		$("#showJobNumNeed").show();
+	} else {
+		$("#showJobNumNeed").hide();
+	}
+}
+
 function check_user(userJobnumIsNeed) {
 	//var checkuserformid = "user_cre_Form";
 	roleChange();
@@ -1368,7 +1397,7 @@ function check_user(userJobnumIsNeed) {
 		return false;
 	}
 	
-	if(userJobnumIsNeed && !$("#jobnum").val()){
+	if(userJobnumIsNeed == "true" && !$("#jobnum").val()){
 		alert("工号不能为空");
 		return false;
 	}
