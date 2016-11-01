@@ -18,7 +18,7 @@ public class PjdSignImgService {
 	 * @return
 	 */
 	@Transactional
-	public void saveSignImg(String cwb,String imgUrl){
-		this.deliveryStateDAO.saveSignImgByCwb(cwb, imgUrl);
+	public int saveSignImg(String cwb,String imgUrl){
+		return this.deliveryStateDAO.saveSignImgByCwb(cwb, imgUrl);
 	}
 }

@@ -73,7 +73,10 @@ public class PjdSignImgCallback implements IVMSCallback{
 		    		//String orgCode=jsonObj.getString("orgCode");
 		    		transportNo=jsonObj.getString("transportNo");
 		    		String imageUrl=jsonObj.getString("imageUrl");
-		    		this.pjdSignImgService.saveSignImg(custOrderNo, imageUrl);
+		    		int num=this.pjdSignImgService.saveSignImg(custOrderNo, imageUrl);
+		    		if(num<1){
+		    			throw new RuntimeException("保存PJD签收图片url时没找到反馈记录");
+		    		}
 	        	}
 	        } catch (Throwable ex) {
 	        	logger.error("消费PJD签收图片信息 onSuccess error,msg:"+msg,ex);

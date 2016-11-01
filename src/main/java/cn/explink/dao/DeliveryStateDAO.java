@@ -1953,8 +1953,8 @@ public class DeliveryStateDAO {
 	 * @param cwb,imgUrl
 	 * @return
 	 */
-	public void saveSignImgByCwb(String cwb,String imgUrl) {
+	public int saveSignImgByCwb(String cwb,String imgUrl) {
 		String sql = "update express_ops_delivery_state set sign_img=? where cwb=? and state=1";
-		this.jdbcTemplate.update(sql,imgUrl,cwb);		
+		return this.jdbcTemplate.update(sql,imgUrl,cwb);		
 	}
 }
