@@ -2,6 +2,8 @@ package cn.explink.service;
 
 import java.math.BigDecimal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,9 @@ public class OrgOrderAdjustRecordService {
 	 @Autowired
 	 FnOrgOrderAdjustRecordDAO orgOrderAdjustRecordDao;
 	 
+		private static Logger logger = LoggerFactory.getLogger(OrgOrderAdjustRecordService.class);
+
+	 
 	 /**
 	  * add by bruce shangguan 20160831
 	  * 处理上门退订单取消后，添加相应的站点签收调整记录
@@ -27,6 +32,7 @@ public class OrgOrderAdjustRecordService {
 	public void handleAdjustRecordForShangMenTuiSuccess(CwbOrder cwbOrder , DeliveryState deliverState){
 		String signTime = deliverState.getSign_time() ;
 		long dateDiff = DateTimeUtil.dateDiff("day", DateTimeUtil.getNowTime(), signTime) ;
+		logger.info("取消上门退，订单[{}]最后一次反馈为上门退成功的时间是[{}]，此刻和该订单最后一次反馈为上门退成功的时间间隔[{}]天，该订单应退金额:{},该订单应收运费是:{}", cwbOrder.getCwb(),signTime, dateDiff,cwbOrder.getPaybackfee(),cwbOrder.getShouldfare());
 		if(dateDiff == 0){
 			return ;
 		}

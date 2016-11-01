@@ -296,6 +296,7 @@ public class AutoDispatchStatusService {
 					}
 					
 					if(isWait||e instanceof AutoWaitException){
+						feedbackTps=false;
 						waitNum=waitNum+1;
 						List<Map<String,Object>> detailList=this.autoExceptionService.queryAutoExceptionDetail(vo.getOrder_sn(),vo.getBox_no(),vo.getOperate_type());
 						if(detailList!=null&&detailList.size()>0){
