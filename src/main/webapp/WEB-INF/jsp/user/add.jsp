@@ -7,15 +7,22 @@
 	List<Branch> branchList = (List<Branch>)request.getAttribute("branches") ;
 	List<Role> roleList = (List<Role>)request.getAttribute("roles") ;
 	List<PaiFeiRule> pfrulelist = (List<PaiFeiRule>) request.getAttribute("pfrulelist");
-	boolean userJobnumIsNeed = (Boolean)request.getAttribute("userJobnumIsNeed");
 %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</HEAD>
+<BODY>
 <div id="box_bg"></div>
 <div id="box_contant">
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg">
+	   <input type="hidden" id="userJobnumIsNeed">
 		<h1><div id="close_box" onclick="closeBox()"></div>创建用户</h1>
 		<form id="user_cre_Form" name="user_cre_Form" enctype="multipart/form-data"
-			 onSubmit="if(check_user(<%=userJobnumIsNeed %>)){submitAddUser(this);}return false;" 
+			 onSubmit="if(check_user($('#userJobnumIsNeed').val())){submitAddUser(this);}return false;" 
 			 action="<%=request.getContextPath()%>/user/createFile;jsessionid=<%=session.getId()%>" method="post"  >
 		<div id="box_form">
 				<ul>
@@ -31,7 +38,7 @@
 						</select>*
 					</li>
 	           		<li><span>所属机构：</span>
-	           		<select id="branchid"  name="branchid">
+	           		<select id="branchid"  name="branchid" onchange="branchChange();">
 						<option value="-1" selected>----请选择----</option>
 						<%for(Branch b : branchList){ %>
 						<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
@@ -107,7 +114,7 @@
 			        <!-- <li><span>备注信息：</span><input type="text" id="userremark" name="userremark" value="" /></li> -->
 			        
 			         <li><span>入职日期：</span><input type="text"  id="startworkdate" name="startworkdate" value="" maxlength="50"/>*(无需填写,点击确认时自动生成入职日期!)</li>
-			         <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="" maxlength="50"/><%if(userJobnumIsNeed){ %>*<%} %></li>
+			         <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="" maxlength="50"/><span id="showJobNumNeed" style="width:10px" >*</span></li>
 	             	 <li><span>最高扣款额度：</span><input type="text"  id="maxcutpayment" name="maxcutpayment" value="" maxlength="50"/></li>
 	             	 <li><span>基础预付款：</span><input type="text"  id="basicadvance" name="basicadvance" value="" maxlength="50"/></li>
 	             	 <li><span>后期预付款：</span><input type="text"  id="lateradvance" name="lateradvance" value="" maxlength="50"/>*(无需填写,动态变化的结果!)</li>
@@ -127,4 +134,5 @@
 <div id="box_yy"></div>
 
 </BODY>
+
 </HTML>

@@ -504,6 +504,7 @@ public class OrgBillAdjustmentRecordService {
 		long orgFreightBillId = cwbOrder.getFnorgfreightbillid() ;
 		long orgBillId = cwbOrder.getFnorgbillid() ;
 		String signTime = deliverState.getSign_time() ;
+		logger.info("接口取消上门退，订单[{}]对应的站点账单id[{}] , 对应的运费账单id:[{}]", cwbOrder.getCwb() , orgBillId,orgFreightBillId);
 		if(orgFreightBillId > 0){
 			OrgBillAdjustmentRecord record = new OrgBillAdjustmentRecord();
 			// 调整金额为运费调整

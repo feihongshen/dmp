@@ -33,9 +33,10 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 <div id="box_contant">
 	<div id="box_top_bg"></div>
 	<div id="box_in_bg">
+	<input type="hidden" id="userJobnumIsNeed" value="<%=userJobnumIsNeed%>">
 		<h1><div id="close_box" onclick="closeBox()"></div>修改用户</h1>
 		<form id="user_save_Form" name="user_save_Form" enctype="multipart/form-data"
-			 onSubmit="if(check_user(<%=userJobnumIsNeed %>)){submitSaveUser(this,<%=u.getUserid() %>);}return false;" 
+			 onSubmit="if(check_user($('#userJobnumIsNeed').val())){submitSaveUser(this,<%=u.getUserid() %>);}return false;" 
 			 action="<%=request.getContextPath()%>/user/saveFile/<%=u.getUserid() %>;jsessionid=<%=session.getId()%>" method="post"  >
 		<div id="box_form">
 			<ul>
@@ -51,7 +52,7 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 						</select>*
 					</li>
 	           		<li><span>所属机构：</span>
-	           		<select id="branchid" name="branchid">
+	           		<select id="branchid" name="branchid" onchange="branchChange();">
 						<option value="-1" selected>----请选择----</option>
 						<%for(Branch b : branchList){ %>
 						<option value="<%=b.getBranchid() %>" ><%=b.getBranchname() %></option>
@@ -146,7 +147,7 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 			         <li><span>备注信息：</span><input type="text" id="userremark" name="userremark" value="<%=u.getUserremark() %>" /></li> --%>
 			         
 			         <li><span>入职日期：</span><input type="text"  id="startworkdate" name="startworkdate" value="<%=u.getStartworkdate()==null?"":u.getStartworkdate() %>" maxlength="50"/></li>
-			         <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="<%=u.getJobnum()==null?"":u.getJobnum() %>" maxlength="50"/><%if(userJobnumIsNeed){ %>*<%} %></li>
+			         <li><span>工号：</span><input type="text"  id="jobnum" name="jobnum" value="<%=u.getJobnum()==null?"":u.getJobnum() %>" maxlength="50"/><span id="showJobNumNeed" style="width:10px" >*</span></li>
 	             	 <li><span>最高扣款额度：</span><input type="text"  id="maxcutpayment" name="maxcutpayment" value="<%=u.getMaxcutpayment()==null?"":u.getMaxcutpayment() %>" maxlength="50"/></li>
 	             	 <li><span>基础预付款：</span><input type="text"  id="basicadvance" name="basicadvance" value="<%=u.getBasicadvance()==null?"":u.getBasicadvance() %>" maxlength="50"/></li>
 	             	 <li><span>后期预付款：</span><input type="text"  id="lateradvance" name="lateradvance" value="<%=u.getLateradvance()==null?"":u.getLateradvance() %>" maxlength="50"/></li>
@@ -169,5 +170,3 @@ initUser[4]="<%=user.getShowphoneflag() %>,showphoneflag";
 
 </BODY>
 </HTML>
-
-</script>

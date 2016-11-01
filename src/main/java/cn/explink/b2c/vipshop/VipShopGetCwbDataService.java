@@ -1075,7 +1075,8 @@ public class VipShopGetCwbDataService {
 			return getSeq(seq_arrs, seq);
 		}
 		// 订单取消
-		if ("cancel".equalsIgnoreCase(cmd_type)) {			
+		if ("cancel".equalsIgnoreCase(cmd_type)) {
+			logger.info("接口取消上门退，订单号是{},是否开启拦截cancelOrIntercept:[{}]", order_sn , vipshop.getCancelOrIntercept());
 			if(vipshop.getCancelOrIntercept()==0){ //取消
 				// add by bruce shangguan 20160831 start
                 this.handleAdjustRecordForShangMenTuiSuccess(order_sn) ;
@@ -1112,6 +1113,7 @@ public class VipShopGetCwbDataService {
 	 * @param orderNumber
 	 */
 	public void handleAdjustRecordForShangMenTuiSuccess(String orderNumber){
+		logger.info("接口取消上门退，订单号是{}", orderNumber);
 		CwbOrder cwbOrder = this.cwbDAO.getCwbByCwb(orderNumber) ;
 		if(cwbOrder == null){
 			return ;
@@ -1120,6 +1122,7 @@ public class VipShopGetCwbDataService {
 		if(deliverState == null){
 			return ;
 		}
+		logger.info("接口取消上门退，订单[{}]最后一次反馈为上门退成功的时间是{}", orderNumber , deliverState.getSign_time());
 		this.orgBillAdjReService.handleAdjustRecordForShangMenTuiSuccess(cwbOrder, deliverState) ;
 		this.orgOrderAdjustRecordService.handleAdjustRecordForShangMenTuiSuccess(cwbOrder, deliverState);
 	}
