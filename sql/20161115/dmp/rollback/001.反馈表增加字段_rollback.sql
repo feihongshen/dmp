@@ -1,0 +1,1 @@
+ALTER TABLE `express_ops_delivery_state` DROP COLUMN `sign_img`;

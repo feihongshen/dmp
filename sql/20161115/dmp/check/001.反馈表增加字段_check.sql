@@ -1,0 +1,2 @@
+SELECT '反馈表增加字段sign_img' AS '脚本注释',IF((SELECT COUNT(1) FROM information_schema.columns WHERE table_schema = schema() and table_name = 'express_ops_delivery_state' AND column_name='sign_img') = 1,'success','failed') AS '执行结果'
+;
