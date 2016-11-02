@@ -117,6 +117,7 @@ public class OrderBackCheckService {
 		wufazaicifankuiBuffer.append("审核完成，（已审核的订单无法再次反馈）其中已审核的订单号为:");
 		if (!"".equals(ids)) {
 			logger.info("===退货确认审核开始===");
+			logger.info("退货确认审核ids{}",ids);
 			List<OrderBackCheck> orderList = orderBackCheckDAO.getOrderBackCheckById(ids);
 			if (orderList!=null&&!orderList.isEmpty()) {
 				//OrderBackCheck order = orderBackCheckDAO.getOrderBackCheckById(Long.parseLong(id));
