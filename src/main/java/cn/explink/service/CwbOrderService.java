@@ -7007,6 +7007,11 @@ public class CwbOrderService extends BaseOrderService {
 				if (isypdjusetranscwb == 1) {
 					this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, "");
 				}
+				//判断运单是否都已经做了退客户出库，如果是，则生成退客户确认记录，否则不能生成 -----刘武强20161101
+				int back2CustomerNum = this.getTransFlowOrderTypeNum(co, isypdjusetranscwb, flowOrderTypeEnum);//从轨迹表中获取退客户出库运单的条数
+				if(back2CustomerNum == -1 || back2CustomerNum == co.getSendcarnum() || back2CustomerNum == co.getBackcarnum()){
+					this.creOrderbackRecord(cwb, co.getCwbordertypeid(), co.getCustomerid(), co.getReceivablefee(), co.getEmaildate(), DateTimeUtil.getNowTime());
+				}
 			}
 		} else {
 			this.validateYipiaoduojianState(co, flowOrderTypeEnum, isypdjusetranscwb, false);
@@ -7049,7 +7054,11 @@ public class CwbOrderService extends BaseOrderService {
 		if ((isypdjusetranscwb == 1) && isypdj) {
 			this.createTranscwbOrderFlow(user, user.getBranchid(), cwb, scancwb, flowOrderTypeEnum, "");
 		}
-		this.creOrderbackRecord(cwb, co.getCwbordertypeid(), co.getCustomerid(), co.getReceivablefee(), co.getEmaildate(), DateTimeUtil.getNowTime());
+		//判断运单是否都已经做了退客户出库，如果是，则生成退客户确认记录，否则不能生成 -----刘武强20161101
+		int back2CustomerNum = this.getTransFlowOrderTypeNum(co, isypdjusetranscwb, flowOrderTypeEnum);//从轨迹表中获取退客户出库运单的条数
+		if(back2CustomerNum == -1 || back2CustomerNum == co.getSendcarnum() || back2CustomerNum == co.getBackcarnum()){
+			this.creOrderbackRecord(cwb, co.getCwbordertypeid(), co.getCustomerid(), co.getReceivablefee(), co.getEmaildate(), DateTimeUtil.getNowTime());
+		}
 	}
 
 	/**
@@ -10542,25 +10551,29 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		String cwb = order.getCwb();
 		if (((order.getSendcarnum() > 1) || (order.getBackcarnum() > 1)) && ((order.getTranscwb().split(",").length > 1) || (order.getTranscwb().split(":").length > 1)) && (isypdjusetranscwb == 1)) {
-			if (order.getTranscwb().indexOf(",") > -1) {
-				String[] transCwbs = order.getTranscwb().split(",");
-				int i = transCwbs.length;
-				for (String transcwb : transCwbs) {//遍历所有的运单，查看是否有运单的状态为到货
-					if ("".equals(transcwb.trim())) {
-						continue;
-					}
-					//从运单轨迹表中得到运单当前的状态记录
-					TranscwbOrderFlow tcof = this.transcwborderFlowDAO.getTranscwbOrderFlowByCwbAndState(transcwb, cwb);
-					
-					if(tcof != null && tcof.getFlowordertype() == flowOrderTypeEnum.getValue()){
-						i -- ;
-					}
+			String[] transCwbs;  //完善代码，如果运单号之间是用：分割，也需要兼容
+			if(order.getTranscwb().indexOf(",") > -1){
+				transCwbs = order.getTranscwb().split(",");
+			}else{
+				transCwbs = order.getTranscwb().split(":");
+			}
+			int i = transCwbs.length;
+			for (String transcwb : transCwbs) {//遍历所有的运单，查看是否有运单的状态为到货
+				if ("".equals(transcwb.trim())) {
+					continue;
 				}
-				if(i != 0 && i < transCwbs.length){//如果订单不全为到货，只是有部分为到货，那么返回true
-					return true;
+				//从运单轨迹表中得到运单当前的状态记录
+				TranscwbOrderFlow tcof = this.transcwborderFlowDAO.getTranscwbOrderFlowByCwbAndState(transcwb, cwb);
+				
+				if(tcof != null && tcof.getFlowordertype() == flowOrderTypeEnum.getValue()){
+					i -- ;
 				}
 			}
-		}		
+			if(i != 0 && i < transCwbs.length){//如果订单不全为到货，只是有部分为到货，那么返回true
+				return true;
+			}
+		}
+				
 		return false;
 	}
 	
@@ -10866,5 +10879,47 @@ public class CwbOrderService extends BaseOrderService {
 			branch = branchList.get(0);
 		}
 		return branch;
+	}
+	
+	/**
+	* @Title: getTransFlowOrderTypeNum 
+	* @Description: 获取处于某个状态的运单个数
+	* @param @param order  订单对象
+	* @param @param isypdjusetranscwb  是否开启一票多件
+	* @param @param flowOrderTypeEnum  要查询的状态
+	* @param @return    设定文件 
+	* @return int    返回类型   如果返回-1，则表示查询异常，无法获取运单轨迹
+	* @throws 
+	* @date 2016年11月1日 下午4:39:00 
+	* @author 刘武强
+	 */
+	private int getTransFlowOrderTypeNum(CwbOrder order,long isypdjusetranscwb,FlowOrderTypeEnum flowOrderTypeEnum){
+		if(order == null){//如果order为空，那么直接返回false
+			return -1;
+		}
+		String cwb = order.getCwb();
+		//发货数量/退货数量大于1，并且主表运单号字段正常，且客户开启一票多件，这个时候才有正常的运单轨迹
+		if (((order.getSendcarnum() > 1) || (order.getBackcarnum() > 1)) && ((order.getTranscwb().split(",").length > 1) || (order.getTranscwb().split(":").length > 1)) && (isypdjusetranscwb == 1)) {
+			String[] transCwbs;
+			if(order.getTranscwb().indexOf(",") > -1){
+				transCwbs = order.getTranscwb().split(",");
+			}else{
+				transCwbs = order.getTranscwb().split(":");
+			}
+			int i = 0;
+			for (String transcwb : transCwbs) {//遍历所有的运单，查看是否有运单的状态为flowOrderTypeEnum
+				if ("".equals(transcwb.trim())) {
+					continue;
+				}
+				//从运单轨迹表中得到运单当前的状态记录
+				TranscwbOrderFlow tcof = this.transcwborderFlowDAO.getTranscwbOrderFlowByCwbAndState(transcwb, cwb);
+				
+				if(tcof != null && tcof.getFlowordertype() == flowOrderTypeEnum.getValue()){
+					i ++ ;
+				}
+			}
+			return i;
+		}
+		return -1;
 	}
 }
