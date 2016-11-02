@@ -98,6 +98,7 @@ import cn.explink.util.DateTimeUtil;
 import cn.explink.util.ExcelUtils;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
+import cn.explink.util.MD5.MD5Util;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -177,6 +178,8 @@ public class DeliveryController {
 
 	private SimpleDateFormat df_d = new SimpleDateFormat("yyyy-MM-dd");
 
+	private final static String PJD_MD5_KEY="PJDElectronicSignature2016";
+	
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		return userDetail.getUser();
@@ -2105,7 +2108,8 @@ public class DeliveryController {
 		try {
 			DeliveryState ds = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
 			if(ds!=null&&ds.getSign_img()!=null&&ds.getSign_img().length()>0){
-				getPjdImg(ds.getSign_img(),"","",response);
+				String url=md5url(ds.getSign_img());
+				getPjdImg(url,"","",response);
 			}
 		} catch (Exception e) {
 			logger.error("从pjd读取签收图片出错,cwb="+cwb,e);
@@ -2151,5 +2155,24 @@ public class DeliveryController {
 			postMethod.releaseConnection();
 
 		}
+	}
+	
+	private String md5url(String url){
+		int index=url.indexOf("?");
+		if(index<0||index==(url.length()-1)){
+			throw new RuntimeException("pjd签收图片url无效");
+		}
+		String paramStr=url.substring(index+1);
+		String [] paramArr=paramStr.split("&");
+		if(paramArr.length<3||paramArr[0]==null||paramArr[1]==null||paramArr[2]==null){
+			throw new RuntimeException("pjd签收图片url无效");
+		}
+		
+		String userCode=paramArr[0].split("=")[1];
+		String date=paramArr[1].split("=")[1];
+		String serialNumber=paramArr[2].split("=")[1];
+		String signStr=userCode+date+serialNumber+PJD_MD5_KEY;
+		String sign=MD5Util.MD5Encode(signStr, null);
+		return url+"&sign="+sign;
 	}
 }
