@@ -862,13 +862,14 @@ public class UserController {
 	public boolean isCheckJobnum(@RequestParam (value="branchid") long branchid){
 		boolean jobcodeneed = isNeedJobnum();
 		Branch branch = branchDAO.getBranchByBranchid(branchid);
-		// 开启检查工号参数，并且 是直营、二级站点，三级站点 的站点
-		if(jobcodeneed && branch.getSitetype() == BranchEnum.ZhanDian.getValue() 
-				&& ((BranchTypeEnum.ZhiYing.getValue() + "").equals(branch.getContractflag()) 
-						|| (BranchTypeEnum.ErJiZhan.getValue() + "").equals(branch.getContractflag())
-							|| (BranchTypeEnum.SanJiZhan.getValue() + "").equals(branch.getContractflag()))){
-			return true;
-		}		
-		return false;
+		// 并且 是加盟、加盟二级站点，加盟三级站点 的站点
+		if(branch.getSitetype() == BranchEnum.ZhanDian.getValue() 
+				&& ((BranchTypeEnum.JiaMeng.getValue() + "").equals(branch.getContractflag()) 
+						|| (BranchTypeEnum.JiaMengErJi.getValue() + "").equals(branch.getContractflag())
+							|| (BranchTypeEnum.JiaMengSanJi.getValue() + "").equals(branch.getContractflag()))){
+			return false;
+		}
+				
+		return jobcodeneed;
 	}
 }
