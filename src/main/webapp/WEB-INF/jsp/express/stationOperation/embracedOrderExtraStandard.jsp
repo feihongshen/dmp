@@ -1629,7 +1629,9 @@
 					$("#goods_height_id").blur();
 					
 					$("#freight_total_id").val(data.embracedOrderVO.freight_total); 
-					if(data.embracedOrderVO.freight != null && data.embracedOrderVO.freight != "0.00"){
+					//modify by zhigang.ye live 2095  快递单运费由10修改为0改了运费生成调整账单第二第生成运费时有问题  2016-11-2
+					//if(data.embracedOrderVO.freight != null && data.embracedOrderVO.freight != "0.00"){
+					if(data.embracedOrderVO.freight != null){
 						$("#freight_id").val(data.embracedOrderVO.freight);
 						$("#freight_id").css('background','#EBEBE4');
 						$("#freight_id").attr("readonly","readonly");
