@@ -354,8 +354,13 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			params.put("totalfee", StringUtils.isNotBlank(embracedOrderVO.getFreight_total()) ? embracedOrderVO.getFreight_total() : 0.00);
 			params.put("express_product_type", embracedOrderVO.getExpress_product_type());// 快递二期增加支付方式
 			if(embracedOrderVO.getPayment_method()!=null&&embracedOrderVO.getPayment_method().equals("1")){
-				params.put("paywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
-				params.put("newpaywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
+				if (embracedOrderVO.getPaywayid() == null) {
+					params.put("paywayid", "1");// 快递二期增加支付方式
+					params.put("newpaywayid", "1");// 快递二期增加支付方式
+				} else {
+					params.put("paywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
+					params.put("newpaywayid", embracedOrderVO.getPaywayid());// 快递二期增加支付方式
+				}
 			}else{
 				params.put("paywayid", "0");// 快递二期增加支付方式
 				params.put("newpaywayid", "0");// 快递二期增加支付方式
