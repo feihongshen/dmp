@@ -126,7 +126,8 @@ public class CwbOrderSmtUnbindService {
 			CwbOrderWithDeliveryState cwbOrderWithDeliveryState = JsonUtil.readValue(orderFlow.getFloworderdetail(), CwbOrderWithDeliveryState.class);
 			CwbOrder cwborder = cwbOrderWithDeliveryState.getCwbOrder();
 			if (cwborder != null && cwborder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()) {
-				if (DeliveryStateEnum.FenZhanZhiLiu.getValue() == cwbOrderWithDeliveryState.getDeliveryState().getDeliverystate()) {
+				if (DeliveryStateEnum.FenZhanZhiLiu.getValue() == cwbOrderWithDeliveryState.getDeliveryState().getDeliverystate()
+						&&cwbOrderWithDeliveryState.getDeliveryState().getIsautolinghuo()==0) {//不是滞留自动领货
 					String shipperNo=getShipper_no(cwborder);
 					if(shipperNo==null ||shipperNo.isEmpty()){
 						logger.info("非唯品会订单,订单号:" + cwborder.getCwb());
