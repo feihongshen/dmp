@@ -243,6 +243,23 @@ public class ExpressDetailTemp {
 	
 	private int				orderSource;		// 订单来源
 	
+	private long          doCreateTime;       //DO订单下发时间
+	
+	private int            isHandOver;         //是否转业务
+	
+	
+	public int getIsHandOver() {
+		return isHandOver;
+	}
+	public void setIsHandOver(int isHandOver) {
+		this.isHandOver = isHandOver;
+	}
+	public long getDoCreateTime() {
+		return doCreateTime;
+	}
+	public void setDoCreateTime(long doCreateTime) {
+		this.doCreateTime = doCreateTime;
+	}
 	public String getTpsTransId() {
 		return tpsTransId;
 	}
