@@ -111,9 +111,5 @@
 		  	<property name="mqConfigService" ref="mqConfigService"/> 
 	  </bean> 
   	  <!-- end 消费pjd签收图片信息 -->
-  	  
-  	  <bean id="pjdExceptionSender" class="cn.explink.b2c.auto.order.mq.AutoExceptionSender" > 
-   	     <property name="channelKey" value="MQ_SEND_PJD_EXCEPTION_CHANNEL" /> 
-   	     <property name="mqConfigService" ref="mqConfigService"/> 
-   	  </bean>
+
 </beans>

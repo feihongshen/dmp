@@ -36,7 +36,7 @@ public class PjdSignImgCallback implements IVMSCallback{
 	@Autowired
 	private PjdSignImgService pjdSignImgService;
 	@Autowired
-	private AutoExceptionSender pjdExceptionSender;
+	private AutoExceptionSender autoExceptionSender;
 	@Autowired
 	private AutoExceptionService autoExceptionService;
 	@Autowired
@@ -120,7 +120,7 @@ public class PjdSignImgCallback implements IVMSCallback{
 				String errorMsg="";
 				try{
 					errorMsg=encodeErrorMsg(err);
-					pjdExceptionSender.send(errorMsg);
+					autoExceptionSender.send(errorMsg);
 				} catch (Throwable et) {
 		        	logger.error("反馈异常到PJD时出错,errorMsg:"+errorMsg,et);
 
