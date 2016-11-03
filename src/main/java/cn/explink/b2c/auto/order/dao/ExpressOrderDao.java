@@ -539,7 +539,7 @@ public class ExpressOrderDao {
 	 * @param tpsTransId
 	 */
 	public void updateExpressDetailTemp(final ExpressDetailTemp expressDetailTemp, final Branch branch, final Branch acceptBranch, final User user) {
-	    final StringBuffer sql = new StringBuffer();
+	    /*final StringBuffer sql = new StringBuffer();
 		sql.append(" update express_ops_cwb_detail set ");
 		sql.append(" transcwb=?,collectorid=?,collectorname=?,senderprovince=?,sendercity=?,");//sendercustomcode,
 		sql.append(" sendercounty=?,senderstreet=?,sendercellphone=?,sendertelephone=?,senderaddress=?,");
@@ -555,172 +555,190 @@ public class ExpressOrderDao {
 		sql.append(" express_product_type=?,hasinsurance=?,paymethod=?,newpaywayid=?,monthsettleno=?,");
 		sql.append(" tpstranscwb=?,senderprovinceid=?,sendercityid=?,sendercountyid=?,senderstreetid=?,");
 		sql.append(" recprovinceid=?,reccityid=?,reccountyid=?,recstreetid=?");
-		sql.append(" where cwb=?");
+		sql.append(" where cwb=?");*/
 
-		this.jdbcTemplate.update(sql.toString(), new PreparedStatementSetter() {
-			@Override
-			public void setValues(PreparedStatement ps) throws SQLException {
-				int i = 0;
-				ps.setString(++i, !expressDetailTemp.getCustPackNo().isEmpty()?expressDetailTemp.getCustPackNo():expressDetailTemp.getTransportNo());
-				//				ps.setString(++i, cwbOrderDTO.getCustCode());
-				if(expressDetailTemp.getIsAcceptProv() == 1){
-					ps.setString(++i, user != null ? user.getUserid() + "":"0");// 小件员id
-					ps.setString(++i, user != null ? user.getRealname() : "");// 小件员名称
-				} else{
-					ps.setString(++i, "0");// 小件员id
-					ps.setString(++i, "");// 小件员名称
-				}
-				ps.setString(++i, expressDetailTemp.getCnorProv());// 寄件人省
+		 final StringBuffer sql = new StringBuffer();
+			sql.append(" update express_ops_cwb_detail set ");
+			sql.append(" transcwb=?,senderprovince=?,sendercity=?,");//sendercustomcode,
+			sql.append(" sendercounty=?,senderstreet=?,sendercellphone=?,sendertelephone=?,senderaddress=?,");
+			sql.append(" sendername=?,consigneename=?,cwbprovince=?,cwbcity=?,cwbcounty=?,");
+			sql.append(" recstreet=?,consigneeaddress=?,consigneemobile=?,consigneephone=?,cwbremark=?,");
+			sql.append(" receivablefee=?,shouldfare=?,sendnum=?,hascod=?,realweight=?,");
+			sql.append(" chargeweight=?,announcedvalue=?,insuredfee=?,paywayid=?,length=?,");
+			sql.append(" width=?,height=?,cwbordertypeid=?,orderflowid=?,");
+			sql.append(" cargovolume=?,cwbstate=?,state=?,");
+			sql.append(" deliverybranchid=?,excelbranch=?,addresscodeedittype=?,totalfee=?,fnorgoffset=?,");
+			sql.append(" infactfare=?,paybackfee=?,isadditionflag=?,credate=?,cnor_corp_no=?,");
+			sql.append(" cnor_corp_name=?,account_id=?,packagefee=?,express_image=?,cnee_corp_name=?,");
+			sql.append(" express_product_type=?,hasinsurance=?,paymethod=?,newpaywayid=?,monthsettleno=?,");
+			sql.append(" tpstranscwb=?,senderprovinceid=?,sendercityid=?,sendercountyid=?,senderstreetid=?,");
+			sql.append(" recprovinceid=?,reccityid=?,reccountyid=?,recstreetid=?");
+			sql.append(" where cwb=?");
 
-				ps.setString(++i, expressDetailTemp.getCnorCity());// 市  5
-				ps.setString(++i, expressDetailTemp.getCnorRegion());// 区
-				ps.setString(++i, expressDetailTemp.getCnorTown());// 街道
-				ps.setString(++i, expressDetailTemp.getCnorMobile());
+			this.jdbcTemplate.update(sql.toString(), new PreparedStatementSetter() {
+				@Override
+				public void setValues(PreparedStatement ps) throws SQLException {
+					int i = 0;
+					ps.setString(++i, !expressDetailTemp.getCustPackNo().isEmpty()?expressDetailTemp.getCustPackNo():expressDetailTemp.getTransportNo());
+					//				ps.setString(++i, cwbOrderDTO.getCustCode());
+					/*if(expressDetailTemp.getIsAcceptProv() == 1){
+						ps.setString(++i, user != null ? user.getUserid() + "":"0");// 小件员id
+						ps.setString(++i, user != null ? user.getRealname() : "");// 小件员名称
+					} else{
+						ps.setString(++i, "0");// 小件员id
+						ps.setString(++i, "");// 小件员名称
+					}*/
+					ps.setString(++i, expressDetailTemp.getCnorProv());// 寄件人省
 
-				ps.setString(++i, expressDetailTemp.getCnorTel());
-				ps.setString(++i, expressDetailTemp.getCnorAddr()); //10
-				ps.setString(++i, expressDetailTemp.getCnorName());
-				ps.setString(++i, expressDetailTemp.getCneeName());
+					ps.setString(++i, expressDetailTemp.getCnorCity());// 市  5
+					ps.setString(++i, expressDetailTemp.getCnorRegion());// 区
+					ps.setString(++i, expressDetailTemp.getCnorTown());// 街道
+					ps.setString(++i, expressDetailTemp.getCnorMobile());
 
-				ps.setString(++i, expressDetailTemp.getCneeProv());// 收件人省
-				ps.setString(++i, expressDetailTemp.getCneeCity());// 市
-				ps.setString(++i, expressDetailTemp.getCneeRegion());// 区 15
-				ps.setString(++i, expressDetailTemp.getCneeTown());// 街道
+					ps.setString(++i, expressDetailTemp.getCnorTel());
+					ps.setString(++i, expressDetailTemp.getCnorAddr()); //10
+					ps.setString(++i, expressDetailTemp.getCnorName());
+					ps.setString(++i, expressDetailTemp.getCneeName());
 
-				//如果详细地址里面已经含省+市+区，则不再加入省市区
-				String cneeAddr = expressDetailTemp.getCneeAddr();
-				
-				ps.setString(++i, cneeAddr);
-				ps.setString(++i, expressDetailTemp.getCneeMobile());
-				ps.setString(++i, expressDetailTemp.getCneeTel()); 
-				ps.setString(++i, expressDetailTemp.getCnorRemark());//20
+					ps.setString(++i, expressDetailTemp.getCneeProv());// 收件人省
+					ps.setString(++i, expressDetailTemp.getCneeCity());// 市
+					ps.setString(++i, expressDetailTemp.getCneeRegion());// 区 15
+					ps.setString(++i, expressDetailTemp.getCneeTown());// 街道
 
-				ps.setBigDecimal(++i, expressDetailTemp.getCodAmount());
-				ps.setBigDecimal(++i, expressDetailTemp.getFreight());// 运费
-				ps.setInt(++i, expressDetailTemp.getTotalNum());
-				if(expressDetailTemp.getCodAmount().compareTo(new BigDecimal(0)) > 0){
-					ps.setInt(++i, 1);// 是否有代收货款
-				}else{
-					ps.setInt(++i, 0);
-				}
+					//如果详细地址里面已经含省+市+区，则不再加入省市区
+					String cneeAddr = expressDetailTemp.getCneeAddr();
+					
+					ps.setString(++i, cneeAddr);
+					ps.setString(++i, expressDetailTemp.getCneeMobile());
+					ps.setString(++i, expressDetailTemp.getCneeTel()); 
+					ps.setString(++i, expressDetailTemp.getCnorRemark());//20
 
-				ps.setBigDecimal(++i, expressDetailTemp.getTotalWeight());  //25
-				ps.setBigDecimal(++i, expressDetailTemp.getCalculateWeight());
-				ps.setBigDecimal(++i, expressDetailTemp.getAssuranceValue());
-				ps.setBigDecimal(++i, expressDetailTemp.getAssuranceFee());
+					ps.setBigDecimal(++i, expressDetailTemp.getCodAmount());
+					ps.setBigDecimal(++i, expressDetailTemp.getFreight());// 运费
+					ps.setInt(++i, expressDetailTemp.getTotalNum());
+					if(expressDetailTemp.getCodAmount().compareTo(new BigDecimal(0)) > 0){
+						ps.setInt(++i, 1);// 是否有代收货款
+					}else{
+						ps.setInt(++i, 0);
+					}
 
-				ps.setInt(++i, MqOrderBusinessUtil.getPayTypeValue(expressDetailTemp.getPayment()));//原支付方式
-				ps.setBigDecimal(++i, expressDetailTemp.getCargoLength());// 长  30
-				ps.setBigDecimal(++i, expressDetailTemp.getCargoWidth());// 宽
-				ps.setBigDecimal(++i, expressDetailTemp.getCargoHeight());// 高
+					ps.setBigDecimal(++i, expressDetailTemp.getTotalWeight());  //25
+					ps.setBigDecimal(++i, expressDetailTemp.getCalculateWeight());
+					ps.setBigDecimal(++i, expressDetailTemp.getAssuranceValue());
+					ps.setBigDecimal(++i, expressDetailTemp.getAssuranceFee());
 
-				ps.setLong(++i, CwbOrderTypeIdEnum.Express.getValue());
-				ps.setInt(++i, FlowOrderTypeEnum.DaoRuShuJu.getValue());
-				
-				if(expressDetailTemp.getIsAcceptProv() == 1){
-					//如果是接收省份，则填写 inputdatetime
+					ps.setInt(++i, MqOrderBusinessUtil.getPayTypeValue(expressDetailTemp.getPayment()));//原支付方式
+					ps.setBigDecimal(++i, expressDetailTemp.getCargoLength());// 长  30
+					ps.setBigDecimal(++i, expressDetailTemp.getCargoWidth());// 宽
+					ps.setBigDecimal(++i, expressDetailTemp.getCargoHeight());// 高
+
+					ps.setLong(++i, CwbOrderTypeIdEnum.Express.getValue());
+					ps.setInt(++i, FlowOrderTypeEnum.DaoRuShuJu.getValue());
+					
+					/*if(expressDetailTemp.getIsAcceptProv() == 1){
+						//如果是接收省份，则填写 inputdatetime
+						ps.setTimestamp(++i, Timestamp.valueOf(DateTimeUtil.getNowTime()));
+					}else{
+						ps.setNull(++i, Types.TIMESTAMP);
+					}*/// 状态   35
+
+					ps.setFloat(++i, expressDetailTemp.getTotalVolume().floatValue());
+					ps.setLong(++i, CwbStateEnum.PeiShong.getValue());
+					/*if(expressDetailTemp.getIsAcceptProv() == 1){
+						ps.setInt(++i, acceptBranch != null ? (int)acceptBranch.getBranchid() : 0);
+						ps.setString(++i, acceptBranch != null ? acceptBranch.getBranchname() : "");//站点
+					}else{
+						ps.setInt(++i, 0);
+						ps.setString(++i, "");//站点
+					}*/
+					ps.setInt(++i, 1);  //40
+
+					ps.setLong(++i, ((null != branch)?branch.getBranchid():0L));//配送站点ID
+					ps.setString(++i, ((null != branch)?branch.getBranchname():""));//配送站点名称
+					ps.setInt(++i, ((null != branch)?CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue():CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()));//是否匹配状态位
+
+					ps.setBigDecimal(++i, expressDetailTemp.getCarriage());// 费用合计
+					ps.setBigDecimal(++i, BigDecimal.ZERO);//  45
+					ps.setBigDecimal(++i, BigDecimal.ZERO);
+					ps.setBigDecimal(++i, expressDetailTemp.getReturnCredit());// 应退金额  
+					if(expressDetailTemp.getIsAcceptProv() == 1){
+						ps.setInt(++i, 0);//补录完成标识，
+					}else{
+						ps.setInt(++i, 1);
+					}
 					ps.setTimestamp(++i, Timestamp.valueOf(DateTimeUtil.getNowTime()));
-				}else{
-					ps.setNull(++i, Types.TIMESTAMP);
-				}// 状态   35
-
-				ps.setFloat(++i, expressDetailTemp.getTotalVolume().floatValue());
-				ps.setLong(++i, CwbStateEnum.PeiShong.getValue());
-				if(expressDetailTemp.getIsAcceptProv() == 1){
-					ps.setInt(++i, acceptBranch != null ? (int)acceptBranch.getBranchid() : 0);
-					ps.setString(++i, acceptBranch != null ? acceptBranch.getBranchname() : "");//站点
-				}else{
-					ps.setInt(++i, 0);
-					ps.setString(++i, "");//站点
+					ps.setString(++i, expressDetailTemp.getCnorCorpNo());//50
+					ps.setString(++i, expressDetailTemp.getCnorCorpName());
+					ps.setString(++i, expressDetailTemp.getAccountId());// 月结账号  
+					ps.setBigDecimal(++i, expressDetailTemp.getPackingFee());
+					ps.setString(++i, expressDetailTemp.getExpressImage());
+					ps.setString(++i, expressDetailTemp.getCneeCorpName());//55
+					ps.setInt(++i, expressDetailTemp.getExpressProductType());
+					// 是否有保价
+					if (expressDetailTemp.getAssuranceValue().compareTo(new BigDecimal(0)) > 0) {
+						ps.setInt(++i, 1);
+					} else {
+						ps.setInt(++i, 0);
+					}
+					// 结算方式
+					ps.setInt(++i, expressDetailTemp.getPayType());
+					ps.setString(++i, MqOrderBusinessUtil.getPayTypeValue(expressDetailTemp.getPayment()) + "");// 现在支付方式 
+					ps.setString(++i, expressDetailTemp.getAccountId());// 月结账号 60
+					ps.setString(++i, expressDetailTemp.getTransportNo()); // tps运单号
+					// 需要把省市区的id带出
+					// 寄件人省市区街道id
+					AdressVO vo = provinceDAO.getProviceByName(expressDetailTemp.getCnorProv());
+					if(vo !=null){
+						ps.setInt(++i, vo.getId());
+					}else{
+						ps.setInt(++i, 0);
+					}
+					vo = cityDAO.getCityByNameAndProvice(expressDetailTemp.getCnorCity(), vo);
+					if(vo !=null){
+						ps.setInt(++i, vo.getId());
+					}else{
+						ps.setInt(++i, 0);
+					}
+					vo = countyDAO.getCountyByNameAndCity(expressDetailTemp.getCnorRegion(), vo);
+					if(vo !=null){
+						ps.setInt(++i, vo.getId());
+					}else{
+						ps.setInt(++i, 0);
+					}
+					vo = townDAO.getTownByNameAndCounty(expressDetailTemp.getCnorTown(), vo);
+					if(vo !=null){
+						ps.setInt(++i, vo.getId());
+					}else{
+						ps.setInt(++i, 0);
+					}//65
+					// 收寄人省市区街道id
+					vo = provinceDAO.getProviceByName(expressDetailTemp.getCneeProv());
+					if(vo !=null){
+						ps.setInt(++i, vo.getId());
+					}else{
+						ps.setInt(++i, 0);
+					}
+					vo = cityDAO.getCityByNameAndProvice(expressDetailTemp.getCneeCity(), vo);
+					if(vo !=null){
+						ps.setInt(++i, vo.getId());
+					}else{
+						ps.setInt(++i, 0);
+					}
+					vo = countyDAO.getCountyByNameAndCity(expressDetailTemp.getCneeRegion(), vo);
+					if(vo !=null){
+						ps.setInt(++i, vo.getId());
+					}else{
+						ps.setInt(++i, 0);
+					}
+					vo = townDAO.getTownByNameAndCounty(expressDetailTemp.getCneeTown(), vo);
+					if(vo !=null){
+						ps.setInt(++i, vo.getId());
+					}else{
+						ps.setInt(++i, 0);
+					}
+					ps.setString(++i, expressDetailTemp.getTransportNo()); // tps运单号
 				}
-				ps.setInt(++i, 1);  //40
-
-				ps.setLong(++i, ((null != branch)?branch.getBranchid():0L));//配送站点ID
-				ps.setString(++i, ((null != branch)?branch.getBranchname():""));//配送站点名称
-				ps.setInt(++i, ((null != branch)?CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue():CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()));//是否匹配状态位
-
-				ps.setBigDecimal(++i, expressDetailTemp.getCarriage());// 费用合计
-				ps.setBigDecimal(++i, BigDecimal.ZERO);//  45
-				ps.setBigDecimal(++i, BigDecimal.ZERO);
-				ps.setBigDecimal(++i, expressDetailTemp.getReturnCredit());// 应退金额  
-				if(expressDetailTemp.getIsAcceptProv() == 1){
-					ps.setInt(++i, 0);//补录完成标识，
-				}else{
-					ps.setInt(++i, 1);
-				}
-				ps.setTimestamp(++i, Timestamp.valueOf(DateTimeUtil.getNowTime()));
-				ps.setString(++i, expressDetailTemp.getCnorCorpNo());//50
-				ps.setString(++i, expressDetailTemp.getCnorCorpName());
-				ps.setString(++i, expressDetailTemp.getAccountId());// 月结账号  
-				ps.setBigDecimal(++i, expressDetailTemp.getPackingFee());
-				ps.setString(++i, expressDetailTemp.getExpressImage());
-				ps.setString(++i, expressDetailTemp.getCneeCorpName());//55
-				ps.setInt(++i, expressDetailTemp.getExpressProductType());
-				// 是否有保价
-				if (expressDetailTemp.getAssuranceValue().compareTo(new BigDecimal(0)) > 0) {
-					ps.setInt(++i, 1);
-				} else {
-					ps.setInt(++i, 0);
-				}
-				// 结算方式
-				ps.setInt(++i, expressDetailTemp.getPayType());
-				ps.setString(++i, MqOrderBusinessUtil.getPayTypeValue(expressDetailTemp.getPayment()) + "");// 现在支付方式 
-				ps.setString(++i, expressDetailTemp.getAccountId());// 月结账号 60
-				ps.setString(++i, expressDetailTemp.getTransportNo()); // tps运单号
-				// 需要把省市区的id带出
-				// 寄件人省市区街道id
-				AdressVO vo = provinceDAO.getProviceByName(expressDetailTemp.getCnorProv());
-				if(vo !=null){
-					ps.setInt(++i, vo.getId());
-				}else{
-					ps.setInt(++i, 0);
-				}
-				vo = cityDAO.getCityByNameAndProvice(expressDetailTemp.getCnorCity(), vo);
-				if(vo !=null){
-					ps.setInt(++i, vo.getId());
-				}else{
-					ps.setInt(++i, 0);
-				}
-				vo = countyDAO.getCountyByNameAndCity(expressDetailTemp.getCnorRegion(), vo);
-				if(vo !=null){
-					ps.setInt(++i, vo.getId());
-				}else{
-					ps.setInt(++i, 0);
-				}
-				vo = townDAO.getTownByNameAndCounty(expressDetailTemp.getCnorTown(), vo);
-				if(vo !=null){
-					ps.setInt(++i, vo.getId());
-				}else{
-					ps.setInt(++i, 0);
-				}//65
-				// 收寄人省市区街道id
-				vo = provinceDAO.getProviceByName(expressDetailTemp.getCneeProv());
-				if(vo !=null){
-					ps.setInt(++i, vo.getId());
-				}else{
-					ps.setInt(++i, 0);
-				}
-				vo = cityDAO.getCityByNameAndProvice(expressDetailTemp.getCneeCity(), vo);
-				if(vo !=null){
-					ps.setInt(++i, vo.getId());
-				}else{
-					ps.setInt(++i, 0);
-				}
-				vo = countyDAO.getCountyByNameAndCity(expressDetailTemp.getCneeRegion(), vo);
-				if(vo !=null){
-					ps.setInt(++i, vo.getId());
-				}else{
-					ps.setInt(++i, 0);
-				}
-				vo = townDAO.getTownByNameAndCounty(expressDetailTemp.getCneeTown(), vo);
-				if(vo !=null){
-					ps.setInt(++i, vo.getId());
-				}else{
-					ps.setInt(++i, 0);
-				}
-				ps.setString(++i, expressDetailTemp.getTransportNo()); // tps运单号
-			}
-		});
+			});
 	}
 
 	/**
