@@ -19,7 +19,6 @@
         <property name="senderList">  
             <list>  
                 <ref bean="autoExceptionSender" />
-                <ref bean="pjdExceptionSender" />
             </list>  
         </property> 
 	  </bean>
