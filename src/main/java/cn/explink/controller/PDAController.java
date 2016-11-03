@@ -11363,7 +11363,7 @@ public class PDAController {
 
 		if (isSingleZhongzhuan) {
 			cwbOrder = this.cwbOrderService.changeoutWarehous(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid,
-					requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0 : Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, false, false);
+					requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0 : Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, true, false);  //把iszhongzhuanout参数改为true，防止未中转入库直接中转出库 -----刘武强20161103
 		} else {
 			cwbOrder = this.cwbOrderService.sortAndChangeOutWarehouse(this.getSessionUser(), cwb, scancwb, driverid, truckid, branchid, requestbatchno == null ? 0 : requestbatchno.length() == 0 ? 0
 					: Long.parseLong(requestbatchno), confirmflag == 1, comment, baleno, reasonid, false, false);
