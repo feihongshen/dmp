@@ -573,13 +573,13 @@ public class CwbOrderPDAController {
 				if ((request.getParameter("baleno") != null) && (request.getParameter("baleno").length() > 0)) {
 					baleno = request.getParameter("baleno");
 				}
-
-				if (branchid <= 0) {
+				//这个可以注释掉，因为如果页面上没有选下一站，出库方法里面会根据路由来确定下一站，这里这样处理还会造成 问题（跨入库直接出库，会自己出给自己）----刘武强20161104
+				/*if (branchid <= 0) {
 					CwbOrder co = this.cwbDAO.getCwbByCwb(scancwb);
 					if (co != null) {
 						branchid = co.getNextbranchid();
 					}
-				}
+				}*/
 				return this.outWarehous(cwb, driverid, truckid, branchid, confirmflag, reasonid, requestbatchno, baleno, new StringBuffer(), CwbOrderPDAEnum.OK.getCode(), request.getContextPath()
 						+ ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl(), request);
 
