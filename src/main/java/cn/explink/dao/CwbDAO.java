@@ -2359,6 +2359,10 @@ public class CwbDAO {
 	 * @param cwbstate
 	 */
 	public void updateCwbRemark(String cwb, String csremark) {
+		// add by jian_xie 【2111】数据库为1000
+		if(!StringUtils.isEmpty(csremark) && csremark.length() > 1000){
+			csremark = csremark.substring(0, 1000);
+		}
 		String sql = "update express_ops_cwb_detail set cwbremark=? where cwb=? and state=1 ";
 		this.jdbcTemplate.update(sql, csremark, cwb);
 	}
