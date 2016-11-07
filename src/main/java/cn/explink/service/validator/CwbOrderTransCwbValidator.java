@@ -28,6 +28,12 @@ public class CwbOrderTransCwbValidator implements CwbOrderValidator {
 			if(!hasSame(transCwbList)){
 				throw new RuntimeException("不能包含相同运单号!");
 			}
+			// 运单号超过50长度， add by jian_xie 2016-11-07
+			for(String transCwb : transCwbList){
+				if(transCwb.length() > 50){
+					throw new RuntimeException("运单号长度超过50！");
+				}
+			}
 		}
 	}
 	
