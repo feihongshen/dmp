@@ -1068,6 +1068,14 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 				this.createErrNote(temp.getOrderNo(), "运单号输入不合法：不是由数字和字母组成", failList);
 				cwbOrders.remove(temp);
 				continue;
+			} else {
+				//  add by jian_xie 2016_11_07
+				temp.setOrderNo(temp.getOrderNo().trim());
+				if(temp.getOrderNo().length() > 100){
+					this.createErrNote(temp.getOrderNo(), "运单号长度超过100", failList);
+					cwbOrders.remove(temp);
+					continue;
+				}
 			}
 			for (String str : repeatOrdersSet) {
 				if ((str != null) && str.equals(temp.getOrderNo())) {
@@ -1385,10 +1393,17 @@ public abstract class ExcelExtractor extends ExpressCommonService {
                     cwbOrders.remove(temp);
                     continue;
                 }
-            }else {
-                embracedOrdervo.setConsignee_name(temp.getConsignee_name());
-                embracedUpdateOrderVO.setConsignee_name(temp.getConsignee_name());
+            } else {
+            	//  add by jian_xie 2016_11_07
+            	temp.setConsignee_name(temp.getConsignee_name().trim());
+            	if(temp.getConsignee_name().length() > 25){
+            		this.createErrNote(temp.getOrderNo(), "收件人超过25长度", failList);
+                    cwbOrders.remove(temp);
+            		continue;
+            	}            	
             }
+            embracedOrdervo.setConsignee_name(temp.getConsignee_name());
+            embracedUpdateOrderVO.setConsignee_name(temp.getConsignee_name());
 			// 收件人省是否在数据库存在
 			if ((temp.getConsignee_provinceName() == null) || "".equals(temp.getConsignee_provinceName().trim())) {
 				 this.createErrNote(temp.getOrderNo(), "收件人省未填写", failList);
