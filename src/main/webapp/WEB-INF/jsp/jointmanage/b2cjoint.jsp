@@ -595,7 +595,7 @@ function delSuccess(data){
             $("#del").val('<%=request.getContextPath()%>/vipshop/del/');
         }
 		//zhili01.liang on 20160902==添加新的EDI处理接口==End===
-		else if(obj=='22554'){//PJD电子签名图片
+		else if(obj=='22558'){//PJD电子签名图片
             $("#edit").val('<%=request.getContextPath()%>/pjdsignimgcfg/show/');
             $("#del").val('<%=request.getContextPath()%>/pjdsignimgcfg/del/');
         }
