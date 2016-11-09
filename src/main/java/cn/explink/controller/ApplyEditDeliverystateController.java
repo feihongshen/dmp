@@ -42,6 +42,8 @@ import cn.explink.dao.ReasonDao;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.dao.ZhiFuApplyDao;
+import cn.explink.dao.fnc.FnStationSignOrderDetailsSnapshotDao;
+import cn.explink.dao.fnc.FnStationSignOrderDetailsSnapshotExpressDao;
 import cn.explink.domain.ApplyEditDeliverystate;
 import cn.explink.domain.Branch;
 import cn.explink.domain.Customer;
@@ -58,6 +60,7 @@ import cn.explink.enumutil.ApplyEnum;
 import cn.explink.enumutil.BillStateEnum;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbOrderTypeEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
@@ -136,6 +139,13 @@ public class ApplyEditDeliverystateController {
 
 	@Autowired
 	SystemInstallDAO systemInstallDAO;
+	
+	@Autowired
+	private FnStationSignOrderDetailsSnapshotDao fnStationSignOrderDetailsSnapshotDao;
+	
+	@Autowired
+	private FnStationSignOrderDetailsSnapshotExpressDao fnStationSignOrderDetailsSnapshotExpressDao;
+
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -342,9 +352,19 @@ public class ApplyEditDeliverystateController {
 							
 							String auditingTime = ec_dsd.getDs().getAuditingtime();
 							if (StringUtils.isNotEmpty(auditingTime)) {
-								String todayStr = DateTimeUtil.formatDate(new Date(), DateTimeUtil.DEF_DATE_FORMAT);
+								/*String todayStr = DateTimeUtil.formatDate(new Date(), DateTimeUtil.DEF_DATE_FORMAT);
 								String autitingDateStr = DateTimeUtil.translateFormatDate(auditingTime, DateTimeUtil.DEF_DATETIME_FORMAT, DateTimeUtil.DEF_DATE_FORMAT);
-								if (!todayStr.equals(autitingDateStr)) {// 归班审核时间与重置反馈时间不在同一天生成订单调整记录
+								if (!todayStr.equals(autitingDateStr)) {// 归班审核时间与重置反馈时间不在同一天生成订单调整记录*/									
+								
+								//不能单纯的根据时间来判断是否要生成调整账单，而是要根据余额报表是否已经生成来判断：如果已经生成了余额报表，那就需要生成调整账单，否则不需要 ---刘武强20161109
+								//获取前一天的日期的int值（因为余额记录表是以这种形式存的）
+								int  reportDate = DateTimeUtil.getIntDate(1);
+								//去快递单快财务照表找昨天的快照数据，如果有，则已生成报表---针对快递现付的运费数据调整
+								long reportnumExpress = this.fnStationSignOrderDetailsSnapshotExpressDao.getReportIdByCwbAndReportdate(cwb, reportDate);
+								//去订单财务快照表找昨天的快照数据，如果有，则已生成报表---针对非快递现付运费外的其他情况
+								long reportnum = this.fnStationSignOrderDetailsSnapshotDao.getReportIdByCwbAndReportdate(cwb, reportDate);//去快递单快照表找昨天的快照数据，如果有，则已生成报表
+								
+								if (reportnumExpress != 0  ||  reportnum != 0) {//如果前一天的余额报表已生成，则生成调整账单	
 									// 重置反馈状态生成调整记录(目前是为了站点签收余额报表增加的方法)
 									this.editCwbService.createFnOrgOrderAdjustRecord(cwb, ec_dsd);
 									//  V4.2.16资金归集代扣。POSCOD自动回款，如果订单支付类型为POS 或者 COD时，当订单被重置反馈时，需写入一条回款调整记录到调整表 gordon.zhou

@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
  * Utility to date time
  * 
@@ -961,4 +962,45 @@ public class DateTimeUtil {
 	public static String getNowDataTime () {
 		return formatDate(new java.util.Date(), DEF_DATETIME_FORMAT);
 	}
+	
+	/**
+	* @Title: date2Int 
+	* @Description: 从eap复制过来，将date转化为int
+	* @param @param date
+	* @param @param format
+	* @param @return    设定文件 
+	* @return int    返回类型 
+	* @throws 
+	* @date 2016年11月8日 下午2:27:43 
+	* @author 刘武强
+	 */
+	public static int date2Int(java.util.Date date, String format) {
+		int ret = 0;
+		try {
+			String formated = DateTimeUtil.formatDate(date, format);
+			if(formated!= null){
+				ret = Integer.parseInt(formated);
+			}
+		} catch (Exception e) {
+			
+		} 
+		return ret;
+	}
+	
+	/**
+	* @Title: getIntDate 
+	* @Description: 获取前i天的日期，返回日期的int值 
+	* @param @param i
+	* @param @return    设定文件 
+	* @return int    返回类型 
+	* @throws 
+	* @date 2016年11月8日 下午2:32:59 
+	* @author 刘武强
+	 */
+	public static int  getIntDate(int i){
+		String reportDate = getDateBeforeDay(i);//in 'yyyy-MM-dd' format,获取前i天的日期
+		java.util.Date parsed  = DateTimeUtil.parseDate(reportDate,"yyyy-MM-dd");
+		return DateTimeUtil.date2Int(parsed, "yyyyMMdd");
+	}
+	
 }
