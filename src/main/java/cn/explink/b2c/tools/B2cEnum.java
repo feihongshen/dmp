@@ -200,6 +200,7 @@ public enum B2cEnum {
 	TPS_NanFangChuanMei(22551,"南方传媒-TPS","nanfangchuanmeitpsother",0),
 	TPS_ZheMengXiTong(22552,"哲盟系统-TPS","zhemengxitongtpsother",0),
 	TPS_JingJingXiYi(22553,"净净洗衣-TPS","jingjingxiyitpsother",0),
+	PJD_SignImg(22554,"电子签名图片-PJD","pjdsignimg",0)
 	//zhili01.liang on 20161017加4家对接 ===End====
 	//zhili01.liang on 20161027加2家对接 
 	TPS_HaiTunXianSheng(22554,"海豚鲜生-TPS","haitunxianshengtpsother",0),

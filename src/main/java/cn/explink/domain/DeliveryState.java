@@ -51,6 +51,7 @@ public class DeliveryState {
 	private BigDecimal shouldfare = BigDecimal.ZERO;
 	private BigDecimal infactfare = BigDecimal.ZERO;
 	private String sign_man_phone;
+	private String sign_img;//签收人签名图片url
 	public String getSign_man_phone() {
 		return sign_man_phone;
 	}
@@ -414,6 +415,14 @@ public class DeliveryState {
 
 	public void setInfactfare(BigDecimal infactfare) {
 		this.infactfare = infactfare;
+	}
+
+	public String getSign_img() {
+		return sign_img;
+	}
+
+	public void setSign_img(String sign_img) {
+		this.sign_img = sign_img;
 	}
 
 	@Override

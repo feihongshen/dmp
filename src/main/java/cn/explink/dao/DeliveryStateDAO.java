@@ -107,6 +107,7 @@ public class DeliveryStateDAO {
 		deliveryState.setShouldfare(rs.getBigDecimal("shouldfare") == null ? BigDecimal.ZERO : rs.getBigDecimal("shouldfare"));
 		deliveryState.setInfactfare(rs.getBigDecimal("infactfare") == null ? BigDecimal.ZERO : rs.getBigDecimal("infactfare"));
 		deliveryState.setShangmenlanshoutime(rs.getString("shangmenlanshoutime"));
+		deliveryState.setSign_img(rs.getString("sign_img"));
 		return deliveryState;
 	}
 	
@@ -1286,7 +1287,7 @@ public class DeliveryStateDAO {
 	 * 在sql中自动变为0 auditingtime 归班时间 在sql中自动清空； receivedfeeuser 收款人 在sql中自动置为0；
 	 * sign_typeid 签收类型 在sql中自动置为未签收 0 sign_man 签收人 签收人在sql中自动清空 sign_time 签收时间
 	 * 在sql中自动清空 issendcustomer 是否已推送供货商 状态在sql中自动变更为 0 为推送 将 pushtime 推送成功时间
-	 * 在sql中自动置为""
+	 * 在sql中自动置为"",sign_img自动清空
 	 *
 	 * @param id
 	 *            反馈表id
@@ -1295,7 +1296,7 @@ public class DeliveryStateDAO {
 	 */
 	public void updateForChongZhiShenHe(long id, DeliveryStateEnum deliverystate, BigDecimal infactfare) {
 		this.jdbcTemplate.update("update express_ops_delivery_state " + "set cash=0,pos=0,otherfee=0,checkfee=0,receivedfee=0,returnedfee=0"
-				+ ",deliverytime='',gcaid=0,auditingtime='',receivedfeeuser=0" + ",sign_typeid=0,sign_man=null,sign_time=null,issendcustomer=0,pushtime='',deliverystate=?,infactfare=?"
+				+ ",deliverytime='',gcaid=0,auditingtime='',receivedfeeuser=0" + ",sign_typeid=0,sign_man=null,sign_time=null,issendcustomer=0,pushtime='',deliverystate=?,infactfare=?,sign_img=''"
 				+ " where id=?", deliverystate.getValue(), infactfare, id);
 
 	}
@@ -1944,5 +1945,16 @@ public class DeliveryStateDAO {
 			ee.printStackTrace();
 			return null;
 		}
+	}
+	
+	/**
+	 * 根据订单号pjd签收人签名图片地址
+	 *
+	 * @param cwb,imgUrl
+	 * @return
+	 */
+	public int saveSignImgByCwb(String cwb,String imgUrl) {
+		String sql = "update express_ops_delivery_state set sign_img=? where cwb=? and state=1";
+		return this.jdbcTemplate.update(sql,imgUrl,cwb);		
 	}
 }

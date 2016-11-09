@@ -13,11 +13,12 @@
                 <ref bean="tpsOrderAutomateConsumer" />
                 <ref bean="tpsOrderConsumer" />
                 <ref bean="tpsBatchNoConsumer" />
+                <ref bean="pjdSignImgConsumer" />
             </list>  
         </property> 
         <property name="senderList">  
             <list>  
-                <ref bean="autoExceptionSender" />  
+                <ref bean="autoExceptionSender" />
             </list>  
         </property> 
 	  </bean>
@@ -42,8 +43,8 @@
    	     <property name="channelKey" value="MQ_SEND_TPS_EXCEPTION_CHANNEL" /> 
    	     <property name="mqConfigService" ref="mqConfigService"/> 
    	  </bean>
- 
-  	  
+
+   	  
   	  <!--start....消费下发订单信息-->
    	  <bean id="tpsOrderAutomateConsumer" class="cn.explink.b2c.auto.order.mq.ConsumerTemplate" >
 		  	<property name="callBack" ref="tpsOrderAutomateMQCallback"/> 
@@ -91,4 +92,23 @@
 		  	<property name="mqConfigService" ref="mqConfigService"/> 
 	  </bean> 
   	  <!-- end 消费tps下发交接单号信息 -->
+  	  
+  	  <bean id="pjdSignImgCallback" class="cn.explink.b2c.auto.order.mq.PjdSignImgCallback" > 
+  	  </bean>
+  	  
+  	  <!-- start 消费pjd签收图片信息 -->
+  	  <bean id="pjdSignImgConsumer" class="cn.explink.b2c.auto.order.mq.ConsumerTemplate" >
+		  	<property name="callBack" ref="pjdSignImgCallback"/> 
+		  	<!-- channel -->
+		  	<property name="exchangeKey" value="MQ_REC_PJD_SIGNIMG_CHANNEL" /> 
+		  	 <!-- 队列 -->
+		  	<property name="queueKey" value="MQ_REC_PJD_SIGNIMG_QUEUE" /> 
+		  	<!-- 每次获取数量 -->
+		  	<property name="fetchCount" value="10"/> 
+		  	<!-- 是否自动提交 -->
+		  	<property name="autoCommit" value="false"/> 
+		  	<property name="mqConfigService" ref="mqConfigService"/> 
+	  </bean> 
+  	  <!-- end 消费pjd签收图片信息 -->
+
 </beans>
