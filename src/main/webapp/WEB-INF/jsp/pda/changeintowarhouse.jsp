@@ -337,7 +337,7 @@ function checkUseAutoAllocating() {
 									$("#damage").show();
 									$("#multicwbnum").show();
 
-									$("#customerid").val(data.body.cwbOrder.customerid);
+									//$("#customerid").val(data.body.cwbOrder.customerid);
 
 									if(data.body.showRemark!=null){
 										$("#cwbDetailshow").html("订单备注："+data.body.showRemark);
