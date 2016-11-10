@@ -126,8 +126,8 @@ public class YpdjHandleRecordDAO {
 
 	// 得到入库缺货件数的统计
 	public long getRukuQuejianbyBranchid(long branchid, long customerid, long emaildateid) {
-		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb left join express_ops_transcwb_detail td  " + "on yp.transcwb=td.transcwb AND td.transcwbstate<>" + TransCwbStateEnum.DIUSHI
-				.getValue() + " WHERE  yp.branchid=? AND yp.nextbranchid=0  and cd.state=1 AND yp.flowordertype =? ";
+		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb "
+				+ " WHERE  yp.branchid=? AND yp.nextbranchid=0  and cd.state=1 AND yp.flowordertype =? ";
 		if (customerid > 0) {
 			sql += " and yp.customerid =" + customerid;
 		}
@@ -139,7 +139,8 @@ public class YpdjHandleRecordDAO {
 
 	// 得到中转站入库缺货件数的统计
 	public long getZhongZhuanZhanRukuQuejianbyBranchid(long branchid, long customerid) {
-		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb WHERE  yp.branchid=? AND yp.nextbranchid=0 AND cd.state=1 AND yp.flowordertype =? ";
+		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb "
+				+ " WHERE  yp.branchid=? AND yp.nextbranchid=0 AND cd.state=1 AND yp.flowordertype =? ";
 		if (customerid > 0) {
 			sql += " and yp.customerid =" + customerid;
 		}
@@ -148,8 +149,8 @@ public class YpdjHandleRecordDAO {
 
 	// 得到入库缺货件数的list列表
 	public List<JSONObject> getRukuQuejianbyBranchidList(long branchid, long customerid, long page, long emaildateid) {
-		String sql = "SELECT yp.*,cd.emaildate,cd.consigneename,cd.consigneeaddress,cd.receivablefee FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb left join express_ops_transcwb_detail td  " + "on yp.transcwb=td.transcwb AND td.transcwbstate<>" + TransCwbStateEnum.DIUSHI
-				.getValue() + " WHERE  yp.branchid=? AND yp.nextbranchid=0  and cd.state=1 AND yp.flowordertype =? ";
+		String sql = "SELECT yp.*,cd.emaildate,cd.consigneename,cd.consigneeaddress,cd.receivablefee FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb "
+				+ " WHERE  yp.branchid=? AND yp.nextbranchid=0  and cd.state=1 AND yp.flowordertype =? ";
 		if (customerid > 0) {
 			sql += " and yp.customerid =" + customerid;
 		}
@@ -162,7 +163,8 @@ public class YpdjHandleRecordDAO {
 
 	// 得到入库缺货件数的list列表
 	public List<JSONObject> getZhongZhuanZhanRukuQuejianbyBranchidList(long branchid, long customerid, long page) {
-		String sql = "SELECT yp.*,cd.emaildate,cd.consigneename,cd.consigneeaddress,cd.receivablefee FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb WHERE  yp.branchid=? AND yp.nextbranchid=0 AND cd.state=1 AND yp.flowordertype =? ";
+		String sql = "SELECT yp.*,cd.emaildate,cd.consigneename,cd.consigneeaddress,cd.receivablefee FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb "
+				+ " WHERE  yp.branchid=? AND yp.nextbranchid=0 AND cd.state=1 AND yp.flowordertype =? ";
 		if (customerid > 0) {
 			sql += " and yp.customerid =" + customerid;
 		}
@@ -172,15 +174,15 @@ public class YpdjHandleRecordDAO {
 	}
 
 	public long getDaoHuoQuejianCount(long branchid) {
-		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb  left join express_ops_transcwb_detail td on yp.transcwb=td.transcwb and td.transcwbstate<>" + TransCwbStateEnum.DIUSHI
-				.getValue() + " WHERE  yp.branchid=?   AND cd.state=1 AND yp.flowordertype in(" + FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao
+		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb  "
+				+ " WHERE  yp.branchid=?   AND cd.state=1 AND yp.flowordertype in(" + FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao
 				.getValue() + ")";
 		return this.jdbcTemplate.queryForLong(sql, branchid);
 	}
 
 	public List<JSONObject> getDaoHuoQuejianList(long branchid, long page) {
-		String sql = "SELECT yp.*,cd.emaildate,cd.consigneename,cd.consigneeaddress,cd.receivablefee,cd.packagecode FROM `ops_ypdjhandlerecord` yp " + "LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb left join express_ops_transcwb_detail td on yp.transcwb=td.transcwb AND td.transcwbstate<>" + TransCwbStateEnum.DIUSHI
-				.getValue() + " WHERE  yp.branchid=?  and cd.state=1 AND yp.flowordertype in(" + FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao
+		String sql = "SELECT yp.*,cd.emaildate,cd.consigneename,cd.consigneeaddress,cd.receivablefee,cd.packagecode FROM `ops_ypdjhandlerecord` yp " + "LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb "
+				+ " WHERE  yp.branchid=?  and cd.state=1 AND yp.flowordertype in(" + FlowOrderTypeEnum.FenZhanDaoHuoSaoMiao.getValue() + "," + FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao
 				.getValue() + ")";
 		sql += " limit ?,?";
 		return this.jdbcTemplate.query(sql, new YpdjHandleRecordAndDaohuoCwbOrderMapper(), branchid, (page - 1) * Page.DETAIL_PAGE_NUMBER, Page.DETAIL_PAGE_NUMBER);
@@ -188,8 +190,8 @@ public class YpdjHandleRecordDAO {
 
 	// 得到出库缺货件数的统计
 	public long getChukuQuejianbyBranchid(long branchid, long nextbranchid) {
-		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb left join express_ops_transcwb_detail td on yp.transcwb=td.transcwb AND td.transcwbstate<>" + TransCwbStateEnum.DIUSHI
-				.getValue() + " WHERE  yp.branchid=?  and cd.state=1 AND yp.flowordertype =? ";
+		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb "
+				+ " WHERE  yp.branchid=?  and cd.state=1 AND yp.flowordertype =? ";
 		if (nextbranchid > 0) {
 			sql += " and yp.nextbranchid =" + nextbranchid;
 		}
@@ -198,8 +200,8 @@ public class YpdjHandleRecordDAO {
 
 	// 得到中转站出库缺货件数的统计
 	public long getZhongZhuanChukuQuejianbyBranchid(long branchid, long nextbranchid) {
-		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb left join express_ops_transcwb_detail td on yp.transcwb=td.transcwb AND td.transcwbstate<>" + TransCwbStateEnum.DIUSHI
-				.getValue() + " WHERE  yp.branchid=?  AND yp.flowordertype =? ";
+		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb "
+				+ " WHERE  yp.branchid=?  AND yp.flowordertype =? ";
 		if (nextbranchid > 0) {
 			sql += " and yp.nextbranchid =" + nextbranchid;
 		}
@@ -208,7 +210,8 @@ public class YpdjHandleRecordDAO {
 
 	// 得到出库缺货件数的统计
 	public long getChukuQuejianbyBranchid(long branchid, long nextbranchid, long flowordertype) {
-		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb WHERE  yp.branchid=? AND cd.state=1 AND yp.flowordertype =? ";
+		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb "
+				+ " WHERE  yp.branchid=? AND cd.state=1 AND yp.flowordertype =? ";
 		if (nextbranchid > 0) {
 			sql += " and yp.nextbranchid =" + nextbranchid;
 		}
@@ -217,8 +220,8 @@ public class YpdjHandleRecordDAO {
 
 	// 得到出库缺货件数的list列表
 	public List<JSONObject> getChukuQuejianbyBranchidList(long branchid, long nextbranchid, long page, long flowordertype) {
-		String sql = "SELECT yp.*,cd.emaildate,cd.consigneename,cd.consigneeaddress,cd.receivablefee FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb left join express_ops_transcwb_detail td on yp.transcwb=td.transcwb AND td.transcwbstate<>" + TransCwbStateEnum.DIUSHI
-				.getValue() + " WHERE  yp.branchid=?  and cd.state=1 AND yp.flowordertype =?   ";
+		String sql = "SELECT yp.*,cd.emaildate,cd.consigneename,cd.consigneeaddress,cd.receivablefee FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb "
+				+ " WHERE  yp.branchid=?  and cd.state=1 AND yp.flowordertype =?   ";
 		if (nextbranchid > 0) {
 			sql += " and yp.nextbranchid =" + nextbranchid;
 		}
@@ -234,8 +237,8 @@ public class YpdjHandleRecordDAO {
 	 * @return
 	 */
 	public List<String> getSQLExportforypdj(long branchid, long customerid, long emaildateid) {
-		String sql = "SELECT yp.cwb FROM `ops_ypdjhandlerecord` AS yp LEFT JOIN `express_ops_cwb_detail` AS cd ON yp.cwb=cd.cwb " + " left join express_ops_transcwb_detail td on yp.transcwb=td.transcwb and td.transcwbstate<>" + TransCwbStateEnum.DIUSHI
-				.getValue() + " WHERE  yp.branchid=" + branchid + " AND yp.nextbranchid=0   AND cd.state=1 AND yp.flowordertype =" + FlowOrderTypeEnum.RuKu.getValue();
+		String sql = "SELECT yp.cwb FROM `ops_ypdjhandlerecord` AS yp LEFT JOIN `express_ops_cwb_detail` AS cd ON yp.cwb=cd.cwb "
+				+ " WHERE  yp.branchid=" + branchid + " AND yp.nextbranchid=0   AND cd.state=1 AND yp.flowordertype =" + FlowOrderTypeEnum.RuKu.getValue();
 		if (customerid > 0) {
 			sql += " and cd.customerid =" + customerid;
 		}
@@ -246,9 +249,8 @@ public class YpdjHandleRecordDAO {
 	}
 
 	public List<String> getSQLExportforypdjZhongzhuan(long branchid, long customerid, long emaildateid) {
-		String sql = "SELECT yp.cwb FROM `ops_ypdjhandlerecord` AS yp LEFT JOIN `express_ops_cwb_detail` AS cd ON yp.cwb=cd.cwb " + " left join express_ops_transcwb_detail td on yp.transcwb=td.transcwb and td.transcwbstate<>" + TransCwbStateEnum.DIUSHI
-				.getValue() + " WHERE  yp.branchid=" + branchid + " AND yp.nextbranchid=0   AND cd.state=1 AND (yp.flowordertype =" + FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue() + " or yp.flowordertype =" + FlowOrderTypeEnum.DingDanLanJie
-				.getValue() + ")";
+		String sql = "SELECT yp.cwb FROM `ops_ypdjhandlerecord` AS yp LEFT JOIN `express_ops_cwb_detail` AS cd ON yp.cwb=cd.cwb "
+				+ " WHERE  yp.branchid=" + branchid + " AND yp.nextbranchid=0   AND cd.state=1 AND (yp.flowordertype =" + FlowOrderTypeEnum.ZhongZhuanZhanRuKu.getValue() +")";
 		if (customerid > 0) {
 			sql += " and cd.customerid =" + customerid;
 		}
@@ -272,8 +274,8 @@ public class YpdjHandleRecordDAO {
 	 * @return
 	 */
 	public List<String> getSQLExportforchukuypdj(long branchid, long nextbranchid, int flowordertypeid) {
-		String sql = "SELECT yp.cwb FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail` cd ON yp.cwb=cd.cwb left join express_ops_transcwb_detail td on yp.transcwb=td.transcwb  and td.transcwbstate<>" + TransCwbStateEnum.DIUSHI
-				.getValue() + " WHERE  yp.branchid = " + branchid + "   AND cd.state=1 AND yp.flowordertype = " + flowordertypeid;
+		String sql = "SELECT yp.cwb FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail` cd ON yp.cwb=cd.cwb "
+				+ " WHERE  yp.branchid = " + branchid + "   AND cd.state=1 AND yp.flowordertype = " + flowordertypeid;
 		if (nextbranchid > 0) {
 			sql += " AND yp.nextbranchid = " + nextbranchid;
 		}
@@ -281,7 +283,8 @@ public class YpdjHandleRecordDAO {
 	}
 
 	public List<JSONObject> getRukuQuejianbyBranchidList(long branchid, long customerid, String orderby, long emaildateid, long asc) {
-		String sql = "SELECT yp.*,cd.emaildate,cd.consigneename,cd.consigneeaddress,cd.receivablefee FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb WHERE  yp.branchid=? AND yp.nextbranchid=0 AND cd.state=1 AND yp.flowordertype =? ";
+		String sql = "SELECT yp.*,cd.emaildate,cd.consigneename,cd.consigneeaddress,cd.receivablefee FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb "
+				+ " WHERE  yp.branchid=? AND yp.nextbranchid=0 AND cd.state=1 AND yp.flowordertype =? ";
 		if (customerid > 0) {
 			sql += " and yp.customerid =" + customerid;
 		}
@@ -304,8 +307,8 @@ public class YpdjHandleRecordDAO {
 	}
 
 	public long getScannedNumber(String cwb, long branchid, long flowordertype) {
-		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb " + "left join express_ops_transcwb_detail td on yp.transcwb=td.transcwb AND td.transcwbstate<>" + TransCwbStateEnum.DIUSHI
-				.getValue() + " WHERE yp.cwb=? and  yp.branchid=?  and cd.state=1 AND yp.flowordertype =? ";
+		String sql = "SELECT COUNT(1) FROM `ops_ypdjhandlerecord` yp LEFT JOIN `express_ops_cwb_detail`cd ON yp.cwb=cd.cwb "
+				+ " WHERE yp.cwb=? and  yp.branchid=?  and cd.state=1 AND yp.flowordertype =? ";
 
 		return this.jdbcTemplate.queryForLong(sql, cwb, branchid, flowordertype);
 	}
