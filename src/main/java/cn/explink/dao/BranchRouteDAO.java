@@ -144,4 +144,15 @@ public class BranchRouteDAO {
 		String sql = "SELECT * FROM express_set_branch_route WHERE type=?";
 		return this.jdbcTemplate.query(sql, new BranchRouteRowMapper(), type);
 	}
+	
+	/**
+	 * 根据起始站ids 流向类型  获取N多货物流向。
+	 * @param fromBranchIds
+	 * @param type
+	 * @return
+	 */
+	public List<BranchRoute> getNextBranchByfromBranchIdsAndType(String fromBranchIds,long type){
+		String sql = "SELECT * FROM express_set_branch_route WHERE fromBranchId in ("+fromBranchIds+") and type=?";
+		return this.jdbcTemplate.query(sql, new BranchRouteRowMapper(), type);
+	}
 }

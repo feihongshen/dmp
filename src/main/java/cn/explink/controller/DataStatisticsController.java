@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.b2c.tools.DataTranferService;
 import cn.explink.dao.BranchDAO;
+import cn.explink.dao.BranchRouteDAO;
 import cn.explink.dao.CommonDAO;
 import cn.explink.dao.ComplaintDAO;
 import cn.explink.dao.CustomWareHouseDAO;
@@ -82,6 +83,7 @@ import cn.explink.enumutil.CwbStateEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.OrderTypeEnum;
+import cn.explink.service.BranchRouteService;
 import cn.explink.service.DataStatisticsService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
@@ -143,6 +145,9 @@ public class DataStatisticsController {
 	TuihuoRecordDAO tuihuoRecordDAO;
 	@Autowired
 	UserBranchDAO userBranchDAO;
+	
+	@Autowired
+	BranchRouteService branchRouteService;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -822,7 +827,17 @@ public class DataStatisticsController {
 		CwbOrder sum = new CwbOrder();
 		List<CwbOrderView> cwbOrderView = new ArrayList<CwbOrderView>();
 		List<Branch> branchList = this.branchDAO.getAllBranches();
-
+		List<Branch> branchIds  = new ArrayList<Branch>();
+		if(kufangid!=null && kufangid.length>0){
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < kufangid.length; i++) {
+				if(i>0){
+					sb.append(",");
+				}
+				sb.append(kufangid[i]);
+			}
+			branchIds = this.branchRouteService.getBranchIds(sb.toString());
+		}
 		if (isshow != 0) {
 			this.logger
 					.info("库房出库统计，操作人{}，选择条件 begindate:" + begindate + ",enddate:" + enddate + ",kufangid:" + kufangid + ",customerid:" + this.dataStatisticsService.getStrings(customerid) + ",cwbordertypeid:" + this.dataStatisticsService
@@ -888,7 +903,7 @@ public class DataStatisticsController {
 		List<String> nextbranchidlist = this.dataStatisticsService.getList(nextbranchid);
 		List<String> kufangidList = this.dataStatisticsService.getList(kufangid);
 
-		model.addAttribute("branchList", branchnameList);
+		model.addAttribute("branchList", branchIds);
 		model.addAttribute("customerlist", this.customerDAO.getAllCustomers());
 		model.addAttribute("exportmouldlist", this.exportmouldDAO.getAllExportmouldByUser(this.getSessionUser().getRoleid()));
 		model.addAttribute("kufangList", kufangList);
@@ -2610,6 +2625,16 @@ public class DataStatisticsController {
 			this.logger.error("queryObsoleteOrder failed ", e);
 		}
 		return "datastatistics/shixiao";
+	}
+	
+	@RequestMapping("/getNextbranch")
+	public @ResponseBody List<Branch> getNextBranch(@RequestParam(value = "branchids", required = false, defaultValue = "\"\"") String ids,HttpServletRequest  request){
+		ids = ids.substring(1,ids.length()-1);
+		if("".equals(ids)){
+			return new ArrayList<Branch>();
+		}
+		List<Branch> branchIds = this.branchRouteService.getBranchIds(ids);
+		return branchIds;
 	}
 
 	@RequestMapping("/daohuoqianyi/{page}")
