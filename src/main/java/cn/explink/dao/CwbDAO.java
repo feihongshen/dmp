@@ -1330,8 +1330,8 @@ public class CwbDAO {
 //					.queryForObject(
 //							"SELECT * from express_ops_cwb_detail where cwb=? and state=1",
 //							new CwbMapper(), cwb);
-		} catch (Exception e) {
-			logger.info("getCwbByCwbLock{}" , cwb);
+		} catch (EmptyResultDataAccessException e) {
+			logger.info("getCwbByCwbLock,出错了订单号{}" , cwb);
 			return null;
 		}
 	}
