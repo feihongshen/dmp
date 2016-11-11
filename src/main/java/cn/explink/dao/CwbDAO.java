@@ -407,6 +407,8 @@ public class CwbDAO {
 			cwbOrder.setOrderSource(rs.getString("order_source"));
 			//zhili01.liang 20160830 货物尺寸类型修改审核
 			cwbOrder.setGoodsSizeType(rs.getInt("goods_size_type"));
+			cwbOrder.setExchangeflag(rs.getInt("exchange_flag"));
+			cwbOrder.setExchangecwb(rs.getString("exchange_cwb"));
 			return cwbOrder;
 		}
 	}
