@@ -49,8 +49,35 @@
 <script src="<%=request.getContextPath()%>/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/jquery.ui.message.min.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/js/multiSelcet/MyMultiSelect.js" type="text/javascript"></script>
+<link href="<%=request.getContextPath()%>/css/multiple-select.css" rel="stylesheet" type="text/css" />
+<script src="<%=request.getContextPath()%>/js/multiSelcet/jquery.multiple.select.js" type="text/javascript"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
+		
+		 $("#kufangid").change(function(){
+			//获取所有选中框,
+			//如果为0 则return 
+			//如果不为空 获取value拼装json 传递到后台。 
+			var $ids = $kufangid1.multipleSelect("getSelects");
+			var json = {branchids:"\""+$ids+"\""};//这边为啥不加引号传不到后台去呢。。
+			$.ajax({
+				type: "POST",
+				url:"${pageContext.request.contextPath}/datastatistics/getNextbranch/",
+				data:json,
+				dataType:"json",
+				success : function(data) {
+					var $selectids = $nextbranchid.multipleSelect("getSelects")+"";
+					var optionsStr = "";
+					$.each(data,function(index,value){
+						optionsStr += "<option value=\""+value.branchid+"\">"+value.branchname+"</option>";
+					})
+					$nextbranchid.html(optionsStr).multipleSelect("refresh");
+					if($selectids != null && $selectids != ""){
+						$nextbranchid.multipleSelect("setSelects",$selectids.split(","));
+					}
+				}
+			})
+		}); 
 	   //获取下拉框的值
 	   $("#find").click(function(){
 	         var checkval="";
@@ -109,10 +136,19 @@ $(function() {
 		timeFormat: 'hh:mm:ss',
 	    dateFormat: 'yy-mm-dd'
 	});
-	$("#customerid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择供货商' });
 	$("#cwbordertypeid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择' });
-	$("#nextbranchid").multiSelect({ oneOrMoreSelected: '*',noneSelected:'请选择' });
-	$("#kufangid").multiSelect({oneOrMoreSelected:'*',noneSelected:'请选择发货库房'});
+	$kufangid1 = $("#kufangid").multipleSelect({
+        placeholder: "请选择库房",
+        filter: true
+    });
+	$nextbranchid = $("#nextbranchid").multipleSelect({
+        placeholder: "请选择下一机构",
+        filter: true
+    });
+	$customerid = $("#customerid").multipleSelect({
+        placeholder: "请选择供货商",
+        filter: true
+    });
 	
 });
 function searchFrom(){
@@ -172,23 +208,18 @@ function clearSelect(){
 			 				}}%>><%=b.getBranchname()%></option>
 		          <%} }%>
 			</select>
-			[<a href="javascript:multiSelectAll('kufangid',1,'请选择');">全选</a>]
-			[<a href="javascript:multiSelectAll('kufangid',0,'请选择');">取消全选</a>]
 		</td>
 	</tr>
 	<tr>
 	<td>
-                        站点名称
+     <%--                    站点名称
 			<select name="ismohu" id="ismohu" class="select1">
 					<option value ="1"<%if(1==(request.getParameter("ismohu")==null?1:Long.parseLong(request.getParameter("ismohu")))){%>selected="selected"<%}%>>模糊匹配</option>
 					<option value ="2"<%if(2==(request.getParameter("ismohu")==null?1:Long.parseLong(request.getParameter("ismohu")))){%>selected="selected"<%}%>>精确匹配</option>
 			 </select>
-			 <input name="branchname" id="branchname" class="input_text1" onKeydown="if(event.keyCode==13&&$(this).val().length>0){moHuOrJingQueSlect($('#ismohu').val(),'<%=request.getContextPath()%>','nextbranchid',$(this).val());}"/>
-	</td>
-		<td>
-		下一站点
+			 <input name="branchname" id="branchname" class="input_text1" onKeydown="if(event.keyCode==13&&$(this).val().length>0){moHuOrJingQueSlect($('#ismohu').val(),'<%=request.getContextPath()%>','nextbranchid',$(this).val());}"/> --%>
+			 下一机构
 			<select name ="nextbranchid" id ="nextbranchid"  multiple="multiple" style="width: 300px;">
-		          <%if(branchlist!=null && branchlist.size()>0){ %>
 		          <%for(Branch b : branchlist){ %>
 						<option value ="<%=b.getBranchid() %>" 
 		           <%if(!nextbranchidList.isEmpty()) 
@@ -200,15 +231,10 @@ function clearSelect(){
 			            }
 				     }
 				     %>><%=b.getBranchname()%></option>
-		          <%} }%>
+		          <%} %>
 			 </select>
-			 [<a href="javascript:multiSelectAll('nextbranchid',1,'请选择');">全选</a>]
-			 [<a href="javascript:multiSelectAll('nextbranchid',0,'请选择');">取消全选</a>]
-	
 	</td>
-	</tr>
-	<tr>
-	<td>
+		<td>
 		订单类型
 			<select name ="cwbordertypeid" id ="cwbordertypeid" multiple="multiple" >
 		          <%for(CwbOrderTypeIdEnum c : CwbOrderTypeIdEnum.values()){ %>
@@ -224,6 +250,8 @@ function clearSelect(){
 		          <%} %>
 			</select>
 	</td>
+	</tr>
+	<tr>
 	<td>
 		供货客户
 			<select name ="customerid" id ="customerid" multiple="multiple" style="width: 300px;">
@@ -239,8 +267,9 @@ function clearSelect(){
 				     }%>><%=c.getCustomername() %></option>
 		          <%} %>
 		        </select>
-				[<a href="javascript:multiSelectAll('customerid',1,'请选择');">全选</a>]
-				[<a href="javascript:multiSelectAll('customerid',0,'请选择');">取消全选</a>]
+	</td>
+	<td>
+		
 	</td>
 	</tr>
 	<tr>
