@@ -759,7 +759,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					// ? "0" : "-1");
 					doReq.setPayment(-1);// 11.13 马哥说运单里任何情况都传-1
 					//月结方式，需要把月结账号，寄件人单位名称，寄件人单位编码传过tps----刘武强20160718
-					if(StringUtils.isNotBlank(embracedOrderVO.getPayment_method()) && "0".equals(embracedOrderVO.getPayment_method().trim())){
+					if(StringUtils.isNotBlank(embracedOrderVO.getPayment_method()) && ("0".equals(embracedOrderVO.getPayment_method().trim()) || "3".equals(embracedOrderVO.getPayment_method().trim()))){
 						doReq.setAccountId(embracedOrderVO.getMonthly_account_number());
 						doReq.setAccountCustName(embracedOrderVO.getSender_companyName());
 						doReq.setAccountCustCode(embracedOrderVO.getMonthly_account_number());
