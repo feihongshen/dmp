@@ -1315,10 +1315,16 @@ public class CwbDAO {
 	 */
 	public CwbOrder getCwbByCwbLock(String cwb) {
 		try {
-			return this.jdbcTemplate
+			//modify by jian_xie 2016-11-11
+			CwbOrder cwborder = jdbcTemplate
 					.queryForObject(
-							"SELECT * from express_ops_cwb_detail where cwb=? and state=1 for update",
+							"SELECT * from express_ops_cwb_detail where cwb=? and state=1",
 							new CwbMapper(), cwb);
+			cwborder = jdbcTemplate
+					.queryForObject(
+							"SELECT * from express_ops_cwb_detail where opscwbid=? for update",
+							new CwbMapper(), cwborder.getOpscwbid());
+			return cwborder;
 //			暂时恢复悲观锁，观察中 //TODO
 //			return this.jdbcTemplate
 //					.queryForObject(
