@@ -174,6 +174,8 @@ function setCurrentDataFilterCond(dataType , timeType , dispatched)
 }
 
 function loadTodayOutAreaOrder(){
+	document.getElementById("todayOutData").style.display="";
+	getOutAreaData();
 	 $.ajax({
 		 type:"post",
 		 url:'<%=request.getContextPath()+ "/smt/querytodayoutareaorder"%>'  + "?timestamp=" + new Date().getTime(),
@@ -299,8 +301,10 @@ function loadTodayOutAreaOrder(){
 			var length = cwbs.length;
 			var $tOutArea = $("#t_out_area");
 			var oriCnt = $tOutArea.html();
-			$tOutArea.html(parseInt(oriCnt) + length);
-			reduceNotHandleNumber(length);
+			if(oriCnt != "点击查询"){
+				$tOutArea.html(parseInt(oriCnt) + length);
+				reduceNotHandleNumber(length);
+			}
 		}
 		closeConfirmDialog();
 		$("#" + tableId + "_quick").val("");
@@ -474,7 +478,7 @@ function loadTodayOutAreaOrder(){
 	});
 	
 	
-	$(function() {
+	function getOutAreaData(){
 		$.ajax({
 			type : "post",
 			dataType : "json",
@@ -489,6 +493,11 @@ function loadTodayOutAreaOrder(){
 					}
 
 				});
+	}
+	
+	$(function() {
+		$("#t_out_area").empty();
+		$("#t_out_area").html("点击查询");
 	});
 	
 	// 页面刷新 add by chunlei05.li 2016/8/16
@@ -654,7 +663,7 @@ dl dd span {
 					<li><a href="#" onclick="loadSmtOrder('all','history',false,1,'history_table',1)">历史待分派</a></li>
 					<li><a href="#" onclick="loadSmtOrder('all','today',true,1,'today_dispatch_table',2)">今日已分派</a></li>
 					<li><a href="#" onclick="showTab(3)">异常单明细</a></li>
-					<li><a href="#" onclick="loadTodayOutAreaOrder()">今日站点超区</a></li>
+					<li><a id="todayOutData" style="display:none;" href="#" onclick="loadTodayOutAreaOrder()">今日站点超区</a></li>
 				</ul>
 			</div>
 			<div id="ViewList" class="tabbox">
