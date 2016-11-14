@@ -1,1 +1,1 @@
-insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('cwbOrderTypeIdNeedToTps','1', '允许发送tps的订单类型1：快递单2：配送单3：上门退 4：上门换, 用,分隔');
+insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('cwbOrderTypeIdNeedToTps','2', '允许发送tps的订单类型1：快递单2：配送单3：上门退 4：上门换, 用,分隔');
