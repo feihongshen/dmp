@@ -1,8 +1,6 @@
 package cn.explink.b2c.tools;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,8 +14,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.explink.b2c.amazon.AmazonService;
+import cn.explink.b2c.auto.order.service.ExpressOrderService;
 import cn.explink.b2c.dangdang_dataimport.DangDangSynInsertCwbDetailTimmer;
 import cn.explink.b2c.dongfangcj.DongFangCJInsertCwbDetailTimmer;
 import cn.explink.b2c.dongfangcj.DongFangCJService_getOrder;
@@ -155,6 +155,8 @@ public class JobUtilController {
 	FlowExpService flowExpService;
 	@Autowired
 	VipshopInsertCwbDetailTimmer vipshopInsertCwbDetailTimmer;
+	@Autowired
+	ExpressOrderService expressOrderService;
 	
 	// public static Map<String, Integer> threadMap;
 	public static RedisMap<String, Integer> threadMap;	
@@ -1355,5 +1357,29 @@ public class JobUtilController {
 		}
 
 		this.logger.info("执行了获取cwbInsertToOrderDetail订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
+	
+	/**
+	 * 定时器，处理快递临时表转业务
+	 */
+	@RequestMapping("/expressOrderTransfer")
+	@ResponseBody
+	public void expressOrderTransfer_Task(){
+		System.out.println("-----expressOrderTransfer启动执行");
+
+		long starttime = 0;
+		long endtime = 0;
+		try {
+			starttime = System.currentTimeMillis();
+			expressOrderService.expressOrderTransfer();
+			endtime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行expressOrderTransfer定时器异常", e);
+		} finally {
+			JobUtil.threadMap.put("expressOrderTransfer", 0);
+		}
+
+		this.logger.info("执行了获取expressOrderTransfer订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+		
 	}
 }

@@ -1,0 +1,1 @@
+ALTER TABLE express_ops_cwb_exprss_detail_temp DROP COLUMN do_create_time;

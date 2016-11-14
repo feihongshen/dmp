@@ -1,6 +1,7 @@
 package cn.explink.b2c.auto.order.handle;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -59,29 +60,42 @@ public class ExpressOrderHandler implements IOrderHandler {
 			return ;
 		}
 		
-		ExpressDetailTemp expressDetailTemp = expressOrderService.getCwbOrderExpresstemp(orderSend.getMessageId());		
+		ExpressDetailTemp expressDetailTemp = expressOrderService.getCwbOrderExpresstempByCwb(orderSend.getTransportNo());		
 		ExpressDetailTemp expressDetailTemp_New = getExprssDetailTemp(orderSend);
-		//新增
-		if(CmdType.NEW.equals(orderSend.getCmdType())){
-			if(expressDetailTemp != null){
-				// 已存在，不能新增
-				logger.info("快递已存在，单号{},tps_trans_id{}", orderSend.getTransportNo(), orderSend.getMessageId());
-				return;
+		long createTimeOld = expressDetailTemp != null?expressDetailTemp.getDoCreateTime():0l;
+		long createTimeNew= orderSend.getCreateTime();
+		System.out.println("createTimeOld:"+createTimeOld+"createTimeNew:"+createTimeNew);
+		if(createTimeNew<=createTimeOld){
+			this.logger.error("已接受订单数据之后的消息，不再处理改信息!");
+			return; 
+		}else{
+			if("003".equalsIgnoreCase(orderSend.getCmdType()) || "090".equals(orderSend.getCmdType())){
+				if(expressDetailTemp != null){
+					if(expressDetailTemp.getIsHandOver()!=0){
+						// 已存在，更新
+						expressOrderService.updateExpressDetailTemp(expressDetailTemp_New);
+						// 更新临时表do记录生成时间
+						expressOrderService.updateExpressDetailTempDoCreateTime(orderSend.getTransportNo(),createTimeNew);
+					}else{
+						expressOrderService.deleteCwbOrderExpresstemp(orderSend.getTransportNo());
+						//新增
+						expressOrderService.insertExpressDetailTemp(expressDetailTemp_New);
+					}
+					
+					logger.info("更新快递单, 单号{},tps_trans_id{}", orderSend.getTransportNo(), orderSend.getMessageId());
+				}else{
+					// 不存在：新增
+					expressOrderService.insertExpressDetailTemp(expressDetailTemp_New);
+					logger.info("新增快递单,快递单号{},tps_trans_id{}", orderSend.getTransportNo(), orderSend.getMessageId());
+				} 
+			}else{
+				this.logger.error("快递类型的订单不接收新增和修改之外的指令!");
+				return; 
 			}
-			expressOrderService.insertExpressDetailTemp(expressDetailTemp_New);
-			// 更新明细
-		}else if (CmdType.EDIT.equals(orderSend.getCmdType())){// 更新
-			if(expressDetailTemp == null){
-				// 不存在，不能更新
-				logger.info("快递不存在, 单号{},tps_trans_id{}", orderSend.getTransportNo(), orderSend.getMessageId());
-				return ;				
-			} 
-			expressOrderService.updateExpressDetailTemp(expressDetailTemp_New);
-		} else {
-			logger.info("不存在对应的cmdtype:{},订单号：{}", orderSend.getCmdType(), orderSend.getTransportNo());
 		}
 				
 	}
+	
 	
 	/**
 	 * 针对快递类型的效验
@@ -184,6 +198,7 @@ public class ExpressOrderHandler implements IOrderHandler {
 		expressDetailTemp.setReturnCredit(new BigDecimal(orderSend.getReturnCredit()));
 		expressDetailTemp.setTotalNum(details.size());
 		expressDetailTemp.setOrderSource(orderSend.getOrderSource());
+		expressDetailTemp.setDoCreateTime(orderSend.getCreateTime());
 		return expressDetailTemp;
 	}
 	

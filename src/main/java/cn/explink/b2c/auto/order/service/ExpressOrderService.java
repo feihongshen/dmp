@@ -85,7 +85,35 @@ public class ExpressOrderService {
 	 * 更新特定字段
 	 */
 	public void updateExpressDetailTemp(ExpressDetailTemp expressDetailTemp){
-		expressOrderDao.updateExpressDetailTemp(expressDetailTemp);
+		Branch branch = null;
+		if(StringUtils.isNotEmpty(expressDetailTemp.getCneeAddr())){
+			branch = this.matchDeliveryBranch(expressDetailTemp.getTransportNo(),expressDetailTemp.getCneeAddr());
+		}
+		// 
+		List<Branch> listBranch  = branchDAO.getBranchByTpsBranchcode(expressDetailTemp.getAcceptDept());
+		Branch acceptBranch = null;
+		if(!CollectionUtils.isEmpty(listBranch)){
+			acceptBranch = listBranch.get(0);				
+		}
+		if(acceptBranch == null && expressDetailTemp.getIsAcceptProv() == 1){
+			logger.info("insertSigleCwbOrder,站点为空,单号{}", expressDetailTemp.getTransportNo());
+			return;
+		}
+		// 小件员
+		User user = userDAO.getUserByUsername(expressDetailTemp.getAcceptOperator());
+		if(user == null && expressDetailTemp.getIsAcceptProv() == 1){
+			logger.info("insertSigleCwbOrder小件员为空,单号{}", expressDetailTemp.getTransportNo());
+			return;
+		}
+		// 转业务效验
+		ExcelColumnSet excelColumnSet = getExcelColumnSet();
+		List<CwbOrderValidator> vailidators = importValidationManager.getVailidators(excelColumnSet);
+		CwbOrderDTO cwbOrderDTO = getCwbOrderDTO(excelColumnSet, expressDetailTemp);
+		for (CwbOrderValidator cwbOrderValidator : vailidators) {
+			cwbOrderValidator.validate(cwbOrderDTO);
+		}
+		//插入主表
+		expressOrderDao.updateExpressDetailTemp(expressDetailTemp, branch, acceptBranch, user);
 	}
 	
 	/**
@@ -244,4 +272,24 @@ public class ExpressOrderService {
 		//发送JMS消息
 		tpsInterfaceExecutor.executTpsInterface(paramObj);
 	}
+	
+	/**
+	 * 根据 tpsTranId删除临时表记录，
+	 * @param tpsTranId
+	 */
+	public void  deleteCwbOrderExpresstemp(String cwb){
+		expressOrderDao.deleteCwbOrderExpresstemp(cwb);
+	}
+
+	//根据订单号查询快递单
+	public ExpressDetailTemp getCwbOrderExpresstempByCwb(String cwb) {
+		return expressOrderDao.getCwbOrderExpresstempByCwb(cwb);
+	}
+	
+	// 更新临时表do记录生成时间
+	public void updateExpressDetailTempDoCreateTime(String transportNo,
+			long createTimeNew) {
+		expressOrderDao.updateExpressDetailTempDoCreateTime(transportNo,createTimeNew);
+	}
+	
 }

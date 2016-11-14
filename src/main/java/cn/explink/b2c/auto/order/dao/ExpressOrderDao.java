@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -132,6 +133,8 @@ public class ExpressOrderDao {
 			expressDetailTemp.setIsAcceptProv(rs.getInt("is_accept_prov"));
 			expressDetailTemp.setReturnCredit(rs.getBigDecimal("return_credit"));
 			expressDetailTemp.setOrderSource(rs.getInt("order_source"));
+			expressDetailTemp.setDoCreateTime(rs.getTimestamp("do_create_time")!=null?rs.getTimestamp("do_create_time").getTime():0);
+			expressDetailTemp.setIsHandOver(rs.getInt("is_hand_over"));
 			return expressDetailTemp;
 		}
 	}
@@ -172,8 +175,8 @@ public class ExpressOrderDao {
 		sql.append(" count,cargo_length,cargo_width,cargo_height,");
 		sql.append(" weight,volume,cust_pack_no,size_sn,");
 		sql.append(" price,unit,tps_trans_id,create_time,is_hand_over,");
-		sql.append(" cnor_corp_no, cnor_corp_name,freight,account_id,packing_fee,express_image,cnee_corp_name,is_accept_prov,express_product_type,return_credit,order_source)");
-		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		sql.append(" cnor_corp_no, cnor_corp_name,freight,account_id,packing_fee,express_image,cnee_corp_name,is_accept_prov,express_product_type,return_credit,order_source,do_create_time)");
+		sql.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 		KeyHolder key = new GeneratedKeyHolder();
 		this.jdbcTemplate.update(new PreparedStatementCreator() {
 
@@ -261,10 +264,16 @@ public class ExpressOrderDao {
 				ps.setInt(++i, expressDetailTemp.getExpressProductType());
 				ps.setBigDecimal(++i, expressDetailTemp.getReturnCredit());// 应退金额
 				ps.setInt(++i, expressDetailTemp.getOrderSource());// 订单来源
+				ps.setTimestamp(++i, new Timestamp(expressDetailTemp.getDoCreateTime()));//do下发时间
 				return ps;
 			}
 		}, key);
 		return key.getKey().longValue();
+	}
+	
+	public static void main(String[] args){
+		System.out.println(new Timestamp(System.currentTimeMillis()));
+		System.out.println(new Timestamp(1477987144925l));
 	}
 
 	/**
@@ -275,6 +284,7 @@ public class ExpressOrderDao {
 	public List<ExpressDetailTemp> getExpressDetailTempListNotOver(String provinceType) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("select * from express_ops_cwb_exprss_detail_temp where is_hand_over=0 and is_accept_prov in (" + provinceType + ") order by create_time limit 0,2000 ");
+		//sql.append("select * from express_ops_cwb_exprss_detail_temp where is_hand_over=0 and cust_order_no='201611011551' order by create_time limit 0,2000 ");
 		logger.info("getExpressDetailTempListNotOver,sql:{}", sql.toString());
 		
 		List<ExpressDetailTemp> transOrderList = this.jdbcTemplate.query(sql.toString(), new ExpressDetailTempMapper());
@@ -320,7 +330,7 @@ public class ExpressOrderDao {
 		sql.append(" sendertelephone,senderaddress,sendername,consigneename,");
 		sql.append(" cwbprovince,cwbcity,cwbcounty,recstreet,");
 		sql.append(" consigneeaddress,consigneemobile,consigneephone,cwbremark,");
-		sql.append(" receivablefee,shouldfare,sendnum,hascod,");
+		sql.append(" receivablefee,shouldfare,sendcarnum,hascod,");
 		sql.append(" realweight,chargeweight,announcedvalue,insuredfee,");
 		sql.append(" paywayid,length,width,height,");
 		sql.append(" cwbordertypeid,orderflowid,flowordertype,");
@@ -528,9 +538,242 @@ public class ExpressOrderDao {
 	 * 更新临时表中的特定字段
 	 * @param tpsTransId
 	 */
-	public void updateExpressDetailTemp(ExpressDetailTemp expressDetailTemp) {
-		// TODO 未有需求
-		
+	public void updateExpressDetailTemp(final ExpressDetailTemp expressDetailTemp, final Branch branch, final Branch acceptBranch, final User user) {
+	    /*final StringBuffer sql = new StringBuffer();
+		sql.append(" update express_ops_cwb_detail set ");
+		sql.append(" transcwb=?,collectorid=?,collectorname=?,senderprovince=?,sendercity=?,");//sendercustomcode,
+		sql.append(" sendercounty=?,senderstreet=?,sendercellphone=?,sendertelephone=?,senderaddress=?,");
+		sql.append(" sendername=?,consigneename=?,cwbprovince=?,cwbcity=?,cwbcounty=?,");
+		sql.append(" recstreet=?,consigneeaddress=?,consigneemobile=?,consigneephone=?,cwbremark=?,");
+		sql.append(" receivablefee=?,shouldfare=?,sendnum=?,hascod=?,realweight=?,");
+		sql.append(" chargeweight=?,announcedvalue=?,insuredfee=?,paywayid=?,length=?,");
+		sql.append(" width=?,height=?,cwbordertypeid=?,orderflowid=?,inputdatetime=?,");
+		sql.append(" cargovolume=?,cwbstate=?,instationid=?,instationname=?,state=?,");
+		sql.append(" deliverybranchid=?,excelbranch=?,addresscodeedittype=?,totalfee=?,fnorgoffset=?,");
+		sql.append(" infactfare=?,paybackfee=?,isadditionflag=?,credate=?,cnor_corp_no=?,");
+		sql.append(" cnor_corp_name=?,account_id=?,packagefee=?,express_image=?,cnee_corp_name=?,");
+		sql.append(" express_product_type=?,hasinsurance=?,paymethod=?,newpaywayid=?,monthsettleno=?,");
+		sql.append(" tpstranscwb=?,senderprovinceid=?,sendercityid=?,sendercountyid=?,senderstreetid=?,");
+		sql.append(" recprovinceid=?,reccityid=?,reccountyid=?,recstreetid=?");
+		sql.append(" where cwb=?");*/
+
+		 final StringBuffer sql = new StringBuffer();
+			sql.append(" update express_ops_cwb_detail set ");
+			sql.append(" transcwb=?,senderprovince=?,sendercity=?,");//sendercustomcode,
+			sql.append(" sendercounty=?,senderstreet=?,sendercellphone=?,sendertelephone=?,senderaddress=?,");
+			sql.append(" sendername=?,consigneename=?,cwbprovince=?,cwbcity=?,cwbcounty=?,");
+			sql.append(" recstreet=?,consigneeaddress=?,consigneemobile=?,consigneephone=?,cwbremark=?,");
+			sql.append(" receivablefee=?,shouldfare=?,sendnum=?,hascod=?,realweight=?,");
+			sql.append(" chargeweight=?,announcedvalue=?,insuredfee=?,paywayid=?,length=?,");
+			sql.append(" width=?,height=?,cwbordertypeid=?,orderflowid=?,");
+			sql.append(" cargovolume=?,cwbstate=?,state=?,");
+			sql.append(" deliverybranchid=?,excelbranch=?,addresscodeedittype=?,totalfee=?,fnorgoffset=?,");
+			sql.append(" infactfare=?,paybackfee=?,isadditionflag=?,credate=?,cnor_corp_no=?,");
+			sql.append(" cnor_corp_name=?,account_id=?,packagefee=?,express_image=?,cnee_corp_name=?,");
+			sql.append(" express_product_type=?,hasinsurance=?,paymethod=?,newpaywayid=?,monthsettleno=?,");
+			sql.append(" tpstranscwb=?,senderprovinceid=?,sendercityid=?,sendercountyid=?,senderstreetid=?,");
+			sql.append(" recprovinceid=?,reccityid=?,reccountyid=?,recstreetid=?");
+			sql.append(" where cwb=?");
+
+			this.jdbcTemplate.update(sql.toString(), new PreparedStatementSetter() {
+				@Override
+				public void setValues(PreparedStatement ps) throws SQLException {
+					int i = 0;
+					ps.setString(++i, !expressDetailTemp.getCustPackNo().isEmpty()?expressDetailTemp.getCustPackNo():expressDetailTemp.getTransportNo());
+					//				ps.setString(++i, cwbOrderDTO.getCustCode());
+					/*if(expressDetailTemp.getIsAcceptProv() == 1){
+						ps.setString(++i, user != null ? user.getUserid() + "":"0");// 小件员id
+						ps.setString(++i, user != null ? user.getRealname() : "");// 小件员名称
+					} else{
+						ps.setString(++i, "0");// 小件员id
+						ps.setString(++i, "");// 小件员名称
+					}*/
+					ps.setString(++i, expressDetailTemp.getCnorProv());// 寄件人省
+
+					ps.setString(++i, expressDetailTemp.getCnorCity());// 市  5
+					ps.setString(++i, expressDetailTemp.getCnorRegion());// 区
+					ps.setString(++i, expressDetailTemp.getCnorTown());// 街道
+					ps.setString(++i, expressDetailTemp.getCnorMobile());
+
+					ps.setString(++i, expressDetailTemp.getCnorTel());
+					ps.setString(++i, expressDetailTemp.getCnorAddr()); //10
+					ps.setString(++i, expressDetailTemp.getCnorName());
+					ps.setString(++i, expressDetailTemp.getCneeName());
+
+					ps.setString(++i, expressDetailTemp.getCneeProv());// 收件人省
+					ps.setString(++i, expressDetailTemp.getCneeCity());// 市
+					ps.setString(++i, expressDetailTemp.getCneeRegion());// 区 15
+					ps.setString(++i, expressDetailTemp.getCneeTown());// 街道
+
+					//如果详细地址里面已经含省+市+区，则不再加入省市区
+					String cneeAddr = expressDetailTemp.getCneeAddr();
+					
+					ps.setString(++i, cneeAddr);
+					ps.setString(++i, expressDetailTemp.getCneeMobile());
+					ps.setString(++i, expressDetailTemp.getCneeTel()); 
+					ps.setString(++i, expressDetailTemp.getCnorRemark());//20
+
+					ps.setBigDecimal(++i, expressDetailTemp.getCodAmount());
+					ps.setBigDecimal(++i, expressDetailTemp.getFreight());// 运费
+					ps.setInt(++i, expressDetailTemp.getTotalNum());
+					if(expressDetailTemp.getCodAmount().compareTo(new BigDecimal(0)) > 0){
+						ps.setInt(++i, 1);// 是否有代收货款
+					}else{
+						ps.setInt(++i, 0);
+					}
+
+					ps.setBigDecimal(++i, expressDetailTemp.getTotalWeight());  //25
+					ps.setBigDecimal(++i, expressDetailTemp.getCalculateWeight());
+					ps.setBigDecimal(++i, expressDetailTemp.getAssuranceValue());
+					ps.setBigDecimal(++i, expressDetailTemp.getAssuranceFee());
+
+					ps.setInt(++i, MqOrderBusinessUtil.getPayTypeValue(expressDetailTemp.getPayment()));//原支付方式
+					ps.setBigDecimal(++i, expressDetailTemp.getCargoLength());// 长  30
+					ps.setBigDecimal(++i, expressDetailTemp.getCargoWidth());// 宽
+					ps.setBigDecimal(++i, expressDetailTemp.getCargoHeight());// 高
+
+					ps.setLong(++i, CwbOrderTypeIdEnum.Express.getValue());
+					ps.setInt(++i, FlowOrderTypeEnum.DaoRuShuJu.getValue());
+					
+					/*if(expressDetailTemp.getIsAcceptProv() == 1){
+						//如果是接收省份，则填写 inputdatetime
+						ps.setTimestamp(++i, Timestamp.valueOf(DateTimeUtil.getNowTime()));
+					}else{
+						ps.setNull(++i, Types.TIMESTAMP);
+					}*/// 状态   35
+
+					ps.setFloat(++i, expressDetailTemp.getTotalVolume().floatValue());
+					ps.setLong(++i, CwbStateEnum.PeiShong.getValue());
+					/*if(expressDetailTemp.getIsAcceptProv() == 1){
+						ps.setInt(++i, acceptBranch != null ? (int)acceptBranch.getBranchid() : 0);
+						ps.setString(++i, acceptBranch != null ? acceptBranch.getBranchname() : "");//站点
+					}else{
+						ps.setInt(++i, 0);
+						ps.setString(++i, "");//站点
+					}*/
+					ps.setInt(++i, 1);  //40
+
+					ps.setLong(++i, ((null != branch)?branch.getBranchid():0L));//配送站点ID
+					ps.setString(++i, ((null != branch)?branch.getBranchname():""));//配送站点名称
+					ps.setInt(++i, ((null != branch)?CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue():CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue()));//是否匹配状态位
+
+					ps.setBigDecimal(++i, expressDetailTemp.getCarriage());// 费用合计
+					ps.setBigDecimal(++i, BigDecimal.ZERO);//  45
+					ps.setBigDecimal(++i, BigDecimal.ZERO);
+					ps.setBigDecimal(++i, expressDetailTemp.getReturnCredit());// 应退金额  
+					if(expressDetailTemp.getIsAcceptProv() == 1){
+						ps.setInt(++i, 0);//补录完成标识，
+					}else{
+						ps.setInt(++i, 1);
+					}
+					ps.setTimestamp(++i, Timestamp.valueOf(DateTimeUtil.getNowTime()));
+					ps.setString(++i, expressDetailTemp.getCnorCorpNo());//50
+					ps.setString(++i, expressDetailTemp.getCnorCorpName());
+					ps.setString(++i, expressDetailTemp.getAccountId());// 月结账号  
+					ps.setBigDecimal(++i, expressDetailTemp.getPackingFee());
+					ps.setString(++i, expressDetailTemp.getExpressImage());
+					ps.setString(++i, expressDetailTemp.getCneeCorpName());//55
+					ps.setInt(++i, expressDetailTemp.getExpressProductType());
+					// 是否有保价
+					if (expressDetailTemp.getAssuranceValue().compareTo(new BigDecimal(0)) > 0) {
+						ps.setInt(++i, 1);
+					} else {
+						ps.setInt(++i, 0);
+					}
+					// 结算方式
+					ps.setInt(++i, expressDetailTemp.getPayType());
+					ps.setString(++i, MqOrderBusinessUtil.getPayTypeValue(expressDetailTemp.getPayment()) + "");// 现在支付方式 
+					ps.setString(++i, expressDetailTemp.getAccountId());// 月结账号 60
+					ps.setString(++i, expressDetailTemp.getTransportNo()); // tps运单号
+					// 需要把省市区的id带出
+					// 寄件人省市区街道id
+					AdressVO vo = provinceDAO.getProviceByName(expressDetailTemp.getCnorProv());
+					if(vo !=null){
+						ps.setInt(++i, vo.getId());
+					}else{
+						ps.setInt(++i, 0);
+					}
+					vo = cityDAO.getCityByNameAndProvice(expressDetailTemp.getCnorCity(), vo);
+					if(vo !=null){
+						ps.setInt(++i, vo.getId());
+					}else{
+						ps.setInt(++i, 0);
+					}
+					vo = countyDAO.getCountyByNameAndCity(expressDetailTemp.getCnorRegion(), vo);
+					if(vo !=null){
+						ps.setInt(++i, vo.getId());
+					}else{
+						ps.setInt(++i, 0);
+					}
+					vo = townDAO.getTownByNameAndCounty(expressDetailTemp.getCnorTown(), vo);
+					if(vo !=null){
+						ps.setInt(++i, vo.getId());
+					}else{
+						ps.setInt(++i, 0);
+					}//65
+					// 收寄人省市区街道id
+					vo = provinceDAO.getProviceByName(expressDetailTemp.getCneeProv());
+					if(vo !=null){
+						ps.setInt(++i, vo.getId());
+					}else{
+						ps.setInt(++i, 0);
+					}
+					vo = cityDAO.getCityByNameAndProvice(expressDetailTemp.getCneeCity(), vo);
+					if(vo !=null){
+						ps.setInt(++i, vo.getId());
+					}else{
+						ps.setInt(++i, 0);
+					}
+					vo = countyDAO.getCountyByNameAndCity(expressDetailTemp.getCneeRegion(), vo);
+					if(vo !=null){
+						ps.setInt(++i, vo.getId());
+					}else{
+						ps.setInt(++i, 0);
+					}
+					vo = townDAO.getTownByNameAndCounty(expressDetailTemp.getCneeTown(), vo);
+					if(vo !=null){
+						ps.setInt(++i, vo.getId());
+					}else{
+						ps.setInt(++i, 0);
+					}
+					ps.setString(++i, expressDetailTemp.getTransportNo()); // tps运单号
+				}
+			});
+	}
+
+	/**
+	 * 根据 tpsTranId删除临时表记录，
+	 * @param tpsTranId
+	 */
+	public void deleteCwbOrderExpresstemp(String cwb) {
+		try {
+			if(cwb.isEmpty()){
+				return;
+			}
+			String sql = "delete from express_ops_cwb_exprss_detail_temp where cust_order_no=?";
+			this.jdbcTemplate.update(sql, cwb.trim());
+		}catch(Exception ex){}
 	}
 	
+	/**
+	 * 通过id查询数据
+	 * @param id
+	 * @return
+	 */
+	public ExpressDetailTemp getCwbOrderExpresstempByCwb(String transportNo) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT * from express_ops_cwb_exprss_detail_temp where transport_no = ? limit 0,1");
+		List<ExpressDetailTemp> list = this.jdbcTemplate.query(sql.toString(), new ExpressDetailTempMapper(), transportNo);
+		if(CollectionUtils.isEmpty(list)){
+			return null;
+		}else {
+			return list.get(0);
+		}
+	}
+
+	public void updateExpressDetailTempDoCreateTime(String transportNo,
+			long createTimeNew) {
+		String sql= "update express_ops_cwb_exprss_detail_temp set do_create_time=? where transport_no = ?";
+		this.jdbcTemplate.update(sql, new Timestamp(createTimeNew), transportNo);
+	}
 }
