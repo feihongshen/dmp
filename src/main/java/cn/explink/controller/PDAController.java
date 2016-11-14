@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +22,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -116,7 +114,6 @@ import cn.explink.domain.SetExportField;
 import cn.explink.domain.Smtcount;
 import cn.explink.domain.StockResult;
 import cn.explink.domain.SystemInstall;
-import cn.explink.domain.TransCwbDetail;
 import cn.explink.domain.Truck;
 import cn.explink.domain.TuihuoRecord;
 import cn.explink.domain.User;
@@ -152,8 +149,8 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.KfzdOrderService;
 import cn.explink.service.OneToMoreService;
-import cn.explink.service.UserService;
 import cn.explink.service.OrderBackCheckService;
+import cn.explink.service.UserService;
 import cn.explink.service.docking.AutoAllocationService;
 import cn.explink.service.express.ExpressOutStationService;
 import cn.explink.service.mps.CwbOrderBranchInfoModificationService;
@@ -170,6 +167,8 @@ import cn.explink.util.ServiceUtil;
 import cn.explink.util.StreamingStatementCreator;
 import cn.explink.util.StringUtil;
 import cn.explink.util.Tongxing.SocketClient;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 @RequestMapping("/PDA")
 @Controller
@@ -2054,11 +2053,17 @@ public class PDAController {
 		String relatedShangMenTuiCwb = ""; // 配送单关联的上门退订单
 
 		List<JSONObject> objList = new ArrayList<JSONObject>();
+		// 订单去重，相同的订单不能处理两次。add by jian_xie
+		Set<String> cwbSet = new HashSet<String>();
 		for (String cwb : cwbs.split("\r\n")) {
 			if (cwb.trim().length() == 0) {
 				continue;
 			}
 			cwb = cwb.trim();
+			if(cwbSet.contains(cwb)){
+				continue;
+			}
+			cwbSet.add(cwb);
 			allnum++;
 			JSONObject obj = new JSONObject();
 			String scancwb = cwb;

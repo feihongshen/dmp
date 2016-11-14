@@ -48,6 +48,8 @@ import cn.explink.dao.ReturnCwbsDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.TransCwbDetailDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.dao.fnc.FnStationSignOrderDetailsSnapshotDao;
+import cn.explink.dao.fnc.FnStationSignOrderDetailsSnapshotExpressDao;
 import cn.explink.domain.AccountCwbDetail;
 import cn.explink.domain.AccountCwbSummary;
 import cn.explink.domain.AccountDeducDetail;
@@ -166,7 +168,10 @@ public class EditCwbService {
 	
 	@Autowired
 	private FnCwbStateDao fnCwbStateDao;
-
+	
+	@Autowired
+	private FnStationSignOrderDetailsSnapshotExpressDao fnStationSignOrderDetailsSnapshotExpressDao;
+	
 	/**
 	 * 修改订单 之 重置审核状态
 	 *
@@ -2026,10 +2031,17 @@ public class EditCwbService {
 				//补录完成时间为空 不生成调整记录
 				return;
 			}
-			String todayStr = DateTimeUtil.formatDate(new Date(), DateTimeUtil.DEF_DATE_FORMAT);
+			/*String todayStr = DateTimeUtil.formatDate(new Date(), DateTimeUtil.DEF_DATE_FORMAT);
 			String inputdatetimeStr = DateTimeUtil.translateFormatDate(inputdatetime, DateTimeUtil.DEF_DATETIME_FORMAT, DateTimeUtil.DEF_DATE_FORMAT);
-			if (!todayStr.equals(inputdatetimeStr)) {//已补录完成 且 补录完成时间与快递运费修改时间不在同一天生成订单调整记录
+			if (!todayStr.equals(inputdatetimeStr)) {//已补录完成 且 补录完成时间与快递运费修改时间不在同一天生成订单调整记录*/
 			/*******************end 20160928************************************/	
+			
+			//不能单纯的根据时间来判断是否要生成调整账单，而是要根据余额报表是否已经生成来判断：如果已经生成了余额报表，那就需要生成调整账单，否则不需要 ---刘武强20161109
+			int  reportDate = DateTimeUtil.getIntDate(1);//获取前一天的日期的int值（因为余额记录表是以这种形式存的）
+			//去快递单快财务照表找昨天的快照数据，如果有，则已生成报表---针对快递现付的运费数据调整
+			long reportnum = this.fnStationSignOrderDetailsSnapshotExpressDao.getReportIdByCwbAndReportdate(order.getCwb(), reportDate);
+			
+			if (reportnum != 0) {//如果前一天的余额报表已生成，则生成调整账单
 				List<FnOrgRecharges> fnOrgRechargesList = new ArrayList<FnOrgRecharges>();
 				
 				int currentSettleMode = this.getCurrentSettleModeFromSysConfig();
@@ -2125,9 +2137,19 @@ public class EditCwbService {
 				//揽件入站时间为空 不生成调整记录
 				return;
 			}
-			String todayStr = DateTimeUtil.formatDate(new Date(), DateTimeUtil.DEF_DATE_FORMAT);
+			
+			
+			/*String todayStr = DateTimeUtil.formatDate(new Date(), DateTimeUtil.DEF_DATE_FORMAT);
 			String inputdatetimeStr = DateTimeUtil.translateFormatDate(inputdatetime, DateTimeUtil.DEF_DATETIME_FORMAT, DateTimeUtil.DEF_DATE_FORMAT);
-			if (!todayStr.equals(inputdatetimeStr)) {//揽件入站时间与快递运费修改时间不在同一天生成订单调整记录
+			
+			if (!todayStr.equals(inputdatetimeStr)) {//揽件入站时间与快递运费修改时间不在同一天生成订单调整记录*/
+			
+			//不能单纯的根据时间来判断是否要生成调整账单，而是要根据余额报表是否已经生成来判断：如果已经生成了余额报表，那就需要生成调整账单，否则不需要 ---刘武强20161109
+			int  reportDate = DateTimeUtil.getIntDate(1);//获取前一天的日期的int值（因为余额记录表是以这种形式存的）
+			//去快递单快财务照表找昨天的快照数据，如果有，则已生成报表---针对快递现付的运费数据调整
+			long reportnum = this.fnStationSignOrderDetailsSnapshotExpressDao.getReportIdByCwbAndReportdate(order.getCwb(), reportDate);
+			
+			if (reportnum != 0) {//如果前一天的余额报表已生成，则生成调整账单
 			/****************end by 20160928***************************/	
 				List<FnOrgRecharges> fnOrgRechargesList = new ArrayList<FnOrgRecharges>();
 				
