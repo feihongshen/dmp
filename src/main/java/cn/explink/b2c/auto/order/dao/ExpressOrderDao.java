@@ -264,7 +264,7 @@ public class ExpressOrderDao {
 				ps.setInt(++i, expressDetailTemp.getExpressProductType());
 				ps.setBigDecimal(++i, expressDetailTemp.getReturnCredit());// 应退金额
 				ps.setInt(++i, expressDetailTemp.getOrderSource());// 订单来源
-				ps.setTimestamp(++i, new Timestamp(expressDetailTemp.getDoCreateTime()));// 订单来源
+				ps.setTimestamp(++i, new Timestamp(expressDetailTemp.getDoCreateTime()));//do下发时间
 				return ps;
 			}
 		}, key);

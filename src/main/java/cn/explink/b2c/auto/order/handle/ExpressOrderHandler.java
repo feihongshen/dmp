@@ -69,7 +69,7 @@ public class ExpressOrderHandler implements IOrderHandler {
 			this.logger.error("已接受订单数据之后的消息，不再处理改信息!");
 			return; 
 		}else{
-			if(CmdType.NEW.equals(orderSend.getCmdType()) || CmdType.EDIT.equals(orderSend.getCmdType())){
+			if("003".equalsIgnoreCase(orderSend.getCmdType()) || "090".equals(orderSend.getCmdType())){
 				if(expressDetailTemp != null){
 					if(expressDetailTemp.getIsHandOver()!=0){
 						// 已存在，更新
