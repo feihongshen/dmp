@@ -276,7 +276,7 @@ public class DfFeeService {
             }
 
             String provinceCode = getAddressCode(province, allProvince, null);
-            ;
+
             String cityCode = "";
 
             if (StringUtils.isNotBlank(province) && StringUtils.isBlank(city)) {
@@ -287,6 +287,13 @@ public class DfFeeService {
 //                cityCode = getAddressCode(city, allCity, provinceCode);
 //                county = getEffectiveAddressId(senderAddr, allCounty, cityCode);
 //            }
+
+            //针对线上的增城区问题，修复，如果能匹配市就用之前的方法
+            if (StringUtils.isNotBlank(city) && StringUtils.isBlank(county)) {
+                cityCode = getAddressCode(city, allCity, provinceCode);
+                county = getEffectiveAddressId(senderAddr, allCounty, cityCode);
+            }
+
             //产品要求查找区的搜索范围是在本省里面找
             if (StringUtils.isBlank(county)) {
                 county = getEffectiveCountyByProvince(senderAddr, allCounty, allCity, provinceCode);
@@ -396,6 +403,12 @@ public class DfFeeService {
 //                    cityCode = getAddressCode(city, allCity, provinceCode);
 //                    county = getEffectiveAddressId(receiverAddr, allCounty, cityCode);
 //                }
+
+                //针对线上的增城区问题，修复，如果能匹配市就用之前的方法
+                if (StringUtils.isNotBlank(city) && StringUtils.isBlank(county)) {
+                    cityCode = getAddressCode(city, allCity, provinceCode);
+                    county = getEffectiveAddressId(receiverAddr, allCounty, cityCode);
+                }
 
                 //产品要求查找区的搜索范围是在本省里面找
                 if (StringUtils.isBlank(county)) {
