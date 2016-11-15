@@ -673,7 +673,7 @@ public class DataImportDAO_B2c {
 
 	public List<CwbOrderDTO> getCwbOrderTempByKeysExtends(String customerids, String cwbordertypeids) {
 		String sql = "select * from express_ops_cwb_detail_b2ctemp where state=1 and customerid in (" + customerids + ") and getDataFlag=0 and cwbordertypeid in (" + cwbordertypeids
-				+ ") order by credate limit 0,2000 ";
+				+ ") order by credate limit 0,500 ";
 		List<CwbOrderDTO> cwborderList = this.jdbcTemplate.query(sql, new CwbDTO4TempMapper());
 		return cwborderList;
 	}
