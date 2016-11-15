@@ -169,9 +169,11 @@ function remarkPost(){
 						<td><%=customWareHouse.getCustomerwarehouse()==null?"":customWareHouse.getCustomerwarehouse()%></td>
 						<td bgcolor="#F1F1F1">货物尺寸</td>
 						<td><%=view.getCarsize()%></td>
-						<td bgcolor="#F1F1F1">自定义1</td>
-						<td><%=cwborder.getRemark1()==null?"":cwborder.getRemark1()%></td>
+<!-- 						<td bgcolor="#F1F1F1">自定义1</td> -->
+<%-- 						<td><%=cwborder.getRemark1()==null?"":cwborder.getRemark1()%></td> --%>
 						
+						<td bgcolor="#F1F1F1">关联单号</td>
+						<td><%=cwborder.getExchangecwb()==null?"":cwborder.getExchangecwb()%></td>
 						</tr>
 					<tr>
 						<td bgcolor="#F1F1F1">供货商运单号</td>
@@ -496,7 +498,7 @@ function remarkPost(){
 						<td></td>
 						<td bgcolor="#F1F1F1">货物尺寸</td>
 						<td></td>
-						<td bgcolor="#F1F1F1">自定义1</td>
+						<td bgcolor="#F1F1F1">关联单号</td>
 						<td></td>
 						
 						</tr>

@@ -54,6 +54,7 @@ import cn.explink.dao.EmailDateDAO;
 import cn.explink.dao.ExportmouldDAO;
 import cn.explink.dao.GroupDetailDao;
 import cn.explink.dao.OrderFlowDAO;
+import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.OutWarehouseGroupDAO;
 import cn.explink.dao.PrintcwbDetailDAO;
 import cn.explink.dao.ReasonDao;
@@ -71,6 +72,7 @@ import cn.explink.domain.Customer;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.GroupDetail;
+import cn.explink.domain.OrderGoods;
 import cn.explink.domain.OutChangePrintVo;
 import cn.explink.domain.OutWarehouseGroup;
 import cn.explink.domain.PrintView;
@@ -174,6 +176,9 @@ public class WarehouseGroup_detailController {
 	
 	@Autowired
 	private BranchService branchService;
+	
+	@Autowired
+	private OrderGoodsDAO orderGoodsDAO;
 	
 	private static Logger logger = LoggerFactory.getLogger(WarehouseGroup_detailController.class);
 
@@ -325,7 +330,16 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("deliverid", deliverid);
 		PrintTemplate printtemplate = this.printTemplateDAO.getPrintTemplate(printtemplateid);
 		if (printtemplate.getTemplatetype() == 1) {
-
+			// --- add by Alice.yu 增加上门换对应的退货单明细  start---
+			List<OrderGoods> orderGoodsList = new ArrayList<OrderGoods>();
+			for(CwbOrder order : cwbList){
+				if(!StringUtils.isEmpty(order.getExchangecwb())){
+					orderGoodsList.addAll(orderGoodsDAO.getOrderGoodsList(order.getExchangecwb()));
+				}
+			}
+			model.addAttribute("orderGoodsList",orderGoodsList);
+			// --- add by Alice.yu 增加上门换对应的退货单明细  end---
+			
 			model.addAttribute("cwbList", cwbList);
 			return "warehousegroup/outbillprinting_template";
 		} 

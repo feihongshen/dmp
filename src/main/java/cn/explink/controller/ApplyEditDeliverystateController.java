@@ -874,6 +874,13 @@ public class ApplyEditDeliverystateController {
 					}
 				}
 				
+				//add by Alice at 2016-11-12
+				//增加限制条件：1、针对唯品会上门换业务，已经归班反馈审核的配送订单、揽换订单不允许重置反馈修改状态
+				if(corder!=null && corder.getExchangeflag()==1){
+					errorCwbs.append(cwbStr+":上门换已经归班反馈审核的配送订单和揽换订单不允许修改!");
+					continue;
+				}
+				
 				//add by 王志宇 -----限制已关闭的账单下的订单不允许修改
 				if(corder!=null){
 					//代收货款账单
