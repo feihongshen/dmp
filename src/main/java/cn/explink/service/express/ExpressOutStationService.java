@@ -625,8 +625,8 @@ public class ExpressOutStationService {
 		Branch currentBranch = this.branchDAO.getBranchByBranchid(branchId);
 		//判空处理
 		if(currentBranch.getContractflag()!=null&&!"".equals(currentBranch.getContractflag())){
-			// 如果是一级站，则只能在货物流向中获取机构类型为库房的机构
-			if (Integer.parseInt(currentBranch.getContractflag()) == BranchTypeEnum.ZhiYing.getValue()) {
+			// 如果是一级站，则只能在货物流向中获取机构类型为库房的机构    加盟站点也需要能够揽件出站给分拣库---刘武强20161115
+			if (Integer.parseInt(currentBranch.getContractflag()) == BranchTypeEnum.ZhiYing.getValue() || Integer.parseInt(currentBranch.getContractflag()) == BranchTypeEnum.JiaMeng.getValue()) {
 				for (Branch branch : branchList) {
 					if (branch.getSitetype() == BranchEnum.KuFang.getValue()) {// 站点改为库房
 						nextBranchList.add(branch);
