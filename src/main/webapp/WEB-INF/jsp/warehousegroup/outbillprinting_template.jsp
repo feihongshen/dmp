@@ -263,7 +263,7 @@ $(function(){
 		
 		<tr id="lantuimingxi-head" style="display: none">
 			<td colspan="6">
-				<table border="1" cellspacing="0" cellpadding="0">
+				<table border="0" cellspacing="0" cellpadding="0">
 					<tr>
 						<span style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">揽退订单明细</span>
 					</tr>
