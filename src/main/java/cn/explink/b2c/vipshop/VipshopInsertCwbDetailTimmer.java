@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -17,6 +19,7 @@ import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
 import cn.explink.b2c.tools.JointService;
+import cn.explink.b2c.tools.VipShopCwbTempInsertTask;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.EmailDateDAO;
@@ -68,7 +71,7 @@ public class VipshopInsertCwbDetailTimmer {
 	 */
 	
 	public void selectTempAndInsertToCwbDetails(){
-		
+		List<B2cEnum> enumList = new ArrayList<B2cEnum>();
 		for (B2cEnum enums : B2cEnum.values()) { // 遍历唯品会enum，可能有多个枚举
 			if (enums.getMethod().contains("vipshop")) {
 				int isOpenFlag = jointService.getStateForJoint(enums.getKey());
@@ -76,10 +79,30 @@ public class VipshopInsertCwbDetailTimmer {
 					logger.info("未开启vipshop[" + enums.getKey() + "]对接！");
 					continue;
 				}
-				selectTempAndInsertToCwbDetail(enums.getKey());
+				enumList.add(enums);
+//				selectTempAndInsertToCwbDetail(enums.getKey());
 			}
 		}
-		
+		if(enumList.size() >= 1){
+			ForkJoinPool forkJoinPool = new ForkJoinPool();
+			try{
+				forkJoinPool.submit(new VipShopCwbTempInsertTask(this, enumList));
+			}finally{
+				try {
+					forkJoinPool.shutdown();
+					if (!forkJoinPool.awaitTermination(1, TimeUnit.HOURS)) {
+						logger.info("第一次forkJoinPool.awaitTermination线程池线程未完成");
+						forkJoinPool.shutdownNow();
+						while(!forkJoinPool.awaitTermination(1, TimeUnit.MINUTES)){
+							logger.info("shutdownNow()forkJoinPool.awaitTermination线程池线程未完成");
+							forkJoinPool.shutdownNow();
+						};
+					}
+				} catch (InterruptedException e) {
+					logger.info("forkJoinPool.awaitTermination出错", e);
+				}
+			}
+		}		
 	}
 
 	public void selectTempAndInsertToCwbDetail(int b2ckey) {
