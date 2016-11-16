@@ -198,7 +198,7 @@
 	                            </td>
 							</tr>
 							<tr>
-								<td class="tdleft">寄件地址<font>*</font>:</td>
+								<td class="tdleft">寄件地址:</td>
 								<td class="tdleft" colspan="4"><input type="text" name="sender_adress" id="sender_adress_id"style="width:100%;" onchange="getFeeByCondition()"/></td>
 							</tr>
 							<tr><td colspan="6"><b>预约单：</b></font></td></tr>
@@ -892,10 +892,10 @@
 	      	if(!checkLength(sender_name, 25, '寄件人', 25)){
 	        	return false;
 	        }
-	      	//校验寄件人地址是否为空
-	        if(!nullValidater(sender_adress,"寄件人地址")){
-	        	confirmFunction("寄件人地址未填写");
-	        }else
+	      	//校验寄件人地址是否为空   ----取消寄件人地址的必填校验   刘武强20161116
+	       // if(!nullValidater(sender_adress,"寄件人地址")){
+	        	//confirmFunction("寄件人地址未填写");   
+	        //}else
 	      	//校验寄件人地址是否超长
 	      	if(!checkLength(sender_adress, 100, '寄件人地址', 100)){
 	        	return false;
@@ -1022,10 +1022,10 @@
 	        if(!checkLength(goods_name, 50, '托物内容/名称', 50)){
 	        	return false;
 	        }
-	      	//校验数量是否为空
-	        if(!nullValidater(goods_number,"数量")){
+	      	//校验数量是否为空   ----取消数量的必填校验   刘武强20161116
+	       /*  if(!nullValidater(goods_number,"数量")){
 	        	confirmFunction("数量未填写");
-	        }
+	        } */
 		}
 
 		//如果已经填写了数量
