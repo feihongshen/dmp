@@ -193,7 +193,8 @@ public class EpaiApiService_Download extends EpaiApiService {
 					cwbMap.put("cwbprovince", order.getCwbprovince());
 					cwbMap.put("cwbcity", order.getCwbcity());
 					cwbMap.put("cwbcounty", order.getCwbcounty());
-
+					// 运费
+					cwbMap.put("shouldfare", order.getShouldfare() == null ? "0" : order.getShouldfare().toString());
 					cwbList.add(cwbMap);
 				} catch (Exception e) {
 					logger.error("下游获取订单数据构建异常cwb=" + order.getCwb(), e);
