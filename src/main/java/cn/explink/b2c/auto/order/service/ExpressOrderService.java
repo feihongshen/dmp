@@ -277,8 +277,8 @@ public class ExpressOrderService {
 	 * 根据 tpsTranId删除临时表记录，
 	 * @param tpsTranId
 	 */
-	public void  deleteCwbOrderExpresstemp(String cwb){
-		expressOrderDao.deleteCwbOrderExpresstemp(cwb);
+	public void  deleteCwbOrderExpresstemp(String transportNo){
+		expressOrderDao.deleteCwbOrderExpresstemp(transportNo);
 	}
 
 	//根据订单号查询快递单
