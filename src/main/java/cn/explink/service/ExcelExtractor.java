@@ -1309,11 +1309,11 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 				embracedUpdateOrderVO.setSender_townName(temp.getSender_townName());
 			}
             if ((temp.getSender_adress() == null) || "".equals(temp.getSender_adress().trim())) {
-                if(inputStatus==1) {
+                /*if(inputStatus==1) {   ----取消寄件人地址的必填校验   刘武强20161116
                     this.createErrNote(temp.getOrderNo(), "寄件人地址未填写", failList);
                     cwbOrders.remove(temp);
                     continue;
-                }
+                }*/
             }else{
                 embracedOrdervo.setSender_adress(temp.getSender_adress());
                 embracedUpdateOrderVO.setSender_adress(temp.getSender_adress());
@@ -1358,11 +1358,11 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 
 			// 数量必须为非负数
 			if ((temp.getGoods_number() == null) || "".equals(temp.getGoods_number().trim())) {
-                if(inputStatus==1) {
+               /* if(inputStatus==1) {  ----取消数量的必填校验   刘武强20161116
                     this.createErrNote(temp.getOrderNo(), "数量没有未填写", failList);
                     cwbOrders.remove(temp);
                     continue;
-                }
+                }*/
 			} else {
 				if ((temp.getGoods_number() != null) && !"".equals(temp.getGoods_number().trim()) && !ExcelExtractor.isPositiveNumber(temp.getGoods_number().trim())) {
 					this.createErrNote(temp.getOrderNo(), "商品数量不为大于0的数", failList);
