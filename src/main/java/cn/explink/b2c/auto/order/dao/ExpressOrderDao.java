@@ -284,7 +284,7 @@ public class ExpressOrderDao {
 	public List<ExpressDetailTemp> getExpressDetailTempListNotOver(String provinceType) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("select * from express_ops_cwb_exprss_detail_temp where is_hand_over=0 and is_accept_prov in (" + provinceType + ") order by create_time limit 0,2000 ");
-		//sql.append("select * from express_ops_cwb_exprss_detail_temp where is_hand_over=0 and cust_order_no='201611011551' order by create_time limit 0,2000 ");
+		//sql.append("select * from express_ops_cwb_exprss_detail_temp where is_hand_over=0 and transport_no='hh2016111500001' order by create_time limit 0,2000 ");
 		logger.info("getExpressDetailTempListNotOver,sql:{}", sql.toString());
 		
 		List<ExpressDetailTemp> transOrderList = this.jdbcTemplate.query(sql.toString(), new ExpressDetailTempMapper());
@@ -330,7 +330,7 @@ public class ExpressOrderDao {
 		sql.append(" sendertelephone,senderaddress,sendername,consigneename,");
 		sql.append(" cwbprovince,cwbcity,cwbcounty,recstreet,");
 		sql.append(" consigneeaddress,consigneemobile,consigneephone,cwbremark,");
-		sql.append(" receivablefee,shouldfare,sendcarnum,hascod,");
+		sql.append(" receivablefee,shouldfare,sendnum,hascod,");
 		sql.append(" realweight,chargeweight,announcedvalue,insuredfee,");
 		sql.append(" paywayid,length,width,height,");
 		sql.append(" cwbordertypeid,orderflowid,flowordertype,");
@@ -745,13 +745,13 @@ public class ExpressOrderDao {
 	 * 根据 tpsTranId删除临时表记录，
 	 * @param tpsTranId
 	 */
-	public void deleteCwbOrderExpresstemp(String cwb) {
+	public void deleteCwbOrderExpresstemp(String transportNo) {
 		try {
-			if(cwb.isEmpty()){
+			if(transportNo.isEmpty()){
 				return;
 			}
-			String sql = "delete from express_ops_cwb_exprss_detail_temp where cust_order_no=?";
-			this.jdbcTemplate.update(sql, cwb.trim());
+			String sql = "delete from express_ops_cwb_exprss_detail_temp where transport_no=?";
+			this.jdbcTemplate.update(sql, transportNo.trim());
 		}catch(Exception ex){}
 	}
 	
