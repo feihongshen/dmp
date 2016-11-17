@@ -34,6 +34,7 @@ import cn.explink.enumutil.MPSAllArrivedFlagEnum;
 import cn.explink.enumutil.MpsTypeEnum;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
+import cn.explink.service.SystemInstallService;
 import cn.explink.support.transcwb.TransCwbDao;
 
 @Service
@@ -65,6 +66,9 @@ public class VipshopInsertCwbDetailTimmer {
 	
 	@Autowired
 	private MqExceptionDAO mqExceptionDAO;
+	
+	@Autowired
+	private SystemInstallService systemInstallService;
 
 	/**
 	 * 唯品会定时器，查询临时表，插入数据到detail表中。
@@ -72,6 +76,8 @@ public class VipshopInsertCwbDetailTimmer {
 	
 	public void selectTempAndInsertToCwbDetails(){
 		List<B2cEnum> enumList = new ArrayList<B2cEnum>();
+		// 是否切换新方法 add by jian_xie
+		boolean isUserNewMethod = systemInstallService.isBoolenInstall("VipShopCwbTempInsertTask");
 		for (B2cEnum enums : B2cEnum.values()) { // 遍历唯品会enum，可能有多个枚举
 			if (enums.getMethod().contains("vipshop")) {
 				int isOpenFlag = jointService.getStateForJoint(enums.getKey());
@@ -80,10 +86,12 @@ public class VipshopInsertCwbDetailTimmer {
 					continue;
 				}
 				enumList.add(enums);
-//				selectTempAndInsertToCwbDetail(enums.getKey());
+				if(!isUserNewMethod){
+					selectTempAndInsertToCwbDetail(enums.getKey());
+				}
 			}
 		}
-		if(enumList.size() >= 1){
+		if(isUserNewMethod && enumList.size() >= 1){
 			ForkJoinPool forkJoinPool = new ForkJoinPool();
 			try{
 				forkJoinPool.submit(new VipShopCwbTempInsertTask(this, enumList));
