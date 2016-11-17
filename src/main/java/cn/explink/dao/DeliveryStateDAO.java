@@ -467,7 +467,7 @@ public class DeliveryStateDAO {
 		sql = this.setDeliveyStateParmForSql(sql, cwb, deliverid, receivedfee, returnedfee, businessfee, deliverystate, cash, pos, posremark, checkfee, checkremark, otherfee, podremarkid,
 				deliverstateremark, createtime, sign_typeid, codpos, infactfare);
 		
-		logger.info("DeliveryStateDAO.saveForReFanKui sql:", sql);
+		logger.info("DeliveryStateDAO.saveForReFanKui sql: {}", sql);
 		
 		this.jdbcTemplate.update(sql, sign_man, sign_time,sign_man_phone);
 	}
