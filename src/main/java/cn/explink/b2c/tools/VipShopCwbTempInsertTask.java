@@ -1,13 +1,5 @@
 package cn.explink.b2c.tools;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.RecursiveAction;
-
-import org.springframework.util.CollectionUtils;
-
-import cn.explink.b2c.vipshop.VipshopInsertCwbDetailTimmer;
-
 /**
  * 订单临时表转主表业务
  * 使用 Fork join 框架 
@@ -15,35 +7,35 @@ import cn.explink.b2c.vipshop.VipshopInsertCwbDetailTimmer;
  * @author jian.xie
  *
  */
-public class VipShopCwbTempInsertTask extends RecursiveAction{
+public class VipShopCwbTempInsertTask {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	private VipshopInsertCwbDetailTimmer 			vipshopInsertCwbDetailTimmer;
-	
-	private List<B2cEnum> 							b2cEnumList;
-	
-	public VipShopCwbTempInsertTask(VipshopInsertCwbDetailTimmer vipshopInsertCwbDetailTimmer, List<B2cEnum> b2cEnumList){
-		this.vipshopInsertCwbDetailTimmer = vipshopInsertCwbDetailTimmer;
-		this.b2cEnumList = b2cEnumList;
-	}
-
-	@Override
-	protected void compute() {
-		if (!CollectionUtils.isEmpty(b2cEnumList)) {
-			if (b2cEnumList.size() == 1) {
-				vipshopInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(b2cEnumList.get(0).getKey());
-			} else {
-				int middle = b2cEnumList.size() / 2;
-				VipShopCwbTempInsertTask left = new VipShopCwbTempInsertTask(vipshopInsertCwbDetailTimmer, b2cEnumList.subList(0, middle));
-				VipShopCwbTempInsertTask right = new VipShopCwbTempInsertTask(vipshopInsertCwbDetailTimmer,b2cEnumList.subList(middle, b2cEnumList.size()));
-				left.fork();
-				right.fork();
-			}
-		}
-	}
+//	/**
+//	 * 
+//	 */
+//	private static final long serialVersionUID = 1L;
+//	
+//	private VipshopInsertCwbDetailTimmer 			vipshopInsertCwbDetailTimmer;
+//	
+//	private List<B2cEnum> 							b2cEnumList;
+//	
+//	public VipShopCwbTempInsertTask(VipshopInsertCwbDetailTimmer vipshopInsertCwbDetailTimmer, List<B2cEnum> b2cEnumList){
+//		this.vipshopInsertCwbDetailTimmer = vipshopInsertCwbDetailTimmer;
+//		this.b2cEnumList = b2cEnumList;
+//	}
+//
+//	@Override
+//	protected void compute() {
+//		if (!CollectionUtils.isEmpty(b2cEnumList)) {
+//			if (b2cEnumList.size() == 1) {
+//				vipshopInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(b2cEnumList.get(0).getKey());
+//			} else {
+//				int middle = b2cEnumList.size() / 2;
+//				VipShopCwbTempInsertTask left = new VipShopCwbTempInsertTask(vipshopInsertCwbDetailTimmer, b2cEnumList.subList(0, middle));
+//				VipShopCwbTempInsertTask right = new VipShopCwbTempInsertTask(vipshopInsertCwbDetailTimmer,b2cEnumList.subList(middle, b2cEnumList.size()));
+//				left.fork();
+//				right.fork();
+//			}
+//		}
+//	}
 
 }
