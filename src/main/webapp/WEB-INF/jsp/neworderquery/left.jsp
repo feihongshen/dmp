@@ -473,6 +473,7 @@ $(function(){
 								<td width="80" align="center" bgcolor="#F1F1F1">收件人</td>
 								<td width="80" align="center" bgcolor="#F1F1F1">电话</td>
 								<td width="80" align="center" bgcolor="#F1F1F1" title="订单当前状态">状态</td>
+								<td width="80" align="center" bgcolor="#F1F1F1">关联单号</td>
 								</tr>
 						<%} else if(request.getAttribute("showLetfOrRight") == null || request.getAttribute("showLetfOrRight").toString().equals("1")) {%>
 							<tr>
@@ -502,6 +503,9 @@ $(function(){
 								<td width="80" align="center" bgcolor="#F1F1F1">收件人</td>
 								<td width="80" align="center" bgcolor="#F1F1F1">电话</td>
 								<td width="80" align="center" bgcolor="#F1F1F1" title="订单当前状态">状态</td>
+								<%if(request.getAttribute("showLetfOrRight").toString().equals("2")) {%>
+									<td width="80" align="center" bgcolor="#F1F1F1">关联单号</td>
+								<%} %>
 								</tr>
 						<%} %>
 					<!-- 		</tbody>
@@ -589,7 +593,6 @@ $(function(){
 												<%=CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText() %>
 											<%} %>
 										</td>
-										<td width="80" align="center"><%=order.getExchangecwb()==null?"":order.getExchangecwb() %></td>
 									</tr>
 							<% 	   } else { %>
 									<tr onclick="goForm('<%=order.getCwb() %>');" >
@@ -615,7 +618,9 @@ $(function(){
 											<%=CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText() %>
 										<%} %>
 									</td>
-									<td width="80" align="center"><%=order.getExchangecwb()==null?"":order.getExchangecwb() %></td>
+									<%if(request.getAttribute("showLetfOrRight").toString().equals("2")) {%>
+										<td width="80" align="center"><%=order.getExchangecwb()==null?"":order.getExchangecwb() %></td>
+									<%} %>
 								</tr>
 							<%} %>
 						<%}} %>	
