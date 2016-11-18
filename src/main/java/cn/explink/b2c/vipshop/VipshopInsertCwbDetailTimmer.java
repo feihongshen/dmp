@@ -86,31 +86,31 @@ public class VipshopInsertCwbDetailTimmer {
 					continue;
 				}
 				enumList.add(enums);
-				if(!isUserNewMethod){
+//				if(!isUserNewMethod){
 					selectTempAndInsertToCwbDetail(enums.getKey());
-				}
+//				}
 			}
 		}
-		if(isUserNewMethod && enumList.size() >= 1){
-			ForkJoinPool forkJoinPool = new ForkJoinPool();
-			try{
-				forkJoinPool.submit(new VipShopCwbTempInsertTask(this, enumList));
-			}finally{
-				try {
-					forkJoinPool.shutdown();
-					if (!forkJoinPool.awaitTermination(1, TimeUnit.HOURS)) {
-						logger.info("第一次forkJoinPool.awaitTermination线程池线程未完成");
-						forkJoinPool.shutdownNow();
-						while(!forkJoinPool.awaitTermination(1, TimeUnit.MINUTES)){
-							logger.info("shutdownNow()forkJoinPool.awaitTermination线程池线程未完成");
-							forkJoinPool.shutdownNow();
-						};
-					}
-				} catch (InterruptedException e) {
-					logger.info("forkJoinPool.awaitTermination出错", e);
-				}
-			}
-		}		
+//		if(isUserNewMethod && enumList.size() >= 1){
+//			ForkJoinPool forkJoinPool = new ForkJoinPool();
+//			try{
+//				forkJoinPool.submit(new VipShopCwbTempInsertTask(this, enumList));
+//			}finally{
+//				try {
+//					forkJoinPool.shutdown();
+//					if (!forkJoinPool.awaitTermination(1, TimeUnit.HOURS)) {
+//						logger.info("第一次forkJoinPool.awaitTermination线程池线程未完成");
+//						forkJoinPool.shutdownNow();
+//						while(!forkJoinPool.awaitTermination(1, TimeUnit.MINUTES)){
+//							logger.info("shutdownNow()forkJoinPool.awaitTermination线程池线程未完成");
+//							forkJoinPool.shutdownNow();
+//						};
+//					}
+//				} catch (InterruptedException e) {
+//					logger.info("forkJoinPool.awaitTermination出错", e);
+//				}
+//			}
+//		}		
 	}
 
 	public void selectTempAndInsertToCwbDetail(int b2ckey) {
