@@ -482,6 +482,7 @@ $(function(){
 								<td width="80" align="center" bgcolor="#F1F1F1">客户</td>
 								<td width="120" align="center" bgcolor="#F1F1F1">发货时间</td>
 								<td width="80" align="center" bgcolor="#F1F1F1" title="订单当前状态">状态</td>
+								<td width="80" align="center" bgcolor="#F1F1F1">关联单号</td>
 							</tr>
 						<%} else if(request.getAttribute("showLetfOrRight") == null || request.getAttribute("showLetfOrRight").toString().equals("3")) {%>
 							<tr>
@@ -527,6 +528,7 @@ $(function(){
 										<%=CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText() %>
 									<%} %>
 								</td>
+								<td width="80" align="center"><%=order.getExchangecwb()==null?"":order.getExchangecwb() %></td>
 							</tr>
 							<%} else if(request.getAttribute("showLetfOrRight") == null || request.getAttribute("showLetfOrRight").toString().equals("1")) {
 								int size = baleCwbSizeMap.get(order.getCwb());
@@ -552,6 +554,7 @@ $(function(){
 														<%=CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText() %>
 													<%} %>
 												</td>
+												<td width="80" align="center"><%=order.getExchangecwb()==null?"":order.getExchangecwb() %></td>
 												</tr>
 										<%	} else if(j == 0) { %>
 												<tr onclick="goForm('<%=order.getCwb() %>');" >
@@ -586,6 +589,7 @@ $(function(){
 												<%=CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText() %>
 											<%} %>
 										</td>
+										<td width="80" align="center"><%=order.getExchangecwb()==null?"":order.getExchangecwb() %></td>
 									</tr>
 							<% 	   } else { %>
 									<tr onclick="goForm('<%=order.getCwb() %>');" >
@@ -611,6 +615,7 @@ $(function(){
 											<%=CwbFlowOrderTypeEnum.getText(order.getFlowordertype()).getText() %>
 										<%} %>
 									</td>
+									<td width="80" align="center"><%=order.getExchangecwb()==null?"":order.getExchangecwb() %></td>
 								</tr>
 							<%} %>
 						<%}} %>	

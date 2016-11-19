@@ -8,11 +8,13 @@
 <%@page import="net.sf.json.JSONObject"%>
 <%@page import="java.math.BigDecimal"%>
 <%@page import="java.text.SimpleDateFormat"%>
-<%@page import="cn.explink.domain.CwbOrder,cn.explink.domain.Customer,cn.explink.domain.Branch,cn.explink.domain.User"%>
+<%@page import="cn.explink.domain.CwbOrder,cn.explink.domain.Customer,cn.explink.domain.Branch,cn.explink.domain.User,cn.explink.domain.OrderGoods"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 PrintTemplate printTemplate = (PrintTemplate) request.getAttribute("template");
 List<CwbOrder> cwbList = (List<CwbOrder>)request.getAttribute("cwbList");
+List<OrderGoods> orderGoodsList = (List<OrderGoods>)request.getAttribute("orderGoodsList");
+int goodsSize = orderGoodsList.size();
 List<Customer> customerlist = (List<Customer>)request.getAttribute("customerlist");
 List<Branch> branchlist = (List<Branch>)request.getAttribute("branchlist");
 List<User> userlist = (List<User>)request.getAttribute("userlist");
@@ -137,6 +139,17 @@ function nowprint(){
 		setcreowg();
 	};
 }
+
+$(function(){
+	if(<%=goodsSize > 0 %>){
+		$("#lantuimingxi-head").get(0).style.display="";
+		$("#lantuimingxi-body").get(0).style.display="";
+	}else{
+		$("#lantuimingxi-head").get(0).style.display="none";
+		$("#lantuimingxi-body").get(0).style.display="none";
+	}
+});
+
 </script>
 <body style="tab-interval: 21pt;">
 <a href="javascript:nowprint()">直接打印</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:prn1_preview();">预览</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:history.go(-1);">返回</a>
@@ -231,7 +244,14 @@ function nowprint(){
 									<%=remark %>
 								<%}else if(printColumn.getField().equals("paywayid")){for(PaytypeEnum pe : PaytypeEnum.values()){if(cwbList.get(i).getPaywayid()==pe.getValue()){%>
 									<%=pe.getText() %>
-								<%}}}else{ %>
+								<%}}}else if(printColumn.getField().equals("exchangecwb")){ %>
+									<%String exchangecwb = (String)PropertyUtils.getProperty(cwbList.get(i), printColumn.getField());
+									if("null".equals(exchangecwb)||exchangecwb == null){ %>
+										<%="" %>
+									<%}else{ %>
+										<%=exchangecwb %>
+									<%} %>
+								<%}else{ %>
 									<%=PropertyUtils.getProperty(cwbList.get(i), printColumn.getField()) %>
 								<%} %>
 					</td>
@@ -240,6 +260,48 @@ function nowprint(){
 			<%} %>
 		</table></td>
 		</tr>
+		
+		<tr id="lantuimingxi-head" style="display: none">
+			<td colspan="6">
+				<table border="1" cellspacing="0" cellpadding="0">
+					<tr>
+						<span style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">揽退订单明细</span>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		
+		<tr id="lantuimingxi-body" style="display: none">
+			<td colspan="6">
+				<table  border="1" cellspacing="0" cellpadding="0">
+				<tr>
+					 <td width="140 px"  style="font-size: 9.5000pt;" align="center" >揽退订单号</td>
+					 <td width="140 px"  style="font-size: 9.5000pt;" align="center" >序号</td>
+					 <td width="140 px"  style="font-size: 9.5000pt;" align="center" >商品编号</td>
+					 <td width="140 px"  style="font-size: 9.5000pt;" align="center" >商品名称和颜色</td>
+					 <td width="140 px"  style="font-size: 9.5000pt;" align="center" >商品品牌</td>
+					 <td width="140 px"  style="font-size: 9.5000pt;" align="center" >件数</td>
+					 <td width="140 px"  style="font-size: 9.5000pt;" align="center" >商品规格</td>
+					 <td width="140 px"  style="font-size: 9.5000pt;" align="center" >备注</td>
+				</tr>
+				
+				<%for(int i=0; i<goodsSize; i++){ %>
+					<%out.print("<tr style=\"height: 15.9000pt;\">"); %>
+					<td width="140 px"  style="font-size: 9.5000pt;"  align="center"><%=orderGoodsList.get(i).getCwb() %></td>
+					<td width="140 px"  style="font-size: 9.5000pt;"  align="center"><%= i+1 %></td>
+					<td width="140 px"  style="font-size: 9.5000pt;"  align="center"><%=orderGoodsList.get(i).getGoods_code() %></td>
+					<td width="140 px"  style="font-size: 9.5000pt;"  align="center"><%=orderGoodsList.get(i).getGoods_name() %></td>
+					<td width="140 px"  style="font-size: 9.5000pt;"  align="center"><%=orderGoodsList.get(i).getGoods_brand() %></td>
+					<td width="140 px"  style="font-size: 9.5000pt;"  align="center"><%=orderGoodsList.get(i).getGoods_num() %></td>
+					<td width="140 px"  style="font-size: 9.5000pt;"  align="center"><%=orderGoodsList.get(i).getGoods_spec() %></td>
+					<td width="140 px"  style="font-size: 9.5000pt;"  align="center">全揽</td>
+					<%out.print("</tr>"); %>
+				<%} %>
+				
+				</table>
+			</td>
+		</tr>
+		
 	<tr>
 		<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
 								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">合计</span><span
@@ -252,7 +314,7 @@ function nowprint(){
 			<o:p></o:p>
 		</span></span></td>
 		<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&#23435;&#20307;';">件数：</span><span
+								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">件数：</span><span
 								style="font-size: 9.5000pt; font-family: 'Times New Roman';">
 			<o:p></o:p>
 		</span></span></td>
@@ -262,7 +324,7 @@ function nowprint(){
 			<o:p></o:p>
 		</span></span></td>
 		<td><span class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span
-								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&#23435;&#20307;';">代收金额：</span><span
+								style="mso-spacerun: 'yes'; font-size: 9.5000pt; font-family: '&amp;#23435;&amp;#20307;';">代收金额：</span><span
 								style="font-size: 9.5000pt; font-family: 'Times New Roman';">
 			<o:p></o:p>
 		</span></span></td>

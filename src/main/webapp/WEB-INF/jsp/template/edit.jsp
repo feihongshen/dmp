@@ -77,6 +77,16 @@ function show(){
 	$("#columnSetting input[field=backreason]").attr("checked",false);
 	$("#columnSetting input[field=driver]").parent().parent().hide();
 	$("#columnSetting input[field=driver]").attr("checked",false);
+	
+	<!--选择模板类型时，默认将 关联单号屏蔽，只有当选择 领货交接单按单 时,才将关联单号展现  add by Alice.yu  start  -->
+	if($("#opertatetype").val()==<%=PrintTemplateOpertatetypeEnum.LingHuoAnDan.getValue() %>){
+		$("#columnSetting input[field=exchangecwb]").parent().parent().show();
+		$("#columnSetting input[field=exchangecwb]").attr("checked",false);
+	}else{
+		$("#columnSetting input[field=exchangecwb]").parent().parent().hide();
+		$("#columnSetting input[field=exchangecwb]").attr("checked",false);
+	}
+	<!--选择模板类型时，默认将 关联单号屏蔽，只有当选择 领货交接单按单 时,才将关联单号展现  add by Alice.yu  end  -->
 }
 $(function(){
 	show();
@@ -881,6 +891,10 @@ $(function(){
 		}else if(columnSetting.length==0){
 			alert("模版内容不能为空");
 			return false;
+		} else if($("#opertatetype").val()==<%=PrintTemplateOpertatetypeEnum.LingHuoAnDan.getValue() %>
+			&& $("#columnSetting input[field=exchangecwb]").attr('checked')!="checked"){
+			alert("模版类型为领货交接单按单时,关联单号必选！");
+			return false;
 		} else if(columnSetting.length!=$("#columnSetting input[type=checkbox]:checked").length){
 			alert("请认真填写宽度");
 			return false;
@@ -1151,7 +1165,7 @@ $(function(){
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
-
+							
 						</tbody>
 					</table>
 				</td>
@@ -1243,6 +1257,14 @@ $(function(){
 							<tr style="background-color: rgb(249, 252, 253); ">
 								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="cwbremark" columnName="备注"/></td>
 								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>备注</strong></td>
+								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
+								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
+							</tr>
+							
+							<!-- 添加关联单号 -->
+							<tr style="background-color: rgb(249, 252, 253); ">
+								<td width="50" align="center" valign="middle" bgcolor="#f3f3f3"><input type="checkbox"  field="exchangecwb" columnName="关联单号"/></td>
+								<td align="center" valign="middle" bgcolor="#EEF6FF"><strong>关联单号</strong></td>
 								<td width="100" align="center" valign="middle"><input type="text" value="100"  size="10"/>cm</td>
 								<!-- <td><button class="upButton">上移</button><button class="downButton">下移</button></td> -->
 							</tr>
