@@ -96,6 +96,9 @@ public class CwbOrderDTO {
 	
 	private String returnaddress; // 退货地址
 	
+	private int exchangeflag;//换货标志
+	private String exchangecwb;//上门换关联的订单号
+	
 	public int getIsmpsflag() {
 		return ismpsflag;
 	}
@@ -923,4 +926,21 @@ public class CwbOrderDTO {
 	public void setReturnaddress(String returnaddress) {
 		this.returnaddress = returnaddress;
 	}
+
+	public int getExchangeflag() {
+		return exchangeflag;
+	}
+
+	public void setExchangeflag(int exchangeflag) {
+		this.exchangeflag = exchangeflag;
+	}
+
+	public String getExchangecwb() {
+		return exchangecwb;
+	}
+
+	public void setExchangecwb(String exchangecwb) {
+		this.exchangecwb = exchangecwb;
+	}
+	
 }

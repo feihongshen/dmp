@@ -62,6 +62,7 @@ import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.B2cPushStateEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryPaymentPatternEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.DeliveryTongjiEnum;
@@ -497,6 +498,7 @@ public class DeliveryController {
 		sdv.setChangereason(cwbOrder.getChangereason());
 		sdv.setShouldfare(ds.getShouldfare());
 		sdv.setInfactfare(ds.getInfactfare());
+		sdv.setExchangeflag(cwbOrder.getExchangeflag());
 		return sdv;
 	}
 
@@ -587,7 +589,7 @@ public class DeliveryController {
 			return "{\"errorCode\":1,\"error\":\"系统错误\"}";
 		}
 	}
-
+	
 	private GotoClassOld loadFormForGotoClass(HttpServletRequest request) {
 		GotoClassOld gco = new GotoClassOld();
 		gco.setNownumber(Long.parseLong(request.getParameter("nownumber")));
@@ -764,6 +766,12 @@ public class DeliveryController {
 		SystemInstall isShowZLZDLH = this.systemInstallDAO.getSystemInstall("isShowZLZDLH");
 		// 是否允许反馈为部分拒收
 		SystemInstall partReject = this.systemInstallDAO.getSystemInstall("partReject");
+		if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&co.getExchangeflag()==1){
+			CwbOrder tuiCwbOrder = this.cwbDAO.getCwbByCwb(co.getExchangecwb());
+			if(tuiCwbOrder!=null){
+				model.addAttribute("transcwbVipSmh", tuiCwbOrder.getTranscwb());
+			}
+		}
 
 		model.addAttribute("backreasonlist", backreasonlist);
 		model.addAttribute("leavedreasonlist", leavedreasonlist);

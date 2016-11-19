@@ -493,7 +493,12 @@ public class DataImportService_B2c {
 			cwbOrder.setVipclub(Integer.parseInt(row.get("vipclub")));
 		}
 		cwbOrder.setDefaultCargoName();
-
+		
+		if (excelColumnSet.getSaletypeindex() != 0) {
+			cwbOrder.setExchangeflag(row.get("exchange_flag") == null ? 0 : Integer.parseInt(row.get("exchange_flag")));
+			cwbOrder.setExchangecwb(row.get("exchange_cwb") == null ? "" : row.get("exchange_cwb"));
+		}
+		
 		return cwbOrder;
 	}
 

@@ -439,6 +439,7 @@ public class CwbOrder {
 	
 	private int exchangeflag;//换货标志：0不是，1是
 	private String exchangecwb;//换货关联的配送订单号或上门退订单号
+	private String exchangetpstranscwb;//换货时揽退单的品骏运单号,因为推此运单号是通过pjd的配送单接口
 
 	public int getInstationhandoverid() {
 		return this.instationhandoverid;
@@ -2146,6 +2147,14 @@ public class CwbOrder {
 
 	public void setExchangecwb(String exchangecwb) {
 		this.exchangecwb = exchangecwb;
+	}
+
+	public String getExchangetpstranscwb() {
+		return exchangetpstranscwb;
+	}
+
+	public void setExchangetpstranscwb(String exchangetpstranscwb) {
+		this.exchangetpstranscwb = exchangetpstranscwb;
 	}
 	
 }

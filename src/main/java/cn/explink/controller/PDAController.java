@@ -2077,7 +2077,7 @@ public class PDAController {
 				}
 				//Added end
 				
-				CwbOrder cwbOrder = this.cwbOrderService.receiveGoodsByDeliver(this.getSessionUser(), deliveryUser, cwb, scancwb, isChaoqu);
+				CwbOrder cwbOrder = this.cwbOrderService.receiveGoodsByDeliver(this.getSessionUser(), deliveryUser, cwb, scancwb, isChaoqu,true);
 				//*******Hps_Concerto*****2016年5月26日17:23:11
 				try{
 					if(CwbFlowOrderTypeEnum.getText(cwbOrder.getFlowordertype())!=null){
@@ -5429,7 +5429,7 @@ public class PDAController {
 		this.addSmtDeliverPickingExtraMsg(obj, cwb);
 
 		User deliveryUser = this.userDAO.getUserByUserid(deliverid);
-		CwbOrder cwbOrder = this.cwbOrderService.receiveGoodsByDeliver(this.getSessionUser(), deliveryUser, cwb, scancwb, isChaoqu);
+		CwbOrder cwbOrder = this.cwbOrderService.receiveGoodsByDeliver(this.getSessionUser(), deliveryUser, cwb, scancwb, isChaoqu,true);
 		obj.put("cwbOrder", JSONObject.fromObject(cwbOrder));
 
 		String searchCwb = "'" + cwb + "'";

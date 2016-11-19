@@ -1796,6 +1796,9 @@ function peisongObj(podremarkid) {
 	if (podremarkid == 1) {
 		$("#signmanid").parent().show();
 		$("#signmanid").val(1);
+		if($("#exchangeflag").val()=='1'){
+			$("#transcwb").parent().show();
+		}
 	}
 }
 function shagnmentuiObj() {
@@ -2038,6 +2041,7 @@ function check_deliveystate(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuan
 	var firstchangereasonid = parseInt($("#firstchangereasonid").val());
 	var changereasonid = parseInt($("#changereasonid").val());
 	var firstlevelreasonid=parseInt($("#firstlevelreasonid").val());
+	var exchangeflag=$("#exchangeflag").val();
 	if (!checkTime($("#deliverytime").val())) {
 		return false;
 	}
@@ -2058,6 +2062,10 @@ function check_deliveystate(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuan
 	} else if (podresultid == ShangMenHuanChengGong) {// 上门换成功
 		return checkShangMenHuan();
 	} else if (podresultid == BuFenTuiHuo) {// 部分退货
+		if(exchangeflag=='1'){
+			alert("唯品会上门换业务不允许反馈为部分拒收");
+			return false;
+		}
 		if (isReasonRequired == 'yes' && !backreasonid > 0) {
 			alert("请选择退货原因");
 			return false;
@@ -2086,6 +2094,10 @@ function check_deliveystate(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuan
 			return checkGongGong_delivery();
 		}
 	} else if (podresultid == DaiZhongZhuan) {// 分站滞留、滞留自动领货
+		if(exchangeflag=='1'){
+			alert("唯品会上门换业务不允许反馈为待中转");
+			return false;
+		}
 		if (firstchangereasonid == 0) {
 			alert("请选择一级中转原因");
 			return false;
@@ -3158,6 +3170,14 @@ function checkpodresultid(id, podresultid) {
  */
 function deliverpod(pname, deliverid, scancwb, podresultid, paywayid, backreasonid, leavedreasonid,firstlevelreasonid, deliverstateremark, type, isReasonRequired,
 		jushou, zhiliu){  
+	var cwbTr=$("tr[id='weifankui'] tr[id='"+scancwb.trim()+"']");
+	if(cwbTr.length>0){
+		 if($(cwbTr).attr("nofankui")=='1'){
+			alert("订单号“"+scancwb+"”唯品会上门换业务的揽退单不允许直接反馈，请操作其相关联的配送单！");
+			return false;
+		 }
+	 }
+	
 	if ($("#podresultid_p").val() == 0) {
 		alert("请选择反馈结果");
 		return false;

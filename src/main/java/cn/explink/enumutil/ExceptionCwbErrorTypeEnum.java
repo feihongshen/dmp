@@ -85,7 +85,12 @@ public enum ExceptionCwbErrorTypeEnum {
 	
 	        ShangMenTuiYigeDingdanZhinengBangdingYigeKuaididanhao(231, "上门退订单一个订单只能绑定一个快递单号！"),
 			DingDanYiLanJieBuYunXuShenHe(232, "订单已经拦截，不允许审核！"),
-			ChaXunYiChangQingShuaXinYeMian(233, "查询异常，请刷新页面！");
+			ChaXunYiChangQingShuaXinYeMian(233, "查询异常，请刷新页面！"),
+			VipShangmenhuanLantuiBuyunxu(234, "唯品会上门换业务不允许直接操作揽退单！"),
+			VipShangmenhuanLantuiBucunzai(235, "唯品会上门换业务配送单关联的揽退单不存在！"),
+			VipShangmenhuanLantuiButongzan(236, "唯品会上门换业务配送单和揽退单不在同一站点！"),
+			VipShangmenhuanLantuiWeidaohuo(236, "唯品会上门换业务配送单关联的揽退单未到货！"),
+			VipShangmenhuanLantuiFeilantui(236, "唯品会上门换业务配送单关联的订单不是揽退单！");
 
 	private int value;
 	private String text;

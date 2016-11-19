@@ -41,7 +41,8 @@ String isReasonRequired = request.getAttribute("isReasonRequired")==null?"no":(S
 String partReject = request.getAttribute("partReject")==null?"yes":(String)request.getAttribute("partReject");
 
 int isOpenFlag = request.getAttribute("isOpenFlag")==null?0:((Integer)request.getAttribute("isOpenFlag")).intValue();
-
+String transcwbVipSmh = request.getAttribute("transcwbVipSmh")==null?"":(String)request.getAttribute("transcwbVipSmh");
+String transcwb=cwborder.getExchangeflag()==1?transcwbVipSmh:cwborder.getTranscwb();
 %>
 <script>
 var showposandqita="<%=showposandqita%>";
@@ -117,6 +118,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 					<input type="hidden" id="paywayid" value="<%=cwborder.getPaywayid()%>"/>
 					<input type="hidden" id="isOpenFlag" value="<%=isOpenFlag%>"/>
 					<input type="hidden" id="shishou" value="<%=deliverystate.getInfactfare()%>"/>
+					<input type="hidden" id="exchangeflag" value="<%=cwborder.getExchangeflag()%>"/>
 				<select id ="podresultid" name ="podresultid" 
 		   			onChange="click_podresultid(<%=deliverystate.getDeliverystate() %>,<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
 		   			<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue()%>,<%=DeliveryStateEnum.JuShou.getValue()%>,
@@ -164,7 +166,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
                    
                 </select>*</li>
            		<li><span>快递单号：</span>
-                     <input type="text" name="transcwb" id="transcwb" value="<%=cwborder.getTranscwb()%>" onKeyDown='if(event.keyCode==13){return false;}'/> (每次只能输入一个快递单号)
+                     <input type="text" name="transcwb" id="transcwb" value="<%=transcwb%>" onKeyDown='if(event.keyCode==13){return false;}'/> (只输一个单号)
 	           	</li>
            		<li><span>退货原因：</span>
 	           		<select name="backreasonid" id="backreasonid">

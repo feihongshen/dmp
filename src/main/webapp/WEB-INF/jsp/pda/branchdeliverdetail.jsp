@@ -124,7 +124,11 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					$("#msg").html(scancwb+data.errorinfo+"         （共"+data.body.cwbOrder.sendcarnum+"件，已扫"+data.body.cwbOrder.scannum+"件）");
 					
 					$("#scansuccesscwb").val(scancwb);
-					$("#showcwb").html("订 单 号："+data.body.cwbOrder.cwb);
+					var exchangecwb='';
+					if(data.body.cwbOrder.exchangeflag=='1'){
+						exchangecwb='      关联的揽退单['+data.body.cwbOrder.exchangecwb+']自动领货成功';
+					}
+					$("#showcwb").html("订 单 号："+data.body.cwbOrder.cwb+exchangecwb);
 					$("#consigneeaddress").html("地 址："+data.body.cwbOrder.consigneeaddress);
 					if(data.body.isChaoqu == true) {
 						if(data.body.matchDeliver == "") {
