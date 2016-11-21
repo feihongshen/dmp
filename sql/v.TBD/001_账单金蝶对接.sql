@@ -1,7 +1,9 @@
 CREATE TABLE `fn_msg_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `rqst_msg` mediumtext COMMENT '发送的消息',
+  `decoded_rqst_msg` mediumtext,
   `resp_msg` mediumtext COMMENT '接收的消息',
+  `decoded_resp_msg` mediumtext,
   `comm_type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '通讯类型 WEBSERVICE(1)',
   `intf` tinyint(4) NOT NULL DEFAULT '0' COMMENT '通信接口名字 CUSTOMER_BILL_KINGDEE(1)',
   `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态 RUNNING(0), DONE(1)',
@@ -10,7 +12,7 @@ CREATE TABLE `fn_msg_record` (
   `create_time` datetime NOT NULL COMMENT '生成时间',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `create_user` varchar(255) NOT NULL DEFAULT '' COMMENT '生成数据操作人',
-  `update_user`  varchar(255) NOT NULL DEFAULT '' COMMENT '更新数据操作人',
+  `update_user` varchar(255) DEFAULT '' COMMENT '更新数据操作人',
   PRIMARY KEY (`id`),
   KEY `fn_msg_record_interface_idx` (`intf`),
   KEY `fn_msg_record_status_idx` (`status`),
