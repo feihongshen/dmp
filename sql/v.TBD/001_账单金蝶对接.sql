@@ -20,3 +20,6 @@ CREATE TABLE `fn_msg_record` (
   KEY `fn_msg_record_create_time_idx` (`create_time`) USING BTREE,
   KEY `fn_msg_record_suc_or_fail_idx` (`suc_or_fail`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO dmp40_function (ID, functionlevel, functionname, functionorder, functionurl, parentfunctionid)
+VALUES (306012, 2, 'EAP异常', 306012, '${eapUrl}msgRecord.do?index&', 3060);
