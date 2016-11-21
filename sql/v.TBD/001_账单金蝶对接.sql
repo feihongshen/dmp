@@ -1,9 +1,9 @@
 CREATE TABLE `fn_msg_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `rqst_msg` mediumtext COMMENT '发送的消息',
-  `decoded_rqst_msg` mediumtext,
+  `decoded_rqst_msg` mediumtext COMMENT '解密发送的消息',
   `resp_msg` mediumtext COMMENT '接收的消息',
-  `decoded_resp_msg` mediumtext,
+  `decoded_resp_msg` mediumtext COMMENT '解密返回的消息',
   `comm_type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '通讯类型 WEBSERVICE(1)',
   `intf` tinyint(4) NOT NULL DEFAULT '0' COMMENT '通信接口名字 CUSTOMER_BILL_KINGDEE(1)',
   `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态 RUNNING(0), DONE(1)',
