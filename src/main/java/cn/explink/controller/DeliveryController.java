@@ -69,6 +69,7 @@ import cn.explink.enumutil.DeliveryTongjiEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
+import cn.explink.enumutil.VipExchangeFlagEnum;
 import cn.explink.enumutil.switchs.SwitchEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.exception.ExplinkException;
@@ -766,7 +767,7 @@ public class DeliveryController {
 		SystemInstall isShowZLZDLH = this.systemInstallDAO.getSystemInstall("isShowZLZDLH");
 		// 是否允许反馈为部分拒收
 		SystemInstall partReject = this.systemInstallDAO.getSystemInstall("partReject");
-		if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&co.getExchangeflag()==1){
+		if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
 			CwbOrder tuiCwbOrder = this.cwbDAO.getCwbByCwb(co.getExchangecwb());
 			if(tuiCwbOrder!=null){
 				model.addAttribute("transcwbVipSmh", tuiCwbOrder.getTranscwb());

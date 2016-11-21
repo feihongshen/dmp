@@ -202,6 +202,7 @@ import cn.explink.enumutil.ReturnCwbsTypeEnum;
 import cn.explink.enumutil.StockDetailEnum;
 import cn.explink.enumutil.StockDetailStocktypeEnum;
 import cn.explink.enumutil.TransCwbStateEnum;
+import cn.explink.enumutil.VipExchangeFlagEnum;
 import cn.explink.enumutil.express.ExpressOperationEnum;
 import cn.explink.enumutil.express.ExpressPaymethodEnum;
 import cn.explink.exception.CwbException;
@@ -2643,7 +2644,7 @@ public class CwbOrderService extends BaseOrderService {
 		cwbOrder.setConsigneename(cwbOrder.getConsigneenameOfkf());
 		cwbOrder.setConsigneephone(cwbOrder.getConsigneephoneOfkf());
 		String exchangetpstranscwb=null;
-		if(flowordertype==FlowOrderTypeEnum.YiFanKui&&cwbOrder.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&cwbOrder.getExchangeflag()==1){
+		if(flowordertype==FlowOrderTypeEnum.YiFanKui&&cwbOrder.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&cwbOrder.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
 			CwbOrder tuiCwbOrder=this.cwbDAO.getCwbByCwb(cwbOrder.getExchangecwb());
 			if(tuiCwbOrder!=null){
 				exchangetpstranscwb=tuiCwbOrder.getTpstranscwb();
@@ -5007,7 +5008,7 @@ public class CwbOrderService extends BaseOrderService {
 		
 		//唯品会上门换业务的只允许操作配送单，不允许直接操作揽退单 
 		if(co!=null&&co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()
-				&&co.getExchangeflag()==1&&isHuanPeisong){
+				&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()&&isHuanPeisong){
 			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),ExceptionCwbErrorTypeEnum.VipShangmenhuanLantuiBuyunxu);
 		}
 		
@@ -5546,7 +5547,7 @@ public class CwbOrderService extends BaseOrderService {
 	public Map<String, Object> deliverStatePod(User user, String cwb, String scancwb, Map<String, Object> parameters) {
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 		//vip上门换配送单位反馈时时也反馈相关联的揽退单;注意要先反馈揽退单，因为要通过配送单的orderflow传运单号给oms和pjd
-		if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&co.getExchangeflag()==1){
+		if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
 			Map<String, Object> tuiParameters=new HashMap<String, Object>();
 			tuiParameters.putAll(parameters);
 			parameters.remove("transcwb");//vip上门换时配送页面填写的的运单号是只用于揽退单的
@@ -5554,6 +5555,7 @@ public class CwbOrderService extends BaseOrderService {
 			if(tuiCwbOrder!=null){
 				long peisongPodresultid = tuiParameters.get("podresultid") == null ? 0l : (Long) tuiParameters.get("podresultid");
 				tuiParameters.put("podresultid", resultSwitch(peisongPodresultid));
+				tuiParameters.put("smtdirectsubmitflag", "0");//vip上门换时揽退单是否直接操作，0不是，否则是
 				this.deliverStatePod(user,co.getExchangecwb(),co.getExchangecwb(),tuiParameters);
 			}
 		}
@@ -5598,7 +5600,8 @@ public class CwbOrderService extends BaseOrderService {
 
 		long changereasonid = parameters.get("changereasonid") == null ? 0l : (Long) parameters.get("changereasonid");
 		long firstchangereasonid = parameters.get("firstchangereasonid") == null ? 0l : (Long) parameters.get("firstchangereasonid");
-	
+		String smtdirectsubmitflag = parameters.get("smtdirectsubmitflag") == null ? null : parameters.get("smtdirectsubmitflag").toString().trim();
+		
 		String transcwb = parameters.get("transcwb") == null ? "" : (String) parameters.get("transcwb");
 
 		transcwb = transcwb.replaceAll(" ", "");
@@ -5630,6 +5633,12 @@ public class CwbOrderService extends BaseOrderService {
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
+		if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+			if(smtdirectsubmitflag==null||!"0".equals(smtdirectsubmitflag)){
+				throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.VipShangmenhuanLantuiBuyunxu);
+			}
+		}
+		
 		String oldTpstranscwb=co.getTpstranscwb();
 		int oldDeliveryState=co.getDeliverystate();
 		if (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Express.getValue()) {
@@ -5681,7 +5690,7 @@ public class CwbOrderService extends BaseOrderService {
 
 		if (isbatch) {
 			// 配送订单批量反馈,验证是否为配送订单
-			if (fankuileixing.equals("PEISONG") && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Peisong.getValue()) && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Express.getValue())) {
+			if (fankuileixing.equals("PEISONG") && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Peisong.getValue()) && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Express.getValue())&&(co.getExchangeflag()!=VipExchangeFlagEnum.YES.getValue())) {
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FEI_PEI_SONG_DING_DAN);
 			}
 			// 上门换订单批量反馈,验证是否为上门换订单
@@ -6781,7 +6790,7 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		for(String cwb :cwbSet){
 			CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
-			if(co.getExchangeflag()==0){
+			if(co.getExchangeflag()==VipExchangeFlagEnum.NO.getValue()){
 				finalCwbSet.add(cwb);
 			}else{
 				if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()){

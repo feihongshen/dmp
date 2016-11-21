@@ -57,6 +57,7 @@ import cn.explink.enumutil.MpsTypeEnum;
 import cn.explink.enumutil.MpsswitchTypeEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.enumutil.TmsSaleTypeEnum;
+import cn.explink.enumutil.VipExchangeFlagEnum;
 import cn.explink.service.CustomerService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
@@ -615,13 +616,13 @@ public class VipShopGetCwbDataService {
 			String relation_order_sn = VipShopGetCwbDataService.convertEmptyString("relation_order_sn", datamap).trim();//上门换时关联的订单号
 			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbB2ctempByCwb(order_sn);
 			
-			String exchange_flag="0";//0不是唯品会上门换,1是
+			String exchange_flag=""+VipExchangeFlagEnum.NO.getValue();//0不是唯品会上门换,1是
 			if(sale_type!=null&&sale_type.trim().length()>0){
 				if(sale_type.equals(TmsSaleTypeEnum.shangmenhuan_peisong.getValue())){
-					exchange_flag="1";
+					exchange_flag=""+VipExchangeFlagEnum.YES.getValue();
 					cwbordertype=String.valueOf(CwbOrderTypeIdEnum.Peisong.getValue());
 				}else if(sale_type.equals(TmsSaleTypeEnum.shangmenhuan_tui.getValue())){
-					exchange_flag="1";
+					exchange_flag=""+VipExchangeFlagEnum.YES.getValue();
 					cwbordertype=String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue());
 				}
 			}

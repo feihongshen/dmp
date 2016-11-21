@@ -126,7 +126,7 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					$("#scansuccesscwb").val(scancwb);
 					var exchangecwb='';
 					if(data.body.cwbOrder.exchangeflag=='1'){
-						exchangecwb='      关联的揽退单['+data.body.cwbOrder.exchangecwb+']自动领货成功';
+						exchangecwb='&nbsp;&nbsp;&nbsp;&nbsp;[关联的揽退单'+data.body.cwbOrder.exchangecwb+'自动领货成功]';
 					}
 					$("#showcwb").html("订 单 号："+data.body.cwbOrder.cwb+exchangecwb);
 					$("#consigneeaddress").html("地 址："+data.body.cwbOrder.consigneeaddress);

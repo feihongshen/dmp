@@ -14,6 +14,7 @@
 <%@page import=" net.sf.json.JSONObject"%>
 <%@page import="cn.explink.util.ServiceUtil"%>
 <%@page import="cn.explink.enumutil.CwbOrderTypeIdEnum"%>
+<%@page import="cn.explink.enumutil.VipExchangeFlagEnum"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 List<JSONObject> deliverList = request.getAttribute("deliverList")==null?new ArrayList<JSONObject>():(List<JSONObject>) request.getAttribute("deliverList");
@@ -542,8 +543,8 @@ function exportYifankui(){
 								<%for(CwbOrderTypeIdEnum ce : CwbOrderTypeIdEnum.values()){if(ds.getCwbordertypeid()==ce.getValue()){ %>
 									<%=ce.getText() %>
 								<%}} %>
-								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1){%>
-								[唯换]
+								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){%>
+								<br/>[唯换]
 								<%}%>
 								</td>
 								<td width="8%" align="center" valign="middle" customerKey="<%=ds.getCustomerid() %>"><%=StringUtil.nullConvertToEmptyString( ds.getCustomername()) %></td>
@@ -556,18 +557,18 @@ function exportYifankui(){
 								<%if(!"no".equals(request.getAttribute("useAudit"))){ %>
 								<td width="10%" align="center">
 								<% if(ds.getCodpos().compareTo(BigDecimal.ZERO)==0){ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									<a href="javascript:if(<%=ds.getUserid() %>==0||<%=ds.getUserid() %>==<%=usermap.get("userid") %>){edit_button('<%=ds.getCwb()%>');}else{alert('不是同一个操作人！');}">[修改]</a>
 									<%} %>
 								<%} %>
 								<%-- <a href="javascript:edit_button('<%=ds.getCwb()%>');">[修改]</a> --%>
 								<%if(isGuiBanUseZanBuChuLi.equals("yes")){ %>
 								<%if(ds.getGcaid()==-1){ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:reSub('<%=ds.getCwb() %>',<%=ds.getReceivedfee() %>,<%=ds.getCash() %>,<%=ds.getPos() %>,0,0);">恢复</a>]
 									<%} %>
 								<%}else{ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:noSub('<%=ds.getCwb() %>',<%=ds.getReceivedfee() %>,<%=ds.getCash() %>,<%=ds.getPos() %>,0,0);">暂不处理</a>]
 									<%} %>
 								<%}} %>
@@ -608,8 +609,8 @@ function exportYifankui(){
 								<%for(CwbOrderTypeIdEnum ce : CwbOrderTypeIdEnum.values()){if(ds.getCwbordertypeid()==ce.getValue()){ %>
 									<%=ce.getText() %>
 								<%}} %>
-								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1){%>
-								[唯换]
+								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){%>
+								<br/>[唯换]
 								<%}%>
 								</td>
 								<td width="15%" align="center" valign="middle" customerKey="<%=ds.getCustomerid() %>"><%=StringUtil.nullConvertToEmptyString(ds.getCustomername()) %></td>
@@ -619,16 +620,16 @@ function exportYifankui(){
 								<td width="15%" align="center"><%=ds.getDeliverstateremark() %></td>
 								<%if(!"no".equals(request.getAttribute("useAudit"))){ %>
 								<td width="10%" align="center">
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									<a href="javascript:edit_button('<%=ds.getCwb()%>');">[修改]</a>
 									<%} %>
 								<%if(isGuiBanUseZanBuChuLi.equals("yes")){ %>
 								<%if(ds.getGcaid()==-1){ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:reSub('<%=ds.getCwb() %>',0,0,0,0,1);">恢复</a>]
 									<%} %>
 								<%}else{ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:noSub('<%=ds.getCwb() %>',0,0,0,0,1);">暂不处理</a>]
 									<%} %>
 								<%}} %>
@@ -674,8 +675,8 @@ function exportYifankui(){
 								<%for(CwbOrderTypeIdEnum ce : CwbOrderTypeIdEnum.values()){if(ds.getCwbordertypeid()==ce.getValue()){ %>
 									<%=ce.getText() %>
 								<%}} %>
-								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1){%>
-								[唯换]
+								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){%>
+								<br/>[唯换]
 								<%}%>
 								</td>
 								<td width="10%" align="center" valign="middle" customerKey="<%=ds.getCustomerid()%>"><%=StringUtil.nullConvertToEmptyString(ds.getCustomername()) %></td>
@@ -689,17 +690,17 @@ function exportYifankui(){
 								<td width="10%" align="center"><%=ds.getDeliverstateremark() %></td>
 								<%if(!"no".equals(request.getAttribute("useAudit"))){ %>
 								<td width="10%" align="center">
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									<!-- <a href="javascript:if(<%=ds.getUserid() %>==0||<%=ds.getUserid() %>==<%=usermap.get("userid") %>){edit_button('<%=ds.getCwb()%>');}else{alert('不是同一个操作人！');}">[修改]</a> -->
 									<a href="javascript:edit_button('<%=ds.getCwb()%>');">[修改]</a>
 									<%}%>
 								　<%if(isGuiBanUseZanBuChuLi.equals("yes")){ %>
 								<%if(ds.getGcaid()==-1){ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:reSub('<%=ds.getCwb() %>',<%=ds.getReceivedfee() %>,<%=ds.getCash() %>,<%=ds.getPos() %>,0,1);">恢复</a>]
 									<%}%>
 								<%}else{ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:noSub('<%=ds.getCwb() %>',<%=ds.getReceivedfee() %>,<%=ds.getCash() %>,<%=ds.getPos() %>,0,1);">暂不处理</a>]
 									<%}%>
 								<%}} %>
@@ -741,8 +742,8 @@ function exportYifankui(){
 								<%for(CwbOrderTypeIdEnum ce : CwbOrderTypeIdEnum.values()){if(ds.getCwbordertypeid()==ce.getValue()){ %>
 									<%=ce.getText() %>
 								<%}} %>
-								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1){%>
-								[唯换]
+								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){%>
+								<br/>[唯换]
 								<%}%>
 								</td>
 								<td width="10%" align="center" valign="middle" customerKey="<%=ds.getCustomerid() %>"><%=StringUtil.nullConvertToEmptyString(ds.getCustomername())  %></td>
@@ -754,17 +755,17 @@ function exportYifankui(){
 								<td width="10%" align="center"><%=ds.getDeliverstateremark() %></td>
 								<%if(!"no".equals(request.getAttribute("useAudit"))){ %>
 								<td width="10%" align="center">
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									<!-- <a href="javascript:if(<%=ds.getUserid() %>==0||<%=ds.getUserid() %>==<%=usermap.get("userid") %>){edit_button('<%=ds.getCwb()%>');}else{alert('不是同一个操作人！');}">[修改]</a> -->
 									<a href="javascript:edit_button('<%=ds.getCwb()%>');">[修改]</a>
 									<%}%>
 								<%if(isGuiBanUseZanBuChuLi.equals("yes")){ %>
 								<%if(ds.getGcaid()==-1){ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:reSub('<%=ds.getCwb() %>',0,0,0,1,0);">恢复</a>]
 									<%}%>
 								<%}else{ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:noSub('<%=ds.getCwb() %>',0,0,0,1,0);">暂不处理</a>]
 									<%}%>
 								<%}} %>
@@ -808,8 +809,8 @@ function exportYifankui(){
 								<%for(CwbOrderTypeIdEnum ce : CwbOrderTypeIdEnum.values()){if(ds.getCwbordertypeid()==ce.getValue()){ %>
 									<%=ce.getText() %>
 								<%}} %>
-								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1){%>
-								[唯换]
+								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){%>
+								<br/>[唯换]
 								<%}%>
 								</td>
 								<td width="10%" align="center" valign="middle" customerKey="<%=ds.getCustomerid()%>"><%=StringUtil.nullConvertToEmptyString(ds.getCustomername())  %></td>
@@ -820,17 +821,17 @@ function exportYifankui(){
 								<td width="15%" align="right"><%=ds.getReturnedfee() %>元</td>
 								<%if(!"no".equals(request.getAttribute("useAudit"))){ %>
 								<td width="10%" align="center">		
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>	
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>	
 									<a href="javascript:if(!<%=ds.getEditFlag() %>){alert('唯品会上门退成功的订单不允许进行反馈修改')}else if(<%=ds.getUserid() %>==0||<%=ds.getUserid() %>==<%=usermap.get("userid") %>){edit_button('<%=ds.getCwb()%>');}else{alert('不是同一个操作人！');}">[修改]</a> 
 								　<!-- <a href="javascript:edit_button('<%=ds.getCwb()%>');">[修改]</a>-->	
 									<%}%>							
 								<%if(isGuiBanUseZanBuChuLi.equals("yes")){ %>
 								<%if(ds.getGcaid()==-1){ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:reSub('<%=ds.getCwb() %>',-<%=ds.getReturnedfee() %>,-<%=ds.getReturnedfee() %>,0,0,1);">恢复</a>]
 									<%}%>
 								<%}else{ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:noSub('<%=ds.getCwb() %>',-<%=ds.getReturnedfee() %>,-<%=ds.getReturnedfee() %>,0,0,1);">暂不处理</a>]
 									<%}%>
 								<%}} %>
@@ -870,8 +871,8 @@ function exportYifankui(){
 								<%for(CwbOrderTypeIdEnum ce : CwbOrderTypeIdEnum.values()){if(ds.getCwbordertypeid()==ce.getValue()){ %>
 									<%=ce.getText() %>
 								<%}} %>
-								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1){%>
-								[唯换]
+								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){%>
+								<br/>[唯换]
 								<%}%>
 								</td>
 								<td width="15%" align="center" valign="middle" customerKey="<%=ds.getCustomerid() %>"><%=StringUtil.nullConvertToEmptyString(ds.getCustomername())  %></td>
@@ -881,17 +882,17 @@ function exportYifankui(){
 								<td width="15%" align="center"><%=ds.getDeliverstateremark() %></td>
 								<%if(!"no".equals(request.getAttribute("useAudit"))){ %>
 								<td width="10%" align="center">
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									<!-- <a href="javascript:if(<%=ds.getUserid() %>==0||<%=ds.getUserid() %>==<%=usermap.get("userid") %>){edit_button('<%=ds.getCwb()%>');}else{alert('不是同一个操作人！');}">[修改]</a> -->
 								　	<a href="javascript:edit_button('<%=ds.getCwb()%>');">[修改]</a>
 									<%}%>
 								<%if(isGuiBanUseZanBuChuLi.equals("yes")){ %>
 								<%if(ds.getGcaid()==-1){ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:reSub('<%=ds.getCwb() %>',0,0,0,0,0);">恢复</a>]
 									<%}%>
 								<%}else{ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:noSub('<%=ds.getCwb() %>',0,0,0,0,0);">暂不处理</a>]
 									<%}%>
 								<%}} %>
@@ -936,8 +937,8 @@ function exportYifankui(){
 								<%for(CwbOrderTypeIdEnum ce : CwbOrderTypeIdEnum.values()){if(ds.getCwbordertypeid()==ce.getValue()){ %>
 									<%=ce.getText() %>
 								<%}} %>
-								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1){%>
-								[唯换]
+								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){%>
+								<br/>[唯换]
 								<%}%>
 								</td>
 								<td width="10%" align="center" valign="middle" customerKey="<%=ds.getCustomerid()%>"><%=StringUtil.nullConvertToEmptyString(ds.getCustomername())  %></td>
@@ -951,17 +952,17 @@ function exportYifankui(){
 								<td width="10%" align="center"><%=ds.getRemarks() %></td>
 								<%if(!"no".equals(request.getAttribute("useAudit"))){ %>
 								<td width="10%" align="center">
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									<a href="javascript:if(<%=ds.getUserid() %>==0||<%=ds.getUserid() %>==<%=usermap.get("userid") %>){edit_button('<%=ds.getCwb()%>');}else{alert('不是同一个操作人！');}">[修改]</a> 
 									<!-- <a href="javascript:edit_button('<%=ds.getCwb()%>');">[修改]</a>-->
 									<%}%>
 								<%if(isGuiBanUseZanBuChuLi.equals("yes")){ %>
 								<%if(ds.getGcaid()==-1){ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:reSub('<%=ds.getCwb() %>',<%=ds.getReceivedfee().subtract(ds.getReturnedfee()) %>,<%=ds.getCash().subtract(ds.getReturnedfee()) %>,<%=ds.getPos() %>,0,1);">恢复</a>]
 									<%}%>
 								<%}else{ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:noSub('<%=ds.getCwb() %>',<%=ds.getReceivedfee().subtract(ds.getReturnedfee()) %>,<%=ds.getCash().subtract(ds.getReturnedfee()) %>,<%=ds.getPos() %>,0,1);">暂不处理</a>]
 									<%}%>
 								<%}} %>
@@ -1002,8 +1003,8 @@ function exportYifankui(){
 								<%for(CwbOrderTypeIdEnum ce : CwbOrderTypeIdEnum.values()){if(ds.getCwbordertypeid()==ce.getValue()){ %>
 									<%=ce.getText() %>
 								<%}} %>
-								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1){%>
-								[唯换]
+								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){%>
+								<br/>[唯换]
 								<%}%>
 								</td>
 								<td width="15%" align="center" valign="middle" customerKey="<%=ds.getCustomerid() %>"><%=StringUtil.nullConvertToEmptyString(ds.getCustomername())   %></td>
@@ -1013,17 +1014,17 @@ function exportYifankui(){
 								<td width="15%" align="right"><%=ds.getBusinessfee() %>元</td>
 								<%if(!"no".equals(request.getAttribute("useAudit"))){ %>
 								<td width="10%" align="center">
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									<!-- <a href="javascript:if(<%=ds.getUserid() %>==0||<%=ds.getUserid() %>==<%=usermap.get("userid") %>){edit_button('<%=ds.getCwb()%>');}else{alert('不是同一个操作人！');}">[修改]</a> -->
 									<a href="javascript:edit_button('<%=ds.getCwb()%>');">[修改]</a>
 									<%}%>
 								<%if(isGuiBanUseZanBuChuLi.equals("yes")){ %>
 								<%if(ds.getGcaid()==-1){ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:reSub('<%=ds.getCwb() %>',<%=ds.getBusinessfee() %>,<%=ds.getCash() %>,0,0,0);">恢复</a>]
 									<%}%>
 								<%}else{ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:noSub('<%=ds.getCwb() %>',<%=ds.getBusinessfee() %>,<%=ds.getCash() %>,0,0,0);">暂不处理</a>]
 									<%}%>
 								<%}} %>
@@ -1067,8 +1068,8 @@ function exportYifankui(){
 								<%for(CwbOrderTypeIdEnum ce : CwbOrderTypeIdEnum.values()){if(ds.getCwbordertypeid()==ce.getValue()){ %>
 									<%=ce.getText() %>
 								<%}} %>
-								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1){%>
-								[唯换]
+								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){%>
+								<br/>[唯换]
 								<%}%>
 								</td>
 								<td width="10%" align="center" valign="middle" customerKey="<%=ds.getCustomerid() %>"><%=StringUtil.nullConvertToEmptyString(ds.getCustomername())  %></td>
@@ -1080,17 +1081,17 @@ function exportYifankui(){
 								<td width="10%" align="center"><%=ds.getDeliverstateremark() %></td>
 								<%if(!"no".equals(request.getAttribute("useAudit"))){ %>
 								<td width="10%" align="center">
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									<!-- <a href="javascript:if(<%=ds.getUserid() %>==0||<%=ds.getUserid() %>==<%=usermap.get("userid") %>){edit_button('<%=ds.getCwb()%>');}else{alert('不是同一个操作人！');}">[修改]</a> -->
 									<a href="javascript:edit_button('<%=ds.getCwb()%>');">[修改]</a>
 									<%}%>
 								<%if(isGuiBanUseZanBuChuLi.equals("yes")){ %>
 								<%if(ds.getGcaid()==-1){ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:reSub('<%=ds.getCwb() %>',0,0,0,1,0);">恢复</a>]
 									<%}%>
 								<%}else{ %>
-									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+									<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 									[<a id="sub_<%=ds.getCwb() %>" href="javascript:noSub('<%=ds.getCwb() %>',0,0,0,1,0);">暂不处理</a>]
 									<%}%>
 								<%}} %>
@@ -1173,14 +1174,14 @@ function exportYifankui(){
 								<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">操作</td>
 							</tr>
 							<%for(DeliveryStateView ds:dsDTO.getWeifankuiList()){ %>
-							<tr id="<%=ds.getCwb() %>" keyName="weifankui" nofankui="<%=(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)?1:0%>">
+							<tr id="<%=ds.getCwb() %>" keyName="weifankui" nofankui="<%=(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())?1:0%>">
 								<td width="10%" align="center" valign="middle"><a  target="_blank" href="<%=request.getContextPath() %>/order/queckSelectOrder/<%=ds.getCwb()%>"  ><%=ds.getCwb()+ds.isHistory() %></a></td>
 								<td width="5%" align="center" valign="middle" >
 								<%for(CwbOrderTypeIdEnum ce : CwbOrderTypeIdEnum.values()){if(ds.getCwbordertypeid()==ce.getValue()){ %>
 									<%=ce.getText() %>
 								<%}} %>
-								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1){%>
-								[唯换]
+								<%if(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){%>
+								<br/>[唯换]
 								<%}%>
 								</td>
 								<td width="10%" align="center" valign="middle" customerKey="<%=ds.getCustomerid() %>"><%=StringUtil.nullConvertToEmptyString(ds.getCustomername()) %></td>
@@ -1191,7 +1192,7 @@ function exportYifankui(){
 								<td width="15%" align="left" valign="middle" ><%=ds.getConsigneeaddress() %></td>
 								<td width="10%" align="right"><%=ds.getBusinessfee() %>元</td>
 								<td id="<%=ds.getCwb() %>_cz" width="10%" align="center">
-								<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==1)){%>
+								<%if(!(ds.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&ds.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){%>
 								<a href="javascript:edit_button('<%=ds.getCwb()%>');">[反馈]</a>　
 								<%}%>
 								</td>

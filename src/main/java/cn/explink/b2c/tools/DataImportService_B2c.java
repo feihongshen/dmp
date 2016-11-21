@@ -30,6 +30,7 @@ import cn.explink.domain.ExcelColumnSet;
 import cn.explink.domain.ImportValidationManager;
 import cn.explink.domain.User;
 import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.enumutil.VipExchangeFlagEnum;
 import cn.explink.service.CwbOrderValidator;
 import cn.explink.service.DataImportService;
 import cn.explink.service.ResultCollector;
@@ -495,7 +496,7 @@ public class DataImportService_B2c {
 		cwbOrder.setDefaultCargoName();
 		
 		if (excelColumnSet.getSaletypeindex() != 0) {
-			cwbOrder.setExchangeflag(row.get("exchange_flag") == null ? 0 : Integer.parseInt(row.get("exchange_flag")));
+			cwbOrder.setExchangeflag(row.get("exchange_flag") == null ? VipExchangeFlagEnum.NO.getValue() : Integer.parseInt(row.get("exchange_flag")));
 			cwbOrder.setExchangecwb(row.get("exchange_cwb") == null ? "" : row.get("exchange_cwb"));
 		}
 		
