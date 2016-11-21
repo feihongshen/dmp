@@ -47,4 +47,10 @@ public class FnStationSignOrderDetailsSnapshotDao {
 		return this.jdbcTemplate.queryForLong(sql, cwb, reportdate);
 	}
 	
+	@DataSource(DatabaseType.REPLICA)
+	public long getOrderCountByCwb(String cwb) {
+		String sql = "select count(1) from fn_station_sign_order_details_snapshot where cwb = ?";
+		return this.jdbcTemplate.queryForLong(sql, cwb);
+	}
+	
 }
