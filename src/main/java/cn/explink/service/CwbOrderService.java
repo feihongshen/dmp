@@ -6785,33 +6785,8 @@ public class CwbOrderService extends BaseOrderService {
 
 		List<Branch> zhongzhuanbranchList = this.branchDAO.getQueryBranchByBranchsiteAndUserid(user.getUserid(), BranchEnum.ZhongZhuan.getValue() + "");
 
-		Set<String> cwbSet=new HashSet<String>();
-		Set<String> finalCwbSet=new HashSet<String>();
 		for (String cwb : cwbs) {
 			cwb = cwb.replaceAll("'", "");
-			cwbSet.add(cwb);
-		}
-		for(String cwb :cwbSet){
-			CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
-			if(co.getExchangeflag()==VipExchangeFlagEnum.NO.getValue()){
-				finalCwbSet.add(cwb);
-			}else{
-				if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()){
-					finalCwbSet.add(cwb);
-					finalCwbSet.add(co.getExchangecwb());
-				}else if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()){
-					if(!cwbSet.contains(co.getExchangecwb())){
-						logger.info("唯品会上门换审核时订单号没成对提交,不做处理,cwb="+cwb);
-						continue;//配送单在页面应该是暂不处理状态
-					}else{
-						finalCwbSet.add(cwb);
-						finalCwbSet.add(co.getExchangecwb());
-					}
-				}
-			}
-		}
-		
-		for(String cwb :finalCwbSet){
 			CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
 			DeliveryState deliverystate = this.deliveryStateDAO.getActiveDeliveryStateByCwb(co.getCwb());
 			if (deliverystate == null) {

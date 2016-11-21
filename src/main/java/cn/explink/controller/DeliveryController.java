@@ -410,6 +410,9 @@ public class DeliveryController {
 			}else{
 				if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()){
 					subCwbSetFinal.add(co.getExchangecwb());
+					if(zanbuchuliCwbSetFinal.contains(co.getExchangecwb())){
+						zanbuchuliCwbSetFinal.remove(co.getExchangecwb());
+					}
 				}else if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()){
 					if(!subCwbSetFinal.contains(co.getExchangecwb())){
 						logger.info("唯品会上门换审核时订单号没成对提交,不做处理,cwb="+cwb);
