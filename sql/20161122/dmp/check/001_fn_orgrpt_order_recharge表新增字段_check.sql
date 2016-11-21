@@ -1,0 +1,1 @@
+SELECT 'fn_orgrpt_order_recharge表新增字段' AS '脚本注释',IF((SELECT count(1) from information_schema.COLUMNS where TABLE_SCHEMA = schema() AND TABLE_NAME='fn_orgrpt_order_recharge' and COLUMN_NAME='recharge_target_id' ) =1,'success','failed') AS '执行结果';
