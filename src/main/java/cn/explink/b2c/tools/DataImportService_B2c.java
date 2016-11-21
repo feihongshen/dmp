@@ -497,7 +497,7 @@ public class DataImportService_B2c {
 		
 		if (excelColumnSet.getSaletypeindex() != 0) {
 			cwbOrder.setExchangeflag(row.get("exchange_flag") == null ? VipExchangeFlagEnum.NO.getValue() : Integer.parseInt(row.get("exchange_flag")));
-			cwbOrder.setExchangecwb(row.get("exchange_cwb") == null ? "" : row.get("exchange_cwb"));
+			cwbOrder.setExchangecwb(row.get("exchange_cwb") == null||row.get("exchange_cwb").length()<1 ? null : row.get("exchange_cwb"));
 		}
 		
 		return cwbOrder;

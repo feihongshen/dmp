@@ -5689,8 +5689,11 @@ public class CwbOrderService extends BaseOrderService {
 		}
 
 		if (isbatch) {
+			if(co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.VipShangmenhuanLantuiBuzhiche);
+			}
 			// 配送订单批量反馈,验证是否为配送订单
-			if (fankuileixing.equals("PEISONG") && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Peisong.getValue()) && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Express.getValue())&&(co.getExchangeflag()!=VipExchangeFlagEnum.YES.getValue())) {
+			if (fankuileixing.equals("PEISONG") && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Peisong.getValue()) && (co.getCwbordertypeid() != CwbOrderTypeIdEnum.Express.getValue())) {
 				throw new CwbException(co.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FEI_PEI_SONG_DING_DAN);
 			}
 			// 上门换订单批量反馈,验证是否为上门换订单

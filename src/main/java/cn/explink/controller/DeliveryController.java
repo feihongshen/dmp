@@ -343,7 +343,15 @@ public class DeliveryController {
 	 */
 	@RequestMapping("/noSub/{cwb}")
 	public @ResponseBody void noSub(@PathVariable("cwb") String cwb) {
+		String exchangecwb=null;
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		if(co!=null&&co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+			exchangecwb=co.getExchangecwb();
+		}
 		this.deliveryStateDAO.noSubSave(cwb);
+		if(exchangecwb!=null&&exchangecwb.length()>0){
+			this.deliveryStateDAO.noSubSave(exchangecwb);
+		}
 	}
 
 	/**
@@ -353,7 +361,15 @@ public class DeliveryController {
 	 */
 	@RequestMapping("/reSub/{cwb}")
 	public @ResponseBody void reSub(@PathVariable("cwb") String cwb) {
+		String exchangecwb=null;
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		if(co!=null&&co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+			exchangecwb=co.getExchangecwb();
+		}
 		this.deliveryStateDAO.reSubSave(cwb);
+		if(exchangecwb!=null&&exchangecwb.length()>0){
+			this.deliveryStateDAO.reSubSave(exchangecwb);
+		}
 	}
 
 	/**
@@ -366,9 +382,65 @@ public class DeliveryController {
 	@RequestMapping("/sub")
 	public String sub(Model model, @RequestParam("zanbuchuliTrStr") String zanbuchuliTrStr, @RequestParam("subTrStr") String subTrStr, @RequestParam("nocwbs") String nocwbs,
 			@RequestParam("deliveryId") long deliveryId) {
+		/*--检查vip上门换时配送单和揽退单要成对出现start--*/
+		String[] zanbuchuliTrStrArr = zanbuchuliTrStr!=null&&zanbuchuliTrStr.length()>0?zanbuchuliTrStr.split(","):null;
+		String[] subTrStrArr = subTrStr!=null&&subTrStr.length()>0?subTrStr.split(","):null;
+		Set<String> zanbuchuliCwbSetFinal=new HashSet<String>();
+		Set<String> subCwbSet=new HashSet<String>();
+		Set<String> subCwbSetFinal=new HashSet<String>();
+		if(zanbuchuliTrStrArr!=null&&zanbuchuliTrStrArr.length>0){
+			for (String cwb : zanbuchuliTrStrArr) {
+				cwb = cwb.replaceAll("'", "");
+				zanbuchuliCwbSetFinal.add(cwb);
+			}
+		}
+		
+		if(subTrStrArr!=null&&subTrStrArr.length>0){
+			for (String cwb : subTrStrArr) {
+				cwb = cwb.replaceAll("'", "");
+				subCwbSet.add(cwb);
+				subCwbSetFinal.add(cwb);
+			}
+		}
+		
+		for(String cwb :subCwbSet){
+			CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+			if(co.getExchangeflag()==VipExchangeFlagEnum.NO.getValue()){
+				continue;
+			}else{
+				if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()){
+					subCwbSetFinal.add(co.getExchangecwb());
+				}else if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()){
+					if(!subCwbSetFinal.contains(co.getExchangecwb())){
+						logger.info("唯品会上门换审核时订单号没成对提交,不做处理,cwb="+cwb);
+						subCwbSetFinal.remove(cwb);//配送单在页面应该是暂不处理状态
+						zanbuchuliCwbSetFinal.add(cwb);
+					}
+				}
+			}
+		}
+		
+		StringBuilder zanbuchuliSb=new StringBuilder("");
+		StringBuilder subSb=new StringBuilder("");
+		for(String cwb :zanbuchuliCwbSetFinal){
+			zanbuchuliSb.append("'").append(cwb).append("'").append(",");
+		}
+		for(String cwb :subCwbSetFinal){
+			subSb.append("'").append(cwb).append("'").append(",");
+		}
+		String zanbuchuliTrStrFinal=zanbuchuliSb.toString();
+		if(zanbuchuliTrStrFinal.length()>0){
+			zanbuchuliTrStrFinal=zanbuchuliTrStrFinal.substring(0, zanbuchuliTrStrFinal.length()-1);
+		}
+		String subTrStrFinal=subSb.toString();
+		if(subTrStrFinal.length()>0){
+			subTrStrFinal=subTrStrFinal.substring(0, subTrStrFinal.length()-1);
+		}
+		/*--检查vip上门换时配送单和揽退单要成对出现end--*/
+		
 		DeliveryStateDTO dsDTO = new DeliveryStateDTO();
-		String cwbs = zanbuchuliTrStr;
-		cwbs += (cwbs.length() > 0) && (subTrStr.length() > 0) ? "," + subTrStr : subTrStr;
+		String cwbs = zanbuchuliTrStrFinal;
+		cwbs += (cwbs.length() > 0) && (subTrStrFinal.length() > 0) ? "," + subTrStrFinal : subTrStrFinal;
 		cwbs += (cwbs.length() > 0) && (nocwbs.length() > 0) ? "," + nocwbs : nocwbs;
 		List<DeliveryState> dlist = this.deliveryStateDAO.getDeliveryStateByCwbs(cwbs);
 
@@ -383,6 +455,8 @@ public class DeliveryController {
 		model.addAttribute("deliver", u);
 		SystemInstall usedeliverpay = this.systemInstallDAO.getSystemInstallByName("usedeliverpayup");
 		model.addAttribute("usedeliverpayup", usedeliverpay == null ? "no" : usedeliverpay.getValue());
+		model.addAttribute("zanbuchuliTrStrFinal", zanbuchuliTrStrFinal);
+		model.addAttribute("subTrStrFinal", subTrStrFinal);
 		return "delivery/sub";
 	}
 

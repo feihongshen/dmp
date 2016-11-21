@@ -166,6 +166,8 @@ public class DataImportDAO_B2c {
 			cwbOrder.setDoType(rs.getInt("do_type"));
 			cwbOrder.setAnnouncedvalue(rs.getBigDecimal("announcedvalue"));
 			cwbOrder.setOrderSource(rs.getInt("order_source"));
+			cwbOrder.setExchangeflag(rs.getInt("exchange_flag"));
+			cwbOrder.setExchangecwb(rs.getString("exchange_cwb"));
 			return cwbOrder;
 		}
 	}
