@@ -504,12 +504,7 @@ $(function(){
 		}if(columnSetting.length==0){
 			alert("模版内容不能为空");
 			return false;
-		}if($("#opertatetype").val()==<%=PrintTemplateOpertatetypeEnum.LingHuoAnDan.getValue() %>
-			&& $("#columnSetting input[field=emaildate]").attr("checked")!="checked"){
-			alert("模版类型为领货交接单按单时,关联单号必选！");
-			return false;
 		}
-		
 
 		$.ajax({
 			url:"<%=request.getContextPath()%>/printtemplate/create",
