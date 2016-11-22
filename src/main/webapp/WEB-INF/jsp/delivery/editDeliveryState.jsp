@@ -9,6 +9,7 @@
 <%@page import=" net.sf.json.JSONObject"%>
 <%@page import="cn.explink.enumutil.DeliveryStateEnum" %>
 <%@page import="java.math.BigDecimal" %>
+<%@page import="cn.explink.enumutil.VipExchangeFlagEnum"%>
 
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 
@@ -41,7 +42,8 @@ String isReasonRequired = request.getAttribute("isReasonRequired")==null?"no":(S
 String partReject = request.getAttribute("partReject")==null?"yes":(String)request.getAttribute("partReject");
 
 int isOpenFlag = request.getAttribute("isOpenFlag")==null?0:((Integer)request.getAttribute("isOpenFlag")).intValue();
-
+String transcwbVipSmh = request.getAttribute("transcwbVipSmh")==null?"":(String)request.getAttribute("transcwbVipSmh");
+String transcwb=cwborder.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()?transcwbVipSmh:cwborder.getTranscwb();
 %>
 <script>
 var showposandqita="<%=showposandqita%>";
@@ -101,12 +103,13 @@ if(parseInt($("#isOpenFlag").val())!=0){
    			<%=DeliveryStateEnum.ShangMenJuTui.getValue() %>,<%=DeliveryStateEnum.HuoWuDiuShi.getValue() %>,<%=DeliveryStateEnum.DaiZhongZhuan.getValue() %>,'<%=isReasonRequired %>','<%=cwborder.getTranscwb()%>')){$('#sub').attr('disabled','disabled');submitSaveFormAndCloseBox4Shangmentui(this);$('#sub').val('处理中...');}return false;" 
 			 action="<%=request.getContextPath()%>/delivery/editDeliveryState/<%=deliverystate.getCwb()%>/<%=deliverystate.getDeliveryid()%>" method="post"  >
 				<ul>
-					<li><span>订单号：</span><%=deliverystate.getCwb() %></li>
+					<li><span>订单号：</span><%=deliverystate.getCwb() %> <%if(cwborder.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&cwborder.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){%>(关联：<%=cwborder.getExchangecwb()%>)<%}%></li>
 					<li><span>订单类型：</span>
 					<%for(CwbOrderTypeIdEnum ce : CwbOrderTypeIdEnum.values()){if(deliverystate.getCwbordertypeid()==ce.getValue()){ %>
 						<%=ce.getText() %>
 					<%}} 
 					%>
+					<%if(cwborder.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&cwborder.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){%>(唯品会上门揽换)<%}%>
 					</li>
 					<li>
 						<span>小件员姓名：</span><%=deliverystate.getDeliverealname() %>
@@ -117,6 +120,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 					<input type="hidden" id="paywayid" value="<%=cwborder.getPaywayid()%>"/>
 					<input type="hidden" id="isOpenFlag" value="<%=isOpenFlag%>"/>
 					<input type="hidden" id="shishou" value="<%=deliverystate.getInfactfare()%>"/>
+					<input type="hidden" id="exchangeflag" value="<%=cwborder.getExchangeflag()%>"/>
 				<select id ="podresultid" name ="podresultid" 
 		   			onChange="click_podresultid(<%=deliverystate.getDeliverystate() %>,<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
 		   			<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue()%>,<%=DeliveryStateEnum.JuShou.getValue()%>,
@@ -164,7 +168,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
                    
                 </select>*</li>
            		<li><span>快递单号：</span>
-                     <input type="text" name="transcwb" id="transcwb" value="<%=cwborder.getTranscwb()%>" onKeyDown='if(event.keyCode==13){return false;}'/> (每次只能输入一个快递单号)
+                     <input type="text" name="transcwb" id="transcwb" value="<%=transcwb%>" onKeyDown='if(event.keyCode==13){return false;}'/> (只输一个单号)
 	           	</li>
            		<li><span>退货原因：</span>
 	           		<select name="backreasonid" id="backreasonid">

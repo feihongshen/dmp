@@ -455,6 +455,7 @@ public class WeisudaService {
 			throw new CwbException(cwbOrder.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.Bei_Zhu_Tai_Chang);
 		}
 		parameters.put("nosysyemflag", "1");//
+		parameters.put("transcwb", orderFlowDto.getExchangetpstranscwb());//
 
 		//通过小件员userid获取user
 		User user = this.userDAO.getAllUserByid(deliverid);

@@ -32,7 +32,8 @@ public class OrderFlowDto {
 				   
 	private String deliverymobile; // 派送员电话
 	private String reamrk1;
-
+	private String exchangetpstranscwb;//唯品会上门换时pjd传过来的品骏运单号
+	
 	/**
 	 * @return the reamrk1
 	 */
@@ -199,5 +200,15 @@ public class OrderFlowDto {
 	}
 
 	private String exptmsg; // 异常状态描述
+
+	public String getExchangetpstranscwb() {
+		return exchangetpstranscwb;
+	}
+
+	public void setExchangetpstranscwb(String exchangetpstranscwb) {
+		this.exchangetpstranscwb = exchangetpstranscwb;
+	}
+
+
 
 }

@@ -56,6 +56,8 @@ import cn.explink.enumutil.MPSAllArrivedFlagEnum;
 import cn.explink.enumutil.MpsTypeEnum;
 import cn.explink.enumutil.MpsswitchTypeEnum;
 import cn.explink.enumutil.PaytypeEnum;
+import cn.explink.enumutil.TmsSaleTypeEnum;
+import cn.explink.enumutil.VipExchangeFlagEnum;
 import cn.explink.service.CustomerService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.DataImportService;
@@ -610,7 +612,20 @@ public class VipShopGetCwbDataService {
 			String is_gathercomp = VipShopGetCwbDataService.convertEmptyString("is_gathercomp", datamap); //最后一箱:1最后一箱 ，0默认 
 			String pack_nos = VipShopGetCwbDataService.convertEmptyString("pack_nos", datamap); // 箱号会随着集单次数追加
 			String total_pack = VipShopGetCwbDataService.convertEmptyString("total_pack", datamap); // 新增箱数
+			String sale_type = VipShopGetCwbDataService.convertEmptyString("sale_type", datamap).trim();//上门换业务为107或108
+			String relation_order_sn = VipShopGetCwbDataService.convertEmptyString("relation_order_sn", datamap).trim();//上门换时关联的订单号
 			CwbOrderDTO cwbOrderDTO = dataImportDAO_B2c.getCwbB2ctempByCwb(order_sn);
+			
+			String exchange_flag=""+VipExchangeFlagEnum.NO.getValue();//0不是唯品会上门换,1是
+			if(sale_type!=null&&sale_type.trim().length()>0){
+				if(sale_type.equals(TmsSaleTypeEnum.shangmenhuan_peisong.getValue())){
+					exchange_flag=""+VipExchangeFlagEnum.YES.getValue();
+					cwbordertype=String.valueOf(CwbOrderTypeIdEnum.Peisong.getValue());
+				}else if(sale_type.equals(TmsSaleTypeEnum.shangmenhuan_tui.getValue())){
+					exchange_flag=""+VipExchangeFlagEnum.YES.getValue();
+					cwbordertype=String.valueOf(CwbOrderTypeIdEnum.Shangmentui.getValue());
+				}
+			}
 			
 			String cargotype = choseCargotype(service_type);
 			created_dtm_loc = choseCreateDtmLoc(created_dtm_loc);
@@ -636,7 +651,7 @@ public class VipShopGetCwbDataService {
 					original_weight, paywayid, attemper_no, created_dtm_loc,
 					rec_create_time, order_delivery_batch, freight,
 					cwbordertype, warehouse_addr, go_get_return_time,
-					is_gatherpack, is_gathercomp, total_pack, transcwb,mpsswitch,vip_club, cmd_type, seq, do_type);
+					is_gatherpack, is_gathercomp, total_pack, transcwb,mpsswitch,vip_club, cmd_type, seq, do_type,exchange_flag,relation_order_sn);
 			
 			
 			//集包相关代码处理
@@ -734,7 +749,7 @@ public class VipShopGetCwbDataService {
 			String order_delivery_batch, String freight, String cwbordertype,
 			String warehouse_addr, String go_get_return_time,
 			String is_gatherpack, String is_gathercomp, String total_pack,
-			String transcwb,int mpsswitch,String vip_club, String cmd_type, String seq, String do_type) {
+			String transcwb,int mpsswitch,String vip_club, String cmd_type, String seq, String do_type,String exchange_flag,String relation_order_sn) {
 		String sendcarnum=total_pack.isEmpty() ? "1" : total_pack;
 		
 		dataMap.put("seq", seq);
@@ -774,6 +789,8 @@ public class VipShopGetCwbDataService {
 		//团购标志
 		dataMap.put("vipclub",vip_club.equals("3")?"1":"0");
 		dataMap.put("cmd_type", cmd_type);
+		dataMap.put("exchange_flag", exchange_flag);
+		dataMap.put("exchange_cwb", relation_order_sn);
 		return dataMap;
 		
 	}

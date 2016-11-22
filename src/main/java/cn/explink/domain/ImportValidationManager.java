@@ -20,6 +20,7 @@ import cn.explink.service.validator.CwbValidator;
 import cn.explink.service.validator.EmaildateValidator;
 import cn.explink.service.validator.ExcelDeliverShouldExists;
 import cn.explink.service.validator.ExcelNextBranchShouldExists;
+import cn.explink.service.validator.ExchangecwbValidator;
 import cn.explink.service.validator.ModelNameValidator;
 import cn.explink.service.validator.PayWayValidator;
 import cn.explink.service.validator.PaybackFeeValidator;
@@ -100,6 +101,9 @@ public class ImportValidationManager {
 	private Remark1_5Validator remark1_5Validator;
 	@Autowired
 	private PayWayValidator payWayValidator;
+	
+	@Autowired
+	ExchangecwbValidator exchangecwbValidator;
 
 	public List<CwbOrderValidator> getValidators(long customerid) {
 		ArrayList<CwbOrderValidator> arrayList = new ArrayList<CwbOrderValidator>();
@@ -206,6 +210,11 @@ public class ImportValidationManager {
 			arrayList.add(payWayValidator);
 		}
 
+		//上门换关联订单号验证
+		if (excelColumnSet.getSaletypeindex() != 0) {
+			arrayList.add(exchangecwbValidator);
+		}
+		
 		return arrayList;
 	}
 	

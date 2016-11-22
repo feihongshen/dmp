@@ -36,6 +36,7 @@ public class DeliveryStateView {
 	private String changereason; //中转原因
 	private String sign_man_phone;
 	private boolean editFlag;//是否允许修改反馈-- 刘武强20160831
+	private int exchangeflag;//换货标志
 
 	public String getSign_man_phone() {
 		return sign_man_phone;
@@ -489,6 +490,14 @@ public class DeliveryStateView {
 
 	public void setEditFlag(boolean editFlag) {
 		this.editFlag = editFlag;
+	}
+
+	public int getExchangeflag() {
+		return exchangeflag;
+	}
+
+	public void setExchangeflag(int exchangeflag) {
+		this.exchangeflag = exchangeflag;
 	}
 	
 	

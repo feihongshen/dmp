@@ -64,6 +64,7 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.enumutil.PaytypeEnum;
 import cn.explink.enumutil.SettlementModeEnum;
+import cn.explink.enumutil.VipExchangeFlagEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.pos.tools.SignTypeEnum;
@@ -876,7 +877,7 @@ public class ApplyEditDeliverystateController {
 				
 				//add by Alice at 2016-11-12
 				//增加限制条件：1、针对唯品会上门换业务，已经归班反馈审核的配送订单、揽换订单不允许重置反馈修改状态
-				if(corder!=null && corder.getExchangeflag()==1){
+				if(corder!=null && corder.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
 					errorCwbs.append(cwbStr+":上门换已经归班反馈审核的配送订单和揽换订单不允许修改!");
 					continue;
 				}

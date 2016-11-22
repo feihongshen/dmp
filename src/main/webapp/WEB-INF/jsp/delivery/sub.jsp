@@ -61,8 +61,8 @@ String usedeliverpayup = request.getAttribute("usedeliverpayup")==null?"no":(Str
 	<%} %>
 		<div id="box_form">
 			
-			<input type="hidden" name="zanbuchuliTrStr" value="<%=request.getParameter("zanbuchuliTrStr") %>"/>
-			<input type="hidden" name="subTrStr" value="<%=request.getParameter("subTrStr") %>"/>
+			<input type="hidden" name="zanbuchuliTrStr" value="<%=request.getAttribute("zanbuchuliTrStrFinal") %>"/>
+			<input type="hidden" name="subTrStr" value="<%=request.getAttribute("subTrStrFinal") %>"/>
 			<input type="hidden" name="nocwbs" value="<%=request.getParameter("nocwbs") %>"/>
 			<input type="hidden" name="subAmount" value="<%=dsDTO.getUpPayAmount() %>"/>
 			<input type="hidden" name="subAmountPos" value="<%=dsDTO.getPos_amount() %>"/>
