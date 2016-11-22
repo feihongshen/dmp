@@ -712,7 +712,8 @@ public class DeliveryController {
 			@RequestParam(value = "signman", required = false, defaultValue = "") String signman, @RequestParam(value = "infactfare", required = false, defaultValue = "") BigDecimal infactfare,
 			@RequestParam("changereasonid") long changereasonid, @RequestParam("firstchangereasonid") long firstchangereasonid,
 			@RequestParam(value = "firstlevelreasonid", required = false, defaultValue = "0") int firstlevelreasonid,
-			@RequestParam(value = "signmanphone", required = false, defaultValue = "") String signmanphone, @RequestParam(value = "transcwb", required = false, defaultValue = "") String transcwb) {
+			@RequestParam(value = "signmanphone", required = false, defaultValue = "") String signmanphone, @RequestParam(value = "transcwb", required = false, defaultValue = "") String transcwb, 
+			@RequestParam(value = "infactfareVipSmh", required = false, defaultValue = "0") BigDecimal infactfareVipSmh) {
 		this.logger.info("web-editDeliveryState-进入单票反馈,cwb={}", cwb);
 		String scancwb = cwb;
 		try {
@@ -756,6 +757,7 @@ public class DeliveryController {
 			parameters.put("changereasonid", changereasonid);
 			parameters.put("firstchangereasonid", firstchangereasonid);
 			parameters.put("transcwb", transcwb);
+			parameters.put("infactfareVipSmh", infactfareVipSmh);
 			
 			//Added by leoliao at 2016-08-12 增加从DMP界面进行反馈标识
 			parameters.put("comefrompage", "1");
@@ -846,8 +848,11 @@ public class DeliveryController {
 		SystemInstall partReject = this.systemInstallDAO.getSystemInstall("partReject");
 		if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
 			CwbOrder tuiCwbOrder = this.cwbDAO.getCwbByCwb(co.getExchangecwb());
+			DeliveryState tuiDs = this.deliveryStateDAO.getActiveDeliveryStateByCwb(co.getExchangecwb());
 			if(tuiCwbOrder!=null){
 				model.addAttribute("transcwbVipSmh", tuiCwbOrder.getTranscwb());
+				model.addAttribute("shouldfareVipSmh", tuiDs.getShouldfare());
+				model.addAttribute("infactfareVipSmh", tuiDs.getInfactfare());
 			}
 		}
 

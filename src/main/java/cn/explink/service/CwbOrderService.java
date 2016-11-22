@@ -5556,6 +5556,7 @@ public class CwbOrderService extends BaseOrderService {
 				long peisongPodresultid = tuiParameters.get("podresultid") == null ? 0l : (Long) tuiParameters.get("podresultid");
 				tuiParameters.put("podresultid", resultSwitch(peisongPodresultid));
 				tuiParameters.put("smtdirectsubmitflag", "0");//vip上门换时揽退单是否直接操作，0不是，否则是
+				tuiParameters.put("infactfare", tuiParameters.get("infactfareVipSmh"));
 				this.deliverStatePod(user,co.getExchangecwb(),co.getExchangecwb(),tuiParameters);
 			}
 		}

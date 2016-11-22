@@ -1778,6 +1778,8 @@ function init_deliverystate() {
 	$("#firstchangereasonid").parent().hide();
 	$("#signmanphone").parent().hide();
 	$("#transcwb").parent().hide();
+	$("#shouldfareVipSmh").parent().hide();
+	$("#infactfareVipSmh").parent().hide();
 }
 
 function gonggong() {
@@ -1798,6 +1800,8 @@ function peisongObj(podremarkid) {
 		$("#signmanid").val(1);
 		if($("#exchangeflag").val()=='1'){
 			$("#transcwb").parent().show();
+			$("#shouldfareVipSmh").parent().show();
+			$("#infactfareVipSmh").parent().show();
 		}
 	}
 }
@@ -2236,6 +2240,23 @@ function checkPeiSong() {
 	if (!checkWeishuaka()) {
 		return false;
 	}
+	
+	if($("#exchangeflag").val()=='1'){
+		if (parseFloat($("#shouldfareVipSmh").val()) == 0 && parseFloat($("#infactfareVipSmh").val()) > 0) {
+			alert("应收运费为0，实收运费不允许大于应收运费。");
+			return false;
+		}
+		if (!isFloat($("#infactfareVipSmh").val())) {
+			alert("实收运费只能为数值");
+			return false;
+		}
+		if (parseFloat($("#shouldfareVipSmh").val()) > 0 && parseFloat($("#infactfareVipSmh").val()) == 0) {
+			if(!confirm('实收运费为0，默认会等于应收运费，确定提交么？')){
+				return false;
+			}
+		} 	
+	}
+	
 	return true;
 }
 
