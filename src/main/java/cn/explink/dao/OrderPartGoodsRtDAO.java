@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import cn.explink.domain.OrderPartGoodsRt;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
+import cn.explink.enumutil.VipExchangeFlagEnum;
 
 @Component
 public class OrderPartGoodsRtDAO {
@@ -103,6 +104,7 @@ public class OrderPartGoodsRtDAO {
 		sql.append(" FROM `express_ops_cwb_detail` cd, express_ops_delivery_state ds ");
 		sql.append(" WHERE cd.cwb = ds.cwb ");
 		sql.append(" AND cd.cwbordertypeid =  " + CwbOrderTypeIdEnum.Shangmentui.getValue());
+		sql.append(" AND cd.exchange_flag =  " + VipExchangeFlagEnum.NO.getValue());
 		sql.append(" AND ds.deliverystate = " + DeliveryStateEnum.WeiFanKui.getValue());
 		// sql.append(" OR ds.posremark='POS反馈-部分退货'");
 		sql.append(" AND ds.cwb IN(" + cwbs).append(")");
