@@ -505,7 +505,7 @@ $(function(){
 			alert("模版内容不能为空");
 			return false;
 		}
-		
+
 		$.ajax({
 			url:"<%=request.getContextPath()%>/printtemplate/create",
 			type:"POST",
