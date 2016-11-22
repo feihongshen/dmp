@@ -120,7 +120,7 @@
                     <td id="recordVersionTd" style="display:none;"><input type="text" name="recordVersion" id="recordVersion"/></td>
 	                <td class="tdrigth">服务产品&nbsp<span style="color:#FF0000">*</span>:</td>
 	                <td>
-	                	<select name="express_product_type" id="express_product_type"  style="width:100%;"<!--  onchange="getFeeByCondition()" -->>
+	                	<select name="express_product_type" id="express_product_type"  style="width:100%;" >
 							<option value="1" >标准</option>
 							<option value="2" >次日达</option>
 							<option value="3" >当日达</option>
@@ -199,7 +199,7 @@
 							</tr>
 							<tr>
 								<td class="tdleft">寄件地址:</td>
-								<td class="tdleft" colspan="4"><input type="text" name="sender_adress" id="sender_adress_id"style="width:100%;"<!--  onchange="getFeeByCondition()" -->/></td>
+								<td class="tdleft" colspan="4"><input type="text" name="sender_adress" id="sender_adress_id"style="width:100%;"/></td>
 							</tr>
 							<tr><td colspan="6"><b>预约单：</b></font></td></tr>
 							<tr>
@@ -303,7 +303,7 @@
 							</tr>
 							<tr>
 								<td class="tdrigth">收件地址<font>*</font>:</td>
-								<td class="tdleft" colspan="6"><input type="text" name="consignee_adress" id="consignee_adress_id" style="width:100%;" <!-- onchange="getFeeByCondition()" -->/></td>								
+								<td class="tdleft" colspan="6"><input type="text" name="consignee_adress" id="consignee_adress_id" style="width:100%;"/></td>								
 							</tr>
 							<tr><td colspan="6"><b>收件人历史信息：</b></td></tr>
 							<tr>
@@ -446,7 +446,7 @@
 					<tr>
 						<td class="tdleft" style="vertical-align:middle; text-align:center;"><font size="3px" color="red">结算方式 *:</font></td>
 						<td class="tdcenter"  style="vertical-align:middle; text-align:center;">
-							<input id="Radio1" type="radio" class="RadioClass" name="payment_method"  value="1" <!-- onchange="getFeeByCondition()" -->/>
+							<input id="Radio1" type="radio" class="RadioClass" name="payment_method"  value="1" />
 							<label id="Label1" for="Radio1" class="RadioLabelClass" ><font size="6px" >现付</font></label>
 						</td>
 						<!-- 暂时去掉快递到付类型 modify by vic.liang@pjbest.com 2016-08-08  -->
