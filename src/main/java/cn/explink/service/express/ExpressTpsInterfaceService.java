@@ -464,7 +464,10 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 	 * @return
 	 * @throws ExpressTpsInterfaceException
 	 */
-	public Boolean preOrderFeedBackProcess(PjSaleOrderFeedbackRequest request) throws ExpressTpsInterfaceException {
+	public Boolean preOrderFeedBackProcess(PjSaleOrderFeedbackRequest request) throws ExpressTpsInterfaceException {		
+		return true;
+		
+		/*Commented by leoliao at 2016-11-21  预约单揽件反馈不走旧的反馈接口（已在快递揽件录入保存后调用新的反馈接口了）
 		Boolean resultFlag = false;
 		try {
 			//揽件反馈
@@ -479,7 +482,9 @@ public class ExpressTpsInterfaceService implements ApplicationListener<ContextRe
 			this.logger.info("预订单：" + request.getReserveOrderNo() + "将反馈结果返回给TPS接口异常,异常原因为{}", e.getMessage());
 			throw new ExpressTpsInterfaceException(e.getMessage());
 		}
+		
 		return resultFlag;
+		*/
 	}
 
 	/**
