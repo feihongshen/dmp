@@ -40,6 +40,7 @@ import cn.explink.pos.tools.PosEnum;
 import cn.explink.pos.tools.PosPayDAO;
 import cn.explink.pos.tools.PosPayService;
 import cn.explink.service.CwbOrderService;
+import cn.explink.service.SystemInstallService;
 import cn.explink.util.StringUtil;
 import cn.explink.util.pos.RSACoder;
 
@@ -75,6 +76,9 @@ public class TlmposService {
 
 	@Autowired
 	PoscodeMappDAO poscodeMappDAO;
+	
+	@Autowired
+	SystemInstallService systemInstallService;
 
 	protected ObjectMapper jacksonmapper = JacksonMapper.getInstance();
 
@@ -372,8 +376,9 @@ public class TlmposService {
 		String cwbTransCwb = this.cwbOrderService.translateCwb(rootnote.getTransaction_Body().getOrder_no()); // 可能是订单号也可能是运单号
 		
 		String userName=rootnote.getTransaction_Header().getExt_attributes().getDelivery_man();
-		
-		if(isAcronym(userName)){ //如果全部为大写，很可能是品骏达一体机,系统中不允许有大小写混合的
+		// modify by jian_xie 关闭大写转小写功能，2016-11-23，运行一段时间后，代码可删除
+		boolean closePJDUppercaseToLowercase = systemInstallService.isBoolenInstall("ClosePJDUppercaseToLowercase");
+		if(!closePJDUppercaseToLowercase && isAcronym(userName)){ //如果全部为大写，很可能是品骏达一体机,系统中不允许有大小写混合的
 			userName=userName.toLowerCase();
 		}
 		
