@@ -754,7 +754,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 							.getInsured_cost()), 2) : 0);
 					doReq.setPackingFee(((embracedOrderVO.getPacking_amount() != null) && (!"".equals(embracedOrderVO.getPacking_amount()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
 							.getPacking_amount()), 2) : 0);
-					doReq.setPayType(Integer.parseInt(embracedOrderVO.getPayment_method()));
+					doReq.setPayType(Integer.parseInt(StringUtils.isEmpty(embracedOrderVO.getPayment_method())? "0" : embracedOrderVO.getPayment_method()));
 					// doReq.setPayment("0".equals(embracedOrderVO.getPayment_method().trim())
 					// ? "0" : "-1");
 					doReq.setPayment(-1);// 11.13 马哥说运单里任何情况都传-1
@@ -781,7 +781,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					List<PjDeliveryOrderCargoRequest> goodslist = new ArrayList<PjDeliveryOrderCargoRequest>();
 					PjDeliveryOrderCargoRequest goodsinfo = new PjDeliveryOrderCargoRequest();
 					goodsinfo.setCargoName(embracedOrderVO.getGoods_name());
-					goodsinfo.setCount(Integer.parseInt(embracedOrderVO.getGoods_number().trim()));
+					goodsinfo.setCount(Integer.parseInt(StringUtils.isEmpty(embracedOrderVO.getGoods_number()) ? "0" : embracedOrderVO.getGoods_number()));
 					goodsinfo.setWeight(((embracedOrderVO.getGoods_weight() != null) && (!"".equals(embracedOrderVO.getGoods_weight()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
 							.getGoods_weight()), 2) : 0);
 					goodsinfo
@@ -813,20 +813,6 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				String consigneeCountyName = embracedOrderVO.getConsignee_countyName();
 				String consigneeTownName = embracedOrderVO.getConsignee_townName();
 				String address = embracedOrderVO.getConsignee_adress();
-//				if(null != address){
-//					if(null != consigneeTownName && address.indexOf(consigneeTownName) < 0){//从地址小的开始处理
-//						address = consigneeTownName + address;
-//					}
-//					if(null != consigneeCountyName && address.indexOf(consigneeCountyName) < 0){
-//						address = consigneeCountyName + address;
-//					}
-//					if(null != consigneeCityName && address.indexOf(consigneeCityName) < 0){
-//						address = consigneeCityName + address;
-//					}
-//					if(null != consigneeProvinceName && address.indexOf(consigneeProvinceName) < 0){
-//						address = consigneeProvinceName + address;
-//					}
-//				}
 				String temp = consigneeProvinceName + consigneeCityName + consigneeCountyName + consigneeTownName;
 				// add by jian_xie 2016-07-19，如果省市区街道，整个没有包含在详细中，就在左边拼接
 				if(address.indexOf(temp) == -1){
@@ -841,7 +827,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				}
 				doReq.setCneePeriod(0);
 				// doReq.setCneeRemark("");//忽略
-				doReq.setTotalNum(Integer.parseInt(embracedOrderVO.getNumber()));
+				doReq.setTotalNum(Integer.parseInt(StringUtils.isEmpty(embracedOrderVO.getNumber()) ? "0" : embracedOrderVO.getNumber()) );
 				List<PjDeliveryOrderRequest> requestlist = new ArrayList<PjDeliveryOrderRequest>();
 				requestlist.add(doReq);
 				ExpressOperationInfo paramObj = new ExpressOperationInfo(ExpressOperationEnum.CreateTransNO);
@@ -849,7 +835,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				this.tpsInterfaceExecutor.executTpsInterface(paramObj);
 			} catch (Exception e) {
 				this.logger.info("发送jms消息异常！");
-				logger.error("发送时的异常为：" + e);
+				logger.error("发送时的异常为：", e);
 			}
 		}
 	}
