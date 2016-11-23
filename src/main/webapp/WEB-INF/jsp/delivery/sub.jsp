@@ -1,6 +1,7 @@
 <%@page import="cn.explink.controller.DeliveryStateDTO"%>
 <%@page import=" cn.explink.domain.Branch"%>
 <%@page import=" cn.explink.domain.User"%>
+<%@page import=" cn.explink.domain.OrderGoods"%>
 <%@ page language="java" import="java.util.*,java.text.SimpleDateFormat, java.math.*" pageEncoding="UTF-8"%>
 <%
 	DeliveryStateDTO dsDTO = request.getAttribute("deliveryStateDTO")==null?null:(DeliveryStateDTO)request.getAttribute("deliveryStateDTO");
@@ -47,6 +48,7 @@
 			+"&smhcgposamount="+(dsDTO.getCodPosAmountNotZanbuchuli(dsDTO.getFankui_shangmenhuan_chenggongList()));
 	
 String usedeliverpayup = request.getAttribute("usedeliverpayup")==null?"no":(String)request.getAttribute("usedeliverpayup");
+List<OrderGoods> vipSmhGoodsList=(List<OrderGoods>)request.getAttribute("vipSmhGoodsList");
 %>
 <div id="box_bg"></div>
 <div id="box_contant">
@@ -251,11 +253,57 @@ String usedeliverpayup = request.getAttribute("usedeliverpayup")==null?"no":(Str
 								</tr>
 							</table></td>
 						</tr>
+						
+						<%if(vipSmhGoodsList!=null&&vipSmhGoodsList.size()>0){%>
+						<tr id="vipSmhGoodsList">
+							<td colspan="3">
+									<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table_2">
+										<tr class="font_1">
+											<td width="10%" height="38" align="center" valign="middle" bgcolor="#eef6ff">揽退订单号</td>
+											<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">序号</td>
+											<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">商品编码</td>
+											<td width="15%" align="center" valign="middle" bgcolor="#eef6ff">商品名称</td>
+											<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">商品品牌</td>
+											<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">件数</td>
+											<td width="10%" align="center" valign="middle" bgcolor="#eef6ff">商品规格</td>
+											<td width="5%" align="center" valign="middle" bgcolor="#eef6ff">备注</td>
+										</tr>
+										<%
+										String goodsCwb="";
+										int goodsSeq=0;
+										for(OrderGoods goods:vipSmhGoodsList){
+											if(!goods.getCwb().equals(goodsCwb)){
+												goodsSeq=1;
+												goodsCwb=goods.getCwb();
+											}else{
+												goodsSeq=goodsSeq+1;
+											}
+										%>
+										<tr>
+											<td><%=goods.getCwb()%></td>
+											<td><%=goodsSeq%></td>
+											<td><%=goods.getGoods_code()%></td>
+											<td><%=goods.getGoods_name()%></td>
+											<td><%=goods.getGoods_brand()%></td>
+											<td><%=goods.getGoods_num()%></td>
+											<td><%=goods.getGoods_spec()%></td>
+											<td>全揽</td>
+										</tr>
+										<%}%>
+										</table>
+								</td></tr>
+								<%}%>
+
 					</table>
 		</div>
 		<div align="center"><input type="submit" value="确认" id="send_addcityuser"   class="button"/>
 		<input type="button" value="确认并打印"  onclick="window.open('<%=printUrl %>');return true;" class="button"/>
+		<%if(vipSmhGoodsList!=null&&vipSmhGoodsList.size()>0){%>
+		<a href="#vipSmhGoodsList">上门退成功明细</a>
+		<%}%>
 		</div>
+
 	</form>
 	</div>
+
 </div>

@@ -5009,7 +5009,7 @@ public class CwbOrderService extends BaseOrderService {
 		//唯品会上门换业务的只允许操作配送单，不允许直接操作揽退单 
 		if(co!=null&&co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()
 				&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()&&isHuanPeisong){
-			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),ExceptionCwbErrorTypeEnum.VipShangmenhuanLantuiBuyunxu);
+			throw new CwbException(cwb, FlowOrderTypeEnum.FenZhanLingHuo.getValue(),ExceptionCwbErrorTypeEnum.VipShangmenhuanLantuiBuyunxu,co.getExchangecwb());
 		}
 		
 		//上门换领货的条件检查
@@ -5636,7 +5636,7 @@ public class CwbOrderService extends BaseOrderService {
 		}
 		if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
 			if(smtdirectsubmitflag==null||!"0".equals(smtdirectsubmitflag)){
-				throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.VipShangmenhuanLantuiBuyunxu);
+				throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.VipShangmenhuanLantuiBuyunxu,co.getExchangecwb());
 			}
 		}
 		

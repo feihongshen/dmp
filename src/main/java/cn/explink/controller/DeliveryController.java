@@ -44,6 +44,7 @@ import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
 import cn.explink.dao.GotoClassOldDAO;
 import cn.explink.dao.OrderFlowDAO;
+import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.SwitchDAO;
 import cn.explink.dao.SystemInstallDAO;
@@ -57,6 +58,7 @@ import cn.explink.domain.DeliverPaymentReportVo;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.GotoClassAuditing;
 import cn.explink.domain.GotoClassOld;
+import cn.explink.domain.OrderGoods;
 import cn.explink.domain.Reason;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
@@ -166,6 +168,9 @@ public class DeliveryController {
 
 	@Autowired
     B2cUtil bcUtil;
+	
+    @Autowired
+	private OrderGoodsDAO orderGoodsDAO;
 
 	private SimpleDateFormat df_d = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -388,6 +393,7 @@ public class DeliveryController {
 		Set<String> zanbuchuliCwbSetFinal=new HashSet<String>();
 		Set<String> subCwbSet=new HashSet<String>();
 		Set<String> subCwbSetFinal=new HashSet<String>();
+		Set<String> vipSmhSucessCwbSetFinal=new HashSet<String>();
 		if(zanbuchuliTrStrArr!=null&&zanbuchuliTrStrArr.length>0){
 			for (String cwb : zanbuchuliTrStrArr) {
 				cwb = cwb.replaceAll("'", "");
@@ -413,11 +419,18 @@ public class DeliveryController {
 					if(zanbuchuliCwbSetFinal.contains(co.getExchangecwb())){
 						zanbuchuliCwbSetFinal.remove(co.getExchangecwb());
 					}
+					if(co.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()){
+						vipSmhSucessCwbSetFinal.add(co.getExchangecwb());
+					}
 				}else if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()){
 					if(!subCwbSetFinal.contains(co.getExchangecwb())){
 						logger.info("唯品会上门换审核时订单号没成对提交,不做处理,cwb="+cwb);
 						subCwbSetFinal.remove(cwb);//配送单在页面应该是暂不处理状态
 						zanbuchuliCwbSetFinal.add(cwb);
+					}else{
+						if(co.getDeliverystate()==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){
+							vipSmhSucessCwbSetFinal.add(cwb);
+						}
 					}
 				}
 			}
@@ -451,6 +464,13 @@ public class DeliveryController {
 			List<DeliveryStateView> deliveryStateViews = this.getDeliveryStateViews(dlist, cwbs);
 			dsDTO.analysisDeliveryStateList(deliveryStateViews, bcUtil, customerDAO);
 		}
+		
+		List<OrderGoods> vipSmhGoodsList=new ArrayList<OrderGoods>();
+		for(String cwb :vipSmhSucessCwbSetFinal){
+			List<OrderGoods> goodList=orderGoodsDAO.getOrderGoodsList(cwb);
+			vipSmhGoodsList.addAll(goodList);
+		}
+		model.addAttribute("vipSmhGoodsList", vipSmhGoodsList);
 
 		model.addAttribute("deliveryStateDTO", dsDTO);
 		User u = this.userDAO.getUserByUserid(deliveryId);
