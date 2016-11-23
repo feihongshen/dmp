@@ -1513,6 +1513,16 @@ public class WarehouseGroup_detailController {
 		model.addAttribute("branchlist", this.branchDAO.getAllEffectBranches());
 		model.addAttribute("operatetype", this.outwarehousegroupDao.getOutWarehouseGroupByid(outwarehousegroupid).getOperatetype());
 		if (printtemplate.getTemplatetype() == 1) {
+			// --- add by Alice.yu 增加上门换对应的退货单明细  start---
+			List<OrderGoods> orderGoodsList = new ArrayList<OrderGoods>();
+			for(CwbOrder order : cwbList){
+				if(!StringUtils.isEmpty(order.getExchangecwb())){
+					orderGoodsList.addAll(orderGoodsDAO.getOrderGoodsList(order.getExchangecwb()));
+				}
+			}
+			model.addAttribute("orderGoodsList",orderGoodsList);
+			// --- add by Alice.yu 增加上门换对应的退货单明细  end---
+			
 			/**
 			 * 按包逻辑完善：真实订单、显示打印用订单 list
 			 */
