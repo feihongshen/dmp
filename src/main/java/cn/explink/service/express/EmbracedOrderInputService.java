@@ -747,7 +747,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					doReq.setCalculateWeight(((embracedOrderVO.getCharge_weight() != null) && (!"".equals(embracedOrderVO.getCharge_weight()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
 							.getCharge_weight()), 2) : 0);
 					doReq.setTotalVolume(((embracedOrderVO.getGoods_kgs() != null) && (!"".equals(embracedOrderVO.getGoods_kgs()))) ? this.toFixed(Double.parseDouble(embracedOrderVO.getGoods_kgs()) / 1000, 2) : 0);//
-					doReq.setTotalBox(Integer.parseInt(embracedOrderVO.getGoods_number().trim()));//
+					doReq.setTotalBox(Integer.parseInt(StringUtils.isEmpty(embracedOrderVO.getGoods_number().trim())?"0" : embracedOrderVO.getGoods_number().trim()));//
 					doReq.setAssuranceValue(((embracedOrderVO.getInsured_amount() != null) && (!"".equals(embracedOrderVO.getInsured_amount()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
 							.getInsured_amount()), 2) : 0);
 					doReq.setAssuranceFee(((embracedOrderVO.getInsured_cost() != null) && (!"".equals(embracedOrderVO.getInsured_cost()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
