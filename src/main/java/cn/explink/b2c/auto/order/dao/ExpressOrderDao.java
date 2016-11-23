@@ -568,7 +568,7 @@ public class ExpressOrderDao {
 			sql.append(" width=?,height=?,cwbordertypeid=?,orderflowid=?,");
 			sql.append(" cargovolume=?,cwbstate=?,state=?,");
 			sql.append(" deliverybranchid=?,excelbranch=?,addresscodeedittype=?,totalfee=?,fnorgoffset=?,");
-			sql.append(" infactfare=?,paybackfee=?,isadditionflag=?,credate=?,cnor_corp_no=?,");
+			sql.append(" infactfare=?,paybackfee=?,isadditionflag=?,cnor_corp_no=?,");
 			sql.append(" cnor_corp_name=?,account_id=?,packagefee=?,express_image=?,cnee_corp_name=?,");
 			sql.append(" express_product_type=?,hasinsurance=?,paymethod=?,newpaywayid=?,monthsettleno=?,");
 			sql.append(" tpstranscwb=?,senderprovinceid=?,sendercityid=?,sendercountyid=?,senderstreetid=?,");
@@ -666,7 +666,7 @@ public class ExpressOrderDao {
 					}else{
 						ps.setInt(++i, 1);
 					}
-					ps.setTimestamp(++i, Timestamp.valueOf(DateTimeUtil.getNowTime()));
+//					ps.setTimestamp(++i, Timestamp.valueOf(DateTimeUtil.getNowTime()));
 					ps.setString(++i, expressDetailTemp.getCnorCorpNo());//50
 					ps.setString(++i, expressDetailTemp.getCnorCorpName());
 					ps.setString(++i, expressDetailTemp.getAccountId());// 月结账号  
