@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -17,6 +20,7 @@ import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
 import cn.explink.b2c.tools.JointService;
+import cn.explink.b2c.tools.VipShopCwbTempInsertSubTask;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CwbDAO;
 import cn.explink.dao.EmailDateDAO;
@@ -73,8 +77,7 @@ public class VipshopInsertCwbDetailTimmer {
 	
 	public void selectTempAndInsertToCwbDetails(){
 		List<B2cEnum> enumList = new ArrayList<B2cEnum>();
-		// 是否切换新方法 add by jian_xie
-		boolean isUserNewMethod = systemInstallService.isBoolenInstall("VipShopCwbTempInsertTask");
+		
 		for (B2cEnum enums : B2cEnum.values()) { // 遍历唯品会enum，可能有多个枚举
 			if (enums.getMethod().contains("vipshop")) {
 				int isOpenFlag = jointService.getStateForJoint(enums.getKey());
@@ -124,7 +127,6 @@ public class VipshopInsertCwbDetailTimmer {
 			}
 			String lefengCustomerid=vipshop.getLefengCustomerid()==null||vipshop.getLefengCustomerid().isEmpty()?vipshop.getCustomerids():vipshop.getLefengCustomerid();
 			for(int i=0;i<15;i++){
-				//String result = dealWithOders(vipshop, lefengCustomerid);
 				
 				String result = dealWithOrders(vipshop, lefengCustomerid);				
 				if(result==null){
@@ -258,14 +260,50 @@ public class VipshopInsertCwbDetailTimmer {
 								 CwbOrderTypeIdEnum.Shangmentui.getValue() + "," +
 								 CwbOrderTypeIdEnum.Shangmenhuan.getValue();
 		String customerids     = (vipshop.getCustomerids() + "," + lefengCustomerid);
-		//int    maxCount = 2000; //vipshop.getGetMaxCount();
 		
 		//获取未转业务的记录
 		List<CwbOrderDTO> listCwbOrderDto = dataImportDAO_B2c.getCwbOrderTempByKeysExtends(customerids, cwbordertypeids);
 		if(listCwbOrderDto == null || listCwbOrderDto.isEmpty()){
 			return null;
 		}
+		// 是否切换新方法 add by jian_xie
+		boolean isUserNewMethod = systemInstallService.isBoolenInstall("VipShopCwbTempInsertTask");
+		if(isUserNewMethod){
+			// 分开size条一组。
+			int size = 50;
+			// 分成 n+1组
+			int n = (int)Math.ceil(((float)listCwbOrderDto.size()) / size);
+			ExecutorService executor = Executors.newFixedThreadPool(n);
+			CountDownLatch downLatch = new CountDownLatch(n);
+			try {
+				VipShopCwbTempInsertSubTask  subTask = null;
+				List<CwbOrderDTO> subListCwbOrderDto = null;
+				int start = 0;
+				int end = size;
+				int totalSize = listCwbOrderDto.size();
+				for(int i = 0; i < n; i++){					
+					start = i * size;
+					end = (i + 1) * size > totalSize ? totalSize : (i + 1) * size;
+					subListCwbOrderDto = listCwbOrderDto.subList(start, end);
+					subTask = new VipShopCwbTempInsertSubTask(vipshop, customerids, subListCwbOrderDto, this, downLatch);
+					executor.execute(subTask);
+				}				
+			}finally{
+				try {
+					downLatch.await();
+				} catch (Exception e) {
+					logger.error("执行downLatch.await出错", e);
+				}
+				executor.shutdown();
+			}
+		} else {
+			subDealWithOrders(vipshop, customerids, listCwbOrderDto);
+		}
 		
+		return "OK";
+	}
+
+	public void subDealWithOrders(VipShop vipshop, String customerids, List<CwbOrderDTO> listCwbOrderDto) {
 		List<CwbOrderDTO> listCwbOrderDtoIsMps   = new ArrayList<CwbOrderDTO>();
 		List<CwbOrderDTO> listCwbOrderDtoIsNoMps = new ArrayList<CwbOrderDTO>();
 		for(CwbOrderDTO cwbOrderDto : listCwbOrderDto){
@@ -316,8 +354,6 @@ public class VipshopInsertCwbDetailTimmer {
 				}
 			}
 		}
-		
-		return "OK";
 	}
 	
 	/**
