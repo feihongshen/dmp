@@ -364,7 +364,7 @@ public class VipshopInsertCwbDetailTimmer {
 	 * @param vipshop
 	 */
 	@Transactional
-	private void ImportBatchOrder(String customerid, long warehouseId, List<CwbOrderDTO> listCwbOrderDto, VipShop vipshop) {
+	public void ImportBatchOrder(String customerid, long warehouseId, List<CwbOrderDTO> listCwbOrderDto, VipShop vipshop) {
 		if(listCwbOrderDto == null || listCwbOrderDto.isEmpty()){
 			return;
 		}
@@ -400,7 +400,7 @@ public class VipshopInsertCwbDetailTimmer {
 	 * @param vipshop
 	 */
 	@Transactional
-	private void ImportSingleOrder(String customerid, long warehouseId, long b2cTempOpscwbid, VipShop vipshop) {
+	public void ImportSingleOrder(String customerid, long warehouseId, long b2cTempOpscwbid, VipShop vipshop) {
 		CwbOrderDTO cwbOrderDto = dataImportDAO_B2c.getCwbByCwbB2ctempOpscwbidLock(b2cTempOpscwbid);
 		if(cwbOrderDto == null){
 			return;
