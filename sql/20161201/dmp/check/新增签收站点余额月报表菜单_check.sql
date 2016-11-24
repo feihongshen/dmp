@@ -1,0 +1,1 @@
+SELECT '签收站点余额月报表' AS '脚本注释', IF((SELECT COUNT(1) FROM dmp40_function WHERE functionname='签收站点余额月报表' and parentfunctionid='8030')=1, 'success', 'failed') AS '执行结果';
