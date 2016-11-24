@@ -70,7 +70,7 @@ public class VipshopInsertCwbDetailTimmer {
 	
 	@Autowired
 	private SystemInstallService systemInstallService;
-
+	
 	/**
 	 * 唯品会定时器，查询临时表，插入数据到detail表中。
 	 */
@@ -322,7 +322,7 @@ public class VipshopInsertCwbDetailTimmer {
 		//集包模式的订单转业务
 		for(CwbOrderDTO cwbOrderDtoIsMps : listCwbOrderDtoIsMps){
 			try{				
-				this.ImportSingleOrder(vipshop.getCustomerids(), warehouseId, cwbOrderDtoIsMps.getOpscwbid(), vipshop);
+				ImportSingleOrder(vipshop.getCustomerids(), warehouseId, cwbOrderDtoIsMps.getOpscwbid(), vipshop);
 			}catch(Exception ee){
 				logger.error("定时器临时表插入或修改方法[dealWithOrders-mps]执行异常!customerids=" + customerids, ee);
 			}
@@ -346,7 +346,7 @@ public class VipshopInsertCwbDetailTimmer {
 					}
 										
 					List<CwbOrderDTO> subList = listCwbOrderDtoIsNoMps.subList(fromIndex, toIdx);
-					this.ImportBatchOrder(vipshop.getCustomerids(), warehouseId, subList, vipshop);
+					ImportBatchOrder(vipshop.getCustomerids(), warehouseId, subList, vipshop);
 					
 					k++;
 				}catch(Exception ee){
