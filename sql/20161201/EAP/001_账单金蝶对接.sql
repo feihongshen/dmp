@@ -21,8 +21,8 @@ CREATE TABLE `fn_msg_record` (
   KEY `fn_msg_record_suc_or_fail_idx` (`suc_or_fail`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO dmp40_function (ID, functionlevel, functionname, functionorder, functionurl, parentfunctionid)
+INSERT INTO `dmp40_function` (`ID`, `functionlevel`, `functionname`, `functionorder`, `functionurl`, `parentfunctionid`)
 VALUES (306012, 2, 'EAP异常', 306012, '${eapUrl}msgRecord.do?index&', 3060);
 
-/**增加客户属性：代收货款抵扣*/
-alter table fn_cust_pay_report_cfg add (is_collect_deduction tinyint not null default FALSE);
+alter table `fn_cust_pay_report_cfg` add (`is_collect_deduction` tinyint not null default FALSE);
+ALTER TABLE `fn_cust_pay_report_cfg` ADD INDEX `is_collect_deduction_idx` (`is_collect_deduction`);
