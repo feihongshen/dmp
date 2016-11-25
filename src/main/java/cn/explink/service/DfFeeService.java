@@ -35,6 +35,7 @@ import com.pjbest.pjorganization.bizservice.service.SbOrgServiceHelper;
 import com.vip.osp.core.exception.OspException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,7 +158,13 @@ public class DfFeeService {
         String[] cwbs = cwbsStr.split(",");
         for (String cwb : cwbs) {
             cwb = cwb.replaceAll("'", "");
-            saveFeeRelative(cwb, currentUser, allProvince, allCity, allCounty);
+            try {
+                saveFeeRelative(cwb, currentUser, allProvince, allCity, allCounty);
+            } catch (Exception e) {
+                //一条错不会影响之后的操作。
+                logger.error("插入计费表时出错：订单号{}, 错误信息：{}", cwb, e.getMessage());
+                e.printStackTrace();
+            }
         }
 
         logger.info("归班审核后插入派费相关表操作结束");
@@ -268,7 +275,8 @@ public class DfFeeService {
                 province = getEffectiveAddressId(senderAddr, allProvince, null);
             }
 
-            String provinceCode = getAddressCode(province, allProvince, null);;
+            String provinceCode = getAddressCode(province, allProvince, null);
+
             String cityCode = "";
 
             if (StringUtils.isNotBlank(province) && StringUtils.isBlank(city)) {
@@ -279,6 +287,13 @@ public class DfFeeService {
 //                cityCode = getAddressCode(city, allCity, provinceCode);
 //                county = getEffectiveAddressId(senderAddr, allCounty, cityCode);
 //            }
+
+            //针对线上的增城区问题，修复，如果能匹配市就用之前的方法
+            if (StringUtils.isNotBlank(city) && StringUtils.isBlank(county)) {
+                cityCode = getAddressCode(city, allCity, provinceCode);
+                county = getEffectiveAddressId(senderAddr, allCounty, cityCode);
+            }
+
             //产品要求查找区的搜索范围是在本省里面找
             if (StringUtils.isBlank(county)) {
                 county = getEffectiveCountyByProvince(senderAddr, allCounty, allCity, provinceCode);
@@ -362,10 +377,10 @@ public class DfFeeService {
 //                }
 
                 if (StringUtils.isBlank(province)) {
-                //如果没有匹配到省份，派件就拿本省的province code。
+                    //如果没有匹配到省份，派件就拿本省的province code。
 //                    province = getEffectiveAddressId(receiverAddr, allProvince, null);
                     AdressVO currentProvince = provinceDAO.getProvinceByCode(ResourceBundleUtil.provinceCode);
-                    if(currentProvince != null){
+                    if (currentProvince != null) {
                         province = currentProvince.getName();
                     }
                 }
@@ -388,6 +403,12 @@ public class DfFeeService {
 //                    cityCode = getAddressCode(city, allCity, provinceCode);
 //                    county = getEffectiveAddressId(receiverAddr, allCounty, cityCode);
 //                }
+
+                //针对线上的增城区问题，修复，如果能匹配市就用之前的方法
+                if (StringUtils.isNotBlank(city) && StringUtils.isBlank(county)) {
+                    cityCode = getAddressCode(city, allCity, provinceCode);
+                    county = getEffectiveAddressId(receiverAddr, allCounty, cityCode);
+                }
 
                 //产品要求查找区的搜索范围是在本省里面找
                 if (StringUtils.isBlank(county)) {
@@ -429,7 +450,7 @@ public class DfFeeService {
         }
     }
 
-	private SbOrgModel findOrgByCarrierAndSiteCode(long branchId) {
+    private SbOrgModel findOrgByCarrierAndSiteCode(long branchId) {
 
         Branch branch = branchDAO.getBranchById(branchId);
 
@@ -660,11 +681,13 @@ public class DfFeeService {
     private boolean isJoinBranch(long branchId) {
         Branch branch = branchDAO.getBranchById(branchId);
         if (branch != null) {
-            int contractFlag = Integer.parseInt(branch.getContractflag());
-            if (BranchTypeEnum.JiaMeng.getValue() == contractFlag
-                    || BranchTypeEnum.JiaMengErJi.getValue() == contractFlag
-                    || BranchTypeEnum.JiaMengSanJi.getValue() == contractFlag) {
-                return true;
+            if (NumberUtils.isNumber(branch.getContractflag())) {
+                int contractFlag = Integer.parseInt(branch.getContractflag());
+                if (BranchTypeEnum.JiaMeng.getValue() == contractFlag
+                        || BranchTypeEnum.JiaMengErJi.getValue() == contractFlag
+                        || BranchTypeEnum.JiaMengSanJi.getValue() == contractFlag) {
+                    return true;
+                }
             }
         }
         return false;
@@ -717,15 +740,15 @@ public class DfFeeService {
     }
 
     /**
+     * @param cwb         订单号
+     * @param isCalculted 是否已计费，0未，1已计费
+     * @param chargerType DeliveryFeeChargerType。ORG/DeliveryFeeChargerType.STAFF
+     * @return
      * @author zhili01.liang on 20160816
      * 根据条件获取计费记录
-     * @param cwb 订单号
-     * @param isCalculted 是否已计费，0未，1已计费
-     * @param chargerType  DeliveryFeeChargerType。ORG/DeliveryFeeChargerType.STAFF
-     * @return
      */
-    public List<DfBillFee> findByCwbAndCalculted(String cwb,int isCalculted,int chargerType,int begin, int interval){
-    	return dfFeeDAO.findByCwbAndCalculted(cwb, isCalculted, chargerType, begin, interval);
+    public List<DfBillFee> findByCwbAndCalculted(String cwb, int isCalculted, int chargerType, int begin, int interval) {
+        return dfFeeDAO.findByCwbAndCalculted(cwb, isCalculted, chargerType, begin, interval);
     }
 
 }
