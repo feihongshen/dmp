@@ -403,14 +403,13 @@ public class DeliveryController {
 		/*--检查vip上门换时配送单和揽退单要成对出现start--*/
 		String[] zanbuchuliTrStrArr = zanbuchuliTrStr!=null&&zanbuchuliTrStr.length()>0?zanbuchuliTrStr.split(","):null;
 		String[] subTrStrArr = subTrStr!=null&&subTrStr.length()>0?subTrStr.split(","):null;
-		Set<String> zanbuchuliCwbSetFinal=new HashSet<String>();
+		Set<String> zanbuchuliCwbSet=new HashSet<String>();
 		Set<String> subCwbSet=new HashSet<String>();
-		Set<String> subCwbSetFinal=new HashSet<String>();
 		Set<String> vipSmhSucessCwbSetFinal=new HashSet<String>();
 		if(zanbuchuliTrStrArr!=null&&zanbuchuliTrStrArr.length>0){
 			for (String cwb : zanbuchuliTrStrArr) {
 				cwb = cwb.replaceAll("'", "");
-				zanbuchuliCwbSetFinal.add(cwb);
+				zanbuchuliCwbSet.add(cwb);
 			}
 		}
 		
@@ -418,53 +417,54 @@ public class DeliveryController {
 			for (String cwb : subTrStrArr) {
 				cwb = cwb.replaceAll("'", "");
 				subCwbSet.add(cwb);
-				subCwbSetFinal.add(cwb);
 			}
 		}
 		
-		for(String cwb :subCwbSet){
-			CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
-			if(co.getExchangeflag()==VipExchangeFlagEnum.NO.getValue()){
-				continue;
-			}else{
-				if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()){
-					subCwbSetFinal.add(co.getExchangecwb());
-					if(zanbuchuliCwbSetFinal.contains(co.getExchangecwb())){
-						zanbuchuliCwbSetFinal.remove(co.getExchangecwb());
-					}
-					if(co.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()){
-						vipSmhSucessCwbSetFinal.add(co.getExchangecwb());
-					}
-				}else if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()){
-					if(!subCwbSetFinal.contains(co.getExchangecwb())){
-						logger.info("唯品会上门换审核时订单号没成对提交,不做处理,cwb="+cwb);
-						subCwbSetFinal.remove(cwb);//配送单在页面应该是暂不处理状态
-						zanbuchuliCwbSetFinal.add(cwb);
-					}else{
-						if(co.getDeliverystate()==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){
-							vipSmhSucessCwbSetFinal.add(cwb);
+		String subCwbStr=joinCwb(subCwbSet);
+		List<CwbOrder> subCoList=this.cwbDAO.getCwbsBycwbs(subCwbStr);
+		if(subCoList!=null&&subCoList.size()>0){
+			for(CwbOrder co:subCoList){
+				if(co.getExchangeflag()==VipExchangeFlagEnum.NO.getValue()){
+					continue;
+				}else{
+					if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()){
+						subCwbSet.add(co.getExchangecwb());
+						if(zanbuchuliCwbSet.contains(co.getExchangecwb())){
+							zanbuchuliCwbSet.remove(co.getExchangecwb());
+						}
+						if(co.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()){
+							vipSmhSucessCwbSetFinal.add(co.getExchangecwb());
+						}
+					}else if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()){
+						if(!subCwbSet.contains(co.getExchangecwb())){
+							logger.info("唯品会上门换审核时订单号没成对提交,不做处理,cwb="+co.getCwb());
+							subCwbSet.remove(co.getCwb());//关联的配送单在页面应该是暂不处理状态或者没勾选
+							if(zanbuchuliCwbSet.contains(co.getExchangecwb())){
+								zanbuchuliCwbSet.add(co.getCwb());
+							}
+						}else{
+							if(co.getDeliverystate()==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){
+								vipSmhSucessCwbSetFinal.add(co.getCwb());
+							}
 						}
 					}
 				}
 			}
 		}
 		
-		StringBuilder zanbuchuliSb=new StringBuilder("");
-		StringBuilder subSb=new StringBuilder("");
-		for(String cwb :zanbuchuliCwbSetFinal){
-			zanbuchuliSb.append("'").append(cwb).append("'").append(",");
+		String zbclCwbStr=joinCwb(zanbuchuliCwbSet);
+		List<CwbOrder> zbclCoList=this.cwbDAO.getCwbsBycwbs(zbclCwbStr);
+		if(zbclCoList!=null&&zbclCoList.size()>0){
+			for(CwbOrder zbclCo:zbclCoList){
+				if(zbclCo.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()
+						&&zbclCo.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+					zanbuchuliCwbSet.add(zbclCo.getExchangecwb());
+				}
+			}
 		}
-		for(String cwb :subCwbSetFinal){
-			subSb.append("'").append(cwb).append("'").append(",");
-		}
-		String zanbuchuliTrStrFinal=zanbuchuliSb.toString();
-		if(zanbuchuliTrStrFinal.length()>0){
-			zanbuchuliTrStrFinal=zanbuchuliTrStrFinal.substring(0, zanbuchuliTrStrFinal.length()-1);
-		}
-		String subTrStrFinal=subSb.toString();
-		if(subTrStrFinal.length()>0){
-			subTrStrFinal=subTrStrFinal.substring(0, subTrStrFinal.length()-1);
-		}
+
+		String zanbuchuliTrStrFinal=joinCwb(zanbuchuliCwbSet);
+		String subTrStrFinal=joinCwb(subCwbSet);
 		/*--检查vip上门换时配送单和揽退单要成对出现end--*/
 		
 		DeliveryStateDTO dsDTO = new DeliveryStateDTO();
@@ -494,6 +494,18 @@ public class DeliveryController {
 		model.addAttribute("zanbuchuliTrStrFinal", zanbuchuliTrStrFinal);
 		model.addAttribute("subTrStrFinal", subTrStrFinal);
 		return "delivery/sub";
+	}
+	
+	private String joinCwb(Set<String> cwbSet){
+		StringBuilder sb=new StringBuilder("");
+		for(String cwb :cwbSet){
+			sb.append("'").append(cwb).append("'").append(",");
+		}
+		String sbStr=sb.toString();
+		if(sbStr.length()>0){
+			sbStr=sbStr.substring(0, sbStr.length()-1);
+		}
+		return sbStr;
 	}
 
 	/**
@@ -665,7 +677,7 @@ public class DeliveryController {
 			@RequestParam(value = "deliverPosAccount", required = false, defaultValue = "0") BigDecimal deliverPosAccount) {
 		try {
 			if (subTrStr.trim().length() == 0) {
-				return "{\"errorCode\":1,\"error\":\"没有关联订单\"}";
+				return "{\"errorCode\":1,\"error\":\"没有需要审核的订单\"}";
 			}
 			// 将支付宝COD扫码的支付合并到pos上作为归班
 			BigDecimal subAmountPosAndCodPos = new BigDecimal(subAmountPos).add(new BigDecimal(subAmountCodPos));
