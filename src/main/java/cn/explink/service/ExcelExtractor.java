@@ -102,6 +102,7 @@ import cn.explink.enumutil.PunishInsideStateEnum;
 import cn.explink.enumutil.PunishlevelEnum;
 import cn.explink.enumutil.PunishtimeEnum;
 import cn.explink.enumutil.express.ExpressOperationEnum;
+import cn.explink.enumutil.express.ExpressPaymethodEnum;
 import cn.explink.enumutil.switchs.SwitchEnum;
 import cn.explink.service.express.EmbracedOrderInputService;
 import cn.explink.service.express.ExpressCommonService;
@@ -598,7 +599,7 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 		} else {
 			cwbOrder.setRemark5("");
 		}
-
+     
 		if (excelColumnSet.getShouldfareindex() != 0) {
 			cwbOrder.setShouldfare(this.getXRowCellData(row, excelColumnSet.getShouldfareindex()));
 		} else {
@@ -617,6 +618,13 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 		
 
 		cwbOrder.setDefaultCargoName();
+		
+		//付款方式：若存在应收运费大于0，paymethod取值为“到付”--产品确认
+		if(cwbOrder.getShouldfare().compareTo(BigDecimal.ZERO)>0){
+			cwbOrder.setPaymethod(ExpressPaymethodEnum.DaoFu.getValue());
+		}else{
+			cwbOrder.setPaymethod(ExpressPaymethodEnum.XianFu.getValue());
+		}
 
 		return cwbOrder;
 	}
