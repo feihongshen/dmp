@@ -2242,19 +2242,14 @@ function checkPeiSong() {
 	}
 	
 	if($("#exchangeflag").val()=='1'){
-		if (parseFloat($("#shouldfareVipSmh").val()) == 0 && parseFloat($("#infactfareVipSmh").val()) > 0) {
-			alert("应收运费为0，实收运费不允许大于应收运费。");
-			return false;
-		}
 		if (!isFloat($("#infactfareVipSmh").val())) {
 			alert("实收运费只能为数值");
 			return false;
 		}
-		if (parseFloat($("#shouldfareVipSmh").val()) > 0 && parseFloat($("#infactfareVipSmh").val()) == 0) {
-			if(!confirm('实收运费为0，默认会等于应收运费，确定提交么？')){
-				return false;
-			}
-		} 	
+		if (parseFloat($("#shouldfareVipSmh").val()) != parseFloat($("#infactfareVipSmh").val())) {
+			alert("实收运费应该等于应收运费");
+			return false;
+		}
 	}
 	
 	return true;
