@@ -12,10 +12,10 @@ INSERT INTO `dmp40_function` (
 )
 VALUES
 	(
-		(select max(id) from tmp_dmp40_function_id),
+		(select id from tmp_dmp40_function_id),
 		'2',
 		'签收站点余额月报表',
-		(select max(id) from tmp_dmp40_function_id),
+		(select id from tmp_dmp40_function_id),
 		'${eapUrl}reportMonthForm.do?index&',
 		'8030'
 	);
