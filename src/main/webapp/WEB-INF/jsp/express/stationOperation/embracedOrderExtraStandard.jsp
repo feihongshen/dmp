@@ -822,6 +822,7 @@
 		var payment_method = $("input[name='payment_method']:checked").val();//0为月结
 		var sender_companyName_id = $("#sender_companyName_id  option:selected").attr("id");
 // 		var countySelect = $("#sender_countyid_id");
+		
 		//如果不属于补录，则第一次只要求填写寄件三级地址
 		if ($("#isadditionflag_id").val() == 0) {
 			//校验寄件人地址
