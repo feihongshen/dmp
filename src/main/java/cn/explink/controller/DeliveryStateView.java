@@ -37,6 +37,7 @@ public class DeliveryStateView {
 	private String sign_man_phone;
 	private boolean editFlag;//是否允许修改反馈-- 刘武强20160831
 	private String sign_img;//签收人签名图片url
+	private int exchangeflag;//换货标志
 
 	public String getSign_man_phone() {
 		return sign_man_phone;
@@ -498,6 +499,14 @@ public class DeliveryStateView {
 
 	public void setSign_img(String sign_img) {
 		this.sign_img = sign_img;
+	}
+
+	public int getExchangeflag() {
+		return exchangeflag;
+	}
+
+	public void setExchangeflag(int exchangeflag) {
+		this.exchangeflag = exchangeflag;
 	}
 	
 	

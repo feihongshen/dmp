@@ -9,6 +9,7 @@
 <%@page import=" net.sf.json.JSONObject"%>
 <%@page import="cn.explink.enumutil.DeliveryStateEnum" %>
 <%@page import="java.math.BigDecimal" %>
+<%@page import="cn.explink.enumutil.VipExchangeFlagEnum"%>
 
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 
@@ -41,7 +42,11 @@ String isReasonRequired = request.getAttribute("isReasonRequired")==null?"no":(S
 String partReject = request.getAttribute("partReject")==null?"yes":(String)request.getAttribute("partReject");
 
 int isOpenFlag = request.getAttribute("isOpenFlag")==null?0:((Integer)request.getAttribute("isOpenFlag")).intValue();
-
+String transcwbVipSmh = request.getAttribute("transcwbVipSmh")==null?"":(String)request.getAttribute("transcwbVipSmh");
+String transcwb=cwborder.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()?transcwbVipSmh:cwborder.getTranscwb();
+String shouldfareVipSmh=request.getAttribute("shouldfareVipSmh")==null?"0":request.getAttribute("shouldfareVipSmh").toString();
+String infactfareVipSmh=request.getAttribute("infactfareVipSmh")==null?"0":request.getAttribute("infactfareVipSmh").toString();
+boolean isVipSmh=cwborder.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&cwborder.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()?true:false;
 %>
 <script>
 var showposandqita="<%=showposandqita%>";
@@ -102,11 +107,13 @@ if(parseInt($("#isOpenFlag").val())!=0){
 			 action="<%=request.getContextPath()%>/delivery/editDeliveryState/<%=deliverystate.getCwb()%>/<%=deliverystate.getDeliveryid()%>" method="post"  >
 				<ul>
 					<li><span>订单号：</span><%=deliverystate.getCwb() %></li>
+					<%if(cwborder.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&cwborder.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){%><li><span>关联揽退单号：</span><%=cwborder.getExchangecwb()%></li><%}%>
 					<li><span>订单类型：</span>
 					<%for(CwbOrderTypeIdEnum ce : CwbOrderTypeIdEnum.values()){if(deliverystate.getCwbordertypeid()==ce.getValue()){ %>
 						<%=ce.getText() %>
 					<%}} 
 					%>
+					<%if(cwborder.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&cwborder.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){%>(揽换)<%}%>
 					</li>
 					<li>
 						<span>小件员姓名：</span><%=deliverystate.getDeliverealname() %>
@@ -117,6 +124,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
 					<input type="hidden" id="paywayid" value="<%=cwborder.getPaywayid()%>"/>
 					<input type="hidden" id="isOpenFlag" value="<%=isOpenFlag%>"/>
 					<input type="hidden" id="shishou" value="<%=deliverystate.getInfactfare()%>"/>
+					<input type="hidden" id="exchangeflag" value="<%=cwborder.getExchangeflag()%>"/>
 				<select id ="podresultid" name ="podresultid" 
 		   			onChange="click_podresultid(<%=deliverystate.getDeliverystate() %>,<%=DeliveryStateEnum.PeiSongChengGong.getValue()%>,<%=DeliveryStateEnum.ShangMenTuiChengGong.getValue()%>,
 		   			<%=DeliveryStateEnum.ShangMenHuanChengGong.getValue()%>,<%=DeliveryStateEnum.JuShou.getValue()%>,
@@ -164,7 +172,7 @@ if(parseInt($("#isOpenFlag").val())!=0){
                    
                 </select>*</li>
            		<li><span>快递单号：</span>
-                     <input type="text" name="transcwb" id="transcwb" value="<%=cwborder.getTranscwb()%>" onKeyDown='if(event.keyCode==13){return false;}'/> (每次只能输入一个快递单号)
+                     <input type="text" name="transcwb" id="transcwb" value="<%=transcwb%>" onKeyDown='if(event.keyCode==13){return false;}'/> (只输一个单号)
 	           	</li>
            		<li><span>退货原因：</span>
 	           		<select name="backreasonid" id="backreasonid">
@@ -260,6 +268,8 @@ if(parseInt($("#isOpenFlag").val())!=0){
 			    <li><span>实收现金：</span><input type="text" name="receivedfeecash" id="receivedfeecash" value ="<%= deliverystate.getCash()%>" onkeyup="weishuakachange();" /></li>
 			    <li><span>应收运费：</span><%=deliverystate.getShouldfare() %><input type="hidden" id="shouldfare" value="<%=deliverystate.getShouldfare()%>"/></li>
 		        <li><span>实收运费：</span><input type="text" id="infactfare" name="infactfare" value="<%=deliverystate.getInfactfare()%>" maxlength="50"/></li>
+			     <li><span>揽退应收运费：</span><%=isVipSmh?shouldfareVipSmh:0%><input type="hidden" id="shouldfareVipSmh" value="<%=isVipSmh?shouldfareVipSmh:0%>"/></li>
+		        <li><span>揽退实收运费：</span><input type="text" id="infactfareVipSmh" name="infactfareVipSmh" value="<%=isVipSmh?infactfareVipSmh:0%>" maxlength="50"/></li>
 			    <%if(showposandqita.equals("yes")){ %>
 					<li><span>POS刷卡实收：</span><input type="text" name="receivedfeepos" id="receivedfeepos" value ="<%=deliverystate.getPos()%>" maxlength="50"/><input  id="isforchange" type="button" onclick="forchange();" value="换"/></li>
 					<li><span>POS备注：</span><input type="text" name="posremark" id="posremark" value ="<%=deliverystate.getPosremark()%>" maxlength="50"/></li>

@@ -70,8 +70,11 @@ public class OrderBackRukuRecordDao {
 	public List<OrderBackRuku> getOrderbackRukus(long page,String cwb,int cwbordertype,long customerid,long branchid,String begintime,String endtime,int auditstate){
 		String sql = "";
 		if(auditstate==0){
+//			sql = "select re.* from express_orderbackruku_record as re left join express_ops_cwb_detail as de on re.cwb = de.cwb"
+//					+" where de.state=1 and re.auditstate =0 and de.flowordertype=15";
+			//modify by Alice.yu 唯品会上门换业务员不允许 审核为退货再投，故此处加上过滤条件de.exchange_flag!=1
 			sql = "select re.* from express_orderbackruku_record as re left join express_ops_cwb_detail as de on re.cwb = de.cwb"
-					+" where de.state=1 and re.auditstate =0 and de.flowordertype=15";
+					+" where de.state=1 and re.auditstate =0 and de.flowordertype=15 and de.exchange_flag!=1 ";
 			StringBuffer sb = new StringBuffer();
 			if(!"".equals(cwb)){
 				sb.append(" and re.cwb in("+cwb+")");

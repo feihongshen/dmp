@@ -40,6 +40,7 @@ public class CwbColumnSetVipShop {
 		excelColumnSet.setIsmpsflagindex(1);
 		excelColumnSet.setMpsallarrivedflagindex(1);
 		excelColumnSet.setVipclubindex(1);
+		excelColumnSet.setSaletypeindex(1);
 		
 		return excelColumnSet;
 	}

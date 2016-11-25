@@ -108,6 +108,7 @@ import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
+import cn.explink.enumutil.VipExchangeFlagEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.service.AdjustmentRecordService;
 import cn.explink.service.CwbOrderService;
@@ -981,6 +982,10 @@ public class CwbOrderController {
 				cwbs = cwbs.append(quot).append(lastcwb).append(quotAndComma);
 				CwbOrder co = this.cwbDao.getCwbByCwb(lastcwb);
 				if (co != null) {
+					if(co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+						//唯品会上门换业务的订单不做拦截
+						continue;
+					}
 					scancwblist.add(cwbStr);
 					cwborderlist.add(co);//找出所有的订单详细信息
 				}

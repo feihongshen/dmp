@@ -5,8 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -60,9 +62,12 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.BranchEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.VipExchangeFlagEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.pos.tools.JacksonMapper;
+import cn.explink.service.BranchAutoWarhouseService;
 import cn.explink.service.BranchService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbTranslator;
@@ -173,6 +178,9 @@ public class DataImportController {
 	
 	@Autowired
 	OrderFlowDAO orderFlowDAO;
+	
+	@Autowired
+	BranchAutoWarhouseService branchAutoWarhouseService;
 
 	private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -637,7 +645,48 @@ public class DataImportController {
 					cwbstrs = cwbBuffer.toString().substring(0, cwbBuffer.length() - 1);
 				}
 				List<CwbOrder> oList = this.cwbDAO.getCwbByCwbs(cwbstrs);
+				
+				/**把vip上门换里的揽退单也同时做匹配地址操作--start**/
+				List<CwbOrder> tuiCoList=null;
+				Set<String> tuiCwbSetFinal=null;
 				if ((oList != null) && (oList.size() > 0)) {
+					Set<String> tuiCwbSet=new HashSet<String>();
+					for (CwbOrder cwbOrder : oList) {
+						if(cwbOrder.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&
+								cwbOrder.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+							if(!cwbStrList.contains(cwbOrder.getExchangecwb())){
+								tuiCwbSet.add(cwbOrder.getExchangecwb());
+							}
+						}
+					}
+					if(tuiCwbSet.size()>0){
+						StringBuffer tuiCwbBuffer = new StringBuffer("");
+						for (String tuicwb:tuiCwbSet) {
+							tuiCwbBuffer = tuiCwbBuffer.append("'" + tuicwb + "',");
+						}
+						String tuiCwbstrs = tuiCwbBuffer.toString();
+						if (tuiCwbstrs.length() > 0) {
+							tuiCwbstrs = tuiCwbstrs.substring(0, tuiCwbstrs.length() - 1);
+							tuiCoList = this.cwbDAO.getCwbByCwbs(tuiCwbstrs);
+							if(tuiCoList!=null&&tuiCoList.size()>0){
+								tuiCwbSetFinal=new HashSet<String>();
+								for(CwbOrder tuiCo:tuiCoList){
+									tuiCwbSetFinal.add(tuiCo.getCwb());
+								}
+								
+							}
+						}
+					}
+				}
+				/**把vip上门换里的揽退单也同时做匹配地址操作--end**/
+				
+				if ((oList != null) && (oList.size() > 0)) {
+					if(tuiCoList!=null&&tuiCoList.size()>0){
+						oList.addAll(tuiCoList);
+						if(tuiCwbSetFinal!=null&&tuiCwbSetFinal.size()>0){
+							cwbStrList.addAll(tuiCwbSetFinal);
+						}
+					}
 					for (CwbOrder cwbOrder : oList) {
 						CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
 						if ((cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue())
@@ -652,6 +701,8 @@ public class DataImportController {
 						}
 						try {
 							this.cwbOrderService.updateDeliveryBranchAndCourier(this.getSessionUser(), cwbOrder, branch, addressCodeEditType, deliver);
+							// 触发vip上门换业务的揽退单自动分站到货
+							vipSmhAutoReachSite(cwbOrder,branch);
 							count += 1;
 						} catch (CwbException ce) {
 							model.addAttribute("error", "匹配失败，" + ce.getMessage() + "!");
@@ -1117,6 +1168,7 @@ public class DataImportController {
 		String brancherror = "";
 		// String cwbss="";
 		String cwbbranches = "";
+		Set<String> matchedSmhSet=new HashSet<String>();
 		for (int i = 0; i < realnamecwbs.length; i++) {
 			Information info = new Information();
 			try {
@@ -1143,6 +1195,13 @@ public class DataImportController {
 				cwberror = "";
 				brancherror = "";
 				if (co != null&&branch != null) {
+					if (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()
+							&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+						if(matchedSmhSet.contains(co.getCwb())){
+							continue;
+						}
+					}
+					
 					CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
 					if ((co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue()) || (co.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue())) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
 						addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.XiuGai;
@@ -1152,6 +1211,37 @@ public class DataImportController {
 						addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.RenGong;
 					}
 					this.cwbOrderService.updateDeliveryBranch(this.getSessionUser(), co, branch, addressCodeEditType);
+					// 触发vip上门换业务的揽退单自动分站到货
+					boolean success=vipSmhAutoReachSite(co,branch);
+					if (success){
+						matchedSmhSet.add(co.getCwb());
+					}
+					
+					//vip上门换业务的揽退单也同时匹配地址
+					if (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()
+							&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+						if(!matchedSmhSet.contains(co.getExchangecwb())){
+							CwbOrder tuiCo = this.cwbDAO.getCwbByCwb(co.getExchangecwb());
+							if(tuiCo!=null){
+								CwbOrderAddressCodeEditTypeEnum addressCodeEditTypeTui = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
+								if ((tuiCo.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue()) || (tuiCo.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue())) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
+									addressCodeEditTypeTui = CwbOrderAddressCodeEditTypeEnum.XiuGai;
+								} else if ((tuiCo.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.WeiPiPei.getValue())
+										|| (tuiCo.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.RenGong.getValue())) {// 如果修改的数据原来是未匹配或者曾经人工修改匹配的
+																																	// 都将匹配状态变更为人工修改
+									addressCodeEditTypeTui = CwbOrderAddressCodeEditTypeEnum.RenGong;
+								}
+								this.cwbOrderService.updateDeliveryBranch(this.getSessionUser(), tuiCo, branch, addressCodeEditTypeTui);
+								// 触发vip上门换业务的揽退单自动分站到货
+								boolean successTui=vipSmhAutoReachSite(tuiCo,branch);
+								if(successTui){
+									matchedSmhSet.add(tuiCo.getCwb());
+								}
+							}
+						}
+					}
+					
+					
 				}
 
 			} catch (Exception ce) {
@@ -1265,5 +1355,20 @@ public class DataImportController {
 		}
 		this.cwbOrderService.updateDeliveryCourier(cwb, deliver);
 		return "{\"errorCode\":0,\"error\":\"操作成功\"}";
+	}
+	
+	// 触发vip上门换业务里的揽退单自动分站到货
+	private boolean vipSmhAutoReachSite(CwbOrder co, Branch branch){
+		boolean success=false;
+		if (co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()
+				&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+			success=true;
+			try {
+				this.branchAutoWarhouseService.branchAutointoWarhouse(co, branch);
+			} catch (Exception e) {
+				logger.error("上门退单人手匹配地址库自动分站到货报错,cwb="+co.getCwb(), e);
+			}
+		}
+		return success;
 	}
 }

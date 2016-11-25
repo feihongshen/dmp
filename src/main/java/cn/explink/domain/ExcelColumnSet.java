@@ -67,6 +67,8 @@ public class ExcelColumnSet {
 	
 	private int returnaddressindex;
 	
+	private int saletypeindex;//上门换业务标志
+	
 	public int getMpsallarrivedflagindex() {
 		return mpsallarrivedflagindex;
 	}
@@ -576,4 +578,13 @@ public class ExcelColumnSet {
 	public void setReturnaddressindex(int returnaddressindex) {
 		this.returnaddressindex = returnaddressindex;
 	}
+
+	public int getSaletypeindex() {
+		return saletypeindex;
+	}
+
+	public void setSaletypeindex(int saletypeindex) {
+		this.saletypeindex = saletypeindex;
+	}
+	
 }

@@ -54,6 +54,7 @@ import cn.explink.dao.ExceptionCwbDAO;
 import cn.explink.dao.GotoClassAuditingDAO;
 import cn.explink.dao.GotoClassOldDAO;
 import cn.explink.dao.OrderFlowDAO;
+import cn.explink.dao.OrderGoodsDAO;
 import cn.explink.dao.ReasonDao;
 import cn.explink.dao.SwitchDAO;
 import cn.explink.dao.SystemInstallDAO;
@@ -67,17 +68,20 @@ import cn.explink.domain.DeliverPaymentReportVo;
 import cn.explink.domain.DeliveryState;
 import cn.explink.domain.GotoClassAuditing;
 import cn.explink.domain.GotoClassOld;
+import cn.explink.domain.OrderGoods;
 import cn.explink.domain.Reason;
 import cn.explink.domain.SystemInstall;
 import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.B2cPushStateEnum;
+import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.DeliveryPaymentPatternEnum;
 import cn.explink.enumutil.DeliveryStateEnum;
 import cn.explink.enumutil.DeliveryTongjiEnum;
 import cn.explink.enumutil.ExceptionCwbErrorTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
+import cn.explink.enumutil.VipExchangeFlagEnum;
 import cn.explink.enumutil.switchs.SwitchEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.exception.ExplinkException;
@@ -175,6 +179,9 @@ public class DeliveryController {
 
 	@Autowired
     B2cUtil bcUtil;
+	
+    @Autowired
+	private OrderGoodsDAO orderGoodsDAO;
 
 	private SimpleDateFormat df_d = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -354,7 +361,15 @@ public class DeliveryController {
 	 */
 	@RequestMapping("/noSub/{cwb}")
 	public @ResponseBody void noSub(@PathVariable("cwb") String cwb) {
+		String exchangecwb=null;
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		if(co!=null&&co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+			exchangecwb=co.getExchangecwb();
+		}
 		this.deliveryStateDAO.noSubSave(cwb);
+		if(exchangecwb!=null&&exchangecwb.length()>0){
+			this.deliveryStateDAO.noSubSave(exchangecwb);
+		}
 	}
 
 	/**
@@ -364,7 +379,15 @@ public class DeliveryController {
 	 */
 	@RequestMapping("/reSub/{cwb}")
 	public @ResponseBody void reSub(@PathVariable("cwb") String cwb) {
+		String exchangecwb=null;
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		if(co!=null&&co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+			exchangecwb=co.getExchangecwb();
+		}
 		this.deliveryStateDAO.reSubSave(cwb);
+		if(exchangecwb!=null&&exchangecwb.length()>0){
+			this.deliveryStateDAO.reSubSave(exchangecwb);
+		}
 	}
 
 	/**
@@ -377,9 +400,76 @@ public class DeliveryController {
 	@RequestMapping("/sub")
 	public String sub(Model model, @RequestParam("zanbuchuliTrStr") String zanbuchuliTrStr, @RequestParam("subTrStr") String subTrStr, @RequestParam("nocwbs") String nocwbs,
 			@RequestParam("deliveryId") long deliveryId) {
+		/*--检查vip上门换时配送单和揽退单要成对出现start--*/
+		String[] zanbuchuliTrStrArr = zanbuchuliTrStr!=null&&zanbuchuliTrStr.length()>0?zanbuchuliTrStr.split(","):null;
+		String[] subTrStrArr = subTrStr!=null&&subTrStr.length()>0?subTrStr.split(","):null;
+		Set<String> zanbuchuliCwbSetFinal=new HashSet<String>();
+		Set<String> subCwbSet=new HashSet<String>();
+		Set<String> subCwbSetFinal=new HashSet<String>();
+		Set<String> vipSmhSucessCwbSetFinal=new HashSet<String>();
+		if(zanbuchuliTrStrArr!=null&&zanbuchuliTrStrArr.length>0){
+			for (String cwb : zanbuchuliTrStrArr) {
+				cwb = cwb.replaceAll("'", "");
+				zanbuchuliCwbSetFinal.add(cwb);
+			}
+		}
+		
+		if(subTrStrArr!=null&&subTrStrArr.length>0){
+			for (String cwb : subTrStrArr) {
+				cwb = cwb.replaceAll("'", "");
+				subCwbSet.add(cwb);
+				subCwbSetFinal.add(cwb);
+			}
+		}
+		
+		for(String cwb :subCwbSet){
+			CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+			if(co.getExchangeflag()==VipExchangeFlagEnum.NO.getValue()){
+				continue;
+			}else{
+				if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()){
+					subCwbSetFinal.add(co.getExchangecwb());
+					if(zanbuchuliCwbSetFinal.contains(co.getExchangecwb())){
+						zanbuchuliCwbSetFinal.remove(co.getExchangecwb());
+					}
+					if(co.getDeliverystate()==DeliveryStateEnum.PeiSongChengGong.getValue()){
+						vipSmhSucessCwbSetFinal.add(co.getExchangecwb());
+					}
+				}else if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()){
+					if(!subCwbSetFinal.contains(co.getExchangecwb())){
+						logger.info("唯品会上门换审核时订单号没成对提交,不做处理,cwb="+cwb);
+						subCwbSetFinal.remove(cwb);//配送单在页面应该是暂不处理状态
+						zanbuchuliCwbSetFinal.add(cwb);
+					}else{
+						if(co.getDeliverystate()==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){
+							vipSmhSucessCwbSetFinal.add(cwb);
+						}
+					}
+				}
+			}
+		}
+		
+		StringBuilder zanbuchuliSb=new StringBuilder("");
+		StringBuilder subSb=new StringBuilder("");
+		for(String cwb :zanbuchuliCwbSetFinal){
+			zanbuchuliSb.append("'").append(cwb).append("'").append(",");
+		}
+		for(String cwb :subCwbSetFinal){
+			subSb.append("'").append(cwb).append("'").append(",");
+		}
+		String zanbuchuliTrStrFinal=zanbuchuliSb.toString();
+		if(zanbuchuliTrStrFinal.length()>0){
+			zanbuchuliTrStrFinal=zanbuchuliTrStrFinal.substring(0, zanbuchuliTrStrFinal.length()-1);
+		}
+		String subTrStrFinal=subSb.toString();
+		if(subTrStrFinal.length()>0){
+			subTrStrFinal=subTrStrFinal.substring(0, subTrStrFinal.length()-1);
+		}
+		/*--检查vip上门换时配送单和揽退单要成对出现end--*/
+		
 		DeliveryStateDTO dsDTO = new DeliveryStateDTO();
-		String cwbs = zanbuchuliTrStr;
-		cwbs += (cwbs.length() > 0) && (subTrStr.length() > 0) ? "," + subTrStr : subTrStr;
+		String cwbs = zanbuchuliTrStrFinal;
+		cwbs += (cwbs.length() > 0) && (subTrStrFinal.length() > 0) ? "," + subTrStrFinal : subTrStrFinal;
 		cwbs += (cwbs.length() > 0) && (nocwbs.length() > 0) ? "," + nocwbs : nocwbs;
 		List<DeliveryState> dlist = this.deliveryStateDAO.getDeliveryStateByCwbs(cwbs);
 
@@ -387,6 +477,13 @@ public class DeliveryController {
 			List<DeliveryStateView> deliveryStateViews = this.getDeliveryStateViews(dlist, cwbs);
 			dsDTO.analysisDeliveryStateList(deliveryStateViews, bcUtil, customerDAO);
 		}
+		
+		List<OrderGoods> vipSmhGoodsList=new ArrayList<OrderGoods>();
+		for(String cwb :vipSmhSucessCwbSetFinal){
+			List<OrderGoods> goodList=orderGoodsDAO.getOrderGoodsList(cwb);
+			vipSmhGoodsList.addAll(goodList);
+		}
+		model.addAttribute("vipSmhGoodsList", vipSmhGoodsList);
 
 		model.addAttribute("deliveryStateDTO", dsDTO);
 		User u = this.userDAO.getUserByUserid(deliveryId);
@@ -394,6 +491,8 @@ public class DeliveryController {
 		model.addAttribute("deliver", u);
 		SystemInstall usedeliverpay = this.systemInstallDAO.getSystemInstallByName("usedeliverpayup");
 		model.addAttribute("usedeliverpayup", usedeliverpay == null ? "no" : usedeliverpay.getValue());
+		model.addAttribute("zanbuchuliTrStrFinal", zanbuchuliTrStrFinal);
+		model.addAttribute("subTrStrFinal", subTrStrFinal);
 		return "delivery/sub";
 	}
 
@@ -511,6 +610,7 @@ public class DeliveryController {
 		sdv.setShouldfare(ds.getShouldfare());
 		sdv.setInfactfare(ds.getInfactfare());
 		sdv.setSign_img(ds.getSign_img());
+		sdv.setExchangeflag(cwbOrder.getExchangeflag());
 		return sdv;
 	}
 
@@ -646,7 +746,8 @@ public class DeliveryController {
 			@RequestParam(value = "signman", required = false, defaultValue = "") String signman, @RequestParam(value = "infactfare", required = false, defaultValue = "") BigDecimal infactfare,
 			@RequestParam("changereasonid") long changereasonid, @RequestParam("firstchangereasonid") long firstchangereasonid,
 			@RequestParam(value = "firstlevelreasonid", required = false, defaultValue = "0") int firstlevelreasonid,
-			@RequestParam(value = "signmanphone", required = false, defaultValue = "") String signmanphone, @RequestParam(value = "transcwb", required = false, defaultValue = "") String transcwb) {
+			@RequestParam(value = "signmanphone", required = false, defaultValue = "") String signmanphone, @RequestParam(value = "transcwb", required = false, defaultValue = "") String transcwb, 
+			@RequestParam(value = "infactfareVipSmh", required = false, defaultValue = "0") BigDecimal infactfareVipSmh) {
 		this.logger.info("web-editDeliveryState-进入单票反馈,cwb={}", cwb);
 		String scancwb = cwb;
 		try {
@@ -690,6 +791,7 @@ public class DeliveryController {
 			parameters.put("changereasonid", changereasonid);
 			parameters.put("firstchangereasonid", firstchangereasonid);
 			parameters.put("transcwb", transcwb);
+			parameters.put("infactfareVipSmh", infactfareVipSmh);
 			
 			//Added by leoliao at 2016-08-12 增加从DMP界面进行反馈标识
 			parameters.put("comefrompage", "1");
@@ -778,6 +880,15 @@ public class DeliveryController {
 		SystemInstall isShowZLZDLH = this.systemInstallDAO.getSystemInstall("isShowZLZDLH");
 		// 是否允许反馈为部分拒收
 		SystemInstall partReject = this.systemInstallDAO.getSystemInstall("partReject");
+		if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+			CwbOrder tuiCwbOrder = this.cwbDAO.getCwbByCwb(co.getExchangecwb());
+			DeliveryState tuiDs = this.deliveryStateDAO.getActiveDeliveryStateByCwb(co.getExchangecwb());
+			if(tuiCwbOrder!=null){
+				model.addAttribute("transcwbVipSmh", tuiCwbOrder.getTranscwb());
+				model.addAttribute("shouldfareVipSmh", tuiDs.getShouldfare());
+				model.addAttribute("infactfareVipSmh", tuiDs.getInfactfare());
+			}
+		}
 
 		model.addAttribute("backreasonlist", backreasonlist);
 		model.addAttribute("leavedreasonlist", leavedreasonlist);

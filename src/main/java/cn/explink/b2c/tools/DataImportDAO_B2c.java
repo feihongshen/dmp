@@ -166,6 +166,8 @@ public class DataImportDAO_B2c {
 			cwbOrder.setDoType(rs.getInt("do_type"));
 			cwbOrder.setAnnouncedvalue(rs.getBigDecimal("announcedvalue"));
 			cwbOrder.setOrderSource(rs.getInt("order_source"));
+			cwbOrder.setExchangeflag(rs.getInt("exchange_flag"));
+			cwbOrder.setExchangecwb(rs.getString("exchange_cwb"));
 			return cwbOrder;
 		}
 	}
@@ -186,8 +188,8 @@ public class DataImportDAO_B2c {
 						+ "customerid,emaildate,consigneemobile,startbranchid,exceldeliver,consigneeno,excelbranch,caramount,customercommand,cartype,carsize,backcaramount,"
 						+ "destination,transway,shipperid,sendcarnum,backcarnum,excelimportuserid,cwbordertypeid,cwbdelivertypeid,customerwarehouseid,cwbprovince,"
 						+ "cwbcity,cwbcounty,shipcwb,transcwb,serviceareaid,nextbranchid,orderflowid,flowordertype,emailfinishflag,commonid,modelname,emaildateid,carwarehouse,"
-						+ "paywayid,newpaywayid,multi_shipcwb,cargovolume,consignoraddress,tmall_notify_id,remark1,remark2,remark3,remark4,remark5,commoncwb,shouldfare,ismpsflag,mpsallarrivedflag,vipclub,tpstranscwb) "
-						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,?,?,? )", new PreparedStatementSetter() {
+						+ "paywayid,newpaywayid,multi_shipcwb,cargovolume,consignoraddress,tmall_notify_id,remark1,remark2,remark3,remark4,remark5,commoncwb,shouldfare,ismpsflag,mpsallarrivedflag,vipclub,tpstranscwb,exchange_flag,exchange_cwb) "
+						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )", new PreparedStatementSetter() {
 					@Override
 					public void setValues(PreparedStatement ps) throws SQLException {
 						ps.setString(1, cwbOrderDTO.getCwb());
@@ -253,6 +255,8 @@ public class DataImportDAO_B2c {
 						ps.setInt(61, cwbOrderDTO.getMpsallarrivedflag());
 						ps.setInt(62, cwbOrderDTO.getVipclub());
 						ps.setString(63, cwbOrderDTO.getTpsTranscwb());
+						ps.setInt(64, cwbOrderDTO.getExchangeflag());
+						ps.setString(65, cwbOrderDTO.getExchangecwb());
 					}
 				});
 	}

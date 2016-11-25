@@ -436,6 +436,10 @@ public class CwbOrder {
 	private String tpstranscwb;// tps运单号
 	
 	private String orderSource;// 订单类型
+	
+	private int exchangeflag;//换货标志：0不是，1是
+	private String exchangecwb;//换货关联的配送订单号或上门退订单号
+	private String exchangetpstranscwb;//换货时揽退单的品骏运单号,因为推此运单号是通过pjd的配送单接口
 
 	public int getInstationhandoverid() {
 		return this.instationhandoverid;
@@ -2128,6 +2132,29 @@ public class CwbOrder {
 		this.goodsSizeType = goodsSizeType;
 	}
 	//zhili01.liang 20160830 货物尺寸类型修改审核=====Begin=====
-	
+
+	public int getExchangeflag() {
+		return exchangeflag;
+	}
+
+	public void setExchangeflag(int exchangeflag) {
+		this.exchangeflag = exchangeflag;
+	}
+
+	public String getExchangecwb() {
+		return exchangecwb;
+	}
+
+	public void setExchangecwb(String exchangecwb) {
+		this.exchangecwb = exchangecwb;
+	}
+
+	public String getExchangetpstranscwb() {
+		return exchangetpstranscwb;
+	}
+
+	public void setExchangetpstranscwb(String exchangetpstranscwb) {
+		this.exchangetpstranscwb = exchangetpstranscwb;
+	}
 	
 }
