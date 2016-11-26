@@ -5546,6 +5546,10 @@ public class CwbOrderService extends BaseOrderService {
 	@Transactional(isolation = Isolation.REPEATABLE_READ)
 	public Map<String, Object> deliverStatePod(User user, String cwb, String scancwb, Map<String, Object> parameters) {
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+		if (co == null) {
+			throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
+		
 		//vip上门换配送单位反馈时时也反馈相关联的揽退单;注意要先反馈揽退单，因为要通过配送单的orderflow传运单号给oms和pjd
 		if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
 			Map<String, Object> tuiParameters=new HashMap<String, Object>();
@@ -5631,9 +5635,6 @@ public class CwbOrderService extends BaseOrderService {
 		// 委托派送变更状态为已反馈
 		this.orderDeliveryClientDAO.updateFanKun(cwb);
 
-		if (co == null) {
-			throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
-		}
 		if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
 			if(smtdirectsubmitflag==null||!"0".equals(smtdirectsubmitflag)){
 				throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.VipShangmenhuanLantuiBuyunxu,co.getExchangecwb());
@@ -6149,16 +6150,18 @@ public class CwbOrderService extends BaseOrderService {
 		
 		//Added by leoliao at 2016-08-12  上门退订单在页面进行反馈或修复反馈时,如果由拒退->上门退成功则整单退货,如果由上门退成功->拒退则整单不做退货;如果需要部分退货,可通过部分退货反馈进行操作
 		String comefrompage = (parameters.get("comefrompage")==null?"0":String.valueOf(parameters.get("comefrompage")));
-		if("1".equals(comefrompage) && co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()){
+		if(("1".equals(comefrompage)||co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()) && co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()){
 			orderPartGoodsReturnService.processOrderGoods(co.getCwb(), podresultid);
-			//反馈揽收状态/运单对照关系给tps edit by zhouhuan 2016-08-30
-			String paramTranscwb = (String) parameters.get("transcwb");
-			String isBatchSMT = (String) parameters.get("isBatchSMT");
-			boolean isThrow=true;
-			if(isBatchSMT!=null&&isBatchSMT.trim().equals("1")){//1表示来自批量反馈页面
-				isThrow=false;
+			if("1".equals(comefrompage)){
+				//反馈揽收状态/运单对照关系给tps edit by zhouhuan 2016-08-30
+				String paramTranscwb = (String) parameters.get("transcwb");
+				String isBatchSMT = (String) parameters.get("isBatchSMT");
+				boolean isThrow=true;
+				if(isBatchSMT!=null&&isBatchSMT.trim().equals("1")){//1表示来自批量反馈页面
+					isThrow=false;
+				}
+				this.sendTranscwbRelationToTps(co,oldTpstranscwb,paramTranscwb,infactfare,podresultid,reason,paybackedfee,isThrow);
 			}
-			this.sendTranscwbRelationToTps(co,oldTpstranscwb,paramTranscwb,infactfare,podresultid,reason,paybackedfee,isThrow);
 		}
 		//Added end
 		
