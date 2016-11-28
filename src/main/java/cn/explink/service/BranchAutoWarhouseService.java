@@ -19,6 +19,7 @@ import cn.explink.domain.User;
 import cn.explink.enumutil.CustomerAutoArrivalBranEnum;
 import cn.explink.enumutil.CwbFlowOrderTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
+import cn.explink.enumutil.VipExchangeFlagEnum;
 
 @Service
 public class BranchAutoWarhouseService {
@@ -42,7 +43,7 @@ public class BranchAutoWarhouseService {
 
 		Customer customer = this.customerDAO.getCustomerById(cwbOrder.getCustomerid());
 		//如果没有找到客户信息，或者客户没有开启揽退单自动到货，那么就直接结束 ---刘武强20161026
-		if (customer == null || customer.getAutoArrivalBranchFlag() != CustomerAutoArrivalBranEnum.kaiqi.getValue()) {
+		if (customer == null || (customer.getAutoArrivalBranchFlag() != CustomerAutoArrivalBranEnum.kaiqi.getValue()&&cwbOrder.getExchangeflag()==VipExchangeFlagEnum.NO.getValue())) {
 			this.logger.info("cwb={},揽退单是否自动到货标志：AutoArrivalBranchFlag={},结束自动到货", cwbOrder.getCwb(), customer.getAutoArrivalBranchFlag());
 			return;
 		}

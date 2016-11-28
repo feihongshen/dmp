@@ -2242,6 +2242,11 @@ function checkPeiSong() {
 	}
 	
 	if($("#exchangeflag").val()=='1'){
+		var transcwbSmh=$("#transcwb").val();
+		if(transcwbSmh==null||$.trim(transcwbSmh)==''){
+			alert("快递单号不能为空");
+			return false;
+		}
 		if (!isFloat($("#infactfareVipSmh").val())) {
 			alert("实收运费只能为数值");
 			return false;
