@@ -17,4 +17,3 @@ VALUES
 		'${eapUrl}branceReportMonthly.do?isIframe&index&',
 		@tmp_dmp40_function_parentid
 	);
- 
