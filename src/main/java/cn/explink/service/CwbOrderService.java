@@ -5556,11 +5556,20 @@ public class CwbOrderService extends BaseOrderService {
 			tuiParameters.putAll(parameters);
 			parameters.remove("transcwb");//vip上门换时配送页面填写的的运单号是只用于揽退单的
 			CwbOrder tuiCwbOrder=this.cwbDAO.getCwbByCwb(co.getExchangecwb());
-			if(tuiCwbOrder!=null){
+			if(tuiCwbOrder==null){
+				throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.VipShangmenhuanLantuiBucunzai);
+			}else{
 				long peisongPodresultid = tuiParameters.get("podresultid") == null ? 0l : (Long) tuiParameters.get("podresultid");
-				tuiParameters.put("podresultid", resultSwitch(peisongPodresultid));
+				long tuiPodresultid=resultSwitch(peisongPodresultid);
+				tuiParameters.put("podresultid", tuiPodresultid);
 				tuiParameters.put("smtdirectsubmitflag", "0");//vip上门换时揽退单是否直接操作，0不是，否则是
 				tuiParameters.put("infactfare", tuiParameters.get("infactfareVipSmh"));
+				if(tuiPodresultid==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){
+					String tuiTranscwb=(tuiParameters.get("transcwb")==null)?null:tuiParameters.get("transcwb").toString().trim();
+					if(tuiTranscwb==null||tuiTranscwb.length()<1){
+						throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.VipShangmenhuanLantuiMeiyundanhao);
+					}
+				}
 				this.deliverStatePod(user,co.getExchangecwb(),co.getExchangecwb(),tuiParameters);
 			}
 		}

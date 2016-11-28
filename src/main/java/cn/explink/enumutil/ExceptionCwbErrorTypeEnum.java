@@ -91,7 +91,8 @@ public enum ExceptionCwbErrorTypeEnum {
 			VipShangmenhuanLantuiButongzan(236, "唯品会上门换业务配送单和揽退单不在同一站点！"),
 			VipShangmenhuanLantuiWeidaohuo(237, "唯品会上门换业务配送单关联的揽退单未到货！"),
 			VipShangmenhuanLantuiFeilantui(238, "唯品会上门换业务配送单关联的订单不是揽退单！"),
-			VipShangmenhuanLantuiBuzhiche(239, "唯品会上门换业务暂不支持批量反馈！");
+			VipShangmenhuanLantuiBuzhiche(239, "唯品会上门换业务暂不支持批量反馈！"),
+			VipShangmenhuanLantuiMeiyundanhao(240, "唯品会上门换业务揽退成功时必须有运单号！");
 
 	private int value;
 	private String text;
