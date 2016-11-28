@@ -5567,6 +5567,7 @@ public class CwbOrderService extends BaseOrderService {
 				if(tuiPodresultid==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){
 					String tuiTranscwb=(tuiParameters.get("transcwb")==null)?null:tuiParameters.get("transcwb").toString().trim();
 					if(tuiTranscwb==null||tuiTranscwb.length()<1){
+						logger.error(ExceptionCwbErrorTypeEnum.VipShangmenhuanLantuiMeiyundanhao.getText()+",cwb="+tuiCwbOrder.getCwb());
 						throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.VipShangmenhuanLantuiMeiyundanhao);
 					}
 				}
