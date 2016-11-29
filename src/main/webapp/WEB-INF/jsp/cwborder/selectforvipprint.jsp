@@ -185,11 +185,11 @@ function nowprint(){
 				<td colspan="7" align="center" height="50"><font size="5px"><strong>唯品会退货单</strong></font></td>
 			</tr>
 			<tr>
-				<td width="75" valign="bottom" height="30">会员名称:</td>
-				<td width="50" valign="bottom"><%=co.getConsigneename()%></td>
-				<td width="75" valign="bottom">联系方式:</td>
-				<td width="40"  valign="bottom"><%=co.getConsigneemobileOfkf()%></td> <!-- 上门退打印不受用户权限限制全部显示明文 modify by vic.liang@pjbest.com 2016-08-29 -->
-				<td width="90" valign="bottom">应收运费:<%=co.getShouldfare()%></td>
+				<td width="86" valign="bottom" height="30">会员名称:</td>
+				<td width="86" valign="bottom"><%=co.getConsigneename()%></td>
+				<td width="77" valign="bottom">联系方式:</td>
+				<td width="81"  valign="bottom"><%=co.getConsigneemobileOfkf()%></td> <!-- 上门退打印不受用户权限限制全部显示明文 modify by vic.liang@pjbest.com 2016-08-29 -->
+				<td width="130" valign="bottom">&nbsp;&nbsp;&nbsp;应收运费:&nbsp;&nbsp;&nbsp;&nbsp;<%=co.getShouldfare()%></td>
 				<td colspan="2" valign="bottom"><%if(co.getExchangecwb()!=null){%>揽换单:<%=co.getExchangecwb()%>【全揽】<%}%></td>
 			</tr>
 			<tr>
@@ -290,11 +290,11 @@ function nowprint(){
 				<td colspan="7" align="center" height="50"><font size="5px" ><strong>唯品会退货单</strong></font></td>
 			</tr>
 			<tr>
-				<td width="75" valign="bottom" height="30">会员名称:</td>
-				<td width="50" valign="bottom"><%=co.getConsigneename()%></td>
-				<td width="75" valign="bottom">联系方式:</td>
-				<td  width="40"  valign="bottom"><%=co.getConsigneemobileOfkf()%></td>
-				<td width="90" valign="bottom">应收运费:<%=co.getShouldfare()%></td>
+				<td width="86" valign="bottom" height="30">会员名称:</td>
+				<td width="86" valign="bottom"><%=co.getConsigneename()%></td>
+				<td width="77" valign="bottom">联系方式:</td>
+				<td  width="81"  valign="bottom"><%=co.getConsigneemobileOfkf()%></td>
+				<td width="130" valign="bottom">&nbsp;&nbsp;&nbsp;应收运费:&nbsp;&nbsp;&nbsp;&nbsp;<%=co.getShouldfare()%></td>
 				<td colspan="2" valign="bottom"><%if(co.getExchangecwb()!=null){%>揽换单:<%=co.getExchangecwb()%>【全揽】<%}%></td>
 			</tr>
 			<tr>
