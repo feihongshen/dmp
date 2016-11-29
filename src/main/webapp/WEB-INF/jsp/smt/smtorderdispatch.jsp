@@ -53,7 +53,11 @@ function branchDeliver(pname,scancwb,deliverid,requestbatchno){
 					$("#msg").html(scancwb+data.errorinfo+"         （共"+data.body.cwbOrder.sendcarnum+"件，已扫"+data.body.cwbOrder.scannum+"件）");
 					
 					$("#scansuccesscwb").val(scancwb);
-					$("#showcwb").html("订 单 号："+scancwb);
+					var exchangecwb='';
+					if(data.body.cwbOrder.exchangeflag=='1'){
+						exchangecwb='&nbsp;&nbsp;&nbsp;&nbsp;[关联的揽退单'+data.body.cwbOrder.exchangecwb+'自动领货成功]';
+					}
+					$("#showcwb").html("订 单 号："+scancwb+exchangecwb);
 					$("#consigneeaddress").html("地 址："+data.body.cwbOrder.consigneeaddress);
 					// 增加超区领货显示结果 add by chunlei05.li 2016/8/16
 					if(data.body.isChaoqu == true) {
