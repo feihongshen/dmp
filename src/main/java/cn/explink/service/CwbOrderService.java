@@ -5559,11 +5559,26 @@ public class CwbOrderService extends BaseOrderService {
 			if(tuiCwbOrder==null){
 				throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.VipShangmenhuanLantuiBucunzai);
 			}else{
+				if(tuiCwbOrder.getCwbordertypeid()!=CwbOrderTypeIdEnum.Shangmentui.getValue()){
+					throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.VipShangmenhuanLantuiFeilantui);
+				}
 				long peisongPodresultid = tuiParameters.get("podresultid") == null ? 0l : (Long) tuiParameters.get("podresultid");
+				if(peisongPodresultid==DeliveryStateEnum.BuFenTuiHuo.getValue()||peisongPodresultid==DeliveryStateEnum.DaiZhongZhuan.getValue()){
+					throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.VipShangmenhuanLantuiFankuicuowu);
+				}
 				long tuiPodresultid=resultSwitch(peisongPodresultid);
 				tuiParameters.put("podresultid", tuiPodresultid);
 				tuiParameters.put("smtdirectsubmitflag", "0");//vip上门换时揽退单是否直接操作，0不是，否则是
 				tuiParameters.put("infactfare", tuiParameters.get("infactfareVipSmh"));
+				tuiParameters.put("receivedfeecash", BigDecimal.ZERO);
+				tuiParameters.put("receivedfeepos", BigDecimal.ZERO);
+				tuiParameters.put("receivedfeecheque", BigDecimal.ZERO);
+				tuiParameters.put("receivedfeeother", BigDecimal.ZERO);
+				tuiParameters.put("receivedfeecodpos", BigDecimal.ZERO);
+				tuiParameters.put("paybackedfee", BigDecimal.ZERO);
+				tuiParameters.put("posremark", "");
+				tuiParameters.put("checkremark", "");
+				//tuiParameters.put("podremarkid", podremarkid);
 				if(tuiPodresultid==DeliveryStateEnum.ShangMenTuiChengGong.getValue()){
 					String tuiTranscwb=(tuiParameters.get("transcwb")==null)?null:tuiParameters.get("transcwb").toString().trim();
 					if(tuiTranscwb==null||tuiTranscwb.length()<1){
