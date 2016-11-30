@@ -350,7 +350,7 @@ public class ExpressOrderDao {
 				ps = con.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
 				int i = 0;
 
-				ps.setString(++i, expressDetailTemp.getTransportNo());
+				ps.setString(++i, expressDetailTemp.getCustOrderNo());
 				ps.setString(++i, expressDetailTemp.getTransportNo());
 				//				ps.setString(++i, cwbOrderDTO.getCustCode());
 				if(expressDetailTemp.getIsAcceptProv() == 1){

@@ -739,7 +739,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					doReq.setCustCode(StringUtil.nullConvertToEmptyString(embracedOrderVO.getSender_No()));
 					doReq.setCneeNo(StringUtil.nullConvertToEmptyString(embracedOrderVO.getConsignee_No()));
 					doReq.setIsCod(Boolean.parseBoolean(embracedOrderVO.getCollection()));
-					doReq.setCodAmount(Double.parseDouble(((embracedOrderVO.getCollection_amount() != null) && (!"".equals(embracedOrderVO.getCollection_amount()))) ? embracedOrderVO.getCollection_amount() : "0.00"));// 按照王海要求，默认改为0.00
+					doReq.setCodAmount(Double.parseDouble(((embracedOrderVO.getCollection_amount() != null) && (!"".equals(embracedOrderVO.getCollection_amount()))) ? embracedOrderVO.getCollection_amount().trim() : "0.00"));// 按照王海要求，默认改为0.00
 					doReq.setCarriage(((embracedOrderVO.getFreight_total() != null) && (!"".equals(embracedOrderVO.getFreight_total()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
 							.getFreight_total()), 2) : 0);
 					doReq.setTotalWeight(((embracedOrderVO.getActual_weight() != null) && (!"".equals(embracedOrderVO.getActual_weight()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
@@ -747,7 +747,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					doReq.setCalculateWeight(((embracedOrderVO.getCharge_weight() != null) && (!"".equals(embracedOrderVO.getCharge_weight()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
 							.getCharge_weight()), 2) : 0);
 					doReq.setTotalVolume(((embracedOrderVO.getGoods_kgs() != null) && (!"".equals(embracedOrderVO.getGoods_kgs()))) ? this.toFixed(Double.parseDouble(embracedOrderVO.getGoods_kgs()) / 1000, 2) : 0);//
-					doReq.setTotalBox(Integer.parseInt(StringUtils.isEmpty(embracedOrderVO.getGoods_number().trim())?"0" : embracedOrderVO.getGoods_number().trim()));//
+					doReq.setTotalBox(Integer.parseInt(StringUtils.isEmpty(embracedOrderVO.getGoods_number())?"0" : embracedOrderVO.getGoods_number().trim()));//
 					doReq.setAssuranceValue(((embracedOrderVO.getInsured_amount() != null) && (!"".equals(embracedOrderVO.getInsured_amount()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
 							.getInsured_amount()), 2) : 0);
 					doReq.setAssuranceFee(((embracedOrderVO.getInsured_cost() != null) && (!"".equals(embracedOrderVO.getInsured_cost()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
@@ -781,7 +781,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 					List<PjDeliveryOrderCargoRequest> goodslist = new ArrayList<PjDeliveryOrderCargoRequest>();
 					PjDeliveryOrderCargoRequest goodsinfo = new PjDeliveryOrderCargoRequest();
 					goodsinfo.setCargoName(embracedOrderVO.getGoods_name());
-					goodsinfo.setCount(Integer.parseInt(StringUtils.isEmpty(embracedOrderVO.getGoods_number()) ? "0" : embracedOrderVO.getGoods_number()));
+					goodsinfo.setCount(Integer.parseInt(StringUtils.isEmpty(embracedOrderVO.getGoods_number()) ? "0" : embracedOrderVO.getGoods_number().trim()));
 					goodsinfo.setWeight(((embracedOrderVO.getGoods_weight() != null) && (!"".equals(embracedOrderVO.getGoods_weight()))) ? this.toFixed(Double.parseDouble(embracedOrderVO
 							.getGoods_weight()), 2) : 0);
 					goodsinfo
@@ -827,7 +827,7 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 				}
 				doReq.setCneePeriod(0);
 				// doReq.setCneeRemark("");//忽略
-				doReq.setTotalNum(Integer.parseInt(StringUtils.isEmpty(embracedOrderVO.getNumber()) ? "0" : embracedOrderVO.getNumber()) );
+				doReq.setTotalNum(Integer.parseInt(StringUtils.isEmpty(embracedOrderVO.getNumber()) ? "0" : embracedOrderVO.getNumber().trim()) );
 				List<PjDeliveryOrderRequest> requestlist = new ArrayList<PjDeliveryOrderRequest>();
 				requestlist.add(doReq);
 				ExpressOperationInfo paramObj = new ExpressOperationInfo(ExpressOperationEnum.CreateTransNO);

@@ -487,6 +487,7 @@ public class VipShopGetCwbDataService {
 			return null;
 		}
 
+		logger.info("获取vipshop订单报文返回{}", response_XML);
 		String orderXML = this.readXMLHandler.subStringSOAP(ReaderXMLHandler.parseBack(response_XML));
 		this.logger.info("当前下载唯品会XML={}", orderXML);
 
