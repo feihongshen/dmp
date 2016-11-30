@@ -353,7 +353,7 @@ public class ApplyEditDeliverystateController {
 							
 							String auditingTime = ec_dsd.getDs().getAuditingtime();
 							if (StringUtils.isNotEmpty(auditingTime)) {
-								/*String todayStr = DateTimeUtil.formatDate(new Date(), DateTimeUtil.DEF_DATE_FORMAT);
+								String todayStr = DateTimeUtil.formatDate(new Date(), DateTimeUtil.DEF_DATE_FORMAT);
 								String autitingDateStr = DateTimeUtil.translateFormatDate(auditingTime, DateTimeUtil.DEF_DATETIME_FORMAT, DateTimeUtil.DEF_DATE_FORMAT);
 								if (!todayStr.equals(autitingDateStr)) {// 归班审核时间与重置反馈时间不在同一天生成订单调整记录*/									
 								/************modify by bruce shangguan 20161121  根据订单号判断之前有没有生成过相应的报表记录**********************/
@@ -361,13 +361,13 @@ public class ApplyEditDeliverystateController {
 								//获取前一天的日期的int值（因为余额记录表是以这种形式存的）
 								//int  reportDate = DateTimeUtil.getIntDate(1);
 								//去快递单快财务照表找昨天的快照数据，如果有，则已生成报表---针对快递现付的运费数据调整
-								long reportnumExpress = this.fnStationSignOrderDetailsSnapshotExpressDao.getOrderCountByCwb(cwb) ;
+								//long reportnumExpress = this.fnStationSignOrderDetailsSnapshotExpressDao.getOrderCountByCwb(cwb) ;
 
 								//long reportnumExpress = this.fnStationSignOrderDetailsSnapshotExpressDao.getReportIdByCwbAndReportdate(cwb, reportDate);
 								//去订单财务快照表找昨天的快照数据，如果有，则已生成报表---针对非快递现付运费外的其他情况
 								//long reportnum = this.fnStationSignOrderDetailsSnapshotDao.getReportIdByCwbAndReportdate(cwb, reportDate);//去快递单快照表找昨天的快照数据，如果有，则已生成报表
-								long reportnum = this.fnStationSignOrderDetailsSnapshotDao.getOrderCountByCwb(cwb) ;
-								if (reportnumExpress != 0  ||  reportnum != 0) {//如果前一天的余额报表已生成，则生成调整账单	
+								//long reportnum = this.fnStationSignOrderDetailsSnapshotDao.getOrderCountByCwb(cwb) ;
+								//if (reportnumExpress != 0  ||  reportnum != 0) {//如果前一天的余额报表已生成，则生成调整账单	
 									// 重置反馈状态生成调整记录(目前是为了站点签收余额报表增加的方法)
 									this.editCwbService.createFnOrgOrderAdjustRecord(cwb, ec_dsd);
 									//  V4.2.16资金归集代扣。POSCOD自动回款，如果订单支付类型为POS 或者 COD时，当订单被重置反馈时，需写入一条回款调整记录到调整表 gordon.zhou
