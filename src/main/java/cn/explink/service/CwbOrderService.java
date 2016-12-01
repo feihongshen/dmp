@@ -5560,6 +5560,19 @@ public class CwbOrderService extends BaseOrderService {
 	@Transactional(isolation = Isolation.REPEATABLE_READ)
 	public Map<String, Object> deliverStatePod(User user, String cwb, String scancwb, Map<String, Object> parameters) {
 		CwbOrder co = this.cwbDAO.getCwbByCwbLock(cwb);
+		
+		String lockKey = getClass().getName() + "deliverStatePod" + cwb;
+		try {			
+			boolean isAcquired = distributedLock.tryLock(lockKey, 1, 1000, TimeUnit.MILLISECONDS);
+			if(!isAcquired){
+				logger.info("订单正在插入" + cwb);
+				throw new CwbException(cwb, "订单正在插入");
+			}
+		} catch (Exception e) {
+			logger.error("insertCwbOrder 加锁失败", e);
+			throw new RuntimeException(e.getMessage());
+		}
+		
 		//vip上门换配送单位反馈时时也反馈相关联的揽退单;注意要先反馈揽退单，因为要通过配送单的orderflow传运单号给oms和pjd
 		if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
 			Map<String, Object> tuiParameters=new HashMap<String, Object>();
