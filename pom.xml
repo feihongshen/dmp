@@ -20,6 +20,9 @@
 		<struts2-jsr303-validation-plugin.version>1.0</struts2-jsr303-validation-plugin.version>		
 	</properties>
 	<repositories>
+	
+	<repository>
+			
 		<repository>
 			<id>vipshopRepository</id>
 			<name>vipshop Repository</name>
@@ -186,11 +189,7 @@
 			<version>5.5.1</version>
 		</dependency>
 		
-		<dependency>
-		  <groupId>com.pjbest.util</groupId>
-		  <artifactId>dlock</artifactId>
-		  <version>1.0.1</version>
-		</dependency>
+		
 		
 		
       
@@ -251,11 +250,15 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>3.8-beta5</version>
 		</dependency>
+		
+		
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.9.4</version>
 		</dependency>
+		
+		
 		<dependency>
 			<groupId>com.jspsmart</groupId>
 			<artifactId>jspsmartupload</artifactId>
@@ -686,6 +689,42 @@
         </dependency>
         <!-- JSR 303  Validator end -->
         
+     	<dependency>
+			<groupId>org.redisson</groupId>
+			<artifactId>redisson</artifactId>
+			<version>2.6.0</version>
+		</dependency>
+		
+		<dependency>
+		  <groupId>com.pjbest.util</groupId>
+		  <artifactId>dlock</artifactId>
+		  <version>1.0.1</version>
+		</dependency>
+		
+		
+		
+        
+		  <dependency>
+		  <groupId>com.fasterxml.jackson.core</groupId>
+		  <artifactId>com.springsource.com.fasterxml.jackson.core.jackson-databind</artifactId>
+		  <version>2.7.6</version>
+		</dependency>
+		
+		<dependency>
+		  <groupId>com.fasterxml.jackson.core</groupId>
+		  <artifactId>com.springsource.com.fasterxml.jackson.core.jackson-core</artifactId>
+		  <version>2.7.6</version>
+		</dependency>
+		
+		<dependency>
+		  <groupId>com.fasterxml.jackson.core</groupId>
+		  <artifactId>com.springsource.com.fasterxml.jackson.core.jackson-annotations</artifactId>
+		  <version>2.7.6</version>
+		</dependency>
+		       
+      
+      
+      
 		
 	</dependencies>
 	<build>
