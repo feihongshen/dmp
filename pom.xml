@@ -185,6 +185,15 @@
 			<artifactId>activemq-camel</artifactId>
 			<version>5.5.1</version>
 		</dependency>
+		
+		<dependency>
+		  <groupId>com.pjbest.util</groupId>
+		  <artifactId>dlock</artifactId>
+		  <version>1.0.1</version>
+		</dependency>
+		
+		
+      
 		<dependency>
 			<groupId>com.sun.xml.ws</groupId>
 			<artifactId>jaxws-rt</artifactId>

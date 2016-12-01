@@ -1,5 +1,7 @@
 package cn.explink.b2c.tools;
 
+import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -305,6 +307,8 @@ public class JobUtil {
 	@Autowired
 	ReSendExpressOrderService reSendExpressOrderService;
 	
+	 @Autowired
+     com.pjbest.util.dlock.IDistributedLock  distributedLock;
 	
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 		JobUtil.threadMap = new RedisMapImpl<String, Integer>("JobUtil");
@@ -474,23 +478,29 @@ public class JobUtil {
 			this.logger.warn("已开启远程定时调用,本地定时任务不生效");
 			return;
 		}
-
-		if (JobUtil.threadMap.get("vipshop") == 1) {
-			this.logger.warn("本地定时器没有执行完毕，跳出循环vipshop");
-			return;
-		}
-		JobUtil.threadMap.put("vipshop", 1);
-
+		
 		long starttime = 0;
 		long endtime = 0;
+		
+		String taskName=this.getClass().getName() + "getVipShopCwbDetail_Task";
 		try {
-			starttime = System.currentTimeMillis();
-			this.vipShopService.excuteVipshopDownLoadTask();
-			endtime = System.currentTimeMillis();
+			
+			boolean isAcquired=	distributedLock.tryLock(taskName, 1, 60*10, TimeUnit.SECONDS);	
+			if (!isAcquired) {
+				this.logger.warn("本地定时器没有执行完毕，跳出循环vipshop");
+				return;
+			}else{
+				starttime = System.currentTimeMillis();
+				this.vipShopService.excuteVipshopDownLoadTask();
+				endtime = System.currentTimeMillis();
+			}
 		} catch (Exception e) {
 			this.logger.error("执行vipshop定时器异常", e);
 		} finally {
-			JobUtil.threadMap.put("vipshop", 0);
+			 try {
+		                 distributedLock.unlock(taskName);
+		       } catch (Exception e) {
+		       }
 		}
 
 		this.logger.info("执行了获取vipshop订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
