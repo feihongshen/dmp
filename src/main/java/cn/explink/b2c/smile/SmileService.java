@@ -161,14 +161,9 @@ public class SmileService {
 		}
 
 		long warehouseid = smile.getWarehouseid(); // 订单导入的库房Id
-		List<CwbOrderDTO> resultList = dataImportInterface.Analizy_DataDealByB2c(Long.parseLong(smile.getCustomerids()), B2cEnum.Smile.getMethod(), orderlist, warehouseid, true);
-		
-		if(resultList.isEmpty()){
-			logger.info("广州思迈-订单导入出错");
-			return buildResponseXML("False", "dmp处理失败，请重推");
-		} else {
-			logger.info("广州思迈-订单导入成功");
-		}
+		dataImportInterface.Analizy_DataDealByB2c(Long.parseLong(smile.getCustomerids()), B2cEnum.Smile.getMethod(), orderlist, warehouseid, true);
+
+		logger.info("广州思迈-订单导入成功");
 
 		return buildResponseXML("True", "成功");
 	}
