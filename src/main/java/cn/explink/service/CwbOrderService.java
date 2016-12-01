@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -44,6 +45,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import com.alibaba.fastjson.JSON;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderService;
+import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderServiceHelper;
+import com.pjbest.deliveryorder.bizservice.PjDoStatusGoodsRequest;
+import com.pjbest.deliveryorder.bizservice.PjDoStatusRequest;
+import com.pjbest.deliveryorder.bizservice.PjDoStatusResponse;
+import com.pjbest.deliveryorder.service.OmOrderTransportModel;
+import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
+import com.pjbest.util.dlock.IDistributedLock;
 
 import cn.explink.aspect.OrderFlowOperation;
 import cn.explink.b2c.auto.order.service.AutoUserService;
@@ -230,17 +241,8 @@ import cn.explink.util.ExcelUtils;
 import cn.explink.util.JsonUtil;
 import cn.explink.util.Page;
 import cn.explink.util.StringUtil;
-
-import com.alibaba.fastjson.JSON;
-import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderService;
-import com.pjbest.deliveryorder.bizservice.PjDeliveryOrderServiceHelper;
-import com.pjbest.deliveryorder.bizservice.PjDoStatusGoodsRequest;
-import com.pjbest.deliveryorder.bizservice.PjDoStatusRequest;
-import com.pjbest.deliveryorder.bizservice.PjDoStatusResponse;
-import com.pjbest.deliveryorder.enumeration.PaymentEnum;
-import com.pjbest.deliveryorder.service.OmOrderTransportModel;
-import com.pjbest.deliveryorder.service.PjTransportFeedbackRequest;
-import com.vip.osp.core.exception.OspException;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 @Service
 @Transactional
@@ -514,6 +516,9 @@ public class CwbOrderService extends BaseOrderService {
 	@Autowired
 	TranscwbOrderFlowDAO transcwbOrderFlowDAO;
 	
+	@Autowired
+    IDistributedLock  distributedLock;
+	
 	private static final String MQ_FROM_URI_RECEIVE_GOODS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.receivegoods.orderFlow";
 	private static final String MQ_FROM_URI_DELIVERY_APP_JMS_ORDER_FLOW = "jms:queue:VirtualTopicConsumers.deliverAppJms.orderFlow";
 	public void insertCwbOrder(final CwbOrderDTO cwbOrderDTO, final long customerid, final long warhouseid, final User user, final EmailDate ed) {
@@ -531,7 +536,19 @@ public class CwbOrderService extends BaseOrderService {
 			cwbOrderDTO.setSendcargonum(0);// 按海外环球的需求，取货件数不处理
 			cwbOrderDTO.setBackcargonum(1);
 		}
-
+		
+		// add by jian_xie 添加分布式锁 锁定1秒
+		String lockKey = getClass().getName() + "insertCwbOrder" + cwbOrderDTO.getCwb();
+		try {			
+			boolean isAcquired = distributedLock.tryLock(lockKey, 1, 1000, TimeUnit.MILLISECONDS);
+			if(!isAcquired){
+				logger.info("订单正在插入" + cwbOrderDTO.getCwb());
+				throw new CwbException(cwbOrderDTO.getCwb(), "订单正在插入");
+			}
+		} catch (Exception e) {
+			logger.error("insertCwbOrder 加锁失败", e);
+			throw new RuntimeException(e.getMessage());
+		}
 		this.jdbcTemplate
 				.update("insert into express_ops_cwb_detail ("
 						+ "cwb,consigneename,consigneeaddress,consigneepostcode,consigneephone,sendcarname,backcarname,receivablefee,paybackfee,carrealweight,"
@@ -5549,7 +5566,17 @@ public class CwbOrderService extends BaseOrderService {
 		if (co == null) {
 			throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
 		}
-		
+		String lockKey = getClass().getName() + "deliverStatePod" + cwb;
+		try {			
+			boolean isAcquired = distributedLock.tryLock(lockKey, 1, 1000, TimeUnit.MILLISECONDS);
+			if(!isAcquired){
+				logger.info("订单正在插入" + cwb);
+				throw new CwbException(cwb, "订单正在插入");
+			}
+		} catch (Exception e) {
+			logger.error("insertCwbOrder 加锁失败", e);
+			throw new RuntimeException(e.getMessage());
+		}
 		//vip上门换配送单位反馈时时也反馈相关联的揽退单;注意要先反馈揽退单，因为要通过配送单的orderflow传运单号给oms和pjd
 		if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
 			Map<String, Object> tuiParameters=new HashMap<String, Object>();
@@ -5660,6 +5687,9 @@ public class CwbOrderService extends BaseOrderService {
 		// 委托派送变更状态为已反馈
 		this.orderDeliveryClientDAO.updateFanKun(cwb);
 
+		if (co == null) {
+			throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.CHA_XUN_YI_CHANG_DAN_HAO_BU_CUN_ZAI);
+		}
 		if(co.getCwbordertypeid()==CwbOrderTypeIdEnum.Shangmentui.getValue()&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
 			if(smtdirectsubmitflag==null||!"0".equals(smtdirectsubmitflag)){
 				throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.VipShangmenhuanLantuiBuyunxu,co.getExchangecwb());
