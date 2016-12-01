@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.pjbest.util.dlock.IDistributedLock;
+
 import cn.explink.b2c.amazon.AmazonService;
 import cn.explink.b2c.auto.order.service.AutoDispatchStatusService;
 import cn.explink.b2c.auto.order.service.ExpressOrderService;
@@ -307,8 +309,8 @@ public class JobUtil {
 	@Autowired
 	ReSendExpressOrderService reSendExpressOrderService;
 	
-	 @Autowired
-     com.pjbest.util.dlock.IDistributedLock  distributedLock;
+	@Autowired
+    IDistributedLock  distributedLock;
 	
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 		JobUtil.threadMap = new RedisMapImpl<String, Integer>("JobUtil");
@@ -482,14 +484,13 @@ public class JobUtil {
 		long starttime = 0;
 		long endtime = 0;
 		
-		String taskName=this.getClass().getName() + "getVipShopCwbDetail_Task";
+		String taskName = getClass().getName() + "getVipShopCwbDetail_Task";
 		try {
-			
-			boolean isAcquired=	distributedLock.tryLock(taskName, 1, 60*10, TimeUnit.SECONDS);	
+			boolean isAcquired = distributedLock.tryLock(taskName, 1, 60 * 120 * 1000, TimeUnit.MILLISECONDS);
 			if (!isAcquired) {
-				this.logger.warn("本地定时器没有执行完毕，跳出循环vipshop");
+				this.logger.warn("本地定时器没有执行完毕，跳出循环getVipShopCwbDetail_Task");
 				return;
-			}else{
+			} else {
 				starttime = System.currentTimeMillis();
 				this.vipShopService.excuteVipshopDownLoadTask();
 				endtime = System.currentTimeMillis();
@@ -497,10 +498,11 @@ public class JobUtil {
 		} catch (Exception e) {
 			this.logger.error("执行vipshop定时器异常", e);
 		} finally {
-			 try {
-		                 distributedLock.unlock(taskName);
-		       } catch (Exception e) {
-		       }
+			try {
+				distributedLock.unlock(taskName);
+			} catch (Exception e) {
+				logger.error(taskName + "解锁失败", e);
+			}
 		}
 
 		this.logger.info("执行了获取vipshop订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
@@ -1580,26 +1582,30 @@ public class JobUtil {
 	 * 执行获取vipshop临时表插入主表log
 	 */
 	public void getVipShopCwbTempInsert_Task() {
-		
-		if (JobUtil.threadMap.get("vipshoptimmer") == 1) {
-			this.logger.warn("本地定时器没有执行完毕，跳出循环vipshop");
-			return;
-		}
-		JobUtil.threadMap.put("vipshoptimmer", 1);
-
 		long starttime = 0;
 		long endtime = 0;
+		String lockKey = getClass().getName() + "getVipShopCwbTempInsert_Task";
 		try {
-			starttime = System.currentTimeMillis();
-			this.vipshopInsertCwbDetailTimmer.selectTempAndInsertToCwbDetails();
-			endtime = System.currentTimeMillis();
+			boolean isAcquired = distributedLock.tryLock(lockKey, 1, 60 * 120 * 1000, TimeUnit.MILLISECONDS);
+			if (!isAcquired) {
+				logger.info(lockKey + "正在执行,退出本次执行定时器任务");
+				return;
+			} else {
+				starttime = System.currentTimeMillis();
+				this.vipshopInsertCwbDetailTimmer.selectTempAndInsertToCwbDetails();
+				endtime = System.currentTimeMillis();
+			}
 		} catch (Exception e) {
 			this.logger.error("执行vipshoptimmer定时器异常", e);
 		} finally {
-			JobUtil.threadMap.put("vipshoptimmer", 0);
+			try {
+				distributedLock.unlock(lockKey);
+			} catch (Exception e) {
+				logger.info(lockKey + "解锁失败");
+			}
 		}
 
-		this.logger.info("执行了获取vipshoptimmer订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+		this.logger.info("执行了获取getVipShopCwbTempInsert_Task订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 	
 	/**
