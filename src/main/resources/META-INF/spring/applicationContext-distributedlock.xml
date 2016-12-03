@@ -21,7 +21,7 @@
 	 <bean id="distributedLock" class="com.pjbest.util.dlock.impl.DistributedLock"  init-method="init" lazy-init="false">
          <property name="hostname" value="${redis.host}" />
          <property name="port" value="${redis.port}" />
-         <property name="scope" value="dmp_distrutelock_${redis.prefix}" />
+         <property name="scope" value="dmp_distrutelock_${label}_${redis.prefix}" />
  </bean>
 	
 </beans>
