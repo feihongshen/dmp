@@ -1601,7 +1601,7 @@ public class JobUtil {
 			try {
 				distributedLock.unlock(lockKey);
 			} catch (Exception e) {
-				logger.info(lockKey + "解锁失败");
+				logger.info(lockKey + "解锁失败", e);
 			}
 		}
 
