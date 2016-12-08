@@ -23,5 +23,4 @@
          <property name="port" value="${redis.port}" />
          <property name="scope" value="dmp_distrutelock_${label}_${redis.prefix}" />
  </bean>
-	
 </beans>
