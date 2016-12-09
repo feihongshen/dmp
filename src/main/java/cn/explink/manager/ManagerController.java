@@ -4,10 +4,12 @@ import java.util.List;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,14 +22,20 @@ import cn.explink.dao.UserDAO;
 import cn.explink.domain.CwbOrder;
 import cn.explink.domain.GotoClassAuditing;
 import cn.explink.domain.PayUp;
+import cn.explink.domain.User;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.IsmpsflagEnum;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderWithDeliveryState;
+import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.PayUpService;
+import cn.explink.service.manager.OMSHelperService;
 
+/**
+ * 常用重推功能
+ */
 @Controller
 @RequestMapping("/manage")
 public class ManagerController {
@@ -54,14 +62,37 @@ public class ManagerController {
 
 	@Autowired
 	GotoClassAuditingDAO gotoClassAuditingDAO;
+	
+	@Autowired
+	SecurityContextHolderStrategy securityContextHolderStrategy;
+	
+	@Autowired
+	OMSHelperService omsHelperService;
 
 	@RequestMapping("/")
 	public String main(String cwb) {
 		return "manage";
 	}
+	private User getSessionUser() {
+		ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
+		return userDetail.getUser();
+	}
+	
+	/**
+	 * 记录日志
+	 */
+	private void writeLog(String cwbs) {
+		User user = getSessionUser();
+		long userid = -1;
+		if (user != null) {
+			userid = user.getUserid();
+		}
+		logger.info("manage操作userid:" + userid + "操作内容keys:" + cwbs);
+	}
 
 	@RequestMapping("/resendFlowJms")
 	public @ResponseBody String resendFlowJms(@RequestParam("cwbs") String cwbs) {
+		writeLog(cwbs);
 		ObjectMapper objMapper = JacksonMapper.getInstance();
 		
 		String[] split = cwbs.split("\n");
@@ -103,6 +134,7 @@ public class ManagerController {
 	}
 	@RequestMapping("/resendFlowJmsEnd")
 	public @ResponseBody String resendFlowJmsEnd(@RequestParam("cwbs") String cwbs) {
+		writeLog(cwbs);
 		String[] split = cwbs.split("\n");
 		for (String cwb : split) {
 			if (cwb.trim().length() == 0) {
@@ -121,7 +153,8 @@ public class ManagerController {
 
 	@RequestMapping("/resendPayup")
 	public @ResponseBody String resendPayup(@RequestParam("ids") String ids) {
-		String[] split = ids.split(",");
+		writeLog(ids);
+		String[] split = ids.split("\n");
 		for (String id : split) {
 			if (id.trim().length() == 0) {
 				continue;
@@ -178,6 +211,7 @@ public class ManagerController {
 
 	@RequestMapping("/resendGotoClassJms")
 	public @ResponseBody String resendGotoClassJms(@RequestParam("gcaids") String gcaids) {
+		writeLog(gcaids);
 		String[] split = gcaids.split("\n");
 		for (String gcaid : split) {
 			if (gcaid.trim().length() == 0) {
@@ -187,6 +221,63 @@ public class ManagerController {
 			cwbOrderService.okJMS(gotoClassAuditingDAO.getGotoClassAuditingByGcaid(Integer.parseInt(gcaid)));
 		}
 
+		return "ok" + split.length;
+	}
+	
+	@RequestMapping("/reTpoSendDoInf")
+	@ResponseBody
+	public String reTpoSendDoInf(String cwbs, String type){
+		writeLog(cwbs);
+		String[] split = cwbs.split("\n");
+		StringBuilder sb = new StringBuilder();
+		for(String cwb : split){
+			if(StringUtils.isEmpty(cwb.trim())){
+				continue;
+			}
+			sb.append(cwb.trim());
+			sb.append(",");
+		}
+		if(sb.length() > 0){
+			omsHelperService.reTpoSendDoInf(sb.toString(), type);
+		}
+		return "ok" + split.length;
+	}
+	
+	@RequestMapping("/reTpoOtherOrderTrack")
+	@ResponseBody
+	public String reTpoOtherOrderTrack(String cwbs, String type){
+		writeLog(cwbs);
+		String[] split = cwbs.split("\n");
+		StringBuilder sb = new StringBuilder();
+		for(String cwb : split){
+			if(StringUtils.isEmpty(cwb.trim())){
+				continue;
+			}
+			sb.append(cwb.trim());
+			sb.append(",");
+		}
+		if(sb.length() > 0){
+			omsHelperService.reTpoOtherOrderTrack(sb.toString(), type);
+		}
+		return "ok" + split.length;
+	}
+	
+	@RequestMapping("/reOpsSendB2cData")
+	@ResponseBody
+	public String reOpsSendB2cData(String cwbs, String type){
+		writeLog(cwbs);
+		String[] split = cwbs.split("\n");
+		StringBuilder sb = new StringBuilder();
+		for(String cwb : split){
+			if(StringUtils.isEmpty(cwb.trim())){
+				continue;
+			}
+			sb.append(cwb.trim());
+			sb.append(",");
+		}
+		if(sb.length() > 0){
+			omsHelperService.reOpsSendB2cData(sb.toString(), type);
+		}
 		return "ok" + split.length;
 	}
 
