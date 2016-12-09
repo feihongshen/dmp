@@ -18,5 +18,3 @@ VALUES
 		@tmp_dmp40_function_parentid
 	);
 
-/*增加 刷卡日期*/
-alter table fn_customer_bill add column pos_time datetime;

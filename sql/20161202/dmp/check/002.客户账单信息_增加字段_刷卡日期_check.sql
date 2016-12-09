@@ -1,0 +1,1 @@
+SELECT 'fn_customer_bill客户账单信息表_增加字段_刷卡日期' AS '脚本注释', IF((SELECT COUNT(1) FROM information_schema.`COLUMNS` WHERE TABLE_SCHEMA = SCHEMA() AND TABLE_NAME='fn_customer_bill' AND COLUMN_NAME IN ('pos_time'))=1, 'success', 'failed') AS '执行结果' ;
