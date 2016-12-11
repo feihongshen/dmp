@@ -30,6 +30,10 @@
 	</div>
 	<div style="display:inline-block">
 		<table>
+		    <tr>
+                <td><div id="btnFormatString" class="easyui-linkbutton">格式化sql拼接字符串</div></td>
+                <td><div id="btnFormatNum" class="easyui-linkbutton">格式化sql拼接数字</div></td>
+            </tr>
 			<tr>
 				<td><div id="btnResendFlowJms" class="easyui-linkbutton">重发express_ops_order_flow所有</div></td>
 				<td><div id="btnResendFlowJmsEnd" class="easyui-linkbutton">重发express_ops_order_flow最后状态</div></td>

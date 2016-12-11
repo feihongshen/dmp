@@ -117,4 +117,17 @@ $(function(){
 	$("#btnOpsSendB2cDataFail").click(function(){
 		resetData("reOpsSendB2cData", "fail");		
 	});
+	
+	$("#btnFormatString").click(function(){
+		var cwbs=$("#cwbs").textbox("getText");
+		cwbs = cwbs.replace(/(?:\S+)(?=\n?)/g,"'$&',");
+		cwbs = cwbs.substring(0, cwbs.length - 1);
+		$("#cwbs").textbox("setText", cwbs);
+	});
+	$("#btnFormatNum").click(function(){
+		var cwbs=$("#cwbs").textbox("getText");
+		cwbs = cwbs.replace(/(?:\S+)(?=\n)/g,'$&,');
+		$("#cwbs").textbox("setText", cwbs);
+	});
+	
 });
