@@ -680,6 +680,7 @@ public class DataImportController {
 				}
 				/**把vip上门换里的揽退单也同时做匹配地址操作--end**/
 				
+				Set<String> ignoreTuiCwbSet=new HashSet<String>();
 				if ((oList != null) && (oList.size() > 0)) {
 					if(tuiCoList!=null&&tuiCoList.size()>0){
 						oList.addAll(tuiCoList);
@@ -688,6 +689,10 @@ public class DataImportController {
 						}
 					}
 					for (CwbOrder cwbOrder : oList) {
+						if(ignoreTuiCwbSet.contains(cwbOrder.getCwb())){
+							//配送单失败，关联的揽退单就不做匹配了
+							continue;
+						}
 						CwbOrderAddressCodeEditTypeEnum addressCodeEditType = CwbOrderAddressCodeEditTypeEnum.WeiPiPei;
 						if ((cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.DiZhiKu.getValue())
 								|| (cwbOrder.getAddresscodeedittype() == CwbOrderAddressCodeEditTypeEnum.XiuGai.getValue())) {// 如果修改的数据原来是地址库匹配的或者是后来修改的
@@ -706,8 +711,14 @@ public class DataImportController {
 							count += 1;
 						} catch (CwbException ce) {
 							model.addAttribute("error", "匹配失败，" + ce.getMessage() + "!");
+							if(cwbOrder.getCwbordertypeid()==CwbOrderTypeIdEnum.Peisong.getValue()&&
+									cwbOrder.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+								ignoreTuiCwbSet.add(cwbOrder.getExchangecwb());
+								logger.error("vip上门换业务配送单匹配失败,cwb="+cwbOrder.getCwb(),ce);
+							}
 						}
 					}
+					cwbStrList.remove(ignoreTuiCwbSet);
 				}
 				cwbOrderBranchMatchVoList = this.cwbOrderService.getCwbBranchMatchByCwbs(cwbStrList);
 				pageobj = new Page(count, page, onePageNumber);

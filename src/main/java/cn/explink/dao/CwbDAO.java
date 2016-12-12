@@ -9639,7 +9639,7 @@ public class CwbDAO {
 	 * @return
 	 */
 	public long getDaizhongzhuanNum(long branchid) {
-		String sql = "select count(1) from express_ops_cwb_detail where flowordertype=? and deliverystate=?  and currentbranchid=? and state=1";
+		String sql = "select count(1) from express_ops_cwb_detail where flowordertype=? and deliverystate=?  and currentbranchid=? and !(cwbordertypeid=2 and exchange_flag=1) and state=1";
 		return this.jdbcTemplate.queryForLong(sql,
 				FlowOrderTypeEnum.YiShenHe.getValue(),
 				DeliveryStateEnum.DaiZhongZhuan.getValue(), branchid);
@@ -9661,7 +9661,7 @@ public class CwbDAO {
 				+ " flowordertype=" + FlowOrderTypeEnum.YiShenHe.getValue()
 				+ " and deliverystate="
 				+ DeliveryStateEnum.DaiZhongZhuan.getValue()
-				+ " and currentbranchid=" + branchid + " and state=1 ";
+				+ " and currentbranchid=" + branchid + " and !(cwbordertypeid=2 AND exchange_flag=1) and state=1 ";
 		return sql;
 
 	}

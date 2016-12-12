@@ -117,6 +117,7 @@ import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.OutWarehouseGroupEnum;
 import cn.explink.enumutil.OutwarehousegroupOperateEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
+import cn.explink.enumutil.VipExchangeFlagEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.exception.ExplinkException;
 import cn.explink.pos.tools.SignTypeEnum;
@@ -1309,7 +1310,8 @@ public class CwbOrderPDAController {
 				+ "--receivedfeecheque:" + receivedfeecheque + "--receivedfeeother:" + receivedfeeother);
 
 		try {
-
+			checkVipSmh(cwb,FlowOrderTypeEnum.YiFanKui);
+			
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put("deliverid", deliverid);
 			parameters.put("podresultid", podresultid);
@@ -2309,6 +2311,7 @@ public class CwbOrderPDAController {
 		String scancwb = cwb;
 		cwb = this.cwborderService.translateCwb(cwb);
 
+		checkVipSmh(cwb,FlowOrderTypeEnum.FenZhanLingHuo);
 		User deliveryUser = this.userDAO.getUserByUserid(deliverid);
 		CwbOrder co = this.cwborderService.receiveGoods(this.getSessionUser(), deliveryUser, cwb, scancwb);
 		PDAResponse pDAResponse = new PDAResponse(CwbOrderPDAEnum.OK.getCode(), co.getCwb() + "成功扫描");
@@ -2395,6 +2398,7 @@ public class CwbOrderPDAController {
 				if (cwbOrder == null) {
 					throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO);
 				}
+				checkVipSmh(cwbOrder,FlowOrderTypeEnum.YiFanKui);
 				if (cwbOrder.getCwbordertypeid() != CwbOrderTypeIdEnum.Peisong.getValue()) {
 					throw new CwbException(cwbOrder.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FEI_PEI_SONG_DING_DAN);
 				}
@@ -2503,6 +2507,7 @@ public class CwbOrderPDAController {
 				String scancwb = cwb;
 				cwb = this.cwborderService.translateCwb(cwb);
 
+				checkVipSmh(cwb,FlowOrderTypeEnum.FenZhanLingHuo);
 				this.cwborderService.receiveGoods(this.getSessionUser(), this.userDAO.getUserByUserid(deliverid), cwb, scancwb);
 				statuscodeSTR += cwb + "_" + statuscode + ",";
 				errorinfoSTR += cwb + "_成功,";
@@ -3169,4 +3174,18 @@ public class CwbOrderPDAController {
 		return this.userDAO.getMoHuUser(userName);
 	}
 
+	//暂时不支持使用PDA进行唯品会上门换业务操作
+	private void checkVipSmh(String cwb,FlowOrderTypeEnum flowOrderTypeEnum){
+		CwbOrder co = this.cwbDAO.getCwbByCwb(cwb);
+		if(co!=null&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+			throw new CwbException(cwb,flowOrderTypeEnum.getValue(),ExceptionCwbErrorTypeEnum.VipShangmenhuanOperateNot);
+		}
+	}
+	
+	//暂时不支持使用PDA进行唯品会上门换业务操作
+	private void checkVipSmh(CwbOrder co,FlowOrderTypeEnum flowOrderTypeEnum){
+		if(co!=null&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+			throw new CwbException(co.getCwb(),flowOrderTypeEnum.getValue(),ExceptionCwbErrorTypeEnum.VipShangmenhuanOperateNot);
+		}
+	}
 }

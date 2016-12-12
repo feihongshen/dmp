@@ -65,9 +65,11 @@ import cn.explink.enumutil.CwbOrderAddressCodeEditTypeEnum;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.EditCwbTypeEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
+import cn.explink.enumutil.VipExchangeFlagEnum;
 import cn.explink.exception.ExplinkException;
 import cn.explink.pos.tools.JacksonMapper;
 import cn.explink.service.AdjustmentRecordService;
+import cn.explink.service.BranchAutoWarhouseService;
 import cn.explink.service.BranchService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderWithDeliveryState;
@@ -146,6 +148,9 @@ public class EditCwbController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	BranchAutoWarhouseService branchAutoWarhouseService;
 	
 	private Logger logger = LoggerFactory.getLogger(EditCwbController.class);
 
@@ -798,10 +803,15 @@ public class EditCwbController {
 					continue;
 				}
 				cwbStr = cwbStr.trim();
+				CwbOrder co = this.cwbDAO.getCwbByCwb(cwbStr);
+				if(co==null||(co.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()&&co.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())){
+					continue;
+				}
+				
 				if (StringUtils.isNotBlank(cwbStr)) {
 					cwbList.add(cwbStr);
 				}
-				CwbOrder co = this.cwbDAO.getCwbByCwb(cwbStr);
+				
 				if(co!=null) {
 					co.setConsigneemobileOfkf(SecurityUtil.getInstance().decrypt(co.getConsigneemobileOfkf()));
 				}
@@ -809,7 +819,10 @@ public class EditCwbController {
 					cwborderlist.add(co);
 				}
 			}
-			List<CwbOrderBranchMatchVo> cwbOrderBranchMatchVoList = this.cwbOrderService.getCwbBranchMatchByCwbs(cwbList);
+			List<CwbOrderBranchMatchVo> cwbOrderBranchMatchVoList = new ArrayList<CwbOrderBranchMatchVo>();
+			if(cwbList.size()>0){
+				cwbOrderBranchMatchVoList =this.cwbOrderService.getCwbBranchMatchByCwbs(cwbList);
+			}
 			List<Branch> branchs = this.branchDAO.getBranchAllzhandian(String.valueOf(BranchEnum.ZhanDian.getValue()));
 			// 匹配站点名称
 			Map<Long, String> branchnameMap = new HashMap<Long, String>();
@@ -864,6 +877,27 @@ public class EditCwbController {
 			@RequestParam(value = "checkeditmobile", required = false, defaultValue = "") String checkeditmobile,
 			@RequestParam(value = "checkbranchname", required = false, defaultValue = "") String checkbranchname,
 			@RequestParam(value = "checkeditcommand", required = false, defaultValue = "") String checkeditcommand) {// 地址
+		
+		String result=this.doUpdateCwbInfo(cwb, editname, editmobile, editcommand, editshow, remark, branchname, courierName, begindate, editaddress, checkeditaddress, checkeditname, checkeditmobile, checkbranchname, checkeditcommand);
+		return result;
+	}
+	
+	private String doUpdateCwbInfo(String cwb,
+				String editname, // 修改的姓名
+				String editmobile, // 修改的电话
+				String editcommand, // 需求
+				long editshow, // 是否显示,
+				String remark, // 订单备注
+			    String branchname, // 匹配后站点
+				String courierName, // 配送员ID
+				String begindate,
+				String editaddress,
+				String checkeditaddress,
+				String checkeditname,
+				String checkeditmobile,
+				String checkbranchname,
+				String checkeditcommand) {// 地址
+			
 		// 1.修改后的信息赋值
 		final ExplinkUserDetail userDetail = (ExplinkUserDetail) this.securityContextHolderStrategy.getContext().getAuthentication().getPrincipal();
 		cwb = cwb.trim();
@@ -1006,6 +1040,24 @@ public class EditCwbController {
 			
 			this.emaildateDAO.editEditEmaildateForCwbcountAdd(ed.getEmaildateid());
 			this.cwbOrderService.updateExcelCwb(co, co.getCustomerid(), (old == null || "".equals(old.getCarwarehouse()))?0:Long.valueOf(old.getCarwarehouse()), userDetail.getUser(), ed, true);
+			
+			//vip上门换业务里把关联的揽退单也做站点匹配
+			if(old.getCwbordertypeid() == CwbOrderTypeIdEnum.Peisong.getValue()&&old.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+				this.logger.info("vip上门换关联的揽退单也做站点匹配,cwb="+old.getExchangecwb());
+				CwbOrder tuiCo = this.cwbDAO.getCwbByCwb(old.getExchangecwb());
+				if(tuiCo!=null){
+					if(tuiCo.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()&&tuiCo.getExchangeflag()==VipExchangeFlagEnum.YES.getValue()){
+						this.doUpdateCwbInfo(tuiCo.getCwb(), editname, editmobile, editcommand, editshow, remark, branchname, courierName, begindate, editaddress, checkeditaddress, checkeditname, checkeditmobile, checkbranchname, checkeditcommand);
+						try {
+							this.logger.info("vip上门换关联的揽退单自动分站到货,cwb="+tuiCo.getCwb());
+							this.branchAutoWarhouseService.branchAutointoWarhouse(tuiCo, branch);
+						} catch (Exception e) {
+							logger.error("vip上门换揽退单修改订单信息时自动分站到货报错,cwb="+tuiCo.getCwb(), e);
+						}
+					}
+				}
+			}
+			
 			return "{\"errorCode\":0,\"error\":\"修改成功\"}";
 		} catch (Exception e) {
 			this.logger.error("调用地址库异常", e);

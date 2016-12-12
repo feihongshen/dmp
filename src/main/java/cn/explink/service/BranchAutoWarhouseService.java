@@ -56,7 +56,9 @@ public class BranchAutoWarhouseService {
 		}*/
 
 		if ((cwbOrder.getFlowordertype() == CwbFlowOrderTypeEnum.WeiDaoHuo.getValue()) || (cwbOrder.getFlowordertype() == CwbFlowOrderTypeEnum.TiHuo.getValue())
-				|| (cwbOrder.getFlowordertype() == CwbFlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue())) {
+				|| (cwbOrder.getFlowordertype() == CwbFlowOrderTypeEnum.TiHuoYouHuoWuDan.getValue())
+				||(cwbOrder.getCwbordertypeid() == CwbOrderTypeIdEnum.Shangmentui.getValue()
+						&&cwbOrder.getExchangeflag()==VipExchangeFlagEnum.YES.getValue())) {
 
 			// 调用分站到货扫描
 			User user = this.getOperatorUser(branch);
