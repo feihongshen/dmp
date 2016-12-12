@@ -6,84 +6,61 @@
 <title>易普配送信息管理平台DMP</title>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/reset.css" type="text/css" />
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/index.css" type="text/css"  />
-<script src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js" type="text/javascript"></script>
-<script>
-	$(function() {
-		//$("#submitButton").button();
-		$("#sendButton").click(function(){
-			var cwbs=$("#cwbs").val();
-			$.ajax({
-				url:"<%=request.getContextPath()%>/manage/resendFlowJms",
-				type:"POST",
-				data:{cwbs:cwbs},
-				success:function(data){
-					alert(data)
-				}
-			});
-		});
-		$("#sendButtonEnd").click(function(){
-			var cwbs=$("#cwbs").val();
-			$.ajax({
-				url:"<%=request.getContextPath()%>/manage/resendFlowJmsEnd",
-				type:"POST",
-				data:{cwbs:cwbs},
-				success:function(data){
-					alert(data)
-				}
-			});
-		});
-		
-		$("#sendGCAButton").click(function(){
-			var cwbs=$("#cwbs").val();
-			$.ajax({
-				url:"<%=request.getContextPath()%>/manage/resendGotoClassJms",
-				type:"POST",
-				data:{gcaids:cwbs},
-				success:function(data){
-					alert(data)
-				}
-			});
-		});
-		
-		$("#sendPayupButton").click(function(){
-			var cwbs=$("#cwbs").val();
-			$.ajax({
-				url:"<%=request.getContextPath()%>/manage/resendPayup",
-				type:"POST",
-				data:{ids:cwbs},
-				success:function(data){
-					alert(data)
-				}
-			});
-		});
-		
-		$("#sendPdaButton").click(function(){
-			var cwbs=$("#cwbs").val();
-			$.ajax({
-				url:"<%=request.getContextPath()%>/manage/resendPdaDeliverJms",
-				type:"POST",
-				data:{flowids:cwbs},
-				success:function(data){
-					alert(data)
-				}
-			});
-		});
-	});
-</script>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/js/easyui1.5/themes/default/easyui.css" type="text/css"  />
+<link rel="stylesheet" href="<%=request.getContextPath()%>/js/easyui1.5/themes/icon.css" type="text/css"  />
+<script src="<%=request.getContextPath()%>/js/easyui1.5/jquery.min.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/manage.js" type="text/javascript"></script>
+<script src="<%=request.getContextPath()%>/js/easyui1.5/jquery.easyui.min.js" type="text/javascript"></script>
+<style>
+    td{
+       width:300px;
+    }
+    td div {
+       width: 100%;
+    }    
+</style>
 </head>
-<body bgcolor="#3c7fb5">
-<div>
-	订单号: <textarea id="cwbs" rows="25" cols="100"></textarea>
-	<button id="sendButton">重发流程消息</button>
-	
-	<button id="sendGCAButton">重发归班消息</button>
-	
-	<button id="sendPayupButton">重发交款消息</button>
-	
-	<button id="sendPdaButton">重发反馈消息</button>
-	
-	<button id="sendButtonEnd">重发最后状态</button>
-</div>
+<body>
+    <!--  
+	<textarea id="cwbs" rows="25" cols="100"></textarea>
+	-->
+	<div style="margin-left:20px;height:100%; display:inline-block">
+	   <input id="cwbs" class="easyui-textbox" data-options="multiline:true, label:'订单号', labelPosition:'top'"
+	   style="width:250px;height:100%">
+	</div>
+	<div style="display:inline-block">
+		<table>
+		    <tr>
+                <td><div id="btnFormatString" class="easyui-linkbutton">格式化sql拼接字符串</div></td>
+                <td><div id="btnFormatNum" class="easyui-linkbutton">格式化sql拼接数字</div></td>
+            </tr>
+			<tr>
+				<td><div id="btnResendFlowJms" class="easyui-linkbutton">重发express_ops_order_flow所有</div></td>
+				<td><div id="btnResendFlowJmsEnd" class="easyui-linkbutton">重发express_ops_order_flow最后状态</div></td>
+			</tr>
+			<tr>
+				<td><div id="btnResendGotoClassJms" class="easyui-linkbutton">重发express_ops_goto_class_auditing消息(id)</div></td>
+			</tr>
+			<tr>
+				<td><div id="btnResendPayup" class="easyui-linkbutton">重发express_ops_pay_up消息(id)</div></td>
+			</tr>
+			<tr>
+			    <td><div id="btnTpoSendDoInfFail" class="easyui-linkbutton">重推tpo_send_do_inf失败</div></td>			    
+			    <td><div id="btnTpoSendDoInfAll" class="easyui-linkbutton">重推tpo_send_do_inf所有</div></td>
+			</tr>
+			<tr>
+                <td><div id="btnTpoOtherOrderTrackFail" class="easyui-linkbutton">重推tpo_other_order_track失败</div></td>
+                <td><div id="btnTpoOtherOrderTrackAll" class="easyui-linkbutton">重推tpo_other_order_track全部</div></td>                
+            </tr>
+            <tr>
+                <td><div id="btnOpsSendB2cDataFail" class="easyui-linkbutton">重推express_send_b2c_data失败</div></td>
+                <td><div id="btnOpsSendB2cDataAll" class="easyui-linkbutton">重推express_send_b2c_data全部</div></td>                
+            </tr>
+		</table>
+		<!-- 这个事件没有写
+	   <button id="btnResendPdaDeliverJms" class="easyui-linkbutton">重发反馈消息</div>	
+	   -->
+		
+	</div>
 </body>
 </html>
-

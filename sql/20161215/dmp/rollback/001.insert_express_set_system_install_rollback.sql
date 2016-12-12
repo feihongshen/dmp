@@ -1,1 +1,1 @@
-delete from express_set_system_install where name ='WeisudaOrderType';
+delete from express_set_system_install where name in('WeisudaOrderType','dmpAndOmsSecretKey');

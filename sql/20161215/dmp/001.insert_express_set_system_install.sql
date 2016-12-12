@@ -1,1 +1,2 @@
 insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('WeisudaOrderType','0', '领货绑定类型0、唯品会单，1、外单。多种类型逗号（,）分隔');
+insert into `express_set_system_install` (`name`, `value`, `chinesename`) values('dmpAndOmsSecretKey','eldldkdladjfajadfadfdadffaffljdflajasd', 'dmp与omshttp通讯使用的密钥');
