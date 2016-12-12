@@ -338,7 +338,7 @@ public class SmtController {
 		sql.append("f.branchid  = " + this.getCurrentBranchId() + " ");
 		sql.append("and f.credate >= '" + this.getTodayOutAreaZeroTimeString() + "' ");
 		sql.append("and f.flowordertype = " + FlowOrderTypeEnum.ChaoQu.getValue() + " ");
-		sql.append("and d.state = 1 ");
+		sql.append("and d.exchange_flag=0 and d.state = 1 ");
 	}
 
 	private String getCwbs(HttpServletRequest request) {
@@ -627,7 +627,7 @@ public class SmtController {
 	}
 
 	private void appendSmtOrderTypeWhereCond(StringBuilder sql) {
-		sql.append("and d.cwbordertypeid = 2 ");
+		sql.append("and d.cwbordertypeid = 2 and d.exchange_flag=0 ");
 	}
 
 	private void appendInStationWhereCond(StringBuilder sql, boolean dispatch) {

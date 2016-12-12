@@ -205,7 +205,7 @@ function goForm(cwb){
 										<td bgcolor="#EBFFD7"><b>货物类型：</b><%=view.getCartype()%></td>
 									</tr>
 									<tr>
-										<td bgcolor="#EBFFD7">&nbsp;</td>
+										<td bgcolor="#EBFFD7"><b>关联订单号：</b><%=cwborder.getExchangecwb()==null?"":cwborder.getExchangecwb() %></td>
 										<td bgcolor="#EBFFD7"><b>货物尺寸类型：</b><%=GoodsSizeTypeEnum.getTextByValue(view.getGoodsSizeType()) %></td>
 									</tr>
 									<tr>

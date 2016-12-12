@@ -2098,10 +2098,6 @@ function check_deliveystate(PeiSongChengGong, ShangMenTuiChengGong, ShangMenHuan
 			return checkGongGong_delivery();
 		}
 	} else if (podresultid == DaiZhongZhuan) {// 分站滞留、滞留自动领货
-		if(exchangeflag=='1'){
-			alert("唯品会上门换业务不允许反馈为待中转");
-			return false;
-		}
 		if (firstchangereasonid == 0) {
 			alert("请选择一级中转原因");
 			return false;
