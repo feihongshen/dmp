@@ -170,13 +170,15 @@ public class BranchController {
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				bh.setCheckremandtype(BranchEnum.YuYinTiXing.getValue());
 			}
-			long branchid;
+			//修改机构上传声音
+			long branchid = this.branchDAO.creBranch(bh);
+			/*long branchid;
 			try {
 				branchid = branchService.creBranchAndSyncOsp(bh);
 			} catch (Exception e) {
 				String errorMessage = "操作失败，无法保存到本地或者同步到机构服务，原因：" + e.getMessage();
 				return "{\"errorCode\":1,\"error\":\"" + errorMessage + "\"}";
-			}
+			}*/
 			bh = branchDAO.getBranchByBranchid(branchid);
 			if (bh.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if (!branchInfService.isCloseOldInterface()) {
@@ -326,13 +328,15 @@ public class BranchController {
 				branch.setBranchname(oldBranch.getBranchname());
 				branch.setTpsbranchcode(oldBranch.getTpsbranchcode());
 			}
-
-			try {
+			//同步到tps 需注释
+		/*	try {
 				branchService.saveBranchAndSyncOsp(branch);
 			} catch (Exception e) {
 				String errorMessage = "操作失败，无法保存到本地或者同步到机构服务，原因：" + e.getMessage();
 				return "{\"errorCode\":1,\"error\":\"" + errorMessage + "\"}";
-			}
+			}*/
+			//修改机构上传声音
+			this.branchDAO.saveBranch(branch);
 			branch = branchDAO.getBranchByBranchid(branchid);
 			if (branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
 				if (!branchInfService.isCloseOldInterface()) {
@@ -621,12 +625,14 @@ public class BranchController {
 
 	@RequestMapping("/del/{id}")
 	public @ResponseBody String del(@PathVariable("id") long branchid) {
-		try {
+		//删除机构信息 同步tps 需注释
+		/*try {
 			branchService.delBranchAndSyncOsp(branchid);
 		} catch (Exception e) {
 			String errorMessage = "操作失败，无法保存到本地或者同步到机构服务，原因：" + e.getMessage();
 			return "{\"errorCode\":1,\"error\":\"" + errorMessage + "\"}";
-		}
+		}*/
+		this.branchDAO.delBranch(branchid);
 		Branch branch = this.branchDAO.getBranchByBranchid(branchid);
 		this.logger.info("operatorUser={},机构管理->del,站点id：{}", this.getSessionUser().getUsername(), branchid);
 		if (!branchInfService.isCloseOldInterface()) {

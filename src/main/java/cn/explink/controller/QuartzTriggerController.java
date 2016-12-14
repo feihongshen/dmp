@@ -69,8 +69,11 @@ public class QuartzTriggerController{
 		
 //		   triggerGroups= stdScheduler.getTriggerGroupNames();
 //		   triggersInGroup = stdScheduler.getTriggerNames(StdScheduler.DEFAULT_GROUP);
+		//stdScheduler.getTriggerGroupNames()取得所有的jobDetail组
 		   for(String triggerGroup: stdScheduler.getTriggerGroupNames()){
+			   //取得某个group下的所有的jobDetail
 			   for(String triggerName: stdScheduler.getTriggerNames(triggerGroup)){
+				   //取得指定的Trigger
 				  Trigger trigger=stdScheduler.getTrigger(triggerName, triggerGroup);//StdScheduler.DEFAULT_GROUP
 				  if(trigger == null){
 					  logger.info("stdScheduler.getTrigger get Null!!! ");
@@ -83,12 +86,19 @@ public class QuartzTriggerController{
 						CronTrigger cronTrigger = (CronTrigger)trigger;
 					    vo.setTriggerId(k);
 					    k=k+1;
+					    //任务名称
 					    vo.setTriggerName(triggerName);//cronTrigger.getJobName();
+					    
 					    vo.setTriggerType("CRON");
+					    //任务描述
 					    vo.setTriggerDesc(cronTrigger.getDescription());
+					    //执行计划
 					    vo.setTriggerPlan(cronTrigger.getCronExpression());
+					    //分组
 					    vo.setTriggerGroup(triggerGroup);
+					    //上次执行时间
 					    vo.setPreviousFireTime(cronTrigger.getPreviousFireTime());
+					    //下次执行时间
 					    vo.setNextFireTime(cronTrigger.getNextFireTime());
 					}
 					if(trigger instanceof SimpleTrigger){
@@ -113,7 +123,7 @@ public class QuartzTriggerController{
 //				  CronTriggerBean cronTriggerBean2=(CronTriggerBean) cronTrigger;
 //				  logger.info("CronTrigger cast to CronTriggerBean succesful");
 //				  --------end---------
-				  
+				  //获取当前定时器的状态
 			      int state=stdScheduler.getTriggerState(triggerName, triggerGroup);
 	//		      Trigger.STATE_NORMAL, Trigger.STATE_PAUSED, 
 	//		      Trigger.STATE_COMPLETE, Trigger.STATE_ERROR, 

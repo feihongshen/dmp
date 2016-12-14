@@ -89,8 +89,8 @@ public class PjwlExpressGetPreOrderDataService {
 			logger.info("数据抓取成功，解析抓取到的数据异常，异常原因：{}", e.getMessage());
 			resFlag = 0;
 		}
-		// DMP调用DO服务反馈抓取成功的预约单
-		List<String> preOrderNos = new ArrayList<String>();
+		// DMP调用DO服务反馈抓取成功的预约单 需注释
+		/*List<String> preOrderNos = new ArrayList<String>();
 		if (normalList != null) {
 			for (InfReserveOrderSModel record : normalList) {
 				preOrderNos.add(record.getReserveOrderNo());
@@ -103,7 +103,7 @@ public class PjwlExpressGetPreOrderDataService {
 				logger.info("DMP数据抓取成功将成功的抓取预订号返回TPS DO 操作异常，异常原因：{}", e.getMessage());
 				
 			}
-		}
+		}*/
 
 		
 		return resFlag;

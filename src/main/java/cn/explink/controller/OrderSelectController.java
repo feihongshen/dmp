@@ -747,14 +747,15 @@ public class OrderSelectController {
 			PjDeliveryOrderService pjDeliveryOrderService = new PjDeliveryOrderServiceHelper.PjDeliveryOrderServiceClient();
 			List<PjDeliveryTrackInfo> result = new ArrayList<PjDeliveryTrackInfo>();
 			List<JoinMessageVO> resultShow = new ArrayList<JoinMessageVO>();
-			try {
+			//请求tps运单状态反馈 需注释
+			/*try {
 				result = pjDeliveryOrderService.getDeliveryOrderTracking(cwb);
 			} catch (OspException e) {
 				this.logger.info("请求TPS运单状态反馈接口异常,异常原因为{}", e.getMessage());
 				model.addAttribute("aorderFlowViews", fororder);
 				this.logger.error("", e);
 				return jspPage;
-			}
+			}*/
 			if ((result == null) || (result.size() == 0)) {
 				this.logger.info("请求TPS运单状态反馈接口异常,异常原因为{}");
 				model.addAttribute("aorderFlowViews", fororder);
