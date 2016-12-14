@@ -101,7 +101,7 @@
 				<li><span>邮箱：</span><input type="text" name="branchemail" id="branchemail" maxlength="50"/></li>
 				 <!-- <li><span>预付款后缴款设置：</span><input type="hidden" name="" class ="zhandian" /></li> -->
 				 <!--对应滑槽口 tps -->
-				<!--  <li><span>对应滑槽口号：</span><input type="text" name="outputno" id="outputno" maxlength="50"/></li> --> 
+				 <li><span>对应滑槽口号：</span><input type="text" name="outputno" id="outputno" maxlength="50"/></li>
 				 <li><span>结算类型：</span>
 				 	<select id ="accounttype" name ="accounttype" class ="zhandian"  style="width:150px;">
 				 	 <option value ="0">==请选择==</option> 

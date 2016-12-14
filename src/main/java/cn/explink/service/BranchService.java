@@ -228,8 +228,8 @@ public class BranchService {
 		
 
 		//自动分拣线的滑槽口号
-		//branch.setOutputno(isNullOrUndefined(request.getParameter("outputno")) ? null : request.getParameter("outputno"));
-		branch.setOutputno(null);
+		branch.setOutputno(isNullOrUndefined(request.getParameter("outputno")) ? null : request.getParameter("outputno"));
+		
 		if ((isNullOrUndefined(request.getParameter("accountexcessfee"))) || request.getParameter("accountexcessfee").toString().equals("")) {
 			branch.setAccountexcessfee(BigDecimal.valueOf(Double.parseDouble("0")));
 		} else {
