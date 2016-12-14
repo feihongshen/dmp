@@ -242,7 +242,6 @@ public class BranchInfService {
 		}
 		return prestr;
 	}
-	
 	public void saveBranchInf(Branch branch, User sessionUser){
 		BranchInf branchInf = new BranchInf();
 		branchInf.setBranchid(branch.getBranchid());
@@ -267,7 +266,7 @@ public class BranchInfService {
 			// 失效
 			branchInf.setStatus((byte) 1);
 		}		
-		branchInfDao.saveBranchInf(branchInf);
+		 branchInfDao.saveBranchInf(branchInf);
 	}
 	
 	/**

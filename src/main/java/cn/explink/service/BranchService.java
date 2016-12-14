@@ -39,23 +39,22 @@ public class BranchService {
 
 	@Autowired
 	private BranchDAO branchDao;
-	
+
 	@Autowired
 	private MqExceptionDAO mqExceptionDAO;
-	
+
 	@Autowired
 	BranchSyncToOspHelper branchSyncToOspHelper;
-	
+
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-    @Autowired
-    private ProvinceDAO provinceDAO;
-    @Autowired
-    private CityDAO cityDAO;
-    @Autowired
-    private CountyDAO countyDAO;
+	@Autowired
+	private ProvinceDAO provinceDAO;
+	@Autowired
+	private CityDAO cityDAO;
+	@Autowired
+	private CountyDAO countyDAO;
 
-
-    public Branch loadFormForBranch(HttpServletRequest request, MultipartFile file, List<String> functionids) {
+	public Branch loadFormForBranch(HttpServletRequest request, MultipartFile file, List<String> functionids) {
 		Branch bh = this.loadFormForBranch(request);
 		if ((file != null) && !file.isEmpty()) {
 			String filePath = ResourceBundleUtil.WAVPATH;
@@ -74,7 +73,8 @@ public class BranchService {
 		return bh;
 	}
 
-	public Branch loadFormForBranch(HttpServletRequest request, MultipartFile file, String wavh, List<String> functionids) {
+	public Branch loadFormForBranch(HttpServletRequest request, MultipartFile file, String wavh,
+			List<String> functionids) {
 		Branch bh = this.loadFormForBranch(request);
 		if ((file != null) && !file.isEmpty()) {
 			String filePath = ResourceBundleUtil.WAVPATH;
@@ -228,8 +228,8 @@ public class BranchService {
 		
 
 		//自动分拣线的滑槽口号
-		branch.setOutputno(isNullOrUndefined(request.getParameter("outputno")) ? null : request.getParameter("outputno"));
-
+		//branch.setOutputno(isNullOrUndefined(request.getParameter("outputno")) ? null : request.getParameter("outputno"));
+		branch.setOutputno(null);
 		if ((isNullOrUndefined(request.getParameter("accountexcessfee"))) || request.getParameter("accountexcessfee").toString().equals("")) {
 			branch.setAccountexcessfee(BigDecimal.valueOf(Double.parseDouble("0")));
 		} else {
@@ -275,7 +275,7 @@ public class BranchService {
 		branch.setPayinType(Integer.parseInt(StringUtils.isEmpty(request.getParameter("payinType")) ? OrgPayInTypeEnum.StationPay.getValue()+"" : request.getParameter("payinType")));
 		return branch;
 	}
-	
+
 	private boolean isNullOrUndefined(String parameter) {
 		return parameter == null || parameter.equals("undefined");
 	}
@@ -285,12 +285,12 @@ public class BranchService {
 	@Produce(uri = "jms:topic:savezhandian")
 	ProducerTemplate savezhandian;
 
-	public void addzhandianToAddress(long branchid, Branch branch,String oldtpsbranchcode) {
+	public void addzhandianToAddress(long branchid, Branch branch, String oldtpsbranchcode) {
 		JSONObject branchToJson = new JSONObject();
 		try {
 			this.logger.info("消息发送端：addzhandian, branchid={}", branchid);
 			this.addzhandian.sendBodyAndHeader(null, "branchid", branchid);
-			
+
 			branchToJson.put("branchid", branchid);
 			branchToJson.put("branchname", branch.getBranchname());
 			branchToJson.put("branchphone", branch.getBranchphone());
@@ -303,19 +303,22 @@ public class BranchService {
 			branchToJson.put("branchprovince", branch.getBranchprovince());
 			branchToJson.put("brancharea", branch.getBrancharea());
 			branchToJson.put("tpsbranchcode", branch.getTpsbranchcode());
-			branchToJson.put("oldtpsbranchcode", oldtpsbranchcode==null?"":oldtpsbranchcode);
-			
+			branchToJson.put("oldtpsbranchcode", oldtpsbranchcode == null ? "" : oldtpsbranchcode);
+
 			this.logger.info("消息发送端：savezhandian, branch={}", branchToJson.toString());
 			this.savezhandian.sendBodyAndHeader(null, "branch", branchToJson.toString());
 		} catch (Exception e) {
 			logger.error("", e);
-			//写MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".addzhandianToAddress")
+			// 写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance()
+					.buildExceptionCode(this.getClass().getSimpleName() + ".addzhandianToAddress")
 					.buildExceptionInfo(e.toString()).buildTopic(this.addzhandian.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("branchid", branchid + "").getMqException());
-			//写MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".addzhandianToAddress")
-					.buildExceptionInfo(e.toString()).buildTopic(this.savezhandian.getDefaultEndpoint().getEndpointUri())
+			// 写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance()
+					.buildExceptionCode(this.getClass().getSimpleName() + ".addzhandianToAddress")
+					.buildExceptionInfo(e.toString())
+					.buildTopic(this.savezhandian.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("branch", branchToJson.toString()).getMqException());
 		}
 	}
@@ -329,13 +332,14 @@ public class BranchService {
 			this.delzhandian.sendBodyAndHeader(null, "branchid", branchid);
 		} catch (Exception e) {
 			logger.error("", e);
-			//写MQ异常表
-			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".delBranch")
-					.buildExceptionInfo(e.toString()).buildTopic(this.delzhandian.getDefaultEndpoint().getEndpointUri())
+			// 写MQ异常表
+			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance()
+					.buildExceptionCode(this.getClass().getSimpleName() + ".delBranch").buildExceptionInfo(e.toString())
+					.buildTopic(this.delzhandian.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("branchid", branchid + "").getMqException());
 		}
 	}
-	
+
 	public Branch getBranchByBranchid(long branchid) {
 		Branch branch = this.branchDao.getBranchByBranchid(branchid);
 		if (branch == null || branch.getBranchid() == 0) {
@@ -343,101 +347,103 @@ public class BranchService {
 		}
 		return branch;
 	}
-	
+
 	public List<Branch> getBranchByTpsBranchcode(String tpsbranchcode) {
 		return this.branchDao.getBranchByTpsBranchcode(tpsbranchcode);
 	}
 
 	/**
 	 * 获取页面数据渲染缓存
+	 * 
 	 * @return
 	 */
 	public List<Branch> getPageCash() {
 
 		return this.branchDao.getAllEffectBranches();
 	}
+
 	public List<Branch> getBranchs() {
 
 		return this.branchDao.getAllBranches();
 	}
-	
-    public List<Branch> getPageCashs() {
+
+	public List<Branch> getPageCashs() {
 		return this.branchDao.getAllBranches();
 	}
 
-    @Transactional(rollbackFor=Exception.class)
-    public long creBranchAndSyncOsp(final Branch branch) throws Exception{
-    	branch.setUpdateUser(CurrentUserHelper.getInstance().getUserName());
-    	long branchid = this.branchDao.creBranch(branch);
-    	Branch savedBranch = branchDao.getBranchByBranchid(branchid);
+	@Transactional(rollbackFor = Exception.class)
+	public long creBranchAndSyncOsp(final Branch branch) throws Exception {
+		branch.setUpdateUser(CurrentUserHelper.getInstance().getUserName());
+		long branchid = this.branchDao.creBranch(branch);
+		Branch savedBranch = branchDao.getBranchByBranchid(branchid);
 		try {
 			branchSyncToOspHelper.saveBranchSyncToOsp(savedBranch);
 			return branchid;
 		} catch (Exception e) {
-    		logger.error(e.getMessage());
-    		throw e;
-    	}
-    }
-    
-    @Transactional(rollbackFor=Exception.class)
-	public void saveBranchAndSyncOsp(final Branch branch) throws Exception{
-    	branch.setUpdateUser(CurrentUserHelper.getInstance().getUserName());
-    	long branchid = branch.getBranchid();
-    	this.branchDao.saveBranch(branch);
-    	Branch savedBranch = branchDao.getBranchByBranchid(branchid);
+			logger.error(e.getMessage());
+			throw e;
+		}
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void saveBranchAndSyncOsp(final Branch branch) throws Exception {
+		branch.setUpdateUser(CurrentUserHelper.getInstance().getUserName());
+		long branchid = branch.getBranchid();
+		this.branchDao.saveBranch(branch);
+		Branch savedBranch = branchDao.getBranchByBranchid(branchid);
 		try {
 			branchSyncToOspHelper.saveBranchSyncToOsp(savedBranch);
 		} catch (Exception e) {
-    		logger.error(e.getMessage());
-    		throw e;
-    	}
-    }
-    
-    @Transactional(rollbackFor=Exception.class)
-	public void delBranchAndSyncOsp(long branchid) throws Exception{
-    	this.branchDao.delBranch(branchid, CurrentUserHelper.getInstance().getUserName());
-    	Branch branch = this.branchDao.getBranchByBranchid(branchid);
-    	if(branch.getTpsbranchcode()==null||branch.getTpsbranchcode().trim().length()<1){
-    		throw new Exception("机构编码不能为空");
-    	}
-    	try {
-    		//dmp只是将机构的字段标记为停用，不是真正删除
-    		branchSyncToOspHelper.saveBranchSyncToOsp(branch);
-    	} catch (Exception e) {
-    		logger.error(e.getMessage());
-    		throw e;
-    	}
-    }
-    
-    public Branch getBranchByBranchcode(String branchcode) {
-    	List<Branch> branchList = this.branchDao.getBranchByBranchcode(branchcode);
-    	if(branchList == null || branchList.size() == 0) {
-    		return null;
-    	}
+			logger.error(e.getMessage());
+			throw e;
+		}
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	public void delBranchAndSyncOsp(long branchid) throws Exception {
+		this.branchDao.delBranch(branchid, CurrentUserHelper.getInstance().getUserName());
+		Branch branch = this.branchDao.getBranchByBranchid(branchid);
+		if (branch.getTpsbranchcode() == null || branch.getTpsbranchcode().trim().length() < 1) {
+			throw new Exception("机构编码不能为空");
+		}
+		try {
+			// dmp只是将机构的字段标记为停用，不是真正删除
+			branchSyncToOspHelper.saveBranchSyncToOsp(branch);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			throw e;
+		}
+	}
+
+	public Branch getBranchByBranchcode(String branchcode) {
+		List<Branch> branchList = this.branchDao.getBranchByBranchcode(branchcode);
+		if (branchList == null || branchList.size() == 0) {
+			return null;
+		}
 		return branchList.get(0);
-    }
-    
-    /**
-     * 获取站点
-     * 2016年6月21日 下午4:37:05
-     * @param branchId
-     * @return
-     */
-    public Branch getZhanDianByBranchId(long branchid) {
-    	Branch branch = this.getBranchByBranchid(branchid);
-    	if(branch != null && branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
-    		return branch;
-    	}
-    	return null;
-    }
-    
-    public Branch getBranchByBranchname(String branchname) {
-    	Branch branch = this.branchDao.getBranchByBranchname(branchname);
-    	if(branch != null && branch.getBranchid() == 0) {
-    		return null;
-    	}
-    	return branch;
-    }
+	}
+
+	/**
+	 * 获取站点 2016年6月21日 下午4:37:05
+	 * 
+	 * @param branchId
+	 * @return
+	 */
+	public Branch getZhanDianByBranchId(long branchid) {
+		Branch branch = this.getBranchByBranchid(branchid);
+		if (branch != null && branch.getSitetype() == BranchEnum.ZhanDian.getValue()) {
+			return branch;
+		}
+		return null;
+	}
+
+	public Branch getBranchByBranchname(String branchname) {
+		Branch branch = this.branchDao.getBranchByBranchname(branchname);
+		if (branch != null && branch.getBranchid() == 0) {
+			return null;
+		}
+		return branch;
+	}
 
 	public List<BranchSyncResultVo> batchSyncBranchOsp() throws Exception {
 		List<Branch> branchs = this.getBranchs();

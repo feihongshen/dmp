@@ -218,7 +218,8 @@
 	         		<input type="hidden" name="" class ="zhandian" />
 	         	</li>
 	         	-->
-	         	<li><span>对应滑槽口号：</span><input type="text" name="outputno" id="outputno" value ="<%=branch.getOutputno()==null?"":branch.getOutputno()%>" maxlength="50"/></li>
+	         	 <!--对应滑槽口 tps -->
+	         	<%-- <li><span>对应滑槽口号：</span><input type="text" name="outputno" id="outputno" value ="<%=branch.getOutputno()==null?"":branch.getOutputno()%>" maxlength="50"/></li> --%>
 	         	
 	         <li>
 		         <span>结算类型：</span>

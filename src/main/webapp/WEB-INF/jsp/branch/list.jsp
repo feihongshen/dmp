@@ -122,7 +122,7 @@ $(function() {
 	    <% if(roleid == 0){%>
 		<span>
 			<form action="<%=request.getContextPath()%>/branch/syncAllBranchToOsp" method="post" id="exportForm">
-				<input name="" type="button" value="同步机构" class="input_button1"  id="sync_button"  />
+				<!-- <input name="" type="button" value="同步机构" class="input_button1"  id="sync_button"  /> -->
 			</form>
 		</span>
 		<%} %>
