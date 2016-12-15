@@ -254,7 +254,9 @@ public class DfFeeService {
 
 //            if(StringUtils.isBlank(province)){
             //根据站点到TPS查找相应省份你的信息。
-            SbOrgModel orgModelFromTPS = findOrgByCarrierAndSiteCode(branchId);
+            SbOrgModel orgModelFromTPS =null;
+            //去tps查当前省的信息
+           // SbOrgModel orgModelFromTPS=findOrgByCarrierAndSiteCode(branchId);
             if (orgModelFromTPS != null) {
                 if (StringUtils.isNotBlank(orgModelFromTPS.getProvinceName())) {
                     province = orgModelFromTPS.getProvinceName();
@@ -362,7 +364,8 @@ public class DfFeeService {
 
 //                if (StringUtils.isBlank(province)) {
                 //根据站点到TPS查找相应省份你的信息。
-                SbOrgModel orgModelFromTPS = findOrgByCarrierAndSiteCode(branchId);
+                SbOrgModel orgModelFromTPS = null;
+                // SbOrgModel orgModelFromTPS =findOrgByCarrierAndSiteCode(branchId)
                 if (orgModelFromTPS != null) {
                     if (StringUtils.isNotBlank(orgModelFromTPS.getProvinceName())) {
                         province = orgModelFromTPS.getProvinceName();

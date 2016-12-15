@@ -266,7 +266,7 @@ public class ValidateCodeAuthenticationFilter extends UsernamePasswordAuthentica
 		int loginFailMaxTryTimeLimit;
 		SystemInstall loginFailMaxTryTimeLimitSystemInstall = systemInstallDAO
 				.getSystemInstall("loginFailMaxTryTimeLimit");
-		loginFailMaxTryTimeLimit = (loginFailMaxTryTimeLimitSystemInstall == null ? 0
+		loginFailMaxTryTimeLimit = (loginFailMaxTryTimeLimitSystemInstall == null ? 5
 				: Integer.valueOf(loginFailMaxTryTimeLimitSystemInstall.getValue()));
 		return loginFailMaxTryTimeLimit;
 	}

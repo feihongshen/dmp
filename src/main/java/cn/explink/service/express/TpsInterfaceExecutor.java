@@ -30,7 +30,8 @@ public class TpsInterfaceExecutor {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	public Map<String, Object> executTpsInterface(ExpressOperationInfo paramObj) {
-		try{
+		//快递轨迹回传个tps 需注释
+		/*try{
 			String header = Tools.obj2json(paramObj);
 			this.logger.info("消息发送端：executeTpsInterfaceTemplate, executeTpsInterfaceHeader={}", header);
 			this.executeTpsInterfaceTemplate.sendBodyAndHeader(null, "executeTpsInterfaceHeader", Tools.obj2json(paramObj));
@@ -40,7 +41,7 @@ public class TpsInterfaceExecutor {
 			this.mqExceptionDAO.save(MqExceptionBuilder.getInstance().buildExceptionCode(this.getClass().getSimpleName() + ".executTpsInterface")
 					.buildExceptionInfo(e.toString()).buildTopic(this.executeTpsInterfaceTemplate.getDefaultEndpoint().getEndpointUri())
 					.buildMessageHeader("executeTpsInterfaceHeader", Tools.obj2json(paramObj)).getMqException());
-		}
+		}*/
 		return null;
 	}
 

@@ -255,9 +255,10 @@ public class ReserveOrderController extends ExpressCommonController {
         } else {
 			isQuery = false;
 		}
-		ReserveOrderPageVo reserveOrderPageVo;
+		ReserveOrderPageVo reserveOrderPageVo=null;
 		if(isQuery) {
-			reserveOrderPageVo = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel, page, rows);
+			//调用tps 订单查询接口 需注释
+			//reserveOrderPageVo = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel, page, rows);
 		} else {
 			reserveOrderPageVo = new ReserveOrderPageVo();
 		}
@@ -334,12 +335,11 @@ public class ReserveOrderController extends ExpressCommonController {
         } else {
             isQuery = false;
 		}
-		final List<ReserveOrderVo> reserveOrderList;
+		final List<ReserveOrderVo> reserveOrderList=new ArrayList<ReserveOrderVo>();
 		if(isQuery) {
-			reserveOrderList = this.reserveOrderService.getTotalReserveOrders(omReserveOrderModel);
-		} else {
-			reserveOrderList = new ArrayList<ReserveOrderVo>();
-		}
+			 // 获取全部的预约单 请求的tps 需注释
+			//reserveOrderList = this.reserveOrderService.getTotalReserveOrders(omReserveOrderModel);
+		} 
 		String sheetName = "订单信息"; // sheet的名称
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		String fileName = "ReserveOrder_" + df.format(new Date()) + ".xlsx"; // 文件名
