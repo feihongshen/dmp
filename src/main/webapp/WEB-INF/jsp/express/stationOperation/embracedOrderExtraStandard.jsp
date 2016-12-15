@@ -201,7 +201,7 @@
 								<td class="tdleft">寄件地址:</td>
 								<td class="tdleft" colspan="4"><input type="text" name="sender_adress" id="sender_adress_id"style="width:100%;"/></td>
 							</tr>
-							<tr><td colspan="6"><b>预约单：</b></font></td></tr>
+							<!-- <tr><td colspan="6"><b>预约单：</b></font></td></tr>
 							<tr>
 							    <td colspan="6">
 									<table class="table1" border="1px" id="reserveOrderTable" width="100%">
@@ -244,7 +244,7 @@
 									  </tbody>
 									 </table>
 								</td>
-							</tr>
+							</tr> -->
 						</table>
 					</fieldset>
 				</td>
@@ -2288,7 +2288,7 @@
 	}
 	
 	//根据寄件人手机号码获取对应的运单号
-	function getReserveOrderBySenderPhone(phone,flag){
+	<%-- function getReserveOrderBySenderPhone(phone,flag){
 		var sender_phone = phone;
 		var reserveOrderTableRows = document.getElementById("reserveOrderTable").rows.length-2;
 		if(reserveOrderTableRows>0){
@@ -2346,7 +2346,7 @@
 				}
 			}
 		}); 
-	}
+	} --%>
 	
 	//根据收件人手机号码获取对应的运单号
 	function getReserveOrderByConsignPhone(phone,flag){

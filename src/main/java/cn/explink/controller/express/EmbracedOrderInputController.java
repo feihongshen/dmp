@@ -333,10 +333,11 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 		ReserveOrderVo  reserveOrder = null;
 		if(tpstransportNo!=null&&!tpstransportNo.isEmpty()){
 			omReserveOrderModel.setTransportNo(tpstransportNo);
-			ReserveOrderPageVo reserveOrderVO = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel,1,1);
+			//调用tps 订单查询接口
+			/*ReserveOrderPageVo reserveOrderVO = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel,1,1);
 			if(reserveOrderVO.getReserveOrderVoList().size()!=0){
 				reserveOrder = reserveOrderVO.getReserveOrderVoList().get(0);
-			}
+			}*/
 		}
 		boolean isRepeat = this.embracedOrderInputService.checkTranscwb(orderNo);//校验录入运单号是否与系统订单号/运单号重复 add by vic.liang@pjbest.com 2016-08-05
 		obj.put("deliveryMansList", deliveryMansList);//重新加载小件员下拉列表数据

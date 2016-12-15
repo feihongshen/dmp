@@ -785,7 +785,8 @@ public abstract class ExcelExtractor extends ExpressCommonService {
 		//快递单导入，如果补录完成，则跟新补录完成时间completedatetime---刘武强20160831
 		this.expressOrderDao.updateEmbracedDataCompleteTime(EmbracedOrdersTps);
 		for (EmbracedOrderVO embracedOrderVO : EmbracedOrdersTps) {
-			this.embracedOrderInputService.tpsSender(embracedOrderVO, "inbrace");
+			//快递单创建 发送到tps 需注释
+		//	this.embracedOrderInputService.tpsSender(embracedOrderVO, "inbrace");
 		}
 		for (CwbOrder order : orders) {
 			this.cwbOrderService.createFloworder(user, branch.getBranchid(), order, FlowOrderTypeEnum.LanJianRuZhan, "", System.currentTimeMillis());
