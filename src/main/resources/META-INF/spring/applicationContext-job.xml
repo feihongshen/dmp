@@ -101,29 +101,31 @@
 				<ref bean="doTime_yonghui" />
 				<ref bean="doTime_pinhaohuo" />
 				<ref bean="doTime_sendFlow" />
-				<ref bean="doTime_expressPreOrder" />
+				<!-- 定时抓取 快递预订单数据,从TPS获取快递预约单,需要注释 -->
+				<!-- <ref bean="doTime_expressPreOrder" /> -->
 				<ref bean="doTime_expressTransOrder" />
 				<ref bean="doTime_createBackTimeLog"/>
 				<ref bean="doTime_dailyDayLogByTuihuoGenerate"/>
 				<ref bean="doTime_dailyDayLogByWareHouseGenerate"/>
 				<ref bean="doTime_dailyDayLogGenerate"/>
-				<ref bean="doTime_getCarrierOrderStatus"/>			
+				<!-- 从TPS获取物流状态任务(运单号),需要注释 -->
+				<!-- <ref bean="doTime_getCarrierOrderStatus"/> -->			
 				<ref bean="doTime_tpsOXOOrderTempToMain"/>
 				<ref bean="doTime_autoDispatchStatusTempToMain"/>
                 <ref bean="doTime_feiniuwang"/>
                 <ref bean="doTime_syncBranchInf"/>
                 <ref bean="doTime_syncUserInf"/>
                 <ref bean="mqExceptionHandler"/>
-                <ref bean="doTime_tpsCwbFlow"/>
+                <!-- <ref bean="doTime_tpsCwbFlow"/> -->
                 <ref bean="doTime_expressOrderTransfer"/>
                 <!-- EMS接口 -->
                 <ref bean="doTime_sendEMSOrder"/>
                 <ref bean="doTime_getEmsEmailNo"/>
                 <ref bean="doTime_imitateEMSTraceToDmpOpt"/>
-                <!-- 重推快递单各种操作给TPS -->
-                <ref bean="doTime_resendExpressToTps"/>
-              <!-- add by zhouhuan tps对接新增非唯品会订单转业务定时器，查询临时表，插入数据到detail表中 2016-08-05 -->
-                <ref bean="doTime_getTPSOtherCwbTempInsert"/>
+                <!-- 重推快递单各种操作给TPS,需要注释 -->
+                <!-- <ref bean="doTime_resendExpressToTps"/> -->
+                <!-- add by zhouhuan tps对接新增非唯品会订单转业务定时器，查询临时表，插入数据到detail表中 2016-08-05 -->
+                <!-- <ref bean="doTime_getTPSOtherCwbTempInsert"/> -->
 			</list>
 		</property>
 		<property name="dataSource" ref="dataSource"></property>
@@ -982,7 +984,7 @@
 	<!-- 抓取唯品会OXO订单揽件状态定时器 结束 -->
 	
 	<!-- 快递模式预订单数据抓取定时器 开始 -->
-	<bean id="doTime_expressPreOrder" class="cn.explink.util.DatabaseInitCronTriggerBean"
+	 <bean id="doTime_expressPreOrder" class="cn.explink.util.DatabaseInitCronTriggerBean"
 		dependency-check="default">
 		<property name="jobDetail">
 			<ref bean="getPjwlExpressPreOrderTask" />
@@ -1001,7 +1003,7 @@
 			<value>getPjwlExpressPreOrderTask</value>
 		</property>
 		<property name="concurrent" value="false" />
-	</bean>
+	</bean> 
 	<!-- 快递模式预订单数据抓取定时器 结束 -->
 
 
@@ -1596,8 +1598,8 @@
      </bean>
      <!-- 执行ems轨迹模拟dmp操作定时器 结束-->
      
-    <!-- 重推快递单各种操作给TPS -->
-	<bean id="doTime_resendExpressToTps" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
+    <!-- 重推快递单各种操作给TPS,需要注释 -->
+	 <bean id="doTime_resendExpressToTps" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
 		<property name="jobDetail">
 			<ref bean="resendExpressToTpsTimmer" />
 		</property>
@@ -1616,7 +1618,7 @@
 			<value>resendExpressToTps</value>
 		</property>
 		<property name="concurrent" value="false" />
-	</bean>
+	</bean> 
      
      <!-- add start-->
 	<!-- add by zhouhuan tps对接新增非唯品会订单转业务定时器，查询临时表，插入数据到detail表中 2016-08-05 -->

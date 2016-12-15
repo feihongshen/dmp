@@ -11,7 +11,7 @@
             <list>  
                 <ref bean="autoDispatchStatusConsumer" />
                 <ref bean="tpsOrderAutomateConsumer" />
-                <ref bean="tpsOrderConsumer" />
+                <!-- <ref bean="tpsOrderConsumer" /> -->
                 <ref bean="tpsBatchNoConsumer" />
                 <ref bean="pjdSignImgConsumer" />
             </list>  

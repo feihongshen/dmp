@@ -152,10 +152,11 @@
 							<div onclick="addTab('修改密码','passwordupdate?&clickFunctionId=10001','folder')">
 								<i class="icon-lock" style="position: relative; left: -25px;"></i>修改密码
 							</div>
-							<div class="menu-sep"></div>
+							<!--历史版本是调用osp 需注释  -->
+							<!-- <div class="menu-sep"></div>
 							<div onclick="addTab('历史版本','taskShow/historyList/1?&clickFunctionId=10001','folder')">
 								<i class="icon-lock" style="position: relative; left: -25px;"></i>历史版本
-							</div>
+							</div> -->
 						</div>
 						<div id="layout_north_zxMenu" style="width: 100px; display: none;">
 							<div
@@ -196,8 +197,8 @@
 					$("#playSearch").val('');
 					}
 			});
-	
-	$(document).ready(function() {
+	<%-- osp 最新版本说明 需注释--%>
+	<%-- $(document).ready(function() {
 		if(isLoginFlag()) {
 			//点击对话框字段关闭按钮事件
 			$('#dlg').dialog({
@@ -233,7 +234,7 @@
 			
 			resetLoginFlag();
 		}
-	});
+	}); --%>
 	
 	function isLoginFlag() {
 		if(<%=("1".equals(session.getAttribute("loginFlag")))%>) {
@@ -297,8 +298,8 @@
 	function closeDlg() {
 		$('#dlg').dialog('close');
 	}
-	
-	function sendReadRecord(){
+	<%-- 用户浏览记录上报 需注释--%>
+	<%-- function sendReadRecord(){
 		var versionNo = $("#versionNo").text();
 		var showTime = $("#showTime").text();
 		$.ajax({
@@ -313,10 +314,10 @@
 			success : function(result) {
 			}
 		});
-	}
-	
+	} --%>
+	//每10分钟定时请求一下ops获取系统公告 需注释
 	// added by wangwei, 20160823, 页面滚动公告栏, start
-	$(function() {
+	<%-- $(function() {
 		showNotice();
 		var tenMinutes = 1000 * 60 * 10;		//每10分钟刷新一次
 		setInterval("showNotice()", tenMinutes);
@@ -335,7 +336,7 @@
 				}
 			}                 
 		});	
-	}
+	} --%>
 	// added by wangwei, 20160823, 页面滚动公告栏, end
 </script>
 </html>
