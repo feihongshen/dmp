@@ -62,7 +62,11 @@
   					<groupId>org.springframework</groupId>
       				<artifactId>spring-context-support</artifactId>
   				</exclusion>
-  			</exclusions> 
+  				<exclusion>
+  					<artifactId>javax.el-api</artifactId>
+  					<groupId>javax.el</groupId>
+  				</exclusion>
+			 </exclusions> 
 		</dependency>
 		<dependency>
 		     <groupId>com.pjbest</groupId> 
@@ -86,11 +90,20 @@
   				</exclusion>
   			</exclusions>
 		</dependency>
+		
 		<dependency>
   			<groupId>com.vip.osp</groupId>
   			<artifactId>osp-core</artifactId>
   			<version>2.5.11</version>
 		</dependency>
+		
+		<dependency>
+	       <groupId>com.sun</groupId>
+	       <artifactId>tools</artifactId>
+	       <scope>system</scope>
+	       <version>1.7</version>
+	       <systemPath>E:\Java\jdk64\lib\tools.jar</systemPath>
+	 	 </dependency>
 		
 		<dependency>
 		  <groupId>com.pjbest.osp.cfg</groupId>
