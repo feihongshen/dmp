@@ -9,10 +9,10 @@
 	  <bean id="consumerStarter" class="cn.explink.b2c.auto.order.mq.ConsumerStarter">
 	    <property name="callBackList">  
             <list>  
-                <ref bean="autoDispatchStatusConsumer" />
+                <!-- <ref bean="autoDispatchStatusConsumer" />
                 <ref bean="tpsOrderAutomateConsumer" />
-                <!-- <ref bean="tpsOrderConsumer" /> -->
-                <ref bean="tpsBatchNoConsumer" />
+                <ref bean="tpsOrderConsumer" />
+                <ref bean="tpsBatchNoConsumer" /> -->
                 <ref bean="pjdSignImgConsumer" />
             </list>  
         </property> 
