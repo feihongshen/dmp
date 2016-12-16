@@ -80,6 +80,13 @@
   			</exclusions> 
 		</dependency>
 		<dependency>
+	       <groupId>com.sun</groupId>
+	       <artifactId>tools</artifactId>
+	       <scope>system</scope>
+	       <version>1.7</version>
+	       <systemPath>E:\Java\jdk64\lib\tools.jar</systemPath>
+	 	 </dependency>
+		<dependency>
   			<groupId>com.pjbest.pjorganization</groupId>
   			<artifactId>pjorganization-service-api</artifactId>
   			<version>1.21.0_04</version>
