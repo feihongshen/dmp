@@ -55,6 +55,7 @@ import cn.explink.b2c.maikaolin.MaikaolinInsertCwbDetailTimmer;
 import cn.explink.b2c.maikaolin.MaikolinService;
 import cn.explink.b2c.maisike.MaisikeService_branchSyn;
 import cn.explink.b2c.meilinkai.MLKService;
+import cn.explink.b2c.mss.MSSInsertCwbDetailTimmer;
 import cn.explink.b2c.pinhaohuo.PinhaohuoInsertCwbDetailTimmer;
 import cn.explink.b2c.pjwl.PjwlExpressService;
 import cn.explink.b2c.rufengda.RufengdaService;
@@ -275,13 +276,13 @@ public class JobUtil {
 	AutoDispatchStatusService autoDispatchStatusService;
 	@Autowired
 	HuanqiugouInsertCwbDetailTimmer huanqiugouInsertCwbDetailTimmer;
-	
+
 	@Autowired
 	SuNingInsertCwbDetailTimmer suNingInsertCwbDetailTimmer;
 
 	@Autowired
 	MLKService mlkService;
-	
+
 	@Autowired
 	YongHuiInsertCwbDetailTimmer yongHuiInsertCwbDetailTimmer;
 	@Autowired
@@ -292,26 +293,26 @@ public class JobUtil {
 	TpsCwbFlowPushService tpsCwbFlowPushService;
 	@Autowired
 	private ExpressOrderService expressOrderService;
-	
-	
+
 	// public static Map<String, Integer> threadMap;
-	public static RedisMap<String, Integer> threadMap;	
+	public static RedisMap<String, Integer> threadMap;
 	@Autowired
 	BranchInfService branchInfService;
-	
+
 	@Autowired
 	UserInfService userInfService;
 	@Autowired
 	EMSService eMSService;
 	@Autowired
 	EMSTimmer eMSTimmer;
-	
+
 	@Autowired
 	ReSendExpressOrderService reSendExpressOrderService;
-	
+
 	@Autowired
-    IDistributedLock  distributedLock;
-	
+	IDistributedLock distributedLock;
+	@Autowired
+	MSSInsertCwbDetailTimmer mssInsertCwbDetailTimmer;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 		JobUtil.threadMap = new RedisMapImpl<String, Integer>("JobUtil");
 		JobUtil.threadMap.put("tmall", 0);
@@ -344,27 +345,27 @@ public class JobUtil {
 		JobUtil.threadMap.put("vipshop_OXOJIT_feedback", 0);
 		JobUtil.threadMap.put("punishinside_autoshenhe", 0);
 		JobUtil.threadMap.put("order_lifecycle_report", 0);
-		
+
 		JobUtil.threadMap.put("getCarrierOrderStatusTimmer", 0);
 		JobUtil.threadMap.put("vipshop_OXO_orderTempInsert", 0);
 		JobUtil.threadMap.put("autoDispatchStatus", 0);
-		
+
 		JobUtil.threadMap.put("syncBranchInf", 0);
 		JobUtil.threadMap.put("syncUserInf", 0);
-		
+
 		JobUtil.threadMap.put("tpsCwbFlow", 0);
 		JobUtil.threadMap.put("tps_OXO_pickstate", 0);
 		JobUtil.threadMap.put("expressOrderTransfer", 0);
-		
-		//EMS定时器
+
+		// EMS定时器
 		JobUtil.threadMap.put("sendOrderToEMS", 0);
 		JobUtil.threadMap.put("getEmsEmailNo", 0);
 		JobUtil.threadMap.put("imitateEMSTraceToDmpOpt", 0);
-	
-		//快递单操作推TPS
+
+		// 快递单操作推TPS
 		JobUtil.threadMap.put("resendExpressToTps", 0);
-		
-		//add by zhouhuan 订单数据从临时表转主表 2016-08-05
+
+		// add by zhouhuan 订单数据从临时表转主表 2016-08-05
 		JobUtil.threadMap.put("cwbInsertToOrderDetail", 0);
 	}
 
@@ -409,16 +410,16 @@ public class JobUtil {
 		JobUtil.threadMap.put("tps_OXO_pickstate", 0);
 		JobUtil.threadMap.put("expressOrderTransfer", 0);
 		this.logger.info("系统自动初始化定时器完成");
-		
-		//EMS定时器 
+
+		// EMS定时器
 		JobUtil.threadMap.put("sendOrderToEMS", 0);
 		JobUtil.threadMap.put("getEmsEmailNo", 0);
 		JobUtil.threadMap.put("imitateEMSTraceToDmpOpt", 0);
-		
-		//快递单操作推TPS
+
+		// 快递单操作推TPS
 		JobUtil.threadMap.put("resendExpressToTps", 0);
-		
-		//add by zhouhuan 订单数据从临时表转主表 2016-08-05
+
+		// add by zhouhuan 订单数据从临时表转主表 2016-08-05
 		JobUtil.threadMap.put("cwbInsertToOrderDetail", 0);
 	}
 
@@ -480,10 +481,10 @@ public class JobUtil {
 			this.logger.warn("已开启远程定时调用,本地定时任务不生效");
 			return;
 		}
-		
+
 		long starttime = 0;
 		long endtime = 0;
-		
+
 		String taskName = getClass().getName() + "getVipShopCwbDetail_Task";
 		try {
 			boolean isAcquired = distributedLock.tryLock(taskName, 1, 60 * 120 * 1000, TimeUnit.MILLISECONDS);
@@ -944,12 +945,12 @@ public class JobUtil {
 
 		} catch (Exception e) {
 			this.logger.error("中兴云购ERP定时器异常", e);
-		} finally{
+		} finally {
 			JobUtil.threadMap.put("zhongxingerp", 0);
 		}
 		long endtime = System.currentTimeMillis();
 		this.logger.info("执行了[获取中兴云购ERP订单]定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
-		//JobUtil.threadMap.put("zhongxingerp", 0);
+		// JobUtil.threadMap.put("zhongxingerp", 0);
 	}
 
 	/**
@@ -1045,11 +1046,11 @@ public class JobUtil {
 			return;
 		}
 		JobUtil.threadMap.put("koukuan", 1);
-		try{
+		try {
 			this.accountDeductRecordService.updateJobKouKuan();
-		}catch(Exception e){
+		} catch (Exception e) {
 			this.logger.error("执行扣款结算自动到货定时器异常", e);
-		}finally{
+		} finally {
 			JobUtil.threadMap.put("koukuan", 0);
 		}
 		this.logger.info("扣款结算自动到货执行完毕！");
@@ -1290,7 +1291,7 @@ public class JobUtil {
 		this.logger.info("执行了获取vipshop_OXO_pickstate订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 
 	}
-	
+
 	/**
 	 * 抓取TPS,OXO订单揽件状态定时任务
 	 */
@@ -1353,35 +1354,34 @@ public class JobUtil {
 	}
 
 	/**
-	 * 定时抓取 快递运单数据
-	 * 不使用快递一期的定时器
-	 * delete by jian_xie 2016-09-05
+	 * 定时抓取 快递运单数据 不使用快递一期的定时器 delete by jian_xie 2016-09-05
 	 */
 	@Deprecated
 	public void getPjwlExpressTransNoTask() {
-//		System.out.println("-----getPjwlExpressTransNoTask启动执行");
-//
-//		if (JobUtil.threadMap.get("express_transNo") == 1) {
-//			this.logger.warn("本地定时器没有执行完毕，跳出循环express_transNo");
-//			return;
-//		}
-//		JobUtil.threadMap.put("express_transNo", 1);
-//
-//		long starttime = 0;
-//		long endtime = 0;
-//		try {
-//			starttime = System.currentTimeMillis();
-//
-//			this.pjwlExpressService.excutePjwlExpressTransNoSinfferTask();
-//
-//			endtime = System.currentTimeMillis();
-//		} catch (Exception e) {
-//			this.logger.error("执行express_transNo定时器异常", e);
-//		} finally {
-//			JobUtil.threadMap.put("express_transNo", 0);
-//		}
-//
-//		this.logger.info("执行了获取express_transNo订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+		// System.out.println("-----getPjwlExpressTransNoTask启动执行");
+		//
+		// if (JobUtil.threadMap.get("express_transNo") == 1) {
+		// this.logger.warn("本地定时器没有执行完毕，跳出循环express_transNo");
+		// return;
+		// }
+		// JobUtil.threadMap.put("express_transNo", 1);
+		//
+		// long starttime = 0;
+		// long endtime = 0;
+		// try {
+		// starttime = System.currentTimeMillis();
+		//
+		// this.pjwlExpressService.excutePjwlExpressTransNoSinfferTask();
+		//
+		// endtime = System.currentTimeMillis();
+		// } catch (Exception e) {
+		// this.logger.error("执行express_transNo定时器异常", e);
+		// } finally {
+		// JobUtil.threadMap.put("express_transNo", 0);
+		// }
+		//
+		// this.logger.info("执行了获取express_transNo订单的定时器,本次耗时:{}秒", ((endtime -
+		// starttime) / 1000));
 	}
 
 	public void sendVipShopOXOJITFeedbackTask() {
@@ -1457,6 +1457,22 @@ public class JobUtil {
 
 	}
 
+	/**
+	 * 美食送
+	 */
+	public void getMss_Task() {
+		try {
+			long starttime = System.currentTimeMillis();
+
+			this.mssInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
+			long endtime = System.currentTimeMillis();
+			this.logger.info("执行了美食送订单导入定时器！本次耗时:{}秒", ((endtime - starttime) / 1000));
+
+		} catch (Exception e) {
+			this.logger.error("执行美食送订单导入定时器异常", e);
+		}
+	}
+
 	// 飞牛网(http)
 	public void getFeiNiuWang_Task() {
 		try {
@@ -1469,8 +1485,7 @@ public class JobUtil {
 			this.logger.error("执行飞牛网(http)订单导入定时器异常", e);
 		}
 	}
-	
-	
+
 	/**
 	 * 广信电信
 	 */
@@ -1506,7 +1521,9 @@ public class JobUtil {
 		try {
 			starttime = System.currentTimeMillis();
 			//
-			String reportDate = DateTimeUtil.getDateBeforeDay(1);//in 'yyyy-MM-dd' format
+			String reportDate = DateTimeUtil.getDateBeforeDay(1);// in
+																	// 'yyyy-MM-dd'
+																	// format
 			int batchSize = getbatchSizeOfOrderLifeCycleReport();
 
 			// 生成前一天的订单详情列表
@@ -1552,8 +1569,7 @@ public class JobUtil {
 			this.logger.error("执行了-环球购物-订单导入定时器异常", e);
 		}
 	}
-	
-	
+
 	/**
 	 * 订单生命周期报表每批次处理的行数,如果找不到，默认是1000
 	 *
@@ -1607,7 +1623,7 @@ public class JobUtil {
 
 		this.logger.info("执行了获取getVipShopCwbTempInsert_Task订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
-	
+
 	/**
 	 * 永辉超市
 	 */
@@ -1622,7 +1638,7 @@ public class JobUtil {
 			this.logger.error("执行了-永辉-订单导入定时器异常", e);
 		}
 	}
-	
+
 	/**
 	 * 【苏宁易购】定时器任务调用
 	 */
@@ -1635,50 +1651,51 @@ public class JobUtil {
 		}
 
 	}
-	//拼好货
-		public void getPinhaohuo_Task() {
-				try {
-					long starttime = System.currentTimeMillis();
-					this.pinhaohuoInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
-					long endtime = System.currentTimeMillis();
-					this.logger.info("执行了拼好货订单导入定时器！本次耗时:{}秒", ((endtime - starttime) / 1000));
 
-				} catch (Exception e) {
-					this.logger.error("执行拼好货订单导入定时器异常", e);
-				}
+	// 拼好货
+	public void getPinhaohuo_Task() {
+		try {
+			long starttime = System.currentTimeMillis();
+			this.pinhaohuoInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
+			long endtime = System.currentTimeMillis();
+			this.logger.info("执行了拼好货订单导入定时器！本次耗时:{}秒", ((endtime - starttime) / 1000));
 
-			}
-			
-			public void setFlowExp() {
-				long starttime = 0;
-				long endtime = 0;
-				try {
-					starttime = System.currentTimeMillis();
-					this.flowExpService.sendFlowExp();
-					endtime = System.currentTimeMillis();
-				} catch (Exception e) {
-					this.logger.error("执行sendFlow定时器异常", e);
-				} 
-				this.logger.info("执行sendFlow定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
-				}
-	
+		} catch (Exception e) {
+			this.logger.error("执行拼好货订单导入定时器异常", e);
+		}
+
+	}
+
+	public void setFlowExp() {
+		long starttime = 0;
+		long endtime = 0;
+		try {
+			starttime = System.currentTimeMillis();
+			this.flowExpService.sendFlowExp();
+			endtime = System.currentTimeMillis();
+		} catch (Exception e) {
+			this.logger.error("执行sendFlow定时器异常", e);
+		}
+		this.logger.info("执行sendFlow定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
+
 	/**
 	 * 执行获取物流运单状态接口
 	 */
 	public void getCarrierOrderStatus_Task() {
 		System.out.println("-----getCarrierOrderStatus_Task启动执行");
-		
+
 		if (JobUtil.threadMap.get("getCarrierOrderStatusTimmer") == 1) {
 			this.logger.warn("本地定时器没有执行完毕，跳出循环");
 			return;
 		}
 		JobUtil.threadMap.put("getCarrierOrderStatusTimmer", 1);
-		
+
 		try {
 			long starttime = System.currentTimeMillis();
-			
+
 			this.tPSCarrierOrderStatusTimmer.getCarrierOrderStatus();
-			
+
 			long endtime = System.currentTimeMillis();
 			this.logger.info("执行了物流状态查询定时器！本次耗时:{}秒", ((endtime - starttime) / 1000));
 		} catch (Exception e) {
@@ -1687,7 +1704,7 @@ public class JobUtil {
 			JobUtil.threadMap.put("getCarrierOrderStatusTimmer", 0);
 		}
 	}
-	
+
 	/*
 	 * OXO数据从临时表转订单主表
 	 */
@@ -1704,7 +1721,7 @@ public class JobUtil {
 		try {
 			starttime = System.currentTimeMillis();
 			vipShopOXOInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail(B2cEnum.VipShop_TPSAutomate.getKey());
-			//this.tPSInsertCwbDetailTimmer.selectTempAndInsertToCwbDetails();
+			// this.tPSInsertCwbDetailTimmer.selectTempAndInsertToCwbDetails();
 			endtime = System.currentTimeMillis();
 		} catch (Exception e) {
 			this.logger.error("执行TPS订单临时表数据插入主表定时器异常", e);
@@ -1714,11 +1731,11 @@ public class JobUtil {
 
 		this.logger.info("执行了获取TPS订单临时表数据插入主表的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
-			
+
 	/**
 	 * 退货中心出入库跟踪表日志
 	 */
-	public void createBackTimeLog(){
+	public void createBackTimeLog() {
 		try {
 			SystemInstall backTimeLog = systemInstallDAO.getSystemInstallByName("backTimeLog");
 			if (backTimeLog == null || !StringUtils.hasLength(backTimeLog.getValue())) {
@@ -1726,16 +1743,16 @@ public class JobUtil {
 				return;
 			}
 			backSummaryService.createBackTimeLog();
-		}catch(Exception e){
-			logger.error("退货中心出入库跟踪表日志生成异常："+e.getMessage());
+		} catch (Exception e) {
+			logger.error("退货中心出入库跟踪表日志生成异常：" + e.getMessage());
 		}
-		
+
 	}
-	
+
 	/**
 	 * 退货日志
 	 */
-	public void dailyDayLogByTuihuoGenerate(){
+	public void dailyDayLogByTuihuoGenerate() {
 		try {
 			SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("tuiHuoDayLogTime");
 			if (siteDayLogTime == null || !StringUtils.hasLength(siteDayLogTime.getValue())) {
@@ -1743,15 +1760,15 @@ public class JobUtil {
 				return;
 			}
 			logToDayByTuihuoService.dailyDayLogByTuihuoGenerate();
-		}catch(Exception e){
-			logger.error("退货日志生成异常："+e.getMessage());
+		} catch (Exception e) {
+			logger.error("退货日志生成异常：" + e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * 库房日志
 	 */
-	public void dailyDayLogByWareHouseGenerate(){
+	public void dailyDayLogByWareHouseGenerate() {
 		try {
 			SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("wareHouseDayLogTime");
 			if (siteDayLogTime == null || !StringUtils.hasLength(siteDayLogTime.getValue())) {
@@ -1759,27 +1776,27 @@ public class JobUtil {
 				return;
 			}
 			logToDayByWarehouseService.dailyDayLogByWareHouseGenerate();
-		}catch(Exception e){
-			logger.error("库房日志生成异常："+e.getMessage());
+		} catch (Exception e) {
+			logger.error("库房日志生成异常：" + e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * 站点日志
 	 */
-	public void dailyDayLogGenerate(){
-		try{
+	public void dailyDayLogGenerate() {
+		try {
 			final SystemInstall siteDayLogTime = systemInstallDAO.getSystemInstallByName("siteDayLogTime");
 			if (siteDayLogTime == null || !StringUtils.hasLength(siteDayLogTime.getValue())) {
 				logger.warn("站点日志未启用，没有找到参数{}", siteDayLogTime);
 				return;
 			}
 			logToDayService.dailyDayLogGenerate();
-		}catch(Exception e){
-			logger.error("站点日志生成异常："+e.getMessage());
+		} catch (Exception e) {
+			logger.error("站点日志生成异常：" + e.getMessage());
 		}
 	}
-	
+
 	/*
 	 * 自动化分拣状态数据从临时表转业务表
 	 */
@@ -1805,7 +1822,7 @@ public class JobUtil {
 
 		this.logger.info("执行了自动化分拣状态数据从临时表转业务表的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
-	
+
 	/**
 	 * 同步站点机构
 	 */
@@ -1828,11 +1845,11 @@ public class JobUtil {
 		}
 		this.logger.info("执行了同步站点机构的定时器,本次耗时:{}秒", ((endTime - startTime) / 1000));
 	}
-	
+
 	/**
 	 * 同步小件员
 	 */
-	public void syncUserInf_Task(){
+	public void syncUserInf_Task() {
 		if (JobUtil.threadMap.get("syncUserInf") == 1) {
 			this.logger.warn("本地定时器没有执行完毕，跳出syncUserInf");
 			return;
@@ -1851,11 +1868,11 @@ public class JobUtil {
 		}
 		this.logger.info("执行了同步小件员的定时器,本次耗时:{}秒", ((endTime - startTime) / 1000));
 	}
-	
+
 	/**
 	 * 订单重量体积反馈给TPS
 	 */
-	public void tpsCwbFlow_Task(){
+	public void tpsCwbFlow_Task() {
 		if (JobUtil.threadMap.get("tpsCwbFlow") == 1) {
 			this.logger.warn("本地定时器没有执行完毕，跳出订单重量体积反馈TPS的任务");
 			return;
@@ -1874,11 +1891,11 @@ public class JobUtil {
 		}
 		this.logger.info("执行了订单重量体积反馈TPS的定时器,本次耗时:{}秒", ((endTime - startTime) / 1000));
 	}
-	
+
 	/**
 	 * 定时器，处理快递临时表转业务
 	 */
-	public void expressOrderTransfer_Task(){
+	public void expressOrderTransfer_Task() {
 		System.out.println("-----expressOrderTransfer启动执行");
 
 		if (JobUtil.threadMap.get("expressOrderTransfer") == 1) {
@@ -1900,8 +1917,9 @@ public class JobUtil {
 		}
 
 		this.logger.info("执行了获取expressOrderTransfer订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
-		
+
 	}
+
 	/**
 	 * 执行获取EMS运单号的定时器
 	 */
@@ -1934,7 +1952,8 @@ public class JobUtil {
 		this.logger.info("执行了获取getEmsEmailNo订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
 
-	//执行ems轨迹模拟dmp操作定时器  EMS ems = eMSService.getEmsObject(B2cEnum.EMS.getKey());
+	// 执行ems轨迹模拟dmp操作定时器 EMS ems =
+	// eMSService.getEmsObject(B2cEnum.EMS.getKey());
 	public void imitateEMSTraceToDmpOpt_task() {
 		if (JobUtil.threadMap.get("imitateEMSTraceToDmpOpt") == 1) {
 			this.logger.warn("本地定时器没有执行完毕，跳出循环EMS轨迹模拟dmp操作");
@@ -1957,8 +1976,8 @@ public class JobUtil {
 
 		this.logger.info("执行了获取imitateEMSTraceToDmpOpt订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
-	
-	//执行推送订单信息给ems定时器 ;
+
+	// 执行推送订单信息给ems定时器 ;
 	public void sendOrderToEMS_task() {
 		if (JobUtil.threadMap.get("sendOrderToEMS") == 1) {
 			this.logger.warn("本地定时器没有执行完毕，跳出循环EMS订单推送操作");
@@ -1980,14 +1999,15 @@ public class JobUtil {
 
 		this.logger.info("执行了获取sendOrderToEMS订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
 	}
-	
+
 	/**
 	 * 重推快递单各种操作给TPS
+	 * 
 	 * @author leo01.liao
 	 */
-	public void resendExpressToTps(){
+	public void resendExpressToTps() {
 		System.out.println("-----resendExpressToTps启动执行");
-		
+
 		JobUtil.threadMap.put("resendExpressToTps", 0);
 
 		if (JobUtil.threadMap.get("resendExpressToTps") == 1) {
@@ -2009,11 +2029,10 @@ public class JobUtil {
 		}
 
 		this.logger.info("执行了获取resendExpressToTps订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
-		
+
 	}
-	
-	
-	//add by zhouhuan tps对接新增非唯品会订单转业务定时器，查询临时表，插入数据到detail表中 2016-08-05
+
+	// add by zhouhuan tps对接新增非唯品会订单转业务定时器，查询临时表，插入数据到detail表中 2016-08-05
 	public void getCwbTempInsert_Task() {
 		if (JobUtil.threadMap.get("cwbInsertToOrderDetail") == 1) {
 			this.logger.warn("本地定时器没有执行完毕，跳出循环cwbInsertToOrderDetail");

@@ -30,7 +30,7 @@ public enum FlowOrderTypeEnum {
 	YunDanLuRu(1000,"运单录入"),
 	LanJianRuZhan(1001,"揽件入站"),
 	LanJianChuZhan(1002,"揽件出站"),
-	
+	LanJianQueRen(1003,"揽件确认"),
 	//add by vic.liang@pjbest.com 2016-08-20
 	BingEmsTrans(65,"绑定邮政运单");
 	

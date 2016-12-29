@@ -26,6 +26,7 @@ import cn.explink.b2c.jiuye.CwbColumnSetJiuye;
 import cn.explink.b2c.liantong.CwbColumnSetLiantong;
 import cn.explink.b2c.maikaolin.CwbColumnSetMaikaolin;
 import cn.explink.b2c.meilinkai.CwbColumnSetMLK;
+import cn.explink.b2c.mss.CwbColumnSetMSS;
 import cn.explink.b2c.pinhaohuo.CwbColumnSetPinhaohuo;
 import cn.explink.b2c.rufengda.CwbColumnSetRufengda;
 import cn.explink.b2c.saohuobang.CwbColumnSetSaohuobang;
@@ -134,7 +135,8 @@ public class CwbColumnImpl implements CwbColumnSet {
 	CwbColumnSetPinhaohuo cwbColumnSetPinhaohuo;
 	@Autowired
 	CwbColumnSetTPS cwbColumnSetTPS;
-
+	@Autowired
+	CwbColumnSetMSS cwbColumnSetMSS;
 	/**
 	 * 根据不同的b2c标识来设置导入规则 验证参数是否合格
 	 */
@@ -236,6 +238,8 @@ public class CwbColumnImpl implements CwbColumnSet {
 			return this.cwbColumnSetPinhaohuo.getEexcelColumnSetByB2c(b2cFlag);
 		}else if (b2cFlag.contains("tps")) {
 			return this.cwbColumnSetTPS.getTPSOrderColumnSetByB2c(b2cFlag);
+		}else if(b2cFlag.equals(B2cEnum.MSS.getMethod())){
+			return this.cwbColumnSetMSS.getEexcelColumnSetByB2c(b2cFlag);
 		}
 
 		return null;

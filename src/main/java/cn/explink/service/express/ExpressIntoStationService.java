@@ -211,6 +211,13 @@ public class ExpressIntoStationService {
 			if(!"".equals(idsAfter)){
 				idsAfter = idsAfter.substring(1,idsAfter.length());
 				Integer count = this.expressIntoStationDAO.executeIntoStationOpe(idsAfter, currentBranchId, nextBranchId, pickExpressTime, intoStationName);
+				//1.创建流程跟踪记录等
+				List<CwbOrder> orders = this.cwbDAO.getCwbsBycwbIds(idsAfter);
+				if ((orders != null) && (orders.size() > 0)) {
+					for (CwbOrder order : orders) {
+						this.cwbOrderService.createFloworder(user, currentBranchId, order, FlowOrderTypeEnum.LanJianQueRen, "", System.currentTimeMillis());
+					}
+				}
 				countTotal += count;
 			}
 			if(!"".equals(idsOther)){

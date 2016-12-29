@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import cn.explink.domain.VO.express.CollectorName;
 import cn.explink.domain.VO.express.ExpressIntoStationCountVO;
 import cn.explink.domain.VO.express.ExpressIntoStationVO;
+import cn.explink.domain.dto.ExpressIntoDto;
 import cn.explink.enumutil.CwbOrderTypeIdEnum;
 import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.express.ExpressProcessStateEnum;
@@ -93,6 +95,33 @@ public class ExpressIntoStationDAO {
 			return intoStationVo;
 		}
 	}
+	/**
+	 * pda 读取字段
+	 * @author Administrator
+	 *
+	 */
+	private final class ExpressIntoDtoMapper implements RowMapper<ExpressIntoDto>{
+
+		@Override
+		public ExpressIntoDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+			String pickTimeStr = StringUtil.nullConvertToEmptyString(rs.getString("instationdatetime"));
+			ExpressIntoDto expressIntoDto=new ExpressIntoDto();
+			expressIntoDto.setCwb(rs.getString("cwb"));
+			expressIntoDto.setSendername(rs.getString("sendername"));
+			expressIntoDto.setSendercellphone(rs.getString("sendercellphone"));
+			expressIntoDto.setSendertelephone(rs.getString("sendertelephone"));
+			expressIntoDto.setSenderaddress(rs.getString("senderaddress"));
+			expressIntoDto.setRealweight(rs.getDouble("realweight"));
+			if (!"".equals(pickTimeStr)&&pickTimeStr.length()>2) {
+				expressIntoDto.setPickTime(pickTimeStr.substring(0,pickTimeStr.length()-2));//揽件时间
+			}else {
+				expressIntoDto.setPickTime(pickTimeStr);//揽件时间
+			}
+			expressIntoDto.setCwbremark(rs.getString("cwbremark"));
+			return expressIntoDto;
+		}
+		
+	}
 
 	// 揽件入站查询
 	public List<ExpressIntoStationVO> getRecordListByPage(long page, Long deliveryId, Integer processState, Integer payType, Long branchId, Map<Long, String> deliverManMap, Map<String, Object> addressInfo) {
@@ -123,6 +152,35 @@ public class ExpressIntoStationDAO {
 		sql.append(" and c.cwbordertypeid="+CwbOrderTypeIdEnum.Express.getValue());
 		sql.append(" and c.state=1 limit " + ((page - 1) * Page.ONE_PAGE_NUMBER) + " ," + Page.ONE_PAGE_NUMBER);
 		return this.jdbcTemplate.query(sql.toString(), new CwbInfoForExpressIntoStation(deliverManMap,addressInfo));
+	}
+	// pda 揽件入站确认查询
+	public List<ExpressIntoDto> getRecordListByPage( String deliveryId, Integer processState, Integer payType, Long branchId) {
+		StringBuffer sql = new StringBuffer();
+		sql.append(" select c.cwb,c.sendername,c.sendercellphone,c.sendertelephone,c.senderaddress,c.realweight,c.instationdatetime,c.cwbremark ");
+		sql.append(" from express_ops_cwb_detail c ");
+		sql.append(" where 1=1 ");
+		if (!Tools.isEmpty(deliveryId)) {
+			if (StringUtils.hasText(deliveryId)) {
+				sql.append(" and collectorid in (" + deliveryId+") ");
+			}
+		}
+		if(payType!=null){
+			
+			sql.append(" and paymethod=" + payType);
+		}
+		//是否交接标示
+		if (ExpressProcessStateEnum.UnProcess.getValue().equals(processState)) {
+			sql.append(" and ishandover=0");
+		}else {
+			sql.append(" and ishandover=1");
+		}
+		// 当前站点
+		sql.append(" and instationid="+branchId);
+		// sql.append(" and c.paymethod="+payType);
+		//快递类型
+		sql.append(" and c.cwbordertypeid="+CwbOrderTypeIdEnum.Express.getValue());
+		sql.append(" and c.state=1");
+		return this.jdbcTemplate.query(sql.toString(), new ExpressIntoDtoMapper());
 	}
 
 	// 揽件入站查询记录数

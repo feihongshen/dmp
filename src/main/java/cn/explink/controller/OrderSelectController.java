@@ -1432,6 +1432,10 @@ public class OrderSelectController {
 				return MessageFormat.format("货物被<font color =\"red\">[{0}]</font>揽件入站；联系电话：<font color =\"red\">[{1}]</font>; 备注：<font color =\"red\">[{2}]</font>", this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(),phone,
 						comment);
 			}
+			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.LanJianQueRen.getValue()) {
+				return MessageFormat.format("货物被<font color =\"red\">[{0}]</font>揽件确认；联系电话：<font color =\"red\">[{1}]</font>; 备注：<font color =\"red\">[{2}]</font>", this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(),phone,
+						comment);
+			}
 			if (orderFlowAll.getFlowordertype() == FlowOrderTypeEnum.LanJianChuZhan.getValue()) {
 				return MessageFormat.format("货物被<font color =\"red\">[{0}]</font>揽件出站；联系电话：<font color =\"red\">[{1}]</font>; 备注：<font color =\"red\">[{2}]</font>", this.userDAO.getUserByUserid(orderFlowAll.getUserid()).getRealname(),phone,
 						comment);

@@ -10163,4 +10163,36 @@ public class CwbDAO {
 		String sqlInsert="insert into express_ops_branch_daohuo (cwb,branchid,credate) values(?,?,?)";
 		this.jdbcTemplate.update(sqlInsert,cwb,branchid,credate);
 	}
+	
+	/**
+	 * 获取 opscwbid 
+	 * @param cwb
+	 * @return
+	 */
+	public long getopscwbidByCwb(String cwb){
+		String sql="select opscwbid from express_ops_cwb_detail where cwb=?";
+		try {
+			return this.jdbcTemplate.queryForLong(sql, cwb);
+		} catch (DataAccessException e) {
+			this.logger.warn("获取opscwbid异常,订单号{}",cwb);
+			return 0L;
+		}
+	}
+	/**
+	 * 修改快递揽件员
+	 * @param cwb
+	 * @param userid
+	 */
+	public void updateCollectorId(String cwb, long userid) {
+		String sql="update express_ops_cwb_detail set collectorid=? where cwb=? ";
+		 this.jdbcTemplate.update(sql, userid,cwb);
+	}
+	/**
+	 * 获取快递单是否已交接
+	 * @param cwb
+	 */
+	public long getIshandoverByCwb(String cwb) {
+		String sql="select ishandover from express_ops_cwb_detail where cwb=?";
+		return this.jdbcTemplate.queryForLong(sql, cwb);
+	}
 }

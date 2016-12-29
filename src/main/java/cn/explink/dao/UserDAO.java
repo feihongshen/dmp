@@ -155,6 +155,17 @@ public class UserDAO {
 		}
 		return user;
 	}
+	
+	
+	public User getUserByUserIdAndWareHouse(String username){
+		String sql="select * from express_set_user where username=? and isImposedOutWarehouse!=0";
+		try {
+			return this.jdbcTemplate.queryForObject(sql,new ImportUserRowMapper(),username);
+		} catch (DataAccessException e) {
+			return null;
+		}
+		
+	}
 
 	public List<User> getUserByid(long userid) {
 		return this.jdbcTemplate.query("SELECT * from express_set_user where userid=? and userDeleteFlag=1 ", new UserRowMapper(), userid);
