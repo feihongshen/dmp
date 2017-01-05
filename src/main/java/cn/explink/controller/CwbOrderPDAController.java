@@ -712,7 +712,7 @@ public class CwbOrderPDAController {
 				long backreasonid = StringUtils.isBlank(request.getParameter("backreasonid")) ? 0 : Long.parseLong(request.getParameter("backreasonid"));
 				// 滞留原因id
 				long leavedreasonid = StringUtils.isBlank(request.getParameter("leavedreasonid")) ? 0 : Long.parseLong(request.getParameter("leavedreasonid"));
-				// 批量订单号
+				// 批量订单号 
 				String cwbs = request.getParameter("cwbs");
 
 				// long deliverid =
@@ -1266,7 +1266,7 @@ public class CwbOrderPDAController {
 		model.addAttribute("endemaildate", endemaildate);
 		model.addAttribute("username", username);
 		model.addAttribute("ulist", this.userDAO.getAllUser());
-		return "/control/list";
+		return "control/list";
 	}
 
 	@RequestMapping("/controlCwbForHanlder/{id}")
@@ -2405,7 +2405,7 @@ public class CwbOrderPDAController {
 					throw new CwbException(cwb, FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.YI_CHANG_DAN_HAO);
 				}
 				checkVipSmh(cwbOrder, FlowOrderTypeEnum.YiFanKui);
-				if (cwbOrder.getCwbordertypeid() != CwbOrderTypeIdEnum.Peisong.getValue()) {
+				if (cwbOrder.getCwbordertypeid() != CwbOrderTypeIdEnum.Peisong.getValue()&&cwbOrder.getCwbordertypeid()!=CwbOrderTypeIdEnum.Express.getValue()) {
 					throw new CwbException(cwbOrder.getCwb(), FlowOrderTypeEnum.YiFanKui.getValue(), ExceptionCwbErrorTypeEnum.FEI_PEI_SONG_DING_DAN);
 				}
 				DeliveryState deliveryState = this.deliveryStateDAO.getActiveDeliveryStateByCwb(cwb);
@@ -2459,12 +2459,28 @@ public class CwbOrderPDAController {
 						cwbOrder == null ? 0 : cwbOrder.getCustomerid(), 0, 0, 0, "", scancwb);
 
 				statuscode = CwbOrderPDAEnum.SYS_ERROR.getCode();
-				errorMsg = errorMsg.append(cwb).append("@").append(e.getError().getText()).append(";");
+				errorMsg = errorMsg.append(cwb).append(" ").append("签收失败");
+				
 				this.logger.error("归班反馈异常" + cwb, e);
+				BatchDeliverBody batchDeliverBody = new BatchDeliverBody();
+				batchDeliverBody.setFailcwbinfo(errorMsg.toString());
+				batchDeliverBody.setSuccesscwbnum(Integer.toString(backMes));
+
+				BatchDeliverBodyPdaResponse PDAResponse = new BatchDeliverBodyPdaResponse(statuscode, errorMsg.toString());
+				PDAResponse.setBody(batchDeliverBody);
+				return PDAResponse;
 			} catch (Exception e) {
+				
 				statuscode = CwbOrderPDAEnum.SYS_ERROR.getCode();
-				errorMsg = errorMsg.append(cwb).append("@").append(e.getMessage());
+				errorMsg = errorMsg.append(cwb).append(" ").append("系统异常");
 				this.logger.error("归班反馈异常" + cwb, e);
+				BatchDeliverBody batchDeliverBody = new BatchDeliverBody();
+				batchDeliverBody.setFailcwbinfo(errorMsg.toString());
+				batchDeliverBody.setSuccesscwbnum(Integer.toString(backMes));
+
+				BatchDeliverBodyPdaResponse PDAResponse = new BatchDeliverBodyPdaResponse(statuscode, errorMsg.toString());
+				PDAResponse.setBody(batchDeliverBody);
+				return PDAResponse;
 			}
 		}
 
@@ -3246,6 +3262,7 @@ public class CwbOrderPDAController {
 		}
 		List<ExpressIntoDto> queryExpressList = this.cwborderService.queryExpressListByPage(deliveryIds,new Integer(processState), user.getBranchid());
 		logger.info("pda进入快递查询的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
+
 		return JSONArray.fromObject(queryExpressList).toString(); 
 	}
 	/**
