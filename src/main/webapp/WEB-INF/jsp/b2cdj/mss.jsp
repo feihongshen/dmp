@@ -33,11 +33,10 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>反馈URL：</span>
 	 						<input type ="text" id="feedbackUrl" name ="feedbackUrl"  maxlength="300"  value="<%=smile.getFeedbackUrl()%>"  > 
 						</li>
-						<li><span>公钥信息：</span>
-	 						<input type ="text" id="access_key" name ="access_key"  maxlength="300"  value="<%=smile.getAccess_key() %>"  > 
-						</li>
+						<li><span>上传图片URL：</span>
+	 						<input type ="text" id="imgUrl" name ="imgUrl"  maxlength="300"  value="<%=smile.getImgUrl()%>"  > </li>
 						<li><span>私钥信息：</span>
-	 						<input type ="text" id="secret_key" name ="secret_key"  maxlength="300"  value="<%=smile.getSecret_key() %>"  > 
+	 						<input type ="text" id="secret_key" name ="secret_key"  maxlength="300"  value="<%=smile.getSecretKey() %>"  > 
 						</li>
 						<li><span>每次反馈数量：</span>
 	 						<input type ="text" id="maxCount" name ="maxCount"  maxlength="300"  value="<%=smile.getMaxCount()%>"    > 
@@ -45,26 +44,6 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>在配送公司中id：</span>
 	 						<input type ="text" id="customerid" name ="customerid"  maxlength="300"  value="<%=smile.getCustomerid()%>"  size="15" > 
 						</li>
-						<li><span>承运商编码：</span>
-	 						<input type ="text" id="dmsCode" name ="dmsCode"  maxlength="300"  value="<%=smile.getDmsCode()%>"  size="15" > 
-						</li>
-						<li><span>命令：</span>
-	 						<input type ="text" id="cmd" name ="cmd"  maxlength="300"  value="<%=smile.getCmd()%>"  size="15" > 
-						</li>
-						<li><span>版本号：</span>
-	 						<input type ="text" id="version" name ="version"  maxlength="300"  value="<%=smile.getVersion()%>"  size="15" > 
-						</li>
-						<li><span>商户ID：</span>
-	 						<input type ="text" id="partner_id" name ="partner_id"  maxlength="300"  value="<%=smile.getPartner_id()%>"  size="15" > 
-						</li>
-						<li><span>商户订单ID：</span>
-	 						<input type ="text" id="partner_order_id" name ="partner_order_id"  maxlength="300"  value="<%=smile.getPartner_order_id()%>"  size="15" > 
-						</li>
-						<li><span>商户ID：</span>
-	 						<input type ="text" id="o3_order_id" name ="o3_order_id"  maxlength="300"  value="<%=smile.getO3_order_id()%>"  size="15" > 
-						</li>
-						
-					
 						<li><span>订单导入库房：</span>
 							<select name="warehouseid">
 								<option value="0">请选择库房</option>
@@ -85,9 +64,8 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						<li><span>反馈URL：</span>
 	 						<input type ="text" id="feedbackUrl" name ="feedbackUrl"  maxlength="300"  value=""  > 
 						</li>
-						<li><span>公钥信息：</span>
-	 						<input type ="text" id="access_key" name ="access_key"  maxlength="300"  value=""  > 
-						</li>
+						<li><span>上传图片URL：</span>
+	 						<input type ="text" id="imgUrl" name ="imgUrl"  maxlength="300"  value=""  > </li>
 						<li><span>私钥信息：</span>
 	 						<input type ="text" id="secret_key" name ="secret_key"  maxlength="300"  value=""  > 
 						</li>
@@ -96,24 +74,6 @@ List<Branch> warehouselist=(List<Branch>)request.getAttribute("warehouselist");
 						</li>
 						<li><span>在配送公司中id：</span>
 	 						<input type ="text" id="customerid" name ="customerid"  maxlength="300"  value=""  size="15" > 
-						</li>
-						<li><span>承运商编码：</span>
-	 						<input type ="text" id="dmsCode" name ="dmsCode"  maxlength="300"  value=""  size="15" > 
-						</li>
-					<li><span>命令：</span>
-	 						<input type ="text" id="cmd" name ="cmd"  maxlength="300"  value=""  size="15" > 
-						</li>
-						<li><span>版本号：</span>
-	 						<input type ="text" id="version" name ="version"  maxlength="300"  value=""  size="15" > 
-						</li>
-						<li><span>商户ID：</span>
-	 						<input type ="text" id="partner_id" name ="partner_id"  maxlength="300"  value=""  size="15" > 
-						</li>
-						<li><span>商户订单ID：</span>
-	 						<input type ="text" id="partner_order_id" name ="partner_order_id"  maxlength="300"  value=""  size="15" > 
-						</li>
-						<li><span>商户ID：</span>
-	 						<input type ="text" id="o3_order_id" name ="o3_order_id"  maxlength="300"  value=""  size="15" > 
 						</li>
 						<li><span>订单导入库房：</span>
 							<select name="warehouseid">

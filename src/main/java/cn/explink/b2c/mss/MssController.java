@@ -84,9 +84,11 @@ public class MssController {
 
 		Mss mss = this.b2cUtil.getViewBean(B2cEnum.MSS.getKey(), Mss.class);
 		String params = request.getParameter("Data");
-		this.logger.info("美食送请求参数：{}", params);
-		if (!StringUtils.hasText(params)) {
-			this.logger.warn("美食送参数为空,params={}", params);
+		String requestTime=request.getParameter("requestTime");
+		String sign=request.getParameter("sign");
+		this.logger.info("美食送请求参数：{},请求时间：{},签名：{}", params,requestTime,sign);
+		if (!StringUtils.hasText(params)&&!StringUtils.hasText(requestTime)&&!StringUtils.hasText(sign)) {
+			this.logger.warn("美食送参数为空,params={},requestTime={},sign={}", params,requestTime,sign);
 			return this.mssService.responseJson("4002", "请求参数错误", mss,"");
 		}
 
@@ -96,7 +98,7 @@ public class MssController {
 			return this.mssService.responseJson("4007", "开发者信息异常", mss,"");
 		}
 		try {
-			return this.mssService.RequestOrdersToTMS(params, mss);
+			return this.mssService.RequestOrdersToTMS(params,requestTime,sign, mss);
 		} catch (Exception e) {
 			e.printStackTrace();
 			this.logger.warn("美食送未知异常" + e);
@@ -104,12 +106,4 @@ public class MssController {
 		}
 
 	}
-
-	// 执行临时表直接插入主表
-	@RequestMapping("/timmer")
-	public @ResponseBody String executeTimmer() {
-		this.cwbDetailTimmer.selectTempAndInsertToCwbDetail();
-		return "执行了美食送的临时表";
-	}
-
 }

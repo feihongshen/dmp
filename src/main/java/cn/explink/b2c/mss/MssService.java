@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import cn.explink.b2c.jiuye.JiuYe;
 import cn.explink.b2c.mss.json.Consignee;
 import cn.explink.b2c.mss.json.Good;
+import cn.explink.b2c.pjwl.ExpressCwbOrderDTO;
+import cn.explink.b2c.pjwl.ExpressCwbOrderDataImportDAO;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.DataImportDAO_B2c;
 import cn.explink.b2c.tools.DataImportService_B2c;
@@ -25,6 +27,7 @@ import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.util.B2cUtil;
 import cn.explink.util.StringUtil;
+import cn.explink.util.MD5.MD5Util;
 import net.sf.json.JSONObject;
 
 @Service
@@ -40,6 +43,8 @@ public class MssService {
 	@Autowired
 	B2cUtil b2cUtil;
 	private Logger logger = LoggerFactory.getLogger(MssService.class);
+	@Autowired
+	ExpressCwbOrderDataImportDAO expressCwbOrderDataImportDAO;
 
 	public void update(int joint_num, int state) {
 		this.jiontDAO.UpdateState(joint_num, state);
@@ -54,14 +59,8 @@ public class MssService {
 		String maxCount = StringUtil.nullConvertToEmptyString(request.getParameter("maxCount"));
 		dms.setMaxCount(("".equals(maxCount)) ? 0 : (Integer.valueOf(request.getParameter("maxCount"))));
 		dms.setWarehouseid(Integer.valueOf(request.getParameter("warehouseid")));
-		dms.setAccess_key(request.getParameter("access_key"));
-		dms.setSecret_key(request.getParameter("secret_key"));
-		dms.setDmsCode(request.getParameter("dmsCode"));
-		dms.setCmd(request.getParameter("cmd"));
-		dms.setVersion(request.getParameter("version"));
-		dms.setPartner_id(request.getParameter("partner_id"));
-		dms.setPartner_order_id(request.getParameter("partner_order_id"));
-		dms.setTicket(request.getParameter("ticket"));
+		dms.setSecretKey(request.getParameter("secret_key"));
+		dms.setImgUrl(request.getParameter("imgUrl"));
 		String oldCustomerids = "";
 
 		JSONObject jsonObj = JSONObject.fromObject(dms);
@@ -85,37 +84,28 @@ public class MssService {
 		this.customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
 	}
 
-	public String RequestOrdersToTMS(String params, Mss mss) throws Exception {
-		Map<String, Object> productMap = new HashMap<String, Object>();
+	public String RequestOrdersToTMS(String params,String requestTime,String sign, Mss mss) throws Exception {
+		ExpressCwbOrderDTO expressCwbOrderDTO=null;
+		// 获取签名
+		String signKey = MD5Util.md5(params+requestTime+mss.getSecretKey(),"UTF-8");
+				// 删除签名
+		if (!signKey.equals(sign)) {
+			this.logger.warn("签名错误");
+			return this.responseJson("4001", "验签错误", mss,"");
+			}
 		try {
-			productMap = new ObjectMapper().readValue(params, Map.class);
+			expressCwbOrderDTO = new ObjectMapper().readValue(params, ExpressCwbOrderDTO.class);
 		} catch (Exception e) {
 			this.logger.warn("解析美食送json异常，" + e);
 			return this.responseJson("5001", "系统异常	", mss,"");
 		}
-		if (productMap.isEmpty()) {
+		if (null==expressCwbOrderDTO) {
 			this.logger.info("美食送参数为空,params={}", params);
 			return this.responseJson("4002", "请求参数错误", mss,"");
 		}
-		// 获取签名
-		String sign = (String) productMap.get("sign");
-		// 删除签名
-		productMap.remove("sign");
-		String signMSS = SignUtil.getSign(productMap, mss.getSecret_key());
-		if (!sign.equals(signMSS)) {
-			this.logger.warn("签名错误");
-			return this.responseJson("4001", "验签错误", mss,"");
-		}
-		Map<String, Object> BodyMap = (Map<String, Object>) productMap.get("body");
-		List<Map<String, String>> orderlist = this.parseCwbArrByOrderDto(BodyMap, mss);
-		if ((orderlist == null) || (orderlist.size() == 0)) {
-			this.logger.warn("美食送-请求没有封装参数，订单号可能为空");
-			return this.responseJson("4004", "请求参数缺失", mss,"");
-		}
-		long warehouseid = mss.getWarehouseid(); // 订单导入的库房Id
-		this.dataImportService_B2c.Analizy_DataDealByB2c(Long.valueOf(mss.getCustomerid()), B2cEnum.MSS.getMethod(), orderlist, warehouseid, true);
+		expressCwbOrderDataImportDAO.insertTransOrder_toTempTable(expressCwbOrderDTO);
 		this.logger.info("美食送-订单导入成功");
-		return this.responseJson("200", "成功", mss,(String)BodyMap.get("partner_order_id"));
+		return this.responseJson("200", "成功", mss,expressCwbOrderDTO.getTransportNo());
 	}
 
 	private List<Map<String, String>> parseCwbArrByOrderDto(Map<String, Object> bodyMap, Mss mss) {
@@ -172,23 +162,9 @@ public class MssService {
 	 * @return
 	 */
 	public String responseJson(String code, String msg, Mss mss,String cwb) {
-		long time = System.currentTimeMillis();
 		Map<String, Object> responseMap = new HashMap<String, Object>();
-		Map<String, Object> bodyMap = new HashMap<String, Object>();
-		Map<String, Object> dataMap = new HashMap<String, Object>();
-		responseMap.put("access_key", mss.getAccess_key());
-		responseMap.put("cmd", mss.getCmd());
-		responseMap.put("ticket", mss.getDmsCode());
-		bodyMap.put("code", code);
-		bodyMap.put("message", msg);
-		if ("200".equals(code)) {
-			dataMap.put("partner_id", mss.getPartner_id());
-			dataMap.put("partner_order_id", cwb);
-		}
-		bodyMap.put("data", dataMap);
-		responseMap.put("body", bodyMap);
-		responseMap.put("time", time / 1000);
-		responseMap.put("sign", SignUtil.getSign(responseMap, mss.getSecret_key()));
+		responseMap.put("errCode", code);
+		responseMap.put("errMsg", msg);
 		Map<String, Object> response = SignUtil.sortMapByKey(responseMap);
 		return SignUtil.toJson(response);
 	}

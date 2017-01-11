@@ -122,7 +122,6 @@
                 <ref bean="doTime_sendEMSOrder"/>
                 <ref bean="doTime_getEmsEmailNo"/>
                 <ref bean="doTime_imitateEMSTraceToDmpOpt"/>
-                <ref bean="doTime_mssTask"/>
                 <!-- 重推快递单各种操作给TPS,需要注释 -->
                 <!-- <ref bean="doTime_resendExpressToTps"/> -->
                 <!-- add by zhouhuan tps对接新增非唯品会订单转业务定时器，查询临时表，插入数据到detail表中 2016-08-05 -->
@@ -1113,26 +1112,6 @@
 		</property>
 		<property name="concurrent" value="false" />
 	</bean>
-	<!--美食送开始  -->
-	<bean id="doTime_mssTask" class="cn.explink.util.DatabaseInitCronTriggerBean" dependency-check="default">
-		<property name="jobDetail">
-			<ref bean="getMss" />
-		</property>
-		<property name="cronExpression">
-			<value>0 */15 * * * ?</value>
-		</property>
-	</bean>
-
-	<bean id="getMss" class="cn.explink.util.BeanInvokingJobDetailFactoryBean" dependency-check="default">
-		<property name="targetBean">
-			<value>excuteTimmer</value>
-		</property>
-		<property name="targetMethod">
-			<value>getMss_Task</value>
-		</property>
-		<property name="concurrent" value="false" />
-	</bean>
-	<!--美食送end  -->
 	
 	<bean id="doTime_guangxindianxin" class="cn.explink.util.DatabaseInitCronTriggerBean"
 		dependency-check="default">

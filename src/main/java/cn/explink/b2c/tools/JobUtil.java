@@ -311,8 +311,6 @@ public class JobUtil {
 
 	@Autowired
 	IDistributedLock distributedLock;
-	@Autowired
-	MSSInsertCwbDetailTimmer mssInsertCwbDetailTimmer;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
 		JobUtil.threadMap = new RedisMapImpl<String, Integer>("JobUtil");
 		JobUtil.threadMap.put("tmall", 0);
@@ -1455,22 +1453,6 @@ public class JobUtil {
 			this.logger.error("执行九曵订单导入定时器异常", e);
 		}
 
-	}
-
-	/**
-	 * 美食送
-	 */
-	public void getMss_Task() {
-		try {
-			long starttime = System.currentTimeMillis();
-
-			this.mssInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
-			long endtime = System.currentTimeMillis();
-			this.logger.info("执行了美食送订单导入定时器！本次耗时:{}秒", ((endtime - starttime) / 1000));
-
-		} catch (Exception e) {
-			this.logger.error("执行美食送订单导入定时器异常", e);
-		}
 	}
 
 	// 飞牛网(http)
