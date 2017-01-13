@@ -146,7 +146,7 @@ public enum B2cEnum {
 	// zhili01.liang on 20161115加7家对接,通和佳递就是城市一百
 	TPS_JingDong(22558, "京东-TPS", "jingdongtpsother", 0), TPS_TongHeJiaDi(22559, "通和佳递-TPS", "tonghejiaditpsother", 0), TPS_LuSeJiaYuan(22560, "绿色家园-TPS", "lusejiayuantpsother", 0), TPS_ShunFeng(
 			22561, "顺丰-TPS", "shunfengtpsother", 0), TPS_KuaiDiNiao(22562, "快递鸟-TPS", "kuaidiniaotpsother", 0), TPS_ZhongLiangWoMaiWang(22563, "中粮我买网-TPS", "zhongliangwomaiwangtpsother",
-					0), TPS_YangGuangXingFuGouWu(22564, "央广幸福购物-TPS", "yangguangxingfugouwutpsother", 0), MSS(21005, "美食送", "MSS", 0)
+					0), TPS_YangGuangXingFuGouWu(22564, "央广幸福购物-TPS", "yangguangxingfugouwutpsother", 0), MSS(21005, "OTMS", "MSS", 0)
 	// zhili01.liang on 20160902,
 	// 下面这些EDI接口由TpsMQOrderSettingController负责展示====End====
 	;

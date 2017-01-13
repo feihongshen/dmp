@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -40,7 +41,7 @@ public class MssController {
 	private Logger logger = LoggerFactory.getLogger(MssController.class);
 
 	/**
-	 * 显示美食送对接页面
+	 * 显示otms对接页面
 	 *
 	 * @param key
 	 * @param model
@@ -51,7 +52,7 @@ public class MssController {
 		model.addAttribute("mss", this.b2cUtil.getViewBean(key, Mss.class));
 		model.addAttribute("joint_num", key);
 		model.addAttribute("warehouselist", this.branchDAO.getBranchBySiteType(BranchEnum.KuFang.getValue()));
-		this.logger.info("进行美食送对接配置----");
+		this.logger.info("进行otms对接配置----");
 		return "/b2cdj/mss";
 	}
 
@@ -73,35 +74,32 @@ public class MssController {
 	}
 
 	/**
-	 * 美食送订单下载
+	 * otms订单下载
 	 *
 	 * @param request
 	 * @return
 	 * @throws IOException
 	 */
 	@RequestMapping("/dms")
-	public @ResponseBody String dms(HttpServletRequest request) throws IOException {
+	public @ResponseBody String dms(HttpServletRequest request,@RequestBody String params) throws IOException {
 
 		Mss mss = this.b2cUtil.getViewBean(B2cEnum.MSS.getKey(), Mss.class);
-		String params = request.getParameter("Data");
-		String requestTime=request.getParameter("requestTime");
-		String sign=request.getParameter("sign");
-		this.logger.info("美食送请求参数：{},请求时间：{},签名：{}", params,requestTime,sign);
-		if (!StringUtils.hasText(params)&&!StringUtils.hasText(requestTime)&&!StringUtils.hasText(sign)) {
-			this.logger.warn("美食送参数为空,params={},requestTime={},sign={}", params,requestTime,sign);
+		this.logger.info("otms请求参数：{}", params);
+		if (!StringUtils.hasText(params)) {
+			this.logger.warn("otms参数为空,params={}",params);
 			return this.mssService.responseJson("4002", "请求参数错误", mss,"");
 		}
 
 		int isOpenFlag = this.jointService.getStateForJoint(B2cEnum.MSS.getKey());
 		if (isOpenFlag == 0) {
-			this.logger.info("未开启[美食送]对接！");
+			this.logger.info("未开启[otms]对接！");
 			return this.mssService.responseJson("4007", "开发者信息异常", mss,"");
 		}
 		try {
-			return this.mssService.RequestOrdersToTMS(params,requestTime,sign, mss);
+			return this.mssService.RequestOrdersToTMS(params,mss);
 		} catch (Exception e) {
 			e.printStackTrace();
-			this.logger.warn("美食送未知异常" + e);
+			this.logger.warn("otms未知异常" + e);
 			return this.mssService.responseJson("6001", "未知异常", mss,"");
 		}
 

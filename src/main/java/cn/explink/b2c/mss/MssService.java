@@ -1,5 +1,6 @@
 package cn.explink.b2c.mss;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,11 +8,14 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSON;
 
 import cn.explink.b2c.jiuye.JiuYe;
 import cn.explink.b2c.mss.json.Consignee;
@@ -25,13 +29,16 @@ import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.CustomerDAO;
+import cn.explink.domain.Branch;
+import cn.explink.domain.VO.express.ExtralInfo4Address;
+import cn.explink.service.addressmatch.AddressMatchExpressService;
 import cn.explink.util.B2cUtil;
 import cn.explink.util.StringUtil;
-import cn.explink.util.MD5.MD5Util;
 import net.sf.json.JSONObject;
 
 @Service
 public class MssService {
+	private static final String String = null;
 	@Autowired
 	JiontDAO jiontDAO;
 	@Autowired
@@ -45,6 +52,8 @@ public class MssService {
 	private Logger logger = LoggerFactory.getLogger(MssService.class);
 	@Autowired
 	ExpressCwbOrderDataImportDAO expressCwbOrderDataImportDAO;
+	@Autowired
+	AddressMatchExpressService addressMatchExpressService;
 
 	public void update(int joint_num, int state) {
 		this.jiontDAO.UpdateState(joint_num, state);
@@ -58,9 +67,12 @@ public class MssService {
 		dms.setImportUrl(request.getParameter("importUrl"));
 		String maxCount = StringUtil.nullConvertToEmptyString(request.getParameter("maxCount"));
 		dms.setMaxCount(("".equals(maxCount)) ? 0 : (Integer.valueOf(request.getParameter("maxCount"))));
-		dms.setWarehouseid(Integer.valueOf(request.getParameter("warehouseid")));
-		dms.setSecretKey(request.getParameter("secret_key"));
 		dms.setImgUrl(request.getParameter("imgUrl"));
+		dms.setAccessKey(request.getParameter("access_key"));
+		dms.setCmd(request.getParameter("cmd"));
+		dms.setTicket(request.getParameter("ticket"));
+		dms.setVersion(request.getParameter("version"));
+		dms.setSecretKey(request.getParameter("secretKey"));
 		String oldCustomerids = "";
 
 		JSONObject jsonObj = JSONObject.fromObject(dms);
@@ -74,7 +86,7 @@ public class MssService {
 			try {
 				oldCustomerids = this.b2cUtil.getViewBean(joint_num, new JiuYe().getClass()).getCustomerid();
 			} catch (Exception e) {
-				this.logger.error("解析【美食送】基础设置异常,原因:{}", e);
+				this.logger.error("解析【otms】基础设置异常,原因:{}", e);
 			}
 			jointEntity.setJoint_num(joint_num);
 			jointEntity.setJoint_property(jsonObj.toString());
@@ -84,76 +96,113 @@ public class MssService {
 		this.customerDAO.updateB2cEnumByJoint_num(customerid, oldCustomerids, joint_num);
 	}
 
-	public String RequestOrdersToTMS(String params,String requestTime,String sign, Mss mss) throws Exception {
-		ExpressCwbOrderDTO expressCwbOrderDTO=null;
+	@SuppressWarnings({  "unchecked" })
+	public String RequestOrdersToTMS(String params, Mss mss) throws Exception {
+		Map<String, Object> productMap = new HashMap<String, Object>();
+		try {
+			productMap = new ObjectMapper().readValue(params, Map.class);
+		} catch (Exception e) {
+			this.logger.warn("解析otmsjson异常，" + e);
+			return this.responseJson("5001", "系统异常	", mss,"");
+		}
+		if (productMap.isEmpty()) {
+			this.logger.info("otms参数为空,params={}", params);
+			return this.responseJson("4002", "请求参数错误", mss,"");
+		}
 		// 获取签名
-		String signKey = MD5Util.md5(params+requestTime+mss.getSecretKey(),"UTF-8");
-				// 删除签名
+		String sign = (String) productMap.get("sign");
+		// 删除签名
+		productMap.remove("sign");
+		String signKey=SignUtil.getSign(productMap, mss.getSecretKey());
+			
 		if (!signKey.equals(sign)) {
 			this.logger.warn("签名错误");
 			return this.responseJson("4001", "验签错误", mss,"");
 			}
-		try {
-			expressCwbOrderDTO = new ObjectMapper().readValue(params, ExpressCwbOrderDTO.class);
-		} catch (Exception e) {
-			this.logger.warn("解析美食送json异常，" + e);
-			return this.responseJson("5001", "系统异常	", mss,"");
+		Map<String, Object> body = (Map<String, Object>) productMap.get("body");
+		ExpressCwbOrderDTO orderlist =this.parseCwbArrByOrderDto(body, mss);
+		if ((orderlist == null) ) {
+			this.logger.warn("otms-请求没有封装参数，订单号可能为空");
+			return this.responseJson("4004", "请求参数缺失", mss,"");
 		}
-		if (null==expressCwbOrderDTO) {
-			this.logger.info("美食送参数为空,params={}", params);
-			return this.responseJson("4002", "请求参数错误", mss,"");
-		}
-		expressCwbOrderDataImportDAO.insertTransOrder_toTempTable(expressCwbOrderDTO);
-		this.logger.info("美食送-订单导入成功");
-		return this.responseJson("200", "成功", mss,expressCwbOrderDTO.getTransportNo());
+		List<String> cwbs=new ArrayList<String>();
+		expressCwbOrderDataImportDAO.insertTransOrder_toTempTable(orderlist);
+		this.logger.info("otms-订单导入成功");
+		return this.responseJson("200", "成功", mss,cwbs.toString());
 	}
 
-	private List<Map<String, String>> parseCwbArrByOrderDto(Map<String, Object> bodyMap, Mss mss) {
-		List<Map<String, String>> cwbList = new ArrayList<Map<String, String>>();
-		if (!bodyMap.isEmpty()) {
-			CwbOrderDTO cwbOrder = this.dataImportDAO_B2c.getCwbByCwbB2ctemp((String) bodyMap.get("partner_order_id"));// 商户订单编号（在o3系统中必须唯一，不能重复）
+	@SuppressWarnings("unchecked")
+	private ExpressCwbOrderDTO parseCwbArrByOrderDto(Map<String, Object> body, Mss mss) {
+		List<ExpressCwbOrderDTO> cwbList = new ArrayList<ExpressCwbOrderDTO>();
+			ExpressCwbOrderDTO expressCwbOrderDTO=new ExpressCwbOrderDTO();
+			String cwb = (String) body.get("partner_order_id");
+		if (!body.isEmpty()) {
+			CwbOrderDTO cwbOrder = this.dataImportDAO_B2c.getCwbByCwbB2ctemp(cwb);// 商户订单编号（在o3系统中必须唯一，不能重复）
 			if (cwbOrder != null) {
-				this.logger.warn("获取美食送订单中含有重复数据cwb={}", bodyMap.get("partner_order_id"));
+				this.logger.warn("获取otms订单中含有重复数据cwb={}", body.get("partner_order_id"));
 				return null;
 			}
 		}
-		List<Good> goods = (List<Good>) bodyMap.get("goods");
-		Map<String, String> cwbMap = new HashMap<String, String>();
-		cwbMap.put("cwb", (String) bodyMap.get("partner_order_id"));
+		//订单号
+		expressCwbOrderDTO.setTransportNo(cwb);
+		expressCwbOrderDTO.setCustOrderNo(cwb);
+		List<Map<String, Object>> goodsMap = (List<Map<String, Object>>) body.get("goods");
 		String sendcarname = "";
 		String carsize = "";
 		int count = 0;
 		long price = 0L;
-		for (Good good : goods) {
-			sendcarname += good.getName() + ",";
-			carsize += good.getSpecs() + ",";
-			count += good.getQuantity();
-			price += good.getPrice().longValue();
+		for (Map<String, Object> good : goodsMap) {
+			sendcarname += (String)good.get("name") + ",";
+			carsize += (String)good.get("specs") + ",";
+			count += (Integer)good.get("quantity");
+			price += (Long)good.get("price");
 		}
-		Consignee consignee = (Consignee) bodyMap.get("extra_metas");
-		Map<String, Object> extraMap = (Map<String, Object>) bodyMap.get("extra_services");
-		Map<String, Object> raMap = (Map<String, Object>) extraMap.get("ra");
-		Map<String, Object> paMap = (Map<String, Object>) extraMap.get("pa");
-		Map<String, Object> rcMap = (Map<String, Object>) extraMap.get("rc");
-		String receipt_amount = (String) raMap.get("receipt_amount");// 代收款金额(单位：分)
-		String pay_amount = (String) paMap.get("pay_amount");// 代付款金额(单位：分)
-		String recv_code = (String) paMap.get("recv_code");// 提货码（骑士提货时需要提供）
-		cwbMap.put("cwbcity", (String) bodyMap.get("city_code"));// 城市代码（详见附录）
-		cwbMap.put("sendcarname", sendcarname);
-		cwbMap.put("carsize", carsize);
-		cwbMap.put("consigneename", consignee.getName());
-		cwbMap.put("consigneeaddress", consignee.getAddress());
-		cwbMap.put("consigneephone", consignee.getTel());
-		cwbMap.put("consigneemobile", consignee.getMobile());
-		cwbMap.put("receivablefee", receipt_amount);
-		cwbMap.put("cwbremark", recv_code);
-		cwbMap.put("remark1", sendcarname + "," + "数量" + count + ",金额" + price);
-		cwbList.add(cwbMap);
-		return cwbList;
+		Branch branch = null;
+		Consignee consignee = (Consignee) body.get("extra_metas");
+		Map<String, Object> extraMap = (Map<String, Object>) body.get("extra_services");
+		Map<String, Object> deliveryMap = (Map<String, Object>) extraMap.get("delivery");
+		Map<String, String> pickMap = (Map<String, String>) deliveryMap.get("pick_up");
+		Map<String,String> extraMetas = (Map<String, String>) body.get("extra_metas");
+		String totalVolume = extraMetas.get("total_volume");
+		String totalWeight = extraMetas.get("total_weight");
+		String address=pickMap.get("address");
+		expressCwbOrderDTO.setCnorProv("北京市");//发货省
+		expressCwbOrderDTO.setCnorCity("北京市");//发货市
+		expressCwbOrderDTO.setCnorRegion("朝阳区");//发货区
+		expressCwbOrderDTO.setCnorAddr(pickMap.get("address"));//发货地址
+		expressCwbOrderDTO.setCnorName(pickMap.get("name"));//发货人
+		expressCwbOrderDTO.setCnorTel(pickMap.get("tel"));//发货人电话
+		expressCwbOrderDTO.setCnorMobile(pickMap.get("mobile"));//发件人手机
+		expressCwbOrderDTO.setCnorRemark((String)body.get("note"));
+		expressCwbOrderDTO.setCneeProv("北京市");//收件人省
+		expressCwbOrderDTO.setCneeCity("北京市");//收件人市
+		expressCwbOrderDTO.setCneeRegion("朝阳区");//收件区 
+		expressCwbOrderDTO.setCneeName(consignee.getName());//收件人姓名
+		expressCwbOrderDTO.setCneeAddr(consignee.getAddress());//收件人地址
+		expressCwbOrderDTO.setCneeTel(consignee.getTel());//收件人电话
+		expressCwbOrderDTO.setCneeMobile(consignee.getMobile());//收件人手机
+		expressCwbOrderDTO.setTotalWeight(new BigDecimal(totalWeight) );//合计重量
+		expressCwbOrderDTO.setTotalVolume(new BigDecimal(totalVolume));//合计体积
+		expressCwbOrderDTO.setTotalBox(1);//箱号
+		expressCwbOrderDTO.setCargoName(sendcarname);
+		expressCwbOrderDTO.setTotalNum(count);//发货数量
+		expressCwbOrderDTO.setIsCod(0);//是否货到付款
+		expressCwbOrderDTO.setCodAmount(new BigDecimal("0"));//代收货款
+		expressCwbOrderDTO.setPayType(1);//付款方式/结算方式
+		expressCwbOrderDTO.setPayment(-1);//支付方式
+		expressCwbOrderDTO.setCargoLength(new BigDecimal("1"));//长
+		expressCwbOrderDTO.setCargoWidth(new BigDecimal("1"));//宽
+		expressCwbOrderDTO.setCargoHeight(new BigDecimal("1"));//高
+		expressCwbOrderDTO.setAssuranceFee(new BigDecimal("0.0"));//保费
+		if(StringUtils.isNotEmpty(pickMap.get("address"))){
+			branch = this.matchDeliveryBranch(cwb,(String)pickMap.get("address"));
+		}
+		expressCwbOrderDTO.setAcceptDept(branch.getBranchname());
+		return expressCwbOrderDTO;
 	}
 
 	/**
-	 * 排序之后返回美食送
+	 * 排序之后返回otms
 	 *
 	 * @param code
 	 * @param success
@@ -162,11 +211,34 @@ public class MssService {
 	 * @return
 	 */
 	public String responseJson(String code, String msg, Mss mss,String cwb) {
+		long time = System.currentTimeMillis();
 		Map<String, Object> responseMap = new HashMap<String, Object>();
-		responseMap.put("errCode", code);
-		responseMap.put("errMsg", msg);
+		Map<String, Object> bodyMap = new HashMap<String, Object>();
+		Map<String, Object> dataMap = new HashMap<String, Object>();
+		responseMap.put("access_key", mss.getAccessKey());
+		responseMap.put("cmd", mss.getCmd());
+		responseMap.put("ticket", mss.getTicket());
+		bodyMap.put("code", code);
+		bodyMap.put("message", msg);
+		if ("200".equals(code)) {
+			//dataMap.put("partner_id", mss.get);
+			dataMap.put("partner_order_id", cwb);
+		}
+		bodyMap.put("data", dataMap);
+		responseMap.put("body", bodyMap);
+		responseMap.put("time", time / 1000);
+		responseMap.put("sign", SignUtil.getSign(responseMap, mss.getSecretKey()));
 		Map<String, Object> response = SignUtil.sortMapByKey(responseMap);
 		return SignUtil.toJson(response);
+	}
+	
+	
+	private Branch matchDeliveryBranch(String cwb,String cneeAddr) {
+		Branch branch = null;
+		ExtralInfo4Address info = new ExtralInfo4Address(cwb,1L,cneeAddr);
+		//匹配站点
+		branch = addressMatchExpressService.matchAddress4SinfferTransData(info);
+		return branch;
 	}
 
 }

@@ -8,8 +8,6 @@ public class Good {
 	private String specs;// 商品规格
 	private int quantity;// 商品数量
 	private BigDecimal price;// 商品单价(单位：分)
-	private BigDecimal discount;// 商品优惠金额（单位：分）
-	private BigDecimal packing_fee;// 商品包装费（单位：分）
 
 	public String getPartner_goods_id() {
 		return this.partner_goods_id;
@@ -49,22 +47,6 @@ public class Good {
 
 	public void setPrice(BigDecimal price) {
 		this.price = price;
-	}
-
-	public BigDecimal getDiscount() {
-		return this.discount;
-	}
-
-	public void setDiscount(BigDecimal discount) {
-		this.discount = discount;
-	}
-
-	public BigDecimal getPacking_fee() {
-		return this.packing_fee;
-	}
-
-	public void setPacking_fee(BigDecimal packing_fee) {
-		this.packing_fee = packing_fee;
 	}
 
 }

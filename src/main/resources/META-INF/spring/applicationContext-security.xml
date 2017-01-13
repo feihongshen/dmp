@@ -112,7 +112,7 @@
 		<intercept-url pattern="/lechong/**" access="permitAll" />
 		<intercept-url pattern="/service/**" access="permitAll" />
 		<intercept-url pattern="/zhongliang/**" access="permitAll" />
-
+        <intercept-url pattern="/mss/**" access="permitAll" />
 		<intercept-url pattern="/expressSysMonitor/**" access="permitAll" />
 		<intercept-url pattern="/checkbranch/**" access="permitAll" />
 		<intercept-url pattern="/location/**" access="permitAll" />

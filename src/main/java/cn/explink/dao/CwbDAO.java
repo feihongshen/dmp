@@ -10195,4 +10195,43 @@ public class CwbDAO {
 		String sql="select ishandover from express_ops_cwb_detail where cwb=?";
 		return this.jdbcTemplate.queryForLong(sql, cwb);
 	}
+	/**
+	 * 获取已经签收并且未上传照片的订单记录信息
+	 * @author lily
+	 * @param page 
+	 * @date 2016-12-29 18:02
+	 */
+	public List<CwbOrder> getCwbOrderByReceiveOrder(long page, String cwb, String consigneeaddress,String starttime,String endtime) {
+		starttime += " 00:00:00";
+		endtime += " 23:59:59";
+		String sql = "SELECT * FROM express_ops_cwb_detail WHERE flowordertype IN (35,36) and inputdatetime >= ? and inputdatetime <= ? ";
+				if(cwb.length()>0 && cwb!=""){
+					sql += " and cwb ='"+cwb+"'";
+				}
+				if(consigneeaddress.length()>0 && consigneeaddress!=""){
+					sql += " and consigneeaddress like'%"+consigneeaddress+"%'";
+				}
+				sql+=" order by opscwbid desc limit "
+				+ ((page - 1) * Page.ONE_PAGE_NUMBER) + " ,"
+				+ Page.ONE_PAGE_NUMBER;
+		return this.jdbcTemplate.query(sql, new CwbMapper(),starttime,endtime);
+	}
+
+	public long getCwbOrderByReceiveOrderCount(String cwb, String consigneeaddress, String starttime, String endtime) {
+		String sql = "SELECT COUNT(1)  FROM express_ops_cwb_detail WHERE flowordertype IN (35,36) and inputdatetime >= ? and inputdatetime <= ? ";
+		if(cwb.length()>0 && cwb!=""){
+			sql += " and cwb ='"+cwb+"'";
+		}
+		if(consigneeaddress.length()>0 && consigneeaddress!=""){
+			sql += " and consigneeaddress like'%"+consigneeaddress+"%'";
+		}
+		return this.jdbcTemplate.queryForInt(sql,starttime,endtime);
+	}
+
+	public void addreciveimgInfo(String mailNo, String localpath,String resultMsg) {
+		String sql = "Insert Into express_ops_cwb_orderimg (cwbid,imgurl,resultMsg,uploadtime) values(?,?,?,now())";
+		this.jdbcTemplate.update(sql, mailNo, localpath,resultMsg);
+		
+	}
+
 }

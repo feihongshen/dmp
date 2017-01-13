@@ -598,6 +598,9 @@ function delSuccess(data){
 		else if(obj=='22565'){//PJD电子签名图片
             $("#edit").val('<%=request.getContextPath()%>/pjdsignimgcfg/show/');
             $("#del").val('<%=request.getContextPath()%>/pjdsignimgcfg/del/');
+        }else if(obj=="21005"){
+        	$("#edit").val('<%=request.getContextPath()%>/mss/show/');
+            $("#del").val('<%=request.getContextPath()%>/mss/del/');
         }
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
