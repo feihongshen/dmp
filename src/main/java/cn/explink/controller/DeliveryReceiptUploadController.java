@@ -75,7 +75,7 @@ public class DeliveryReceiptUploadController {
 		//将图片上传到本地
 		String filePath = "/files/upload";
 		String relativePath = FilesHelperUtils.fileUploadStream(request, multipartFile, filePath);
-		String localpath = "/usr/local/tomcat8080_ouky/webapps/ouky"+relativePath;
+		String localpath = "/usr/local/tomcat8080-ouky/webapps/ouky"+relativePath;
 		//发送请求给otms并接收相应
 		String result ;
 		String resultMsg = "发送请求失败";
@@ -89,9 +89,9 @@ public class DeliveryReceiptUploadController {
 						code[j] = code[j].substring(1, code[j].length()-1);
 						if(code[j].equals(UploadResponseCodeEnum.Chenggong.getCode())){
 							//上传状态为成功的话，将数据添加到数据库中
-							this.cwbDAO.addreciveimgInfo(mailNo,localpath,resultMsg);
 							resultMsg = UploadResponseCodeEnum.Chenggong.getMeaning();
 							logger.info("订单号为"+mailNo+"的交接单上传成功，图片位置保存在"+localpath+"");
+							this.cwbDAO.addreciveimgInfo(mailNo,localpath,resultMsg);
 						}else if(code[j].equals(UploadResponseCodeEnum.OrderError.getCode())){
 							resultMsg = UploadResponseCodeEnum.OrderError.getMeaning();
 							logger.info("订单号为"+mailNo+"的交接单上传失败，错误提示为订单信息错误或不完整");

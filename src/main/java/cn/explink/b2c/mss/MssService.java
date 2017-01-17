@@ -28,6 +28,7 @@ import cn.explink.b2c.tools.DataImportService_B2c;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.b2c.tools.JointEntity;
 import cn.explink.controller.CwbOrderDTO;
+import cn.explink.dao.BranchDAO;
 import cn.explink.dao.CustomerDAO;
 import cn.explink.domain.Branch;
 import cn.explink.domain.VO.express.ExtralInfo4Address;
@@ -54,6 +55,9 @@ public class MssService {
 	ExpressCwbOrderDataImportDAO expressCwbOrderDataImportDAO;
 	@Autowired
 	AddressMatchExpressService addressMatchExpressService;
+	
+	@Autowired
+	private BranchDAO branchDao;
 
 	public void update(int joint_num, int state) {
 		this.jiontDAO.UpdateState(joint_num, state);
@@ -120,20 +124,24 @@ public class MssService {
 			return this.responseJson("4001", "验签错误", mss,"");
 			}
 		Map<String, Object> body = (Map<String, Object>) productMap.get("body");
-		ExpressCwbOrderDTO orderlist =this.parseCwbArrByOrderDto(body, mss);
+		ExpressCwbOrderDTO orderlist=null;
+		try {
+			orderlist = this.parseCwbArrByOrderDto(body, mss);
+		} catch (Exception e) {
+			logger.error("otms请求参数错误,订单号{}",body.get("partner_order_id"));
+			return this.responseJson("4002", "请求参数错误", mss,"");
+		}
 		if ((orderlist == null) ) {
 			this.logger.warn("otms-请求没有封装参数，订单号可能为空");
 			return this.responseJson("4004", "请求参数缺失", mss,"");
 		}
-		List<String> cwbs=new ArrayList<String>();
 		expressCwbOrderDataImportDAO.insertTransOrder_toTempTable(orderlist);
 		this.logger.info("otms-订单导入成功");
-		return this.responseJson("200", "成功", mss,cwbs.toString());
+		return this.responseJson("200", "成功", mss,(String)body.get("partner_order_id"));
 	}
 
 	@SuppressWarnings("unchecked")
 	private ExpressCwbOrderDTO parseCwbArrByOrderDto(Map<String, Object> body, Mss mss) {
-		List<ExpressCwbOrderDTO> cwbList = new ArrayList<ExpressCwbOrderDTO>();
 			ExpressCwbOrderDTO expressCwbOrderDTO=new ExpressCwbOrderDTO();
 			String cwb = (String) body.get("partner_order_id");
 		if (!body.isEmpty()) {
@@ -149,16 +157,16 @@ public class MssService {
 		List<Map<String, Object>> goodsMap = (List<Map<String, Object>>) body.get("goods");
 		String sendcarname = "";
 		String carsize = "";
-		int count = 0;
-		long price = 0L;
+		Integer count = 0;
+		Long price = 0L;
 		for (Map<String, Object> good : goodsMap) {
 			sendcarname += (String)good.get("name") + ",";
 			carsize += (String)good.get("specs") + ",";
 			count += (Integer)good.get("quantity");
-			price += (Long)good.get("price");
+			price += (Integer)good.get("price");
 		}
 		Branch branch = null;
-		Consignee consignee = (Consignee) body.get("extra_metas");
+		 Map<String,String> consigneeMap = (Map<java.lang.String, java.lang.String>) body.get("consignee");
 		Map<String, Object> extraMap = (Map<String, Object>) body.get("extra_services");
 		Map<String, Object> deliveryMap = (Map<String, Object>) extraMap.get("delivery");
 		Map<String, String> pickMap = (Map<String, String>) deliveryMap.get("pick_up");
@@ -177,12 +185,12 @@ public class MssService {
 		expressCwbOrderDTO.setCneeProv("北京市");//收件人省
 		expressCwbOrderDTO.setCneeCity("北京市");//收件人市
 		expressCwbOrderDTO.setCneeRegion("朝阳区");//收件区 
-		expressCwbOrderDTO.setCneeName(consignee.getName());//收件人姓名
-		expressCwbOrderDTO.setCneeAddr(consignee.getAddress());//收件人地址
-		expressCwbOrderDTO.setCneeTel(consignee.getTel());//收件人电话
-		expressCwbOrderDTO.setCneeMobile(consignee.getMobile());//收件人手机
-		expressCwbOrderDTO.setTotalWeight(new BigDecimal(totalWeight) );//合计重量
-		expressCwbOrderDTO.setTotalVolume(new BigDecimal(totalVolume));//合计体积
+		expressCwbOrderDTO.setCneeName(consigneeMap.get("name"));//收件人姓名
+		expressCwbOrderDTO.setCneeAddr(consigneeMap.get("address"));//收件人地址
+		expressCwbOrderDTO.setCneeTel(consigneeMap.get("tel"));//收件人电话
+		expressCwbOrderDTO.setCneeMobile(consigneeMap.get("mobile"));//收件人手机
+		expressCwbOrderDTO.setTotalWeight(new BigDecimal(totalWeight.substring(0, totalWeight.indexOf("K")-1)) );//合计重量
+		expressCwbOrderDTO.setTotalVolume(new BigDecimal(totalVolume.substring(0, totalVolume.indexOf("C")-1)));//合计体积
 		expressCwbOrderDTO.setTotalBox(1);//箱号
 		expressCwbOrderDTO.setCargoName(sendcarname);
 		expressCwbOrderDTO.setTotalNum(count);//发货数量
@@ -194,10 +202,22 @@ public class MssService {
 		expressCwbOrderDTO.setCargoWidth(new BigDecimal("1"));//宽
 		expressCwbOrderDTO.setCargoHeight(new BigDecimal("1"));//高
 		expressCwbOrderDTO.setAssuranceFee(new BigDecimal("0.0"));//保费
-		if(StringUtils.isNotEmpty(pickMap.get("address"))){
-			branch = this.matchDeliveryBranch(cwb,(String)pickMap.get("address"));
+		expressCwbOrderDTO.setIsAcceptProv(1);
+		if(StringUtils.isNotEmpty(address)){
+			branch = this.matchDeliveryBranch(cwb,address);
 		}
-		expressCwbOrderDTO.setAcceptDept(branch.getBranchname());
+		try {
+			expressCwbOrderDTO.setAcceptDept(branch.getBranchname());
+			String branchcontactman =this.branchDao.getBranchByBranchid(branch.getBranchid()).getBranchcontactman();
+			expressCwbOrderDTO.setAcceptOperator(branchcontactman);
+			this.logger.info("订单{}匹配地址为{}",cwb,branch.getBranchname());
+		} catch (Exception e) {
+			this.logger.error("订单{}匹配地址失败",cwb);
+			return null;
+		}
+		expressCwbOrderDTO.setCneePeriod(0);
+		expressCwbOrderDTO.setCount(count);
+		expressCwbOrderDTO.setAssuranceValue(new BigDecimal(0));
 		return expressCwbOrderDTO;
 	}
 

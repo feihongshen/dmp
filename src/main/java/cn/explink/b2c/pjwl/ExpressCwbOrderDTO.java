@@ -218,7 +218,10 @@ public class ExpressCwbOrderDTO {
 	 * 单位
 	 */
 	private String unit;
-	
+	/**
+	 * // 省份类型 0 派件省，1揽件省
+	 */
+	private int isAcceptProv;
 	
 	public String getId() {
 		return id;
@@ -525,6 +528,12 @@ public class ExpressCwbOrderDTO {
 	}
 	public void setUnit(String unit) {
 		this.unit = unit;
+	}
+	public int getIsAcceptProv() {
+		return isAcceptProv;
+	}
+	public void setIsAcceptProv(int isAcceptProv) {
+		this.isAcceptProv = isAcceptProv;
 	}
 	
 }

@@ -533,6 +533,16 @@ public class ExpressOrderDao {
 		sql.append("update express_ops_cwb_exprss_detail_temp set is_hand_over=1 where tps_trans_id=?");
 		this.jdbcTemplate.update(sql.toString(), tpsTransId);
 	}
+	/**
+	 * 更新临时表中的已转业务记录
+	 * @param transCwb
+	 */
+	public void updateExpressDetailTempForTransCwb(String transCwb){
+		StringBuffer sql = new StringBuffer();
+		sql.append("update express_ops_cwb_exprss_detail_temp set is_hand_over=1 where transport_no=?");
+		this.jdbcTemplate.update(sql.toString(), transCwb);
+		
+	}
 	
 	/**
 	 * 更新临时表中的特定字段

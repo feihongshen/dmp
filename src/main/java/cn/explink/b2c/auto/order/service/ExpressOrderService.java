@@ -17,6 +17,7 @@ import cn.explink.b2c.auto.order.domain.ExpressDetailTemp;
 import cn.explink.b2c.auto.order.util.MqOrderBusinessUtil;
 import cn.explink.controller.CwbOrderDTO;
 import cn.explink.dao.BranchDAO;
+import cn.explink.dao.CwbDAO;
 import cn.explink.dao.SystemInstallDAO;
 import cn.explink.dao.UserDAO;
 import cn.explink.domain.Branch;
@@ -26,7 +27,9 @@ import cn.explink.domain.ImportValidationManager;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.express.ExtralInfo4Address;
 import cn.explink.domain.express.ExpressOperationInfo;
+import cn.explink.enumutil.FlowOrderTypeEnum;
 import cn.explink.enumutil.express.ExpressOperationEnum;
+import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbOrderValidator;
 import cn.explink.service.addressmatch.AddressMatchExpressService;
 import cn.explink.service.express.TpsInterfaceExecutor;
@@ -64,6 +67,11 @@ public class ExpressOrderService {
 	
 	@Autowired
 	ImportValidationManager importValidationManager;
+	
+	@Autowired
+	private CwbOrderService cwbOrderService;
+	@Autowired
+	private CwbDAO cwbDAO;
 	
 	/**
 	 * 根据 tpsTranId查询临时表，
@@ -210,9 +218,12 @@ public class ExpressOrderService {
 			//插入主表
 			expressOrderDao.insertCwbOrder(expressDetailTemp, branch, acceptBranch, user);
 			logger.info("定时器临时表插入detail表成功!cwb={}", expressDetailTemp.getTransportNo());
+			CwbOrder order = this.cwbOrderService.getCwbByCwb(expressDetailTemp.getCustOrderNo());
+			this.cwbOrderService.createFloworder(user, branch.getBranchid(), order, FlowOrderTypeEnum.LanJianRuZhan, "", System.currentTimeMillis());
 		}
 		//更新记录
-		expressOrderDao.updateExpressDetailTempForOver(expressDetailTemp.getTpsTransId());
+		//expressOrderDao.updateExpressDetailTempForOver(expressDetailTemp.getTpsTransId());
+		expressOrderDao.updateExpressDetailTempForTransCwb(expressDetailTemp.getTransportNo());
 	}
 	
 	/**
