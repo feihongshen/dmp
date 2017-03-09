@@ -106,6 +106,7 @@ import cn.explink.domain.Reason;
 import cn.explink.domain.Role;
 import cn.explink.domain.Truck;
 import cn.explink.domain.User;
+import cn.explink.domain.VO.express.EmbracedOrderVO;
 import cn.explink.domain.VO.express.ExpressIntoStationVO;
 import cn.explink.domain.VO.express.ExpressParamsVO;
 import cn.explink.domain.dto.ExpressIntoDto;
@@ -128,12 +129,14 @@ import cn.explink.exception.CwbException;
 import cn.explink.exception.ExplinkException;
 import cn.explink.pos.tools.SignTypeEnum;
 import cn.explink.service.BaleService;
+import cn.explink.service.CwbOrderPdaService;
 import cn.explink.service.CwbOrderService;
 import cn.explink.service.CwbRouteService;
 import cn.explink.service.DataStatisticsService;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.SystemInstallService;
+import cn.explink.service.express.EmbracedOrderInputService;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.B2cUtil;
 import cn.explink.util.DateTimeUtil;
@@ -225,6 +228,10 @@ public class CwbOrderPDAController {
 	SecurityContextHolderStrategy securityContextHolderStrategy;
 	@Autowired
 	ExportmouldDAO exportmouldDAO;
+	@Autowired
+	EmbracedOrderInputService embracedOrderInputService;
+	@Autowired
+	CwbOrderPdaService cwbOrderPdaService;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail)
@@ -3279,5 +3286,109 @@ public class CwbOrderPDAController {
 		}
 		List<User> uList = this.userDAO.getUserByRolesAndBranchid(roleids, userid);
 		return uList;
+	}
+	@RequestMapping("/inputSave")
+	@ResponseBody
+	public String inputSaveAPP(HttpServletRequest request,HttpServletResponse response){
+		//快递单导入
+		EmbracedOrderVO embracedOrderVO=new EmbracedOrderVO();
+		embracedOrderVO = this.conventEmbracedOrderVo(embracedOrderVO,request);
+		String flag = this.embracedOrderInputService.savaEmbracedOrderVO(embracedOrderVO, 0);
+		JSONObject jsonObject=new JSONObject();
+		if("true".equals(flag)){
+			jsonObject.element("code", "00");
+			jsonObject.element("msg", "录入成功");
+		}else if("false".equals(flag)){
+			jsonObject.element("code", "11");
+			jsonObject.element("msg", "录入失败");
+		}else{
+			jsonObject.element("code", "22");
+			jsonObject.element("msg", "订单已经存在");
+		}
+		
+		return jsonObject.toString();
+	}
+
+	private EmbracedOrderVO conventEmbracedOrderVo(EmbracedOrderVO embracedOrderVO, HttpServletRequest request) {
+		embracedOrderVO.setOrderNo(null==request.getParameter("orderNo")?"":request.getParameter("orderNo"));
+		embracedOrderVO.setDelivermanId(null==request.getParameter("delivermanId")?"":request.getParameter("delivermanId"));
+		embracedOrderVO.setDelivermanName(null==request.getParameter("delivermanName")?"":request.getParameter("delivermanName"));
+		embracedOrderVO.setDeliverid(null==request.getParameter("deliverid")?"":request.getParameter("deliverid"));
+		embracedOrderVO.setDelivername(null==request.getParameter("delivername")?"":request.getParameter("delivername"));
+		embracedOrderVO.setSender_provinceid(null==request.getParameter("sender_provinceid")?"":request.getParameter("sender_provinceid"));
+		embracedOrderVO.setSender_provinceName(null==request.getParameter("sender_provinceName")?"":request.getParameter("sender_provinceName"));
+		embracedOrderVO.setSender_cityid(null==request.getParameter("sender_cityid")?"":request.getParameter("sender_cityid"));
+		embracedOrderVO.setSender_cityName(null==request.getParameter("sender_cityName")?"":request.getParameter("sender_cityName"));
+		embracedOrderVO.setSender_cellphone(null==request.getParameter("sender_cellphone")?"":request.getParameter("sender_cellphone"));
+		embracedOrderVO.setSender_telephone(null==request.getParameter("sender_telephone")?"":request.getParameter("sender_telephone"));
+		embracedOrderVO.setSender_adress(null==request.getParameter("sender_adress")?"":request.getParameter("sender_adress"));
+		embracedOrderVO.setConsignee_provinceid(null==request.getParameter("consignee_provinceid")?"":request.getParameter("consignee_provinceid"));
+		embracedOrderVO.setConsignee_provinceName(null==request.getParameter("consignee_provinceName")?"":request.getParameter("consignee_provinceName"));
+		embracedOrderVO.setConsignee_cityid(null==request.getParameter("consignee_cityid")?"":request.getParameter("consignee_cityid"));
+		embracedOrderVO.setConsignee_cityName(null==request.getParameter("consignee_cityName")?"":request.getParameter("consignee_cityName"));
+		embracedOrderVO.setConsignee_cellphone(null==request.getParameter("consignee_cellphone")?"":request.getParameter("consignee_cellphone"));
+		embracedOrderVO.setConsignee_telephone(null==request.getParameter("consignee_telephone")?"":request.getParameter("consignee_telephone"));
+		embracedOrderVO.setConsignee_adress(null==request.getParameter("consignee_adress")?"":request.getParameter("consignee_adress"));
+		embracedOrderVO.setNumber(null==request.getParameter("number")?"":request.getParameter("number"));
+		embracedOrderVO.setFreight(null==request.getParameter("freight")?"":request.getParameter("freight"));
+		embracedOrderVO.setIsadditionflag(null==request.getParameter("isadditionflag")?"":request.getParameter("isadditionflag"));
+		embracedOrderVO.setInputhandlerid(null==request.getParameter("inputhandlerid")?"":request.getParameter("inputhandlerid"));
+		embracedOrderVO.setInputhandlername(null==request.getParameter("inputhandlername")?"":request.getParameter("inputhandlername"));
+		embracedOrderVO.setInputdatetime(null==request.getParameter("inputdatetime")?"":request.getParameter("inputdatetime"));
+		embracedOrderVO.setSender_No(null==request.getParameter("sender_No")?"":request.getParameter("sender_No"));
+		embracedOrderVO.setSender_companyName(null==request.getParameter("sender_companyName")?"":request.getParameter("sender_companyName"));
+		embracedOrderVO.setSender_customerid(Long.parseLong(null==request.getParameter("sender_customerid")?"":request.getParameter("sender_customerid")));
+		embracedOrderVO.setSender_name(null==request.getParameter("sender_name")?"":request.getParameter("sender_name"));
+		embracedOrderVO.setSender_countyid(null==request.getParameter("sender_countyid")?"":request.getParameter("sender_countyid"));
+		embracedOrderVO.setSender_countyName(null==request.getParameter("sender_countyName")?"":request.getParameter("sender_countyName"));
+		embracedOrderVO.setSender_townid(null==request.getParameter("sender_townid")?"":request.getParameter("sender_townid"));
+		embracedOrderVO.setSender_townName(null==request.getParameter("sender_townName")?"":request.getParameter("sender_townName"));
+		embracedOrderVO.setSender_certificateNo(null==request.getParameter("sender_certificateNo")?"":request.getParameter("sender_certificateNo"));
+		embracedOrderVO.setConsignee_No(null==request.getParameter("consignee_No")?"":request.getParameter("consignee_No"));
+		embracedOrderVO.setConsignee_companyName(null==request.getParameter("consignee_companyName")?"":request.getParameter("consignee_companyName"));
+		embracedOrderVO.setConsignee_customerid(Long.parseLong(null==request.getParameter("consignee_customerid")?"":request.getParameter("consignee_customerid")));
+		embracedOrderVO.setConsignee_name(null==request.getParameter("consignee_name")?"":request.getParameter("consignee_name"));
+		embracedOrderVO.setConsignee_countyid(null==request.getParameter("consignee_countyid")?"":request.getParameter("consignee_countyid"));
+		embracedOrderVO.setConsignee_countyName(null==request.getParameter("consignee_countyName")?"":request.getParameter("consignee_countyName"));
+		embracedOrderVO.setConsignee_townid(null==request.getParameter("consignee_townid")?"":request.getParameter("consignee_townid"));
+		embracedOrderVO.setConsignee_townName(null==request.getParameter("consignee_townName")?"":request.getParameter("consignee_townName"));
+		embracedOrderVO.setConsignee_certificateNo(null==request.getParameter("consignee_certificateNo")?"":request.getParameter("consignee_certificateNo"));
+		embracedOrderVO.setGoods_name(null==request.getParameter("goods_name")?"":request.getParameter("goods_name"));
+		embracedOrderVO.setGoods_number(null==request.getParameter("goods_number")?"":request.getParameter("goods_number"));
+		embracedOrderVO.setGoods_weight(null==request.getParameter("goods_weight")?"":request.getParameter("goods_weight"));
+		embracedOrderVO.setGoods_longth(null==request.getParameter("goods_longth")?"":request.getParameter("goods_longth"));
+		embracedOrderVO.setGoods_width(null==request.getParameter("goods_width")?"":request.getParameter("goods_width"));
+		embracedOrderVO.setGoods_height(null==request.getParameter("goods_height")?"":request.getParameter("goods_height"));
+		embracedOrderVO.setGoods_kgs(null==request.getParameter("goods_kgs")?"":request.getParameter("goods_kgs"));
+		embracedOrderVO.setGoods_other(null==request.getParameter("goods_other")?"":request.getParameter("goods_other"));
+		embracedOrderVO.setCollection(null==request.getParameter("collection")?"":request.getParameter("collection"));
+		embracedOrderVO.setCollection_amount(null==request.getParameter("collection_amount")?"":request.getParameter("collection_amount"));
+		embracedOrderVO.setPacking_amount(null==request.getParameter("packing_amount")?"":request.getParameter("packing_amount"));
+		embracedOrderVO.setInsured(null==request.getParameter("insured")?"":request.getParameter("insured"));
+		embracedOrderVO.setInsured_amount(null==request.getParameter("insured_amount")?"":request.getParameter("insured_amount"));
+		embracedOrderVO.setInsured_cost(null==request.getParameter("insured_cost")?"":request.getParameter("insured_cost"));
+		embracedOrderVO.setCharge_weight(null==request.getParameter("charge_weight")?"":request.getParameter("charge_weight"));
+		embracedOrderVO.setActual_weight(null==request.getParameter("actual_weight")?"":request.getParameter("actual_weight"));
+		embracedOrderVO.setFreight_total(null==request.getParameter("freight_total")?"":request.getParameter("freight_total"));
+		embracedOrderVO.setOrigin_adress(null==request.getParameter("origin_adress")?"":request.getParameter("origin_adress"));
+		embracedOrderVO.setDestination(null==request.getParameter("destination")?"":request.getParameter("destination"));
+		embracedOrderVO.setPayment_method(null==request.getParameter("payment_method")?"":request.getParameter("payment_method"));
+		embracedOrderVO.setRemarks(null==request.getParameter("remarks")?"":request.getParameter("remarks"));
+		embracedOrderVO.setInstationhandlerid(null==request.getParameter("instationhandlerid")?"":request.getParameter("instationhandlerid"));
+		embracedOrderVO.setInstationhandlername(null==request.getParameter("instationhandlername")?"":request.getParameter("instationhandlername"));
+		embracedOrderVO.setInstationid(Integer.valueOf(null==request.getParameter("instationid")?"":request.getParameter("instationid")));
+		embracedOrderVO.setInstationname(null==request.getParameter("instationname")?"":request.getParameter("instationname"));
+		embracedOrderVO.setInstationdatetime(null==request.getParameter("instationdatetime")?"":request.getParameter("instationdatetime"));
+		embracedOrderVO.setFlowordertype(null==request.getParameter("flowordertype")?"":request.getParameter("flowordertype"));
+		embracedOrderVO.setCarsize(null==request.getParameter("carsize")?"":request.getParameter("carsize"));
+		embracedOrderVO.setExpress_product_type(Integer.valueOf(null==request.getParameter("express_product_type")?"":request.getParameter("express_product_type")));
+		embracedOrderVO.setPaywayid(Integer.valueOf(null==request.getParameter("paywayid")?"":request.getParameter("paywayid")));
+		embracedOrderVO.setRecordVersion(Long.valueOf(null==request.getParameter("recordVersion")?"":request.getParameter("recordVersion")));
+		return embracedOrderVO;
+	}
+	@RequestMapping("/getAddress")
+	@ResponseBody
+	public String getAddress(){
+		return cwbOrderPdaService.getAddress();
 	}
 }

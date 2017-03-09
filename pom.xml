@@ -17,9 +17,9 @@
 		<database.driverClassName>com.mysql.jdbc.Driver</database.driverClassName>
 		<spring-security.version>3.1.0.RELEASE</spring-security.version>
 		<aspectj.version>1.8.8</aspectj.version>
-		<struts2-jsr303-validation-plugin.version>1.0</struts2-jsr303-validation-plugin.version>		
+		<struts2-jsr303-validation-plugin.version>1.0</struts2-jsr303-validation-plugin.version>
 	</properties>
-	
+
 	<repositories>
 		<repository>
 			<id>vipshopRepository</id>
@@ -27,8 +27,8 @@
 			<url>http://mvn1.tools.vipshop.com/nexus/content/groups/public/</url>
 		</repository>
 	</repositories>
-	
-	
+
+
 	<pluginRepositories>
 		<pluginRepository>
 			<id>spring-maven-release</id>
@@ -43,125 +43,125 @@
 	</pluginRepositories>
 	<dependencies>
 		<dependency>
-  			<groupId>com.vip.top</groupId>
-  			<artifactId>mainidservice-service-api</artifactId>
-  			<version>1.1.0_01</version>
-  			<exclusions>
-  				<exclusion>
-  					<groupId>org.springframework</groupId>
-      				<artifactId>spring-context-support</artifactId>
-  				</exclusion>
-  			</exclusions>
+			<groupId>com.vip.top</groupId>
+			<artifactId>mainidservice-service-api</artifactId>
+			<version>1.1.0_01</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-context-support</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-		     <groupId>com.pjbest</groupId> 
-			 <artifactId>pjdeliveryorder-service-api</artifactId> 
-			 <version>1.24.1_03</version>
-			 <exclusions>
-  				<exclusion>
-  					<groupId>org.springframework</groupId>
-      				<artifactId>spring-context-support</artifactId>
-  				</exclusion>
-  				<exclusion>
-  					<artifactId>javax.el-api</artifactId>
-  					<groupId>javax.el</groupId>
-  				</exclusion>
-			 </exclusions> 
+			<groupId>com.pjbest</groupId>
+			<artifactId>pjdeliveryorder-service-api</artifactId>
+			<version>1.24.1_03</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-context-support</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>javax.el-api</artifactId>
+					<groupId>javax.el</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-		     <groupId>com.pjbest</groupId> 
-			 <artifactId>id-allocation-service-api</artifactId> 
-			 <version>1.1.0_03</version>
-			 <exclusions>
-  				<exclusion>
-  					<groupId>org.springframework</groupId>
-      				<artifactId>spring-context-support</artifactId>
-  				</exclusion>
-  			</exclusions> 
+			<groupId>com.pjbest</groupId>
+			<artifactId>id-allocation-service-api</artifactId>
+			<version>1.1.0_03</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-context-support</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-  			<groupId>com.pjbest.pjorganization</groupId>
-  			<artifactId>pjorganization-service-api</artifactId>
-  			<version>1.21.0_04</version>
-  			<exclusions>
-  				<exclusion>
-  					<groupId>org.springframework</groupId>
-      				<artifactId>spring-context-support</artifactId>
-  				</exclusion>
-  			</exclusions>
+			<groupId>com.pjbest.pjorganization</groupId>
+			<artifactId>pjorganization-service-api</artifactId>
+			<version>1.21.0_04</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-context-support</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-  			<groupId>com.vip.osp</groupId>
-  			<artifactId>osp-core</artifactId>
-  			<version>2.5.11</version>
+			<groupId>com.vip.osp</groupId>
+			<artifactId>osp-core</artifactId>
+			<version>2.5.11</version>
 		</dependency>
-		
+
 		<dependency>
-		  <groupId>com.pjbest.osp.cfg</groupId>
-		  <artifactId>osp-cfg-service-api</artifactId>
-		  <version>2.1.0_15</version>
+			<groupId>com.pjbest.osp.cfg</groupId>
+			<artifactId>osp-cfg-service-api</artifactId>
+			<version>2.1.0_15</version>
 		</dependency>
-		
+
 		<dependency>
-	      <groupId>com.vip.venus</groupId>
-	      <artifactId>venus-core</artifactId>
-	      <version>1.6.4</version>
-	      <exclusions>
-	      	<exclusion>
-	      		<artifactId>spring-context-support</artifactId>
-	      		<groupId>org.springframework</groupId>
-	      	</exclusion>
-	      </exclusions>
+			<groupId>com.vip.venus</groupId>
+			<artifactId>venus-core</artifactId>
+			<version>1.6.4</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>spring-context-support</artifactId>
+					<groupId>org.springframework</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-		
+
 		<dependency>
-	      <groupId>com.alibaba</groupId>
-	      <artifactId>fastjson</artifactId>
-	      <version>1.2.0</version>
-	    </dependency>
-		 <dependency>
-		  <groupId>com.codahale.metrics</groupId>
-		  <artifactId>metrics-core</artifactId>
-		  <version>3.0.2</version>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.0</version>
 		</dependency>
-		
 		<dependency>
-		  <groupId>com.vip.hermes</groupId>
-		  <artifactId>hermes-core</artifactId>
-		  <version>1.2.4</version>
-		  <exclusions>
-		      	<exclusion>
-			    	<groupId>com.fasterxml.jackson.core</groupId>
-		  			<artifactId>jackson-annotations</artifactId>
-			   	</exclusion>
-			   
-			 </exclusions> 
+			<groupId>com.codahale.metrics</groupId>
+			<artifactId>metrics-core</artifactId>
+			<version>3.0.2</version>
 		</dependency>
-		
+
 		<dependency>
-		  <groupId>org.apache.commons</groupId>
-		  <artifactId>commons-collections4</artifactId>
-		  <version>4.1</version>
+			<groupId>com.vip.hermes</groupId>
+			<artifactId>hermes-core</artifactId>
+			<version>1.2.4</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-annotations</artifactId>
+				</exclusion>
+
+			</exclusions>
 		</dependency>
-		
+
 		<dependency>
-		     <groupId>org.apache.zookeeper</groupId> 
-			<artifactId>zookeeper</artifactId> 
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+			<version>4.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.zookeeper</groupId>
+			<artifactId>zookeeper</artifactId>
 			<version>3.4.6</version>
 			<exclusions>
-		      	<exclusion>
-			    	<groupId>org.slf4j</groupId>
-		  			<artifactId>slf4j-log4j12</artifactId>
-			   	</exclusion>
-			   	<exclusion>
-			    	<groupId>org.slf4j</groupId>
-		  			<artifactId>slf4j-api</artifactId>
-			   	</exclusion>
-			   	<exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
-			   	</exclusion>
-			 </exclusions>      
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.antlr</groupId>
@@ -188,22 +188,22 @@
 			<artifactId>activemq-core</artifactId>
 			<version>5.5.1</version>
 			<exclusions>
-			   	<exclusion>
-			    	<groupId>org.slf4j</groupId>
-		  			<artifactId>slf4j-api</artifactId>
-			   	</exclusion>
-			 </exclusions>    
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-camel</artifactId>
 			<version>5.5.1</version>
 		</dependency>
-		
-		
-		
-		
-      
+
+
+
+
+
 		<dependency>
 			<groupId>com.sun.xml.ws</groupId>
 			<artifactId>jaxws-rt</artifactId>
@@ -261,15 +261,15 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>3.8-beta5</version>
 		</dependency>
-		
-		
+
+
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.9.4</version>
 		</dependency>
-		
-		
+
+
 		<dependency>
 			<groupId>com.jspsmart</groupId>
 			<artifactId>jspsmartupload</artifactId>
@@ -513,15 +513,15 @@
 			<artifactId>cxf-rt-transports-http-jetty</artifactId>
 			<version>${cxf.version}</version>
 			<exclusions>
-		      	<exclusion>
-			    	<groupId>org.slf4j</groupId>
-		  			<artifactId>slf4j-jdk14</artifactId>
-			   	</exclusion>
-			   	<exclusion>
-			    	<groupId>org.slf4j</groupId>
-		  			<artifactId>slf4j-api</artifactId>
-			   	</exclusion>
-			 </exclusions>    
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-jdk14</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 
@@ -550,14 +550,8 @@
 			<artifactId>jtds</artifactId>
 			<version>1.2.4</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>winxuan-sdk-explink</groupId>
-			<artifactId>winxuan-api-sdk</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/winxuan-api-sdk-1.0.jar</systemPath>
-		</dependency>
-		 -->
+		<!-- <dependency> <groupId>winxuan-sdk-explink</groupId> <artifactId>winxuan-api-sdk</artifactId> <version>1.0</version> 
+			<scope>system</scope> <systemPath>${basedir}/lib/winxuan-api-sdk-1.0.jar</systemPath> </dependency> -->
 
 		<!-- <dependency> <groupId>org.apache.xmlbeans</groupId> <artifactId>xmlbeans</artifactId> <version>2.5.0</version> 
 			</dependency> -->
@@ -601,8 +595,8 @@
 			<artifactId>aspectjweaver</artifactId>
 			<version>1.8.1</version>
 		</dependency>
-		
-			<!-- JAXB eclipselink impl -->
+
+		<!-- JAXB eclipselink impl -->
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>eclipselink</artifactId>
@@ -610,107 +604,126 @@
 		</dependency>
 
 		<dependency>
-		    <groupId>joda-time</groupId>
-		    <artifactId>joda-time</artifactId>
-		    <version>2.3</version>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.3</version>
 		</dependency>
-		
+
 		<!-- vipshop mq client -->
 		<dependency>
-		      <groupId>com.vip.platform.middleware</groupId>
-		      <artifactId>vms</artifactId>
-		      <version>0.7.5</version>
-		      <exclusions>
-		      	<exclusion>
-			    	<groupId>org.apache.kafka</groupId>
-		  			<artifactId>kafka_2.10</artifactId>
-			   	</exclusion>
-			   	<exclusion>
-			    	<groupId>com.codahale.metrics</groupId>
-		  			<artifactId>metrics-core</artifactId>
-			   	</exclusion>
-			  </exclusions>     
+			<groupId>com.vip.platform.middleware</groupId>
+			<artifactId>vms</artifactId>
+			<version>0.7.5</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.kafka</groupId>
+					<artifactId>kafka_2.10</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.codahale.metrics</groupId>
+					<artifactId>metrics-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-														
+
 		<dependency>
-			  <groupId>org.springframework.data</groupId>
-			  <artifactId>spring-data-redis</artifactId>
-			  <version>1.6.2.RELEASE</version>
-		</dependency>		
-		<dependency>
-			  <groupId>org.apache.commons</groupId>
-			  <artifactId>commons-pool2</artifactId>
-			  <version>2.4.2</version>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+			<version>1.6.2.RELEASE</version>
 		</dependency>
 		<dependency>
-			  <groupId>org.springframework</groupId>
-			  <artifactId>spring-context-support</artifactId>
-			  <version>4.0.0.RELEASE</version>
-		</dependency>				
-		<dependency>
-    		  <groupId>redis.clients</groupId>
-   		      <artifactId>jedis</artifactId>
-    		  <version>2.6.1</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+			<version>2.4.2</version>
 		</dependency>
-															
-		<dependency> 
-			<groupId>com.vip.mercury</groupId> 
-			<artifactId>mercury-client-all</artifactId> 
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>4.0.0.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>2.6.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.vip.mercury</groupId>
+			<artifactId>mercury-client-all</artifactId>
 			<version>2.5.1</version>
 			<exclusions>
-			   <exclusion>
-			      <groupId>org.springframework</groupId>
-			      <artifactId>spring-webmvc</artifactId>
-			   </exclusion>
-			</exclusions> 
-			<type>pom</type> 
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-webmvc</artifactId>
+				</exclusion>
+			</exclusions>
+			<type>pom</type>
 		</dependency>
-        <dependency>
-            <groupId>com.vip.tps</groupId>
-            <artifactId>tps-base-service-api</artifactId>
-            <version>1.16.3_03</version>
-        </dependency>
-        <dependency>
+		<dependency>
+			<groupId>com.vip.tps</groupId>
+			<artifactId>tps-base-service-api</artifactId>
+			<version>1.16.3_03</version>
+		</dependency>
+		<dependency>
 			<groupId>com.vip.logistics</groupId>
 			<artifactId>vip-member-encrypt</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
-        <dependency>
-		     <groupId>com.pjbest.psp</groupId>
-		     <artifactId>psp-express-service-api</artifactId>
-		     <version>1.5.2-SNAPSHOT</version>
-		</dependency>
-		<!-- <dependency>
-		     <groupId>com.pjbest</groupId> 
-			 <artifactId>pjdeliveryorder-service-api</artifactId> 
-			 <version>1.20.0_07</version>
-			 <exclusions>
-  				<exclusion>
-  					<groupId>org.springframework</groupId>
-      				<artifactId>spring-context-support</artifactId>
-  				</exclusion>
-  			</exclusions> 
-		</dependency> -->
-		
-		<!-- JSR 303  Validator begin -->
 		<dependency>
-            <groupId>com.github.umeshawasthi</groupId>
-            <artifactId>struts2-jsr303-validation-plugin</artifactId>
-            <version>${struts2-jsr303-validation-plugin.version}</version>
-        </dependency>
-        <!-- JSR 303  Validator end -->
-        
-     	
-		
+			<groupId>com.pjbest.psp</groupId>
+			<artifactId>psp-express-service-api</artifactId>
+			<version>1.5.2-SNAPSHOT</version>
+		</dependency>
+		<!-- <dependency> <groupId>com.pjbest</groupId> <artifactId>pjdeliveryorder-service-api</artifactId> 
+			<version>1.20.0_07</version> <exclusions> <exclusion> <groupId>org.springframework</groupId> <artifactId>spring-context-support</artifactId> 
+			</exclusion> </exclusions> </dependency> -->
+
+		<!-- JSR 303 Validator begin -->
 		<dependency>
-		  <groupId>com.pjbest.util</groupId>
-		  <artifactId>dlock</artifactId>
-		  <version>1.0.1</version>
+			<groupId>com.github.umeshawasthi</groupId>
+			<artifactId>struts2-jsr303-validation-plugin</artifactId>
+			<version>${struts2-jsr303-validation-plugin.version}</version>
+		</dependency>
+		<!-- JSR 303 Validator end -->
+
+
+
+		<dependency>
+			<groupId>com.pjbest.util</groupId>
+			<artifactId>dlock</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<!-- 上传文件的依赖 -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.3.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpasyncclient</artifactId>
+			<version>4.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>4.3.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.4.4</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.2</version>
 		</dependency>
 		
-	
-      
-		
+
+
+
 	</dependencies>
 	<build>
 		<finalName>dmp_pj</finalName>
@@ -718,7 +731,7 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
-				
+
 			</resource>
 			<resource>
 				<directory>src/main/java/cn/explink/util/pos</directory>
@@ -735,151 +748,151 @@
 			</resource>
 		</resources>
 		<pluginManagement>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.2</version>
-				<!-- NB: do not use 1.3 or 1.3.x due to MASPECTJ-90 and do not use 1.4 due to declare parents issue -->
-				<dependencies>
-					<!-- NB: You must use Maven 2.0.9 or above or these are ignored (see MNG-2972) -->
-					<dependency>
-						<groupId>org.aspectj</groupId>
-						<artifactId>aspectjrt</artifactId>
-						<version>${aspectj.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.aspectj</groupId>
-						<artifactId>aspectjtools</artifactId>
-						<version>${aspectj.version}</version>
-					</dependency>
-				</dependencies>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-							<goal>test-compile</goal>
-						</goals>
-					</execution>
-				</executions>
-			
-				<configuration>
-					<outxml>true</outxml>
-					<aspectLibraries>
-						<aspectLibrary>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-aspects</artifactId>
-						</aspectLibrary>
-					</aspectLibraries>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.1.1</version>
-				<configuration>
-					<archive>
-						<manifestEntries>
-							<SVN-Revision>${SVN.revision}</SVN-Revision>
-						</manifestEntries>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-					<encoding>${project.build.sourceEncoding}</encoding>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.5</version>
-				<configuration>
-					<encoding>${project.build.sourceEncoding}</encoding>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-					<printSummary>false</printSummary>
-					<redirectTestOutputToFile>true</redirectTestOutputToFile>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.7</version>
-			</plugin>
-			<!-- IDE -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.7</version>
-				<!-- Note 2.8 does not work with AspectJ aspect path -->
-				<configuration>
-					<downloadSources>true</downloadSources>
-					<downloadJavadocs>false</downloadJavadocs>
-					<wtpversion>2.0</wtpversion>
-					<additionalBuildcommands>
-						<buildCommand>
-							<name>org.eclipse.ajdt.core.ajbuilder</name>
-							<arguments>
-								<aspectPath>org.springframework.aspects</aspectPath>
-							</arguments>
-						</buildCommand>
-						<buildCommand>
-							<name>org.springframework.ide.eclipse.core.springbuilder</name>
-						</buildCommand>
-					</additionalBuildcommands>
-					<additionalProjectnatures>
-						<projectnature>org.eclipse.ajdt.ui.ajnature</projectnature>
-						<projectnature>com.springsource.sts.roo.core.nature</projectnature>
-						<projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
-					</additionalProjectnatures>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>tomcat-maven-plugin</artifactId>
-				<version>1.1</version>
-				<configuration>
-					<url>${tomcat.manager.url}</url>
-					<username>tomcat</username>
-					<password>explink</password>
-					<path>/dmp_pj</path>
-					<update>true</update>
-				</configuration>
-			</plugin>
-			<!-- <plugin> <groupId>com.google.code.maven-svn-revision-number-plugin</groupId> <artifactId>svn-revision-number-maven-plugin</artifactId> 
-				<version>1.13</version> <executions> <execution> <goals> <goal>revision</goal> </goals> </execution> 
-				</executions> <configuration> <entries> <entry> <prefix>SVN</prefix> </entry> </entries> </configuration> 
-				</plugin> -->
-			<plugin>
-				<groupId>org.liquibase</groupId>
-				<artifactId>liquibase-maven-plugin</artifactId>
-				<version>2.0.3</version>
-				<configuration>
-					<changeLogFile>src/main/db/changelog/changelog.xml</changeLogFile>
-					<driver>${drivers}</driver>
-					<url>${expressurl.url}</url>
-					<username>${expressurl.user}</username>
-					<password>${expressurl.password}</password>
-					<promptOnNonLocalDatabase>${expressurl.promptOnNonLocalDatabase}</promptOnNonLocalDatabase>
-				</configuration>
-			</plugin>
-		</plugins>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>aspectj-maven-plugin</artifactId>
+					<version>1.2</version>
+					<!-- NB: do not use 1.3 or 1.3.x due to MASPECTJ-90 and do not use 1.4 due to declare parents issue -->
+					<dependencies>
+						<!-- NB: You must use Maven 2.0.9 or above or these are ignored (see MNG-2972) -->
+						<dependency>
+							<groupId>org.aspectj</groupId>
+							<artifactId>aspectjrt</artifactId>
+							<version>${aspectj.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.aspectj</groupId>
+							<artifactId>aspectjtools</artifactId>
+							<version>${aspectj.version}</version>
+						</dependency>
+					</dependencies>
+					<executions>
+						<execution>
+							<goals>
+								<goal>compile</goal>
+								<goal>test-compile</goal>
+							</goals>
+						</execution>
+					</executions>
+
+					<configuration>
+						<outxml>true</outxml>
+						<aspectLibraries>
+							<aspectLibrary>
+								<groupId>org.springframework</groupId>
+								<artifactId>spring-aspects</artifactId>
+							</aspectLibrary>
+						</aspectLibraries>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>2.1.1</version>
+					<configuration>
+						<archive>
+							<manifestEntries>
+								<SVN-Revision>${SVN.revision}</SVN-Revision>
+							</manifestEntries>
+						</archive>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.3.2</version>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+						<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.5</version>
+					<configuration>
+						<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.9</version>
+					<configuration>
+						<printSummary>false</printSummary>
+						<redirectTestOutputToFile>true</redirectTestOutputToFile>
+						<skip>true</skip>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.7</version>
+				</plugin>
+				<!-- IDE -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-eclipse-plugin</artifactId>
+					<version>2.7</version>
+					<!-- Note 2.8 does not work with AspectJ aspect path -->
+					<configuration>
+						<downloadSources>true</downloadSources>
+						<downloadJavadocs>false</downloadJavadocs>
+						<wtpversion>2.0</wtpversion>
+						<additionalBuildcommands>
+							<buildCommand>
+								<name>org.eclipse.ajdt.core.ajbuilder</name>
+								<arguments>
+									<aspectPath>org.springframework.aspects</aspectPath>
+								</arguments>
+							</buildCommand>
+							<buildCommand>
+								<name>org.springframework.ide.eclipse.core.springbuilder</name>
+							</buildCommand>
+						</additionalBuildcommands>
+						<additionalProjectnatures>
+							<projectnature>org.eclipse.ajdt.ui.ajnature</projectnature>
+							<projectnature>com.springsource.sts.roo.core.nature</projectnature>
+							<projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
+						</additionalProjectnatures>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>tomcat-maven-plugin</artifactId>
+					<version>1.1</version>
+					<configuration>
+						<url>${tomcat.manager.url}</url>
+						<username>tomcat</username>
+						<password>explink</password>
+						<path>/dmp_pj</path>
+						<update>true</update>
+					</configuration>
+				</plugin>
+				<!-- <plugin> <groupId>com.google.code.maven-svn-revision-number-plugin</groupId> <artifactId>svn-revision-number-maven-plugin</artifactId> 
+					<version>1.13</version> <executions> <execution> <goals> <goal>revision</goal> </goals> </execution> 
+					</executions> <configuration> <entries> <entry> <prefix>SVN</prefix> </entry> </entries> </configuration> 
+					</plugin> -->
+				<plugin>
+					<groupId>org.liquibase</groupId>
+					<artifactId>liquibase-maven-plugin</artifactId>
+					<version>2.0.3</version>
+					<configuration>
+						<changeLogFile>src/main/db/changelog/changelog.xml</changeLogFile>
+						<driver>${drivers}</driver>
+						<url>${expressurl.url}</url>
+						<username>${expressurl.user}</username>
+						<password>${expressurl.password}</password>
+						<promptOnNonLocalDatabase>${expressurl.promptOnNonLocalDatabase}</promptOnNonLocalDatabase>
+					</configuration>
+				</plugin>
+			</plugins>
 		</pluginManagement>
-		
+
 	</build>
 
 </project>
