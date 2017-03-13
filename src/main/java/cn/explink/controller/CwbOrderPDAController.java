@@ -92,6 +92,9 @@ import cn.explink.dao.TranscwbOrderFlowDAO;
 import cn.explink.dao.TruckDAO;
 import cn.explink.dao.TuihuoRecordDAO;
 import cn.explink.dao.UserDAO;
+import cn.explink.dao.express.CityDAO;
+import cn.explink.dao.express.CountyDAO;
+import cn.explink.dao.express.ProvinceDAO;
 import cn.explink.domain.Bale;
 import cn.explink.domain.BaleView;
 import cn.explink.domain.Branch;
@@ -232,6 +235,13 @@ public class CwbOrderPDAController {
 	EmbracedOrderInputService embracedOrderInputService;
 	@Autowired
 	CwbOrderPdaService cwbOrderPdaService;
+	@Autowired
+	ProvinceDAO provinceDAO ;
+	@Autowired
+	CityDAO cityDAO;
+	@Autowired
+	CountyDAO  countyDAO;
+	
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail)
@@ -3293,7 +3303,7 @@ public class CwbOrderPDAController {
 		//快递单导入
 		EmbracedOrderVO embracedOrderVO=new EmbracedOrderVO();
 		embracedOrderVO = this.conventEmbracedOrderVo(embracedOrderVO,request);
-		String flag = this.embracedOrderInputService.savaEmbracedOrderVO(embracedOrderVO, 0);
+		String flag = this.embracedOrderInputService.savaEmbracedOrderVO(embracedOrderVO, 2);
 		JSONObject jsonObject=new JSONObject();
 		if("true".equals(flag)){
 			jsonObject.element("code", "00");
@@ -3311,20 +3321,20 @@ public class CwbOrderPDAController {
 
 	private EmbracedOrderVO conventEmbracedOrderVo(EmbracedOrderVO embracedOrderVO, HttpServletRequest request) {
 		embracedOrderVO.setOrderNo(null==request.getParameter("orderNo")?"":request.getParameter("orderNo"));
-		embracedOrderVO.setDelivermanId(null==request.getParameter("delivermanId")?"":request.getParameter("delivermanId"));
-		embracedOrderVO.setDelivermanName(null==request.getParameter("delivermanName")?"":request.getParameter("delivermanName"));
+		embracedOrderVO.setDelivermanId(String.valueOf(this.getSessionUser().getUserid()));
+		embracedOrderVO.setDelivermanName(String.valueOf(this.getSessionUser().getUsername()));
 		embracedOrderVO.setDeliverid(null==request.getParameter("deliverid")?"":request.getParameter("deliverid"));
 		embracedOrderVO.setDelivername(null==request.getParameter("delivername")?"":request.getParameter("delivername"));
-		embracedOrderVO.setSender_provinceid(null==request.getParameter("sender_provinceid")?"":request.getParameter("sender_provinceid"));
+		embracedOrderVO.setSender_provinceid(String.valueOf(this.provinceDAO.getProvinceByCode(null==request.getParameter("sender_provinceid")?"":request.getParameter("sender_provinceid")).getId()));
 		embracedOrderVO.setSender_provinceName(null==request.getParameter("sender_provinceName")?"":request.getParameter("sender_provinceName"));
-		embracedOrderVO.setSender_cityid(null==request.getParameter("sender_cityid")?"":request.getParameter("sender_cityid"));
+		embracedOrderVO.setSender_cityid(String.valueOf(this.cityDAO.getCityByCode(null==request.getParameter("sender_cityid")?"":request.getParameter("sender_cityid")).getId()));//
 		embracedOrderVO.setSender_cityName(null==request.getParameter("sender_cityName")?"":request.getParameter("sender_cityName"));
 		embracedOrderVO.setSender_cellphone(null==request.getParameter("sender_cellphone")?"":request.getParameter("sender_cellphone"));
 		embracedOrderVO.setSender_telephone(null==request.getParameter("sender_telephone")?"":request.getParameter("sender_telephone"));
 		embracedOrderVO.setSender_adress(null==request.getParameter("sender_adress")?"":request.getParameter("sender_adress"));
-		embracedOrderVO.setConsignee_provinceid(null==request.getParameter("consignee_provinceid")?"":request.getParameter("consignee_provinceid"));
+		embracedOrderVO.setConsignee_provinceid(String.valueOf(this.provinceDAO.getProvinceByCode(null==request.getParameter("consignee_provinceid")?"":request.getParameter("consignee_provinceid")).getId()));
 		embracedOrderVO.setConsignee_provinceName(null==request.getParameter("consignee_provinceName")?"":request.getParameter("consignee_provinceName"));
-		embracedOrderVO.setConsignee_cityid(null==request.getParameter("consignee_cityid")?"":request.getParameter("consignee_cityid"));
+		embracedOrderVO.setConsignee_cityid(String.valueOf(this.cityDAO.getCityByCode(null==request.getParameter("consignee_cityid")?"":request.getParameter("consignee_cityid")).getId()));
 		embracedOrderVO.setConsignee_cityName(null==request.getParameter("consignee_cityName")?"":request.getParameter("consignee_cityName"));
 		embracedOrderVO.setConsignee_cellphone(null==request.getParameter("consignee_cellphone")?"":request.getParameter("consignee_cellphone"));
 		embracedOrderVO.setConsignee_telephone(null==request.getParameter("consignee_telephone")?"":request.getParameter("consignee_telephone"));
@@ -3332,23 +3342,23 @@ public class CwbOrderPDAController {
 		embracedOrderVO.setNumber(null==request.getParameter("number")?"":request.getParameter("number"));
 		embracedOrderVO.setFreight(null==request.getParameter("freight")?"":request.getParameter("freight"));
 		embracedOrderVO.setIsadditionflag(null==request.getParameter("isadditionflag")?"":request.getParameter("isadditionflag"));
-		embracedOrderVO.setInputhandlerid(null==request.getParameter("inputhandlerid")?"":request.getParameter("inputhandlerid"));
-		embracedOrderVO.setInputhandlername(null==request.getParameter("inputhandlername")?"":request.getParameter("inputhandlername"));
+		embracedOrderVO.setInputhandlerid(String.valueOf(this.getSessionUser().getUserid()));
+		embracedOrderVO.setInputhandlername(this.getSessionUser().getUsername());
 		embracedOrderVO.setInputdatetime(null==request.getParameter("inputdatetime")?"":request.getParameter("inputdatetime"));
 		embracedOrderVO.setSender_No(null==request.getParameter("sender_No")?"":request.getParameter("sender_No"));
 		embracedOrderVO.setSender_companyName(null==request.getParameter("sender_companyName")?"":request.getParameter("sender_companyName"));
-		embracedOrderVO.setSender_customerid(Long.parseLong(null==request.getParameter("sender_customerid")?"":request.getParameter("sender_customerid")));
+		//embracedOrderVO.setSender_customerid(Long.parseLong(null==request.getParameter("sender_customerid")?"":request.getParameter("sender_customerid")));
 		embracedOrderVO.setSender_name(null==request.getParameter("sender_name")?"":request.getParameter("sender_name"));
-		embracedOrderVO.setSender_countyid(null==request.getParameter("sender_countyid")?"":request.getParameter("sender_countyid"));
+		embracedOrderVO.setSender_countyid(String.valueOf(this.countyDAO.getCountyByCode(null==request.getParameter("sender_countyid")?"":request.getParameter("sender_countyid")).getId()));
 		embracedOrderVO.setSender_countyName(null==request.getParameter("sender_countyName")?"":request.getParameter("sender_countyName"));
 		embracedOrderVO.setSender_townid(null==request.getParameter("sender_townid")?"":request.getParameter("sender_townid"));
 		embracedOrderVO.setSender_townName(null==request.getParameter("sender_townName")?"":request.getParameter("sender_townName"));
 		embracedOrderVO.setSender_certificateNo(null==request.getParameter("sender_certificateNo")?"":request.getParameter("sender_certificateNo"));
 		embracedOrderVO.setConsignee_No(null==request.getParameter("consignee_No")?"":request.getParameter("consignee_No"));
 		embracedOrderVO.setConsignee_companyName(null==request.getParameter("consignee_companyName")?"":request.getParameter("consignee_companyName"));
-		embracedOrderVO.setConsignee_customerid(Long.parseLong(null==request.getParameter("consignee_customerid")?"":request.getParameter("consignee_customerid")));
+		//embracedOrderVO.setConsignee_customerid(Long.parseLong(null==request.getParameter("consignee_customerid")?"":request.getParameter("consignee_customerid")));
 		embracedOrderVO.setConsignee_name(null==request.getParameter("consignee_name")?"":request.getParameter("consignee_name"));
-		embracedOrderVO.setConsignee_countyid(null==request.getParameter("consignee_countyid")?"":request.getParameter("consignee_countyid"));
+		embracedOrderVO.setConsignee_countyid(String.valueOf(this.countyDAO.getCountyByCode(null==request.getParameter("consignee_countyid")?"":request.getParameter("consignee_countyid")).getId()));
 		embracedOrderVO.setConsignee_countyName(null==request.getParameter("consignee_countyName")?"":request.getParameter("consignee_countyName"));
 		embracedOrderVO.setConsignee_townid(null==request.getParameter("consignee_townid")?"":request.getParameter("consignee_townid"));
 		embracedOrderVO.setConsignee_townName(null==request.getParameter("consignee_townName")?"":request.getParameter("consignee_townName"));
@@ -3374,16 +3384,16 @@ public class CwbOrderPDAController {
 		embracedOrderVO.setDestination(null==request.getParameter("destination")?"":request.getParameter("destination"));
 		embracedOrderVO.setPayment_method(null==request.getParameter("payment_method")?"":request.getParameter("payment_method"));
 		embracedOrderVO.setRemarks(null==request.getParameter("remarks")?"":request.getParameter("remarks"));
-		embracedOrderVO.setInstationhandlerid(null==request.getParameter("instationhandlerid")?"":request.getParameter("instationhandlerid"));
-		embracedOrderVO.setInstationhandlername(null==request.getParameter("instationhandlername")?"":request.getParameter("instationhandlername"));
-		embracedOrderVO.setInstationid(Integer.valueOf(null==request.getParameter("instationid")?"":request.getParameter("instationid")));
+		embracedOrderVO.setInstationhandlerid(String.valueOf(this.getSessionUser().getUserid()));
+		embracedOrderVO.setInstationhandlername(String.valueOf(this.getSessionUser().getUsername()));
+		embracedOrderVO.setInstationid((int)this.getSessionUser().getBranchid());
 		embracedOrderVO.setInstationname(null==request.getParameter("instationname")?"":request.getParameter("instationname"));
 		embracedOrderVO.setInstationdatetime(null==request.getParameter("instationdatetime")?"":request.getParameter("instationdatetime"));
 		embracedOrderVO.setFlowordertype(null==request.getParameter("flowordertype")?"":request.getParameter("flowordertype"));
 		embracedOrderVO.setCarsize(null==request.getParameter("carsize")?"":request.getParameter("carsize"));
 		embracedOrderVO.setExpress_product_type(Integer.valueOf(null==request.getParameter("express_product_type")?"":request.getParameter("express_product_type")));
 		embracedOrderVO.setPaywayid(Integer.valueOf(null==request.getParameter("paywayid")?"":request.getParameter("paywayid")));
-		embracedOrderVO.setRecordVersion(Long.valueOf(null==request.getParameter("recordVersion")?"":request.getParameter("recordVersion")));
+		//embracedOrderVO.setRecordVersion(Long.valueOf(null==request.getParameter("recordVersion")?"":request.getParameter("recordVersion")));
 		return embracedOrderVO;
 	}
 	@RequestMapping("/getAddress")

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -66,7 +67,8 @@ public class GeneralDAO {
 		sql.append(culoms.substring(0, culoms.lastIndexOf(",")) + ") values");
 		sql.append(values.substring(0, values.lastIndexOf(",")) + ")");
 
-		this.jdbcTemplate.update(sql.toString(), params);
+			this.jdbcTemplate.update(sql.toString(), params);
+		
 		return true;
 	}
 

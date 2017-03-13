@@ -113,7 +113,13 @@ public class CountyDAO {
 		county = this.jdbcTemplate.queryForObject(sql.toString(), new CountyRowMapper(), id);
 		return county;
 	}
-	
+	public AdressVO getCountyByCode(String code) {
+		StringBuffer sql = new StringBuffer();
+		AdressVO county = new AdressVO();
+		sql.append("select id,code,name,city_code as parentCode from express_set_county where code=?");
+		county = this.jdbcTemplate.queryForObject(sql.toString(), new CountyRowMapper(), code);
+		return county;
+	}
 	/**
 	 * 通过名称及所属城市获取镇
 	 * 

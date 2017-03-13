@@ -156,4 +156,14 @@ public class CityDAO {
         }
         return adressVO;
     }
+    public AdressVO getCityByCode(String code) {
+        String sql = "select id,code,name,province_code as parentCode from express_set_city where code=?";
+        AdressVO adressVO = null;
+        try {
+            adressVO = this.jdbcTemplate.queryForObject(sql, new CityRowMapper(), code);
+        } catch (DataAccessException e) {
+            return null;
+        }
+        return adressVO;
+    }
 }
