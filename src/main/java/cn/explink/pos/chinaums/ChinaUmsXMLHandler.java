@@ -45,7 +45,7 @@ public class ChinaUmsXMLHandler {
 						.append(loginmap.get("response_time")).append("</response_time>" + "<response_code>").append(loginmap.get("response_code")).append("</response_code>" + "<response_msg>")
 						.append(loginmap.get("response_msg")).append("</response_msg>" + "</transaction_header>" + "<transaction_body>").append("<employname>").append(loginmap.get("employname"))
 						.append("</employname>" + "<netcode>").append(loginmap.get("netcode")).append("</netcode>" + "<netname>").append(loginmap.get("netname")).append("</netname>" + "<mobile>")
-						.append(loginmap.get("mobile")).append("</mobile>").append("</transaction_body></transaction>");
+						.append(loginmap.get("mobile")).append("</mobile>").append("<exceptioncodeversion>").append(loginmap.get("exceptioncodeversion")).append("</exceptioncodeversion>").append("</transaction_body></transaction>");
 			} else {
 				str.append("<transaction><transaction_header>" + "<version>").append(loginmap.get("version")).append("</version>" + "<transtype>").append(loginmap.get("transtype"))
 						.append("</transtype>" + "<employno>").append(loginmap.get("employno")).append("</employno>" + "<termid>").append(loginmap.get("termid")).append("</termid>" + "<response_time>")
@@ -61,7 +61,7 @@ public class ChinaUmsXMLHandler {
 						.append(loginmap.get("response_time")).append("</response_time>" + "<response_code>").append(loginmap.get("response_code")).append("</response_code>" + "<response_msg>")
 						.append(loginmap.get("response_msg")).append("</response_msg>" + "</transaction_header>" + "<transaction_body>").append("<employname>").append(loginmap.get("employname"))
 						.append("</employname>" + "<netcode>").append(loginmap.get("netcode")).append("</netcode>" + "<netname>").append(loginmap.get("netname")).append("</netname>" + "<mobile>")
-						.append(loginmap.get("mobile")).append("</mobile>" + "<rolename>").append(loginmap.get("rolename")).append("</rolename>").append("</transaction_body></transaction>");
+						.append(loginmap.get("mobile")).append("</mobile>" + "<rolename>").append(loginmap.get("rolename")).append("</rolename>").append("<exceptioncodeversion>").append(loginmap.get("exceptioncodeversion")).append("</exceptioncodeversion>").append("</transaction_body></transaction>");
 			} else {
 				str.append("<transaction><transaction_header>" + "<version>").append(loginmap.get("version")).append("</version>" + "<transtype>").append(loginmap.get("transtype"))
 						.append("</transtype>" + "<employno>").append(loginmap.get("employno")).append("</employno>" + "<termid>").append(loginmap.get("termid")).append("</termid>" + "<response_time>")
@@ -90,7 +90,7 @@ public class ChinaUmsXMLHandler {
 						.append("</response_code>" + "<response_msg>").append(loginmap.get("response_msg")).append("</response_msg>").append("<mac>").append(loginmap.get("mac")).append("</mac>")
 						.append("</transaction_header>" + "<transaction_body>").append("<employname>").append(loginmap.get("employname")).append("</employname>" + "<netcode>")
 						.append(loginmap.get("netcode")).append("</netcode>" + "<netname>").append(loginmap.get("netname")).append("</netname>" + "<mobile>").append(loginmap.get("mobile"))
-						.append("</mobile>").append("</transaction_body></transaction>");
+						.append("</mobile>").append("<exceptioncodeversion>").append(loginmap.get("exceptioncodeversion")).append("</exceptioncodeversion>").append("</transaction_body></transaction>");
 			} else {
 				str.append("<?xml version='1.0' encoding='UTF-8' ?>" + "<transaction><transaction_header>" + "<version>").append(loginmap.get("version")).append("</version>" + "<transtype>")
 						.append(loginmap.get("transtype")).append("</transtype>" + "<employno>").append(loginmap.get("employno")).append("</employno>" + "<termid>").append(loginmap.get("termid"))
@@ -107,7 +107,7 @@ public class ChinaUmsXMLHandler {
 						.append("</response_code>" + "<response_msg>").append(loginmap.get("response_msg")).append("</response_msg>").append("<mac>").append(loginmap.get("mac")).append("</mac>")
 						.append("</transaction_header>" + "<transaction_body>").append("<employname>").append(loginmap.get("employname")).append("</employname>" + "<netcode>")
 						.append(loginmap.get("netcode")).append("</netcode>" + "<netname>").append(loginmap.get("netname")).append("</netname>" + "<mobile>").append(loginmap.get("mobile"))
-						.append("</mobile>" + "<rolename>").append(loginmap.get("rolename")).append("</rolename>").append("</transaction_body></transaction>");
+						.append("</mobile>" + "<rolename>").append(loginmap.get("rolename")).append("</rolename>").append("<exceptioncodeversion>").append(loginmap.get("exceptioncodeversion")).append("</exceptioncodeversion>").append("</transaction_body></transaction>");
 			} else {
 				str.append("<?xml version='1.0' encoding='UTF-8' ?>" + "<transaction><transaction_header>" + "<version>").append(loginmap.get("version")).append("</version>" + "<transtype>")
 						.append(loginmap.get("transtype")).append("</transtype>" + "<employno>").append(loginmap.get("employno")).append("</employno>" + "<termid>").append(loginmap.get("termid"))
@@ -292,7 +292,11 @@ public class ChinaUmsXMLHandler {
 				.append(cwbmap.get("response_msg")).append("</response_msg>" + "</transaction_header>" + "<transaction_body>").append("</transaction_body></transaction>");
 		return str.toString().replaceAll("null", "");
 	}
-
+	/**
+	 * 返回的XML信息,去掉mac标签的标签的报文
+	 * @param cwbMap
+	 * @return
+	 */
 	public static String createMACXML_cwbSign(Map cwbMap) {
 		StringBuffer str = new StringBuffer("");
 		str.append("<transaction><transaction_header>" + "<version>").append(cwbMap.get("version")).append("</version>" + "<transtype>").append(cwbMap.get("transtype"))

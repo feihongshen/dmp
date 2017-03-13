@@ -15,7 +15,12 @@ import cn.explink.util.MD5.MD5Util;
 @Service
 public class ChinaUmsService_public {
 	private Logger logger = LoggerFactory.getLogger(ChinaUmsService_public.class);
-
+	/**
+	 * 将原来的报文加上MAC后生成的报文
+	 * @param chinaUms
+	 * @param rootnote
+	 * @return
+	 */
 	public String createXML_toExptFeedBack(ChinaUms chinaUms, Transaction rootnote) {
 		Map<String, String> retMap = new HashMap<String, String>();
 		// 放入map
@@ -42,11 +47,16 @@ public class ChinaUmsService_public {
 				.append("</mac>" + "</transaction_header>" + "<transaction_body>").append("</transaction_body></transaction>");
 		return str.toString().replaceAll("null", "");
 	}
-
+	/**
+	 * 拼接签名
+	 * @param chinaUms
+	 * @param str
+	 * @return
+	 */
 	private String CreateRespSign(ChinaUms chinaUms, String str) {
 		String MAC = "";
 		try {
-			MAC = MD5Util.md5(str.toString() + MD5Util.md5(chinaUms.getPrivate_key()));
+			MAC = MD5Util.md5(str.toString() + MD5Util.md5(chinaUms.getPrivate_key()),"UTF-8");
 		} catch (Exception e) {
 			logger.error("移动POS(chinaums):返回签名加密异常!", e);
 			e.printStackTrace();

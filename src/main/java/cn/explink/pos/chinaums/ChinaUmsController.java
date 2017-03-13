@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import cn.explink.b2c.tools.JiontDAO;
 import cn.explink.domain.User;
 import cn.explink.pos.chinaums.xml.Transaction;
+import cn.explink.pos.chinaums.xml.Transaction_Header;
 import cn.explink.pos.tools.PosEnum;
 import cn.explink.service.ExplinkUserDetail;
 import cn.explink.util.MD5.MD5Util;
@@ -88,8 +89,10 @@ public class ChinaUmsController {
 			if (isOpenFlag == 0) {
 				logger.error("未开启北京银联商务对接");
 				Transaction rootnote = new Transaction();
-				rootnote.getTransaction_Header().setResponse_code("50");
-				rootnote.getTransaction_Header().setResponse_msg("未开启pos对接！");
+				Transaction_Header header=new Transaction_Header();
+				header.setResponse_code("50");
+				header.setResponse_msg("未开启pos对接！");
+				rootnote.setTransaction_Header(header);
 				return chinaUmsService_public.createXML_toExptFeedBack(chinaUms, rootnote);
 			}
 			logger.info("北京银联商务对接:请 的消息:{}", XMLDOC);

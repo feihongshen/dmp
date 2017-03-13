@@ -83,13 +83,14 @@ public class ChinaUmsService_toLogin extends ChinaUmsService {
 				retMap.put("mobile", user1.getUsermobile());
 				Role role = roleDAO.getRolesByRoleid(user1.getRoleid());
 				retMap.put("rolename", role.getRolename());
+				retMap.put("exceptioncodeversion", transaction.getTransaction_Header().getVersion());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		String str = ChinaUmsXMLHandler.createMACXML_Login(retMap, user,chinaUms.getVersion());
 		String MAC = CreateRespSign(chinaUms, str);
-		retMap.put("mac", MAC.toUpperCase());
+		retMap.put("mac", MAC);
 		return retMap;
 	}
 

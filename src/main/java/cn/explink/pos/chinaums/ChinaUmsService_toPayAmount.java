@@ -241,6 +241,8 @@ public class ChinaUmsService_toPayAmount extends ChinaUmsService {
 					respNote.setResp_code(AliPayExptMessageEnum.QiTaShiBai.getResp_code());
 					respNote.setResp_msg("未支付订单不可签收");
 					logger.info("未支付订单不可签收cwb={}", respNote.getOrder_no());
+					logger.error("系统错误，请联系技术人员");
+					logger.debug("debug日志");
 					return respNote;
 				}
 

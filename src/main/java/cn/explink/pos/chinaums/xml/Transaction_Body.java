@@ -8,6 +8,7 @@ public class Transaction_Body {
 	private String orderno;// 订单号
 	// 登录使用
 	private String passwd;// 登录密码
+	private String exceptioncodeversion;// 问题编码最新数据版本
 	// 签收使用
 	private String cod;// 代收款金额
 	private String payway;// 代收款支付方式
@@ -186,5 +187,15 @@ public class Transaction_Body {
 	public void setUrgent(String urgent) {
 		this.urgent = urgent;
 	}
+	@XmlElement(name = "exceptioncodeversion")
+	public String getExceptioncodeversion() {
+		return exceptioncodeversion;
+	}
+
+	public void setExceptioncodeversion(String exceptioncodeversion) {
+		this.exceptioncodeversion = exceptioncodeversion;
+	}
+	
+	
 
 }

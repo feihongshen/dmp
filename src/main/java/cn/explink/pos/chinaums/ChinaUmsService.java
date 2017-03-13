@@ -81,7 +81,11 @@ public class ChinaUmsService {
 	ExceptionCwbDAO exceptionCwbDAO;
 
 	protected ObjectMapper jacksonmapper = JacksonMapper.getInstance();
-
+	/**
+	 * 通过key获取POS对接中的参数
+	 * @param key
+	 * @return
+	 */
 	private String getObjectMethod(int key) {
 		JointEntity obj = null;
 		String posValue = "";
@@ -93,7 +97,11 @@ public class ChinaUmsService {
 		}
 		return posValue;
 	}
-
+	/**
+	 * 将获取的JSON数据装换成ChinaUms
+	 * @param key
+	 * @return
+	 */
 	public ChinaUms getChinaUmsSettingMethod(int key) {
 		ChinaUms chinaUms = new ChinaUms();
 		if (!"".equals(getObjectMethod(key))) {
@@ -178,7 +186,7 @@ public class ChinaUmsService {
 					logger.error("chinaums请求签名验证失败!");
 					rootnote.getTransaction_Header().setResponse_code(ChinaUmsExptMessageEnum.SignValidateFailed.getResp_code());
 					rootnote.getTransaction_Header().setResponse_msg(ChinaUmsExptMessageEnum.SignValidateFailed.getResp_msg());
-					//return chinaUmsService_public.createXML_toExptFeedBack(chinaUms, rootnote);
+					return chinaUmsService_public.createXML_toExptFeedBack(chinaUms, rootnote);
 				}
 				return DealWithchinaumsInterface(chinaUms, xmlstr, rootnote);
 			} catch (Exception e) {
@@ -268,8 +276,8 @@ public class ChinaUmsService {
 		strb.append(xmlsE);
 		String key = chinaUms.getPrivate_key();
 		String str1 = MD5Util.md5(key);// 约定的私钥,加密后得到32位私钥
-		logger.info(transtype + "需要验证的内容:" + strb.toString() + str1);
-		String str2 = MD5Util.md5(strb.toString() + str1).toUpperCase();// 去掉mac节点剩下的所有的报文加上私钥进行ＭＤ５加密
+		logger.info(transtype + "需要验证的内容:" + strb.toString() + key);
+		String str2 = MD5Util.md5(strb.toString() + str1,"UTF-8").toUpperCase();// 去掉mac节点剩下的所有的报文加上私钥进行ＭＤ５加密
 		logger.info(transtype + "签名验证的内容:" + str2);
 		logger.info(transtype + "签名验证mac:" + mac);
 		// 验证签名
@@ -293,7 +301,8 @@ public class ChinaUmsService {
 	protected String CreateRespSign(ChinaUms chinaUms, String str) {
 		String MAC = "";
 		try {
-			MAC = MD5Util.md5(str.toString() + MD5Util.md5(chinaUms.getPrivate_key()));
+			String key = chinaUms.getPrivate_key();
+			MAC = MD5Util.md5(str+MD5Util.md5(key),"UTF-8").toUpperCase();
 		} catch (Exception e) {
 			logger.error("移动POS(chinaums):返回签名加密异常!", e);
 		}

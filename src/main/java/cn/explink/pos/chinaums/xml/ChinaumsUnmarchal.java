@@ -15,7 +15,6 @@ import javax.xml.bind.Unmarshaller;
  *
  */
 public class ChinaumsUnmarchal {
-
 	public static Transaction Unmarchal(String xmlstr) throws JAXBException, UnsupportedEncodingException {
 		JAXBContext jc = JAXBContext.newInstance(Transaction.class);
 		Unmarshaller m = jc.createUnmarshaller();

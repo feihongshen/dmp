@@ -24,7 +24,7 @@ ChinaUms chinaums = (ChinaUms)request.getAttribute("chinaums");
 					</li>
 					
 					<li><span>请求URL：</span>
-						<input type ="text" id="request_url" name ="request_url" value ="<%=StringUtil.nullConvertToEmptyString(chinaums.getRequest_url()) %>" maxlength="50"  >
+						<input type ="text" id="request_url" name ="request_url" value ="<%=StringUtil.nullConvertToEmptyString(chinaums.getRequest_url()) %>" maxlength="100"  >
 					</li>
 					<li><span>他人刷卡限制：</span>
 						<input type="radio" name="isotherdeliveroper" <% if(chinaums.getIsotherdeliveroper()==1){ %>checked="checked"<%} %> value="1">开启
