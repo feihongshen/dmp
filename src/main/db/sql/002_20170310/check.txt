@@ -1,1 +1,1 @@
-SELECT * FROM express_set_menu_info_new WHERE menulevel ='p'  and menuno ='P30'
+SELECT * FROM express_set_menu_info_new WHERE menulevel ='p'  and menuno ='P30' or menuno ='P31' or menuno ='P32';
