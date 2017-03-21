@@ -98,16 +98,23 @@ public class ExpressOutStationController extends ExpressCommonController {
 	@RequestMapping("/executeOutStation")
 	@ResponseBody
 	public ExpressOpeAjaxResult expressOutStationExecute(Model model, HttpServletRequest request, HttpServletResponse response, ExpressOutStationParamsVO params) {
+		//当前请求时间
 		long startTime = System.currentTimeMillis();
+		//返回数据
 		ExpressOpeAjaxResult res = new ExpressOpeAjaxResult();
+		//获取请求路径
 		String contextPath = request.getContextPath();
 		Map<String, Object> checkResMap = new HashMap<String, Object>();
 		try {
+			//校验订单号是否为空
 			if (!Tools.isEmpty(params.getScanNo())) {
+				//赋值当前路径
 				params.setContextPath(contextPath);
+				//快递单号
 				String scanNo = params.getScanNo();
 				scanNo = this.cwborderService.translateCwb(scanNo);// 订单号和运单号的转换
 				checkResMap = this.expressOutStationService.checkIsOrderOrBaleOperation(scanNo, params);
+				//声音文件路径
 				String wavPath = null;
 				if (ExpressOutStationFlagEnum.OrderNo.getValue().equals(checkResMap.get("opeFlag"))) {
 					// 订单号操作

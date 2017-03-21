@@ -111,6 +111,8 @@ import cn.explink.domain.Truck;
 import cn.explink.domain.User;
 import cn.explink.domain.VO.express.EmbracedOrderVO;
 import cn.explink.domain.VO.express.ExpressIntoStationVO;
+import cn.explink.domain.VO.express.ExpressOpeAjaxResult;
+import cn.explink.domain.VO.express.ExpressOutStationParamsVO;
 import cn.explink.domain.VO.express.ExpressParamsVO;
 import cn.explink.domain.dto.ExpressIntoDto;
 import cn.explink.domain.orderflow.OrderFlow;
@@ -128,6 +130,8 @@ import cn.explink.enumutil.OutWarehouseGroupEnum;
 import cn.explink.enumutil.OutwarehousegroupOperateEnum;
 import cn.explink.enumutil.ReasonTypeEnum;
 import cn.explink.enumutil.VipExchangeFlagEnum;
+import cn.explink.enumutil.express.AddressMatchEnum;
+import cn.explink.enumutil.express.ExpressOutStationFlagEnum;
 import cn.explink.exception.CwbException;
 import cn.explink.exception.ExplinkException;
 import cn.explink.pos.tools.SignTypeEnum;
@@ -140,6 +144,8 @@ import cn.explink.service.ExplinkUserDetail;
 import cn.explink.service.ExportService;
 import cn.explink.service.SystemInstallService;
 import cn.explink.service.express.EmbracedOrderInputService;
+import cn.explink.service.express.ExpressOutStationService;
+import cn.explink.service.express.TpsInterfaceExecutor;
 import cn.explink.support.transcwb.TransCwbDao;
 import cn.explink.util.B2cUtil;
 import cn.explink.util.DateTimeUtil;
@@ -148,6 +154,7 @@ import cn.explink.util.Page;
 import cn.explink.util.ResourceBundleUtil;
 import cn.explink.util.ServiceUtil;
 import cn.explink.util.StringUtil;
+import cn.explink.util.Tools;
 
 @RequestMapping("/cwborderPDA")
 @Controller
@@ -241,7 +248,10 @@ public class CwbOrderPDAController {
 	CityDAO cityDAO;
 	@Autowired
 	CountyDAO  countyDAO;
-	
+	@Autowired
+	ExpressOutStationService expressOutStationService;
+	@Autowired
+	private TpsInterfaceExecutor tpsInterfaceExecutor;
 
 	private User getSessionUser() {
 		ExplinkUserDetail userDetail = (ExplinkUserDetail)
@@ -3401,4 +3411,94 @@ public class CwbOrderPDAController {
 	public String getAddress(){
 		return cwbOrderPdaService.getAddress();
 	}
+	
+	
+	@RequestMapping("/executeOutStation")
+	@ResponseBody
+	public ExpressOpeAjaxResult expressOutStationExecute(Model model, HttpServletRequest request, HttpServletResponse response) {
+		ExpressOutStationParamsVO params = this.getRequestParams(request);
+		//当前请求时间
+		long startTime = System.currentTimeMillis();
+		//返回数据
+		ExpressOpeAjaxResult res = new ExpressOpeAjaxResult();
+		//获取请求路径
+		String contextPath = request.getContextPath();
+		Map<String, Object> checkResMap = new HashMap<String, Object>();
+		try {
+			//校验订单号是否为空
+			if (!Tools.isEmpty(params.getScanNo())) {
+				//赋值当前路径
+				params.setContextPath(contextPath);
+				//快递单号
+				String scanNo = params.getScanNo();
+				scanNo = this.cwborderService.translateCwb(scanNo);// 订单号和运单号的转换
+				checkResMap = this.expressOutStationService.checkIsOrderOrBaleOperation(scanNo, params);
+				//声音文件路径
+				String wavPath = null;
+				if (ExpressOutStationFlagEnum.OrderNo.getValue().equals(checkResMap.get("opeFlag"))) {
+					// 订单号操作
+					res = this.expressOutStationService.executeOutStationOpeOrderNo(this.getSessionUser(), scanNo, params);
+					if (res.getStatus()) {// 成功
+						// 匹配地址库
+						CwbOrder cwbOrder = this.cwborderService.getCwbByCwb(scanNo);
+						this.matchStation(scanNo, this.getSessionUser().getUserid(), cwbOrder.getConsigneeaddress());
+						wavPath = this.getErrorWavFullPath(request, CwbOrderPDAEnum.OK.getVediourl());
+					} else {
+						wavPath = this.getErrorWavFullPath(request, CwbOrderPDAEnum.SYS_ERROR.getVediourl());
+					}
+
+				} else if (ExpressOutStationFlagEnum.BaleNo.getValue().equals(checkResMap.get("opeFlag"))) {
+					// 包号操作
+					res = this.expressOutStationService.executeOutStationOpeBaleNo(this.getSessionUser(), scanNo, params);
+					if (res.getStatus()) {
+						// 匹配地址库
+						Bale bale=(Bale) checkResMap.get("bale");
+						List<String> cwbList = this.cwborderService.getCwbsByBale(bale.getId());
+						for (String cwb : cwbList) {
+							CwbOrder cwbOrder = this.cwborderService.getCwbByCwb(cwb);
+							this.matchStation(cwb, this.getSessionUser().getUserid(), cwbOrder.getConsigneeaddress());
+						}
+						wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.OK.getVediourl();
+					} else {
+						wavPath = request.getContextPath() + ServiceUtil.waverrorPath + CwbOrderPDAEnum.Feng_Bao.getVediourl();
+					}
+				}
+				res.addLongWav(wavPath);
+			}
+		} catch (Exception e) {
+			checkResMap.put("opeFlag", ExpressOutStationFlagEnum.OrderNo.getValue());
+			res.setAttributes(checkResMap);
+			res.setStatus(false);
+			res.setMsg(e.getMessage());
+			String wavPath = this.getErrorWavFullPath(request, CwbOrderPDAEnum.SYS_ERROR.getVediourl());
+			res.addLongWav(wavPath);
+		}
+		this.logger.info("进入揽件出站页面的时间共：" + (System.currentTimeMillis() - startTime) + "毫秒");
+		return res;
+	}
+	
+	private void matchStation(String cwb, long userid, String address) {
+		Boolean matchFlag = this.tpsInterfaceExecutor.autoMatch(cwb, userid, address, AddressMatchEnum.ExpressOutStation.getValue());
+		if (matchFlag) {
+			this.logger.info("揽件出站调用地址库jms消息发送成功");
+
+		} else {
+			this.logger.info("揽件出站调用地址库jms消息发送失败");
+		}
+	}
+
+	private String getErrorWavFullPath(HttpServletRequest request, String fillName) {
+		return request.getContextPath() + ServiceUtil.waverrorPath + fillName;
+	}
+
+	private String getWavFullPath(HttpServletRequest request, String fillName) {
+		return request.getContextPath() + ServiceUtil.wavPath + fillName;
+	}
+	private ExpressOutStationParamsVO getRequestParams(HttpServletRequest request){
+		ExpressOutStationParamsVO expressOutStationParamsVO=new ExpressOutStationParamsVO();
+		expressOutStationParamsVO.setScanNo(null==request.getParameter("scanNo")?"":request.getParameter("scanNo"));
+		expressOutStationParamsVO.setNextBranch(Long.parseLong(request.getParameter("nextBranch")));
+		return expressOutStationParamsVO;
+	}
+
 }

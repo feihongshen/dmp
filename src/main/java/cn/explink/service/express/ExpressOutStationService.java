@@ -111,6 +111,7 @@ public class ExpressOutStationService {
 
 		// 通过扫描的号码查询订单表和包号表
 		CwbOrder order = this.cwbDAO.getCwbByCwb(scanNo);
+		//根据包号获取是否为合包
 		Bale bale = this.baleDAO.getBaleOnway(scanNo);
 		// 标识包号是否存在
 		Boolean baleIsExist = false;
@@ -140,14 +141,18 @@ public class ExpressOutStationService {
 	 * @return
 	 */
 	public ExpressOpeAjaxResult executeOutStationOpeOrderNo(User user, String scanNo, ExpressOutStationParamsVO params) {
+		//ajax返回信息
 		ExpressOpeAjaxResult res = new ExpressOpeAjaxResult();
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			this.logger.info("开始出库处理,cwb:{}", scanNo);
 			// 获取当前机构
 			Long currentBranchId = user.getBranchid();
+			//获取下一站
 			Long nextBranchId = params.getNextBranch();
+			//根据下一站获取机构
 			Branch nextBranch = this.branchDAO.getBranchByBranchid(nextBranchId);
+			//获取订单信息
 			CwbOrder order = this.cwbDAO.getCwbByCwbLock(scanNo);
 			// 1.操作订单号的标识
 			resultMap.put("opeFlag", ExpressOutStationFlagEnum.OrderNo.getValue());
@@ -343,31 +348,36 @@ public class ExpressOutStationService {
 
 		// 2.揽件出站的逻辑操作
 		Branch ifBranch = this.branchDAO.getQueryBranchByBranchid(currentBranchId);
-
+		//货物流向确认
 		boolean routeFlag = false;
 		if ((ifBranch != null) && (ifBranch.getSitetype() == BranchEnum.ZhanDian.getValue())) {// 当前站不为空&&当前机构为站点
+			//获取当前站点的货物流向
 			List<BranchRoute> routelist = this.branchRouteDAO.getBranchRouteByWheresql(currentBranchId, pageNextBranchId, 2);
 			for (BranchRoute r : routelist) {
+				//下一站点==站点的货物流向
 				if (pageNextBranchId == r.getToBranchId()) {
 					routeFlag = true;
 				}
 			}
+			//订单操作状态不是运单录入&&订单的下一站不为0&&没有下一站点的货物流向&&下一站>0
 			if ((order.getFlowordertype() != FlowOrderTypeEnum.YunDanLuRu.getValue()) && (order.getNextbranchid() != 0) && !routeFlag && (pageNextBranchId > 0)) {
 				throw new CwbException(scanNo, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, this.branchDAO.getBranchByBranchid(order.getNextbranchid())
 						.getBranchname());
 			}
+			//订单操作状态不是运单录入&&订单下一站不为0&&订单的下一站不等于货物流向的下一站&& 货物流向的下一站不为0
 		} else if ((order.getFlowordertype() != FlowOrderTypeEnum.YunDanLuRu.getValue()) && (order.getNextbranchid() != 0) && (order.getNextbranchid() != pageNextBranchId) && (pageNextBranchId > 0)) {
 			throw new CwbException(scanNo, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.BU_SHI_ZHE_GE_MU_DI_DI, this.branchDAO.getBranchByBranchid(order.getNextbranchid())
 					.getBranchname());
 		}
-
+		//订单操作状态等于揽件入站||订单状态为到错货||订单状态为已审核||订单状态为分站滞留
 		if (((order.getFlowordertype() == FlowOrderTypeEnum.LanJianRuZhan.getValue()) || (order.getFlowordertype() == FlowOrderTypeEnum.FenZhanDaoHuoYouHuoWuDanSaoMiao.getValue()) || ((order
 				.getFlowordertype() == FlowOrderTypeEnum.YiShenHe.getValue()) && (order.getDeliverystate() == DeliveryStateEnum.FenZhanZhiLiu.getValue())))
 				&& (order.getCurrentbranchid() != currentBranchId)) {
 			throw new CwbException(scanNo, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.FEI_BEN_ZHAN_HUO);
 		}
-
+		//获取当前站点的信息
 		Branch userbranch = this.branchDAO.getBranchById(currentBranchId);
+		//订单的当前站点
 		Branch cwbBranch = this.branchDAO.getBranchByBranchid(order.getCurrentbranchid() == 0 ? order.getNextbranchid() : order.getCurrentbranchid());
 		if ((cwbBranch.getBranchid() != pageNextBranchId) && (userbranch.getSitetype() != BranchEnum.ZhongZhuan.getValue()) && (cwbBranch.getSitetype() == BranchEnum.ZhongZhuan.getValue())) {
 			throw new CwbException(scanNo, FlowOrderTypeEnum.ChuKuSaoMiao.getValue(), ExceptionCwbErrorTypeEnum.ZHONG_ZHUAN_HUO);
@@ -562,7 +572,15 @@ public class ExpressOutStationService {
 			throw new CwbException(co.getCwb(), nextState.getValue(), ExceptionCwbErrorTypeEnum.STATE_CONTROL_ERROR, fromstate.getText(), nextState.getText());
 		}
 	}
-
+	/**
+	 * 
+	 * @param branchid 下一站
+	 * @param forceOut
+	 * @param co 订单
+	 * @param user 
+	 * @param aflag
+	 * @return
+	 */
 	private long getNextBranchidExecute(long branchid, boolean forceOut, CwbOrder co, User user, boolean aflag) {
 		long nextBranchid = this.getNextBranchId(co, user);
 		long currentbranchtype = this.branchDAO.getBranchByBranchid(user.getBranchid()).getSitetype();
