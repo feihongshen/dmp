@@ -210,9 +210,9 @@ public class ChinaUmsService_toExptFeedBack extends ChinaUmsService {
 		}
 		
 		if(badtype==null||badtype.isEmpty()){
-			if("01".equals(errcode)){
+			if("02".equals(errcode)){
 				deliverystate=DeliveryStateEnum.JuShou.getValue();
-			}else if("02".equals(errcode)){
+			}else if("01".equals(errcode)){
 				deliverystate=DeliveryStateEnum.FenZhanZhiLiu.getValue();
 			}
 		}else{
