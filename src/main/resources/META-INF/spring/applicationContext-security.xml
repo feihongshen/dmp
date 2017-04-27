@@ -40,6 +40,8 @@
 			access="permitAll" />
 		<intercept-url pattern="/order/norderFlowQueryForOutsideByCwb/**"
 			access="permitAll" />
+			<intercept-url pattern="/order/queryOrderFlowByCwb/**"
+			access="permitAll" />
 		<intercept-url pattern="/wavPlay**" access="permitAll" />
 
 

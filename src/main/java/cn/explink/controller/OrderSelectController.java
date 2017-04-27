@@ -1,5 +1,6 @@
 package cn.explink.controller;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,6 +23,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +40,14 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.explink.b2c.dpfoss.JsonUtil;
 import cn.explink.b2c.ems.EMSDAO;
 import cn.explink.b2c.ems.SendToEMSOrder;
+import cn.explink.b2c.feiniuwang.CwbRequest;
 import cn.explink.b2c.tools.B2cEnum;
 import cn.explink.b2c.tools.JointService;
 import cn.explink.dao.AbnormalOrderDAO;
@@ -103,6 +109,8 @@ import cn.explink.domain.User;
 import cn.explink.domain.VO.BaleCwbClassifyVo;
 import cn.explink.domain.VO.express.EmbracedOrderVO;
 import cn.explink.domain.VO.express.JoinMessageVO;
+import cn.explink.domain.json.QueryCwbResponseDto;
+import cn.explink.domain.json.QueryOrder;
 import cn.explink.domain.orderflow.OrderFlow;
 import cn.explink.domain.orderflow.TranscwbOrderFlow;
 import cn.explink.enumutil.AbnormalWriteBackEnum;
@@ -3223,5 +3231,48 @@ public class OrderSelectController {
 		}
 		return phone;
 	}
-
+	@RequestMapping(value="/queryOrderFlowByCwb",method=RequestMethod.POST)
+	@ResponseBody
+	public String  queryOrderFlowByCwb(@RequestParam(value="cwb",required=true,defaultValue="")String cwb,@RequestParam(value="requestSign",required=true,defaultValue="")String requestSign) throws Exception{
+		this.logger.info("请求参数：cwb={},requestSign={}",cwb,requestSign);
+		QueryCwbResponseDto cwbResponseDto=new QueryCwbResponseDto();
+		if(!StringUtils.hasText(cwb)||!StringUtils.hasText(requestSign)){
+			this.logger.info("请求参数不全");
+			cwbResponseDto.setReturnCode("02");
+			cwbResponseDto.setRemark("请求参数不全");
+			return JsonUtil.fromObject(cwbResponseDto);
+		}
+		String sign = MD5Util.md5(cwb.trim()+"explink", "UTF-8");
+		if(!sign.equals(requestSign)){
+			this.logger.info("签名验证失败：requestSign={},sign={}",requestSign,sign);
+			cwbResponseDto.setReturnCode("01");
+			cwbResponseDto.setRemark("签名失败");
+			return JsonUtil.fromObject(cwbResponseDto);
+		}
+		List<OrderFlow> datalist = this.orderFlowDAO.getOrderFlowByCwb(cwb.trim());
+		if(datalist.isEmpty()){
+			this.logger.info("未检索到数据");
+			cwbResponseDto.setReturnCode("03");
+			cwbResponseDto.setRemark("未检索到数据");
+			return JsonUtil.fromObject(cwbResponseDto);
+		}
+		
+		List<QueryOrder> queryOrders=new ArrayList<QueryOrder>();
+		for (OrderFlow orderFlow : datalist) {
+			QueryOrder order=new QueryOrder();
+			CwbOrderWithDeliveryState cwbOrderWithDeliveryState = this.objectMapper.readValue(orderFlow.getFloworderdetail(), CwbOrderWithDeliveryState.class);
+			order.setDatetime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(orderFlow.getCredate()));
+			order.setFloworderType(orderFlow.getFlowordertype());
+			order.setStateCode(String.valueOf(DeliveryStateEnum.getByValue(Integer.valueOf(cwbOrderWithDeliveryState.getDeliveryState()==null?"0":cwbOrderWithDeliveryState.getDeliveryState().getDeliverystate()+"")).getValue()));
+			order.setDetail(this.getDetailExport(orderFlow));
+			queryOrders.add(order);
+		}
+		cwbResponseDto.setQueryOrders(queryOrders);
+		cwbResponseDto.setReturnCode("00");
+		cwbResponseDto.setRemark("成功");
+		String jsonString = JsonUtil.fromObject(cwbResponseDto);
+		return jsonString;
+		
+		
+	}
 }
