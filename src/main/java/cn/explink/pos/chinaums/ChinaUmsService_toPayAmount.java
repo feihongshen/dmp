@@ -206,7 +206,7 @@ public class ChinaUmsService_toPayAmount extends ChinaUmsService {
 			int signflag=rootnote.getTransaction_Body().getSignflag();
 			return signflag==0?1:2;
 		}
-		return "0".equals(rootnote.getTransaction_Body().getSignpeople()) ? 1 : 2;
+		return "0".equals(String.valueOf(rootnote.getTransaction_Body().getSignflag())) ? 1 : 2;
 	}
 
 	private String getSignpeopleProxy(CwbOrder cwbOrder, Transaction rootnote,int version) {
@@ -214,7 +214,7 @@ public class ChinaUmsService_toPayAmount extends ChinaUmsService {
 			//int signflag=rootnote.getTransaction_Body().getSignflag();
 			return rootnote.getTransaction_Body().getSigner();
 		}
-		return "0".equals(rootnote.getTransaction_Body().getSignpeople()) ? cwbOrder.getConsigneename() : "他人签收";
+		return "0".equals(String.valueOf(rootnote.getTransaction_Body().getSignflag())) ? cwbOrder.getConsigneename() : "他人签收";
 	}
 
 	/**
