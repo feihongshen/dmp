@@ -104,7 +104,7 @@
 		<intercept-url pattern="/smile/**" access="permitAll" />
 		<intercept-url pattern="/yhdAddressmatch/**" access="permitAll" />
 		<intercept-url pattern="/liantong/**" access="permitAll" />
-
+		<intercept-url pattern="/liantongordercenter/**" access="permitAll"/>
 		<intercept-url pattern="/httxAddress/**" access="permitAll" />
 
 		<intercept-url pattern="/alipayapp/**" access="permitAll" />

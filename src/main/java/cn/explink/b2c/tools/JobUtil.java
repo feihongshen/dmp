@@ -51,6 +51,7 @@ import cn.explink.b2c.hzabc.HangZhouABCInsertCwbDetailTimmer;
 import cn.explink.b2c.jiuye.JiuYeInsertCwbDetailTimmer;
 import cn.explink.b2c.lechong.LechongInsertCwbDetailTimmer;
 import cn.explink.b2c.liantong.LiantongInsertCwbDetailTimmer;
+import cn.explink.b2c.liantongordercenter.LianTongOrderCenterInsertCwbDetailTimmer;
 import cn.explink.b2c.maikaolin.MaikaolinInsertCwbDetailTimmer;
 import cn.explink.b2c.maikaolin.MaikolinService;
 import cn.explink.b2c.maisike.MaisikeService_branchSyn;
@@ -309,6 +310,8 @@ public class JobUtil {
 	@Autowired
 	ReSendExpressOrderService reSendExpressOrderService;
 
+	@Autowired
+	private LianTongOrderCenterInsertCwbDetailTimmer LianTongOrderCenterInsertCwbDetailTimmer;
 	@Autowired
 	IDistributedLock distributedLock;
 	static { // 静态初始化 以下变量,用于判断线程是否在执行
@@ -2035,5 +2038,12 @@ public class JobUtil {
 		}
 
 		this.logger.info("执行了获取cwbInsertToOrderDetail订单的定时器,本次耗时:{}秒", ((endtime - starttime) / 1000));
+	}
+	/**
+	 * 联通订单中心定时任务
+	 */
+	public void getLiantongOrderCenterTask() {
+		this.logger.info("执行了联通订单中心定时器");
+		this.LianTongOrderCenterInsertCwbDetailTimmer.selectTempAndInsertToCwbDetail();
 	}
 }

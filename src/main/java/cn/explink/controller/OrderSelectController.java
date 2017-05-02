@@ -3267,10 +3267,11 @@ public class OrderSelectController {
 			order.setDetail(this.getDetailExport(orderFlow));
 			queryOrders.add(order);
 		}
+		
 		cwbResponseDto.setQueryOrders(queryOrders);
 		cwbResponseDto.setReturnCode("00");
 		cwbResponseDto.setRemark("成功");
-		String jsonString = JsonUtil.fromObject(cwbResponseDto);
+		String jsonString  = JsonUtil.fromObject(cwbResponseDto);
 		return jsonString;
 		
 		

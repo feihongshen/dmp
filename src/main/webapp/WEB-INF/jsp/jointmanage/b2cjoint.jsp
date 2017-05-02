@@ -601,7 +601,10 @@ function delSuccess(data){
         }else if(obj=="21005"){
         	$("#edit").val('<%=request.getContextPath()%>/mss/show/');
             $("#del").val('<%=request.getContextPath()%>/mss/del/');
-        }
+        }else if(obj=='22566'){
+			$("#edit").val('<%=request.getContextPath()%>/liantongOrderCenter/show/');
+			$("#del").val('<%=request.getContextPath()%>/liantongOrderCenter/del/');
+		}
 		else{
 			$("#edit").val('<%=request.getContextPath()%>/explinkInterface/show/');
 			$("#del").val('<%=request.getContextPath()%>/explinkInterface/del/');

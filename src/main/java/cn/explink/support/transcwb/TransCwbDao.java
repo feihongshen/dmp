@@ -153,4 +153,14 @@ public class TransCwbDao {
 		return this.jdbcTemplate.queryForInt(sql,transcwb);
 		
 	}
+	
+	/**
+	 * 根据订单号，删除对应运单记录
+	 * 
+	 * @param cwb
+	 */
+	public void deleteTransCwbByCwb(String cwb) {
+		String sql = "DELETE FROM express_ops_transcwb WHERE cwb=?";
+		this.jdbcTemplate.update(sql, cwb);
+	}
 }
