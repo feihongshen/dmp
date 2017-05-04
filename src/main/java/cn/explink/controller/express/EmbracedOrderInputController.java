@@ -14,6 +14,11 @@ import java.util.concurrent.Executors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.explink.service.express.ExpressWeighService;
+import net.sf.json.JSONObject;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,8 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.pjbest.deliveryorder.service.OmReserveOrderModel;
 
 import cn.explink.b2c.pjwl.ExpressCwbOrderDataImportDAO;
 import cn.explink.dao.CwbDAO;
@@ -37,6 +40,7 @@ import cn.explink.domain.VO.express.EmbracedOrderVO;
 import cn.explink.domain.express.ExpressPreOrder;
 import cn.explink.domain.express.ExpressWeigh;
 import cn.explink.domain.express.NewAreaForm;
+import cn.explink.domain.express2.VO.ReserveOrderPageVo;
 import cn.explink.domain.express2.VO.ReserveOrderVo;
 import cn.explink.service.Excel2003Extractor;
 import cn.explink.service.Excel2007Extractor;
@@ -46,7 +50,8 @@ import cn.explink.service.express.EmbracedOrderInputService;
 import cn.explink.service.express2.ReserveOrderService;
 import cn.explink.util.ExportUtil4Express;
 import cn.explink.util.Page;
-import net.sf.json.JSONObject;
+
+import com.pjbest.deliveryorder.service.OmReserveOrderModel;
 
 /**
  *
@@ -78,6 +83,8 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 	ReserveOrderService reserveOrderService;
 	@Autowired
 	UserDAO userDAO;
+    @Autowired
+    private ExpressWeighService expressWeighService;
 
 	private ExcelExtractor excelExtractor = null;
 	private static final String CONTENT_TYPE = "text/html; charset=GBK";
@@ -318,8 +325,10 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 		if(collector != null && !deliveryMansList.contains(collector)){
 			deliveryMansList.add(collector);
 		}
-		
-		ExpressWeigh expressWeigh = this.embracedOrderInputService.getWeighByCwb(orderNo, this.getSessionUser().getBranchid());
+        //Modified by Steve PENG. 快递1.0 临时修改 start
+//		ExpressWeigh expressWeigh = this.embracedOrderInputService.getWeighByCwb(orderNo, this.getSessionUser().getBranchid());
+		ExpressWeigh expressWeigh = this.embracedOrderInputService.getWeighByCwb(orderNo);
+        //Modified by Steve PENG. 快递1.0 临时修改 end
 		//查询快递单号的图片路径
 		String expressImage = expressCwbOrderDataImportDAO.getExpressImageById(orderNo);
 		
@@ -330,11 +339,10 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 		ReserveOrderVo  reserveOrder = null;
 		if(tpstransportNo!=null&&!tpstransportNo.isEmpty()){
 			omReserveOrderModel.setTransportNo(tpstransportNo);
-			//调用tps 订单查询接口
-			/*ReserveOrderPageVo reserveOrderVO = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel,1,1);
+			ReserveOrderPageVo reserveOrderVO = this.reserveOrderService.getReserveOrderPage(omReserveOrderModel,1,1);
 			if(reserveOrderVO.getReserveOrderVoList().size()!=0){
 				reserveOrder = reserveOrderVO.getReserveOrderVoList().get(0);
-			}*/
+			}
 		}
 		boolean isRepeat = this.embracedOrderInputService.checkTranscwb(orderNo);//校验录入运单号是否与系统订单号/运单号重复 add by vic.liang@pjbest.com 2016-08-05
 		obj.put("deliveryMansList", deliveryMansList);//重新加载小件员下拉列表数据
@@ -403,6 +411,11 @@ public class EmbracedOrderInputController extends ExpressCommonController {
 		String flag = this.embracedOrderInputService.savaEmbracedOrderVO(embracedOrderVO, "0".equals(embracedOrderVO.getIsadditionflag()) ? 2 : 1);
 		//刘武强 11.17  对页面读取的实际重量进行保存
 		this.embracedOrderInputService.savaexpressWeigh(embracedOrderVO, isRead);
+        //Modified by Steve PENG. 快递1.0 临时修改 start
+        if (embracedOrderVO != null && NumberUtils.isNumber(embracedOrderVO.getActual_weight()))
+           // expressWeighService.feedbackWeightToDO(embracedOrderVO.getOrderNo(), Double.parseDouble(embracedOrderVO.getActual_weight()));
+        //Modified by Steve PENG. 快递1.0 临时修改 end
+
 		// 获取回显数据
 		model.addAttribute("notExtraInputNumber", this.embracedOrderInputService.getNonExtraInputOrder(1, Page.ONE_PAGE_NUMBER).get("count"));
 		//获取省市的级联下拉列表

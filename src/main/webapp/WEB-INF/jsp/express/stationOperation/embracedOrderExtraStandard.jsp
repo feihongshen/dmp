@@ -28,6 +28,7 @@
 <script src="<%=request.getContextPath()%>/js/swfupload/swfupload.queue.js"  type="text/javascript"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
 <style>
+<style>
 .RadioClass{
 	display: none;
 }
@@ -2281,7 +2282,8 @@
 		$("#isRead").val("1");
 	}
 	function setWeight() {
-		var weight = window.parent.document.getElementById("scaleApplet").getWeight();
+		//var weight = window.parent.document.getElementById("scaleApplet").getWeight();
+		var weight = window.parent.document.getElementById("weightNumber").value;
 		if (weight != null && weight != '') {
 			$("#actual_weight_id").val(weight);
 		}

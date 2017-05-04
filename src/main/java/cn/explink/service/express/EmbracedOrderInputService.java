@@ -476,8 +476,8 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 			} else {
 				this.logger.info("订单补录调用地址库jms消息发送失败");
 			}
-			// 在必填项都填完整的时候才调用创建运单接口 需注释 发送tps 信息
-			//this.tpsSender(embracedOrderVO, "inbrace");
+			// 在必填项都填完整的时候才调用创建运单接口
+			this.tpsSender(embracedOrderVO, "inbrace");
 		} else {
 			params.put("isadditionflag", 0);
 			params.put("senderaddress", StringUtils.isNotBlank(embracedOrderVO.getSender_adress()) ? embracedOrderVO.getSender_adress() : null);
@@ -533,8 +533,8 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 		if ("true".equals(flag)) {
 			if(!StringUtil.isEmpty(embracedOrderVO.getReserveOrderNo())){
 				try{
-					//快递二期新增，反馈预约单状态:揽收成功给tps 需注释
-					//this.reserveOrderService.returnReserveOrderStateToTps(embracedOrderVO,branch);
+					//快递二期新增，反馈预约单状态:揽收成功给tps
+					this.reserveOrderService.returnReserveOrderStateToTps(embracedOrderVO,branch);
 				}catch(Exception e){
 					flag="false"; 
 				}
@@ -625,6 +625,11 @@ public class EmbracedOrderInputService extends ExpressCommonService {
 		ExpressWeigh expressWeigh = this.expressWeighDAO.getExpressWeighByCwb(cwb, branchid);
 		return expressWeigh;
 	}
+
+    public ExpressWeigh getWeighByCwb(String cwb) {
+        ExpressWeigh expressWeigh = this.expressWeighDAO.getExpressWeighByCwb(cwb);
+        return expressWeigh;
+    }
 
 	/**
 	 *

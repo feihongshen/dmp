@@ -136,4 +136,12 @@ public class ExpressWeighDAO {
 		info = this.jdbcTemplate.query(sql.toString(), new ExpressWeighAllRowMapper(), cwb, branchid);
 		return info.size() > 0 ? info.get(0) : null;
 	}
+
+    public ExpressWeigh getExpressWeighByCwb(String cwb) {
+        List<ExpressWeigh> info = new ArrayList<ExpressWeigh>();
+        StringBuffer sql = new StringBuffer();
+        sql.append("SELECT * FROM express_ops_weigh WHERE cwb =? ORDER BY handletime DESC limit 1");
+        info = this.jdbcTemplate.query(sql.toString(), new ExpressWeighAllRowMapper(), cwb);
+        return info.size() > 0 ? info.get(0) : null;
+    }
 }

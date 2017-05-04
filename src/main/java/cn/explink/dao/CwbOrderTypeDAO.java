@@ -112,7 +112,7 @@ public class CwbOrderTypeDAO {
 
 	public Map<String, Long> getOrderTypeMappings() {
 		String sql = "SELECT * FROM express_set_importset WHERE "
-				+ " = 1";
+				+ " 1= 1";
 		List<ImportCwbOrderType> orderTypeList = jdbcTemplate.query(sql, new CwbOrderTypeMapper());
 		Map<String, Long> orderTypeMapping = new HashMap<String, Long>();
 		if (orderTypeList != null) {

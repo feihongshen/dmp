@@ -86,9 +86,8 @@ var requestContext = "<%=request.getContextPath()%>" ;
 		console.log("weightTime:"+weightTime) ;
 		jQuery("#weightNotice").text("正在称重中,请稍等......") ;
 		window.setTimeout(function waitForWeight(){
-			var weight = jQuery('#weightSpan').text();
-			var weightExp = /^[0-9]+(\.[0-9]+[1-9])?$/ ;
-			if (!weightExp.test(weight)) {
+			var weight = jQuery('#weightSpan').text().trim();
+			if (!isRightWeight(weight)) {
 				jQuery("#weightNotice").text("请检查系统是否已连接电子秤") ;
 				return;
 			}
@@ -123,8 +122,9 @@ var requestContext = "<%=request.getContextPath()%>" ;
 
 	function setWeight() {
         try{
-        	var scaleApplet  =  window.parent.document.getElementById("scaleApplet") ;
-        	var weight = scaleApplet.getWeight();
+        	//var scaleApplet  =  window.parent.document.getElementById("scaleApplet") ;
+        	//var weight = scaleApplet.getWeight();
+        	var weight = window.parent.document.getElementById("weightNumber").value;
         	if (weight != null && weight != '' &&　weight != undefined ) {
     			document.getElementById("weightSpan").innerHTML = weight;
     		}

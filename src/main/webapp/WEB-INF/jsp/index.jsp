@@ -49,6 +49,7 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/easyui/src/jquery.tabs.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/express/feedback/comm.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/express/stationOperation.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/express/pluginGetWeight.js?_v=1.0"></script>
 <script src="<%=request.getContextPath()%>/js/datePlugin/My97DatePicker/WdatePicker.js"
 	type="text/javascript"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/dmp40/eap/sys/plug-in/layer/layer.min.js"></script>
@@ -104,8 +105,10 @@
 								<label style="font-size: 1.1em; color: #46affc">唯易配送信息系统</label>
 							</h2>
 						</div>
+						<!-- tangfuzhong:电子秤插件优化，不再用applet
 						<applet id="scaleApplet" name="scaleApplet" code="ScaleApplet.class"
 							archive="ScaleApplet.jar,javax.comm.jar" width="1" height="1"> </applet>
+						-->
 					</div>
 					<div class="pull-right" style="text-align: right; margin-right: 10px;">
 						<div style="float: right; margin-top: 10px;">
@@ -152,11 +155,14 @@
 							<div onclick="addTab('修改密码','passwordupdate?&clickFunctionId=10001','folder')">
 								<i class="icon-lock" style="position: relative; left: -25px;"></i>修改密码
 							</div>
-							<!--历史版本是调用osp 需注释  -->
 							<!-- <div class="menu-sep"></div>
 							<div onclick="addTab('历史版本','taskShow/historyList/1?&clickFunctionId=10001','folder')">
 								<i class="icon-lock" style="position: relative; left: -25px;"></i>历史版本
 							</div> -->
+							<div class="menu-sep"></div>
+							<div onclick="addTab('电子秤插件','plugins/getWeightPluginStatus?&clickFunctionId=10001','folder')">
+								<i class="icon-lock" style="position: relative; left: -25px;"></i>电子秤插件
+							</div>
 						</div>
 						<div id="layout_north_zxMenu" style="width: 100px; display: none;">
 							<div
@@ -188,6 +194,11 @@
 	<iframe id="printcwb" name="printcwb" src="<%=request.getContextPath()%>/printcwb"
 		target="printcwb" width="0" height="0" style="display: none" frameborder="0" scrolling="auto"
 		marginheight="0" marginwidth="0" allowtransparency="yes"></iframe>
+	
+  <!-- tangfuzhong:电子秤插件优化，begin-->
+  <object id="plugin_getWeight_object" type="application/x-juart" width="0" height="0" ><param name="onload" value="pluginLoaded"  /></object>
+  <div sytle="display:none;"><input type="hidden" id="weightNumber" size="10"><input type="hidden" id="weightNumber_Old_String" size="20"><div id="plugin_getWeight_message" style="display:none;"></div><div id="firefoxpluginStatus" style="display:none;"></div></div>
+  <!-- tangfuzhong:电子秤插件优化，end -->
 </body>
 <script type="text/javascript">
 	$("#playSearch").keydown(
@@ -197,7 +208,7 @@
 					$("#playSearch").val('');
 					}
 			});
-	<%-- osp 最新版本说明 需注释--%>
+	
 	<%-- $(document).ready(function() {
 		if(isLoginFlag()) {
 			//点击对话框字段关闭按钮事件
@@ -298,7 +309,7 @@
 	function closeDlg() {
 		$('#dlg').dialog('close');
 	}
-	<%-- 用户浏览记录上报 需注释--%>
+	
 	<%-- function sendReadRecord(){
 		var versionNo = $("#versionNo").text();
 		var showTime = $("#showTime").text();
@@ -314,10 +325,10 @@
 			success : function(result) {
 			}
 		});
-	} --%>
-	//每10分钟定时请求一下ops获取系统公告 需注释
+	}
+	
 	// added by wangwei, 20160823, 页面滚动公告栏, start
-	<%-- $(function() {
+	$(function() {
 		showNotice();
 		var tenMinutes = 1000 * 60 * 10;		//每10分钟刷新一次
 		setInterval("showNotice()", tenMinutes);
@@ -338,5 +349,13 @@
 		});	
 	} --%>
 	// added by wangwei, 20160823, 页面滚动公告栏, end
+</script>
+<script type="text/javascript">
+//唐富忠：电子秤优化，检查插件是否加载成功
+$(function() {
+	check_firefoxpluginStatus();
+});
+
+
 </script>
 </html>

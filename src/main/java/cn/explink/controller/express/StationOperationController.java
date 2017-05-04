@@ -657,9 +657,13 @@ public class StationOperationController extends ExpressCommonController {
 			this.expressWeighService.saveWeight(this.constructExpressWeigh(waybillNo, weight));
 		} else {
 			this.expressWeighService.updateWeight(this.constructExpressWeigh(waybillNo, weight));
-		}
-		successFlag = true ;
-		return successFlag ;
+        }
+
+       // expressWeighService.feedbackWeightToDO(waybillNo, weight);
+        successFlag = true ;
+
+
+        return successFlag ;
 	}
 
 	private ExpressWeigh constructExpressWeigh(String waybillNo, Double weight) {
