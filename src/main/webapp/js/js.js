@@ -1780,6 +1780,15 @@ function init_deliverystate() {
 	$("#transcwb").parent().hide();
 	$("#shouldfareVipSmh").parent().hide();
 	$("#infactfareVipSmh").parent().hide();
+	
+	//added by gordon.zhou 2016/12/15 如果是到付类型的快递单，需要在归班反馈页面的“到付费用合计”元素
+	if($("#cwbordertypeid").val() == 6 && $("#paymethod").val() == 2){
+		$("#infacttotalfee").parent().show(); 
+	}else{
+		$("#infacttotalfee").parent().hide();
+	}
+	//end aded by gordon.zhou
+	
 }
 
 function gonggong() {
@@ -1903,28 +1912,58 @@ function click_podresultid(deliverystate, PeiSongChengGong, ShangMenTuiChengGong
 	$("#infactfare").removeAttr('disabled');
 	init_deliverystate();
 	if (podresultid == PeiSongChengGong) {// 配送成功
-		for (var i = 0; i < newpaywayid.split(",").length; i++) {
-			var newpayway = newpaywayid.split(",")[i];
-			if (newpayway == 1) {
-				$("#receivedfeecash").val(
-						(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
-								- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
-			} else if (newpayway == 2 && showposandqita == "yes") {
-				$("#receivedfeepos").val(
-						(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeecash").val()) * 100
-								- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
-			} else if (newpayway == 3) {
-				$("#receivedfeecheque").val(
-						(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
-								- parseFloat($("#receivedfeecash").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
-			} else if (newpayway == 4 && showposandqita == "yes") {
-				$("#receivedfeeother").val(
-						(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
-								- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeecash").val()) * 100) / 100);
-			} else {
-				$("#receivedfeecash").val(
-						(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
-								- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+		// added by gordon.zhou 2016/12/15 到付快递订单类型处理
+		if($("#cwbordertypeid").val() == 6 && $("#paymethod").val() == 2){
+			for (var i = 0; i < newpaywayid.split(",").length; i++) {
+				var newpayway = newpaywayid.split(",")[i];
+				if (newpayway == 1) {
+					$("#receivedfeecash").val(
+							(parseFloat($("#shouldfee").val()) * 100 + parseFloat($("#totalfee").val()) * 100  - parseFloat($("#receivedfeepos").val()) * 100
+									- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+				} else if (newpayway == 2 && showposandqita == "yes") {
+					$("#receivedfeepos").val(
+							(parseFloat($("#shouldfee").val()) * 100 + parseFloat($("#totalfee").val()) * 100 - parseFloat($("#receivedfeecash").val()) * 100
+									- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+				} else if (newpayway == 3) {
+					$("#receivedfeecheque").val(
+							(parseFloat($("#shouldfee").val()) * 100 + parseFloat($("#totalfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
+									- parseFloat($("#receivedfeecash").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+				} else if (newpayway == 4 && showposandqita == "yes") {
+					$("#receivedfeeother").val(
+							(parseFloat($("#shouldfee").val()) * 100 + parseFloat($("#totalfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
+									- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeecash").val()) * 100) / 100);
+				} else {
+					$("#receivedfeecash").val(
+							(parseFloat($("#shouldfee").val()) * 100 + parseFloat($("#totalfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
+									- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+				}
+			}
+		}
+		//end added by gordon.zhou
+		else{
+			for (var i = 0; i < newpaywayid.split(",").length; i++) {
+				var newpayway = newpaywayid.split(",")[i];
+				if (newpayway == 1) {
+					$("#receivedfeecash").val(
+							(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
+									- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+				} else if (newpayway == 2 && showposandqita == "yes") {
+					$("#receivedfeepos").val(
+							(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeecash").val()) * 100
+									- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+				} else if (newpayway == 3) {
+					$("#receivedfeecheque").val(
+							(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
+									- parseFloat($("#receivedfeecash").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+				} else if (newpayway == 4 && showposandqita == "yes") {
+					$("#receivedfeeother").val(
+							(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
+									- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeecash").val()) * 100) / 100);
+				} else {
+					$("#receivedfeecash").val(
+							(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
+									- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+				}
 			}
 		}
 
@@ -1969,28 +2008,58 @@ function click_podresultid(deliverystate, PeiSongChengGong, ShangMenTuiChengGong
 		if (podresultid == JuShou) {// 拒收
 			quantuiObj();
 		} else if (podresultid == BuFenTuiHuo) {// 部分退货
-			for (var i = 0; i < newpaywayid.split(",").length; i++) {
-				var newpayway = newpaywayid.split(",")[i];
-				if (newpayway == 1) {
-					$("#receivedfeecash").val(
-							(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
-									- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
-				} else if (newpayway == 2 && showposandqita == "yes") {
-					$("#receivedfeepos").val(
-							(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeecash").val()) * 100
-									- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
-				} else if (newpayway == 3) {
-					$("#receivedfeecheque").val(
-							(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
-									- parseFloat($("#receivedfeecash").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
-				} else if (newpayway == 4 && showposandqita == "yes") {
-					$("#receivedfeeother").val(
-							(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
-									- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeecash").val()) * 100) / 100);
-				} else {
-					$("#receivedfeecash").val(
-							(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
-									- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+			// added by gordon.zhou 2016/12/15 到付快递订单类型处理
+			if($("#cwbordertypeid").val() == 6 && $("#paymethod").val() == 2){
+				for (var i = 0; i < newpaywayid.split(",").length; i++) {
+					var newpayway = newpaywayid.split(",")[i];
+					if (newpayway == 1) {
+						$("#receivedfeecash").val(
+								(parseFloat($("#shouldfee").val()) * 100 + parseFloat($("#totalfee").val()) * 100  - parseFloat($("#receivedfeepos").val()) * 100
+										- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+					} else if (newpayway == 2 && showposandqita == "yes") {
+						$("#receivedfeepos").val(
+								(parseFloat($("#shouldfee").val()) * 100 + parseFloat($("#totalfee").val()) * 100 - parseFloat($("#receivedfeecash").val()) * 100
+										- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+					} else if (newpayway == 3) {
+						$("#receivedfeecheque").val(
+								(parseFloat($("#shouldfee").val()) * 100 + parseFloat($("#totalfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
+										- parseFloat($("#receivedfeecash").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+					} else if (newpayway == 4 && showposandqita == "yes") {
+						$("#receivedfeeother").val(
+								(parseFloat($("#shouldfee").val()) * 100 + parseFloat($("#totalfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
+										- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeecash").val()) * 100) / 100);
+					} else {
+						$("#receivedfeecash").val(
+								(parseFloat($("#shouldfee").val()) * 100 + parseFloat($("#totalfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
+										- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+					}
+				}
+			}
+			// end added by gordon.zhou
+			else{
+				for (var i = 0; i < newpaywayid.split(",").length; i++) {
+					var newpayway = newpaywayid.split(",")[i];
+					if (newpayway == 1) {
+						$("#receivedfeecash").val(
+								(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
+										- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+					} else if (newpayway == 2 && showposandqita == "yes") {
+						$("#receivedfeepos").val(
+								(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeecash").val()) * 100
+										- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+					} else if (newpayway == 3) {
+						$("#receivedfeecheque").val(
+								(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
+										- parseFloat($("#receivedfeecash").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+					} else if (newpayway == 4 && showposandqita == "yes") {
+						$("#receivedfeeother").val(
+								(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
+										- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeecash").val()) * 100) / 100);
+					} else {
+						$("#receivedfeecash").val(
+								(parseFloat($("#shouldfee").val()) * 100 - parseFloat($("#receivedfeepos").val()) * 100
+										- parseFloat($("#receivedfeecheque").val()) * 100 - parseFloat($("#receivedfeeother").val()) * 100) / 100);
+					}
 				}
 			}
 			bufentuihuoObj(podresultid);
@@ -2226,11 +2295,19 @@ function checkPeiSong() {
 	if (!checksignman()) {
 		return false;
 	}
-
-	if ((parseFloat($("#receivedfeecash").val()) + parseFloat($("#receivedfeepos").val()) + parseFloat($("#receivedfeecheque").val())
-			+ parseFloat($("#receivedfeeother").val()) != parseFloat($("#shouldfee").val()))) {
-		alert("配送成功时，总金额不等于应收款，不可以反馈");
-		return false;
+	// added by gordon.zhou 2016/12/19 快递到付订单反馈金额校验
+	if($("#cwbordertypeid").val() == 6 && $("#paymethod").val() == 2){
+		if ((parseFloat($("#receivedfeecash").val()) + parseFloat($("#receivedfeepos").val()) + parseFloat($("#receivedfeecheque").val())
+				+ parseFloat($("#receivedfeeother").val()) != parseFloat($("#shouldfee").val()) + parseFloat($("#totalfee").val()))) {
+			alert("配送成功时，总金额不等于应收款，不可以反馈");
+			return false;
+		}
+	}else{
+		if ((parseFloat($("#receivedfeecash").val()) + parseFloat($("#receivedfeepos").val()) + parseFloat($("#receivedfeecheque").val())
+				+ parseFloat($("#receivedfeeother").val()) != parseFloat($("#shouldfee").val()))) {
+			alert("配送成功时，总金额不等于应收款，不可以反馈");
+			return false;
+		}
 	}
 
 	if (!checkWeishuaka()) {
@@ -7823,3 +7900,47 @@ function onCityChangeForBranch(contextPath, id) {
 		}
 	});
 }
+	
+//唐富忠 判断重量数值合法性并转为float. 不合法返回-1
+function parseWeight_(number_) {
+
+	try {
+		if (isNaN(number_)) {
+			return -1;
+		}		
+	} catch (err) {
+		return -1;
+	}
+
+	try {
+		number_ = parseFloat(number_);
+	} catch (err) {
+		return -1;
+	} finally {
+		if (isNaN(number_)) {
+			return -1;
+		}
+	}
+	return number_;
+}
+
+	
+	/**
+	 * add by bruce shangguan 20170122 判断获取的重量是否合法
+	 */
+	function isRightWeight(carrealweight){
+		if(isNaN(carrealweight)){
+			return false ;
+		}
+		try{
+			carrealweight = parseFloat(carrealweight);
+	    }catch(err){
+	    	carrealweight = 0 ;
+	    }
+		if(isNaN(carrealweight) || carrealweight <= 0){
+			return false ;
+		}
+		return true ;
+	}
+
+	
